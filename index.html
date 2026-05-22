@@ -179,6 +179,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
 <nav>
   <div class="nav-brand">YS89<span>發文管理系統</span></div>
+  <div id="sync-status" style="font-size:.72rem;color:var(--accent);margin-left:8px;opacity:.8"></div>
   <div class="nav-tab active" onclick="nav(this,'personas')">發文角色</div>
   <div class="nav-tab" onclick="nav(this,'tracker')">發文追蹤</div>
   <div class="nav-tab" onclick="nav(this,'articles')">文章庫</div>
@@ -392,9 +393,21 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 <script>
 // ===== DB =====
 const K='ys89_'
+const API='https://ys89-api.ysyyds0001.workers.dev'
 const DB={
   get(k){try{return JSON.parse(localStorage.getItem(K+k)||'[]')}catch{return[]}},
-  set(k,v){localStorage.setItem(K+k,JSON.stringify(v))},
+  set(k,v){
+    localStorage.setItem(K+k,JSON.stringify(v))
+    fetch(API+'/api/'+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(v)})
+      .catch(()=>{})
+  },
+  async pull(k){
+    try{
+      const r=await fetch(API+'/api/'+k)
+      if(r.ok){const d=await r.json();localStorage.setItem(K+k,JSON.stringify(d));return d}
+    }catch(e){}
+    return this.get(k)
+  },
   id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
 }
 
@@ -528,9 +541,20 @@ const DEFAULT_COMMUNITY=[
   {id:'c16',name:'林家益',followers:44,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
 ]
 
-function initData(){
-  if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
-  if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
+async function initData(){
+  const sync=document.getElementById('sync-status')
+  if(sync) sync.textContent='同步中…'
+  try{
+    await Promise.all(['personas','articles','posts','community'].map(k=>DB.pull(k)))
+    if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
+    if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
+    if(sync) sync.textContent='已同步'
+    setTimeout(()=>{if(sync)sync.textContent=''},2000)
+  }catch(e){
+    if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
+    if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
+    if(sync){sync.textContent='離線模式';sync.style.color='#fb923c'}
+  }
 }
 
 // ===== HELPERS =====
@@ -977,8 +1001,7 @@ function saveCommunity(){
 }
 
 // ===== INIT =====
-initData()
-renderPersonas()
+initData().then(()=>renderPersonas())
 </script>
 </body>
 </html>
