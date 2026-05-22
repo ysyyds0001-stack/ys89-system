@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YS89 發文管理系統</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230B0908'/><text x='16' y='22' text-anchor='middle' font-size='18' fill='%23D4542A'>✦</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -338,8 +339,9 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="modal" style="max-width:400px">
     <div class="mh"><div class="mt">更新流量數據</div><button class="mc" onclick="closeModal('modal-metrics')">✕</button></div>
     <input type="hidden" id="um-id">
+    <div class="fr"><div class="fg"><label>瀏覽次數</label><input type="number" id="um-views"></div><div class="fg"><label>已觸及帳號</label><input type="number" id="um-reach"></div></div>
     <div class="fr"><div class="fg"><label>按讚</label><input type="number" id="um-likes"></div><div class="fg"><label>留言</label><input type="number" id="um-comments"></div></div>
-    <div class="fr"><div class="fg"><label>分享</label><input type="number" id="um-shares"></div><div class="fg"><label>觸及</label><input type="number" id="um-reach"></div></div>
+    <div class="fr"><div class="fg"><label>儲存</label><input type="number" id="um-saves"></div><div class="fg"><label>分享</label><input type="number" id="um-shares"></div></div>
     <div class="fb" style="margin-top:6px">
       <button class="btn btn-outline" onclick="closeModal('modal-metrics')">取消</button>
       <button class="btn btn-primary" onclick="updateMetrics()">更新</button>
@@ -767,14 +769,14 @@ function renderPosts(){
   const wrap=document.getElementById('posts-table')
   if(!posts.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無發文記錄</div>';return}
   wrap.innerHTML=`<div style="overflow-x:auto"><table>
-    <thead><tr><th>日期</th><th>角色</th><th>平台</th><th>主題</th><th>引用文章</th><th>讚</th><th>留</th><th>分享</th><th>觸及</th><th>操作</th></tr></thead>
+    <thead><tr><th>日期</th><th>角色</th><th>平台</th><th>主題</th><th>引用文章</th><th>👀瀏覽</th><th>👁觸及</th><th>👍讚</th><th>💬留言</th><th>🔖儲存</th><th>🔄分享</th><th>操作</th></tr></thead>
     <tbody>${posts.map(p=>`<tr>
       <td style="white-space:nowrap">${p.date||'—'}</td>
       <td><span class="badge b-green">${p.personaName||'—'}</span></td>
       <td><span class="badge b-blue">${p.platform||'—'}</span></td>
       <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.topic||''}">${p.topic||'—'}</td>
       <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.77rem" class="tm" title="${p.articleTitle||''}">${p.articleTitle||'—'}</td>
-      <td>${p.likes||0}</td><td>${p.comments||0}</td><td>${p.shares||0}</td><td>${p.reach||0}</td>
+      <td>${p.views||0}</td><td>${p.reach||0}</td><td>${p.likes||0}</td><td>${p.comments||0}</td><td>${p.saves||0}</td><td>${p.shares||0}</td>
       <td class="flex" style="gap:5px"><button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新</button><button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button></td>
     </tr>`).join('')}</tbody>
   </table></div>`
@@ -824,7 +826,7 @@ function savePost(){
 function openMetrics(id){
   const p=DB.get('posts').find(x=>x.id===id); if(!p)return
   document.getElementById('um-id').value=id
-  ;['likes','comments','shares','reach'].forEach(k=>document.getElementById('um-'+k).value=p[k]||0)
+  ;['views','reach','likes','comments','saves','shares'].forEach(k=>document.getElementById('um-'+k).value=p[k]||0)
   openModal('modal-metrics')
 }
 
@@ -832,7 +834,7 @@ function updateMetrics(){
   const id=document.getElementById('um-id').value
   const posts=DB.get('posts')
   const i=posts.findIndex(x=>x.id===id); if(i<0)return
-  ;['likes','comments','shares','reach'].forEach(k=>posts[i][k]=+document.getElementById('um-'+k).value||0)
+  ;['views','reach','likes','comments','saves','shares'].forEach(k=>posts[i][k]=+document.getElementById('um-'+k).value||0)
   DB.set('posts',posts)
   closeModal('modal-metrics')
   renderPosts()
