@@ -775,7 +775,7 @@ function renderPosts(){
       <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.topic||''}">${p.topic||'—'}</td>
       <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.77rem" class="tm" title="${p.articleTitle||''}">${p.articleTitle||'—'}</td>
       <td>${p.likes||0}</td><td>${p.comments||0}</td><td>${p.shares||0}</td><td>${p.reach||0}</td>
-      <td><button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新</button></td>
+      <td class="flex" style="gap:5px"><button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新</button><button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button></td>
     </tr>`).join('')}</tbody>
   </table></div>`
 }
@@ -837,6 +837,24 @@ function updateMetrics(){
   closeModal('modal-metrics')
   renderPosts()
   toast('數據已更新')
+}
+
+function delPost(id){
+  if(!confirm('確定刪除這筆發文記錄？\n（文章庫的覆蓋狀態也會同步移除）'))return
+  const posts=DB.get('posts')
+  const post=posts.find(x=>x.id===id); if(!post)return
+  DB.set('posts',posts.filter(x=>x.id!==id))
+  // 同步移除文章庫的覆蓋記錄
+  if(post.articleId&&post.personaId){
+    const articles=DB.get('articles')
+    const ai=articles.findIndex(a=>a.id===post.articleId)
+    if(ai>=0){
+      articles[ai].postedBy=(articles[ai].postedBy||[]).filter(x=>x.pid!==post.personaId)
+      DB.set('articles',articles)
+    }
+  }
+  renderPosts()
+  toast('已刪除')
 }
 
 // ===== ARTICLES =====
