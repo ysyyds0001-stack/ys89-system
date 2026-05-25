@@ -1600,6 +1600,24 @@ function buildPersonaPrompt(p, url, summary){
   const summaryBlock = summary.trim()
     ? `發布方向：\n${summary.trim()}`
     : `發布方向：\n（請自行讀取上方文章連結，整理這篇文章的核心主題、重點訊息與最適合的發文切入角度，作為後續所有輸出的依據）`
+  // 組合角色設定區塊
+  const structuredFields = [
+    `- 角色名稱：${p.name}`,
+    (p.tagline||p.essence) ? `- 角色一句話定位：${p.tagline||p.essence}` : '',
+    p.personaDesc            ? `- 人設說法：${p.personaDesc}` : '',
+    (p.topics||p.direction)  ? `- 內容領域：${p.topics||p.direction}` : '',
+    p.tone                   ? `- 語氣：${p.tone}` : '',
+    p.visualStyle            ? `- 視覺風格：${p.visualStyle}` : '',
+    p.colorScheme            ? `- 主色系：${p.colorScheme}` : '',
+    `- 禁用風格：${visualForbidden}`,
+  ].filter(Boolean).join('\n')
+  const roleBlock = p.role
+    ? `\n\n角色定位提示詞（完整人設，請完全依照此人設的語氣、立場與個性輸出所有內容）：\n${p.role}`
+    : ''
+  const imgBlock = p.img
+    ? `\n\n圖文生圖風格提示詞（封面/內頁圖請參考以下英文提示詞風格）：\n${p.img}`
+    : ''
+
   return `你是一名資深社群內容企劃、角色 IP 設計師、SEO 文案編輯、IG 圖文設計顧問。
 
 請用「${p.name}」這個角色的人設，幫我整理這篇文章的 IG 社群發文整包。
@@ -1610,14 +1628,7 @@ ${url}
 ${summaryBlock}
 
 角色設定：
-- 角色名稱：${p.name}
-- 角色一句話定位：${p.tagline||p.essence||'（依角色特色補充）'}
-- 人設說法：${p.personaDesc||p.role||'（依角色說明補充）'}
-- 內容領域：${p.topics||p.direction||''}
-- 語氣：${p.tone||''}
-- 視覺風格：${p.visualStyle||''}
-- 主色系：${p.colorScheme||''}
-- 禁用風格：${visualForbidden}
+${structuredFields}${roleBlock}${imgBlock}
 
 請遵守以下規則：
 1. 必須先讀懂文章內容。
