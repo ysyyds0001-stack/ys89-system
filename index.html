@@ -185,6 +185,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'tracker')">發文追蹤</div>
   <div class="nav-tab" onclick="nav(this,'articles')">文章庫</div>
   <div class="nav-tab" onclick="nav(this,'community')">社群號</div>
+  <div class="nav-tab" onclick="nav(this,'threads')">📱 Threads</div>
 </nav>
 
 <div id="toast"></div>
@@ -254,6 +255,37 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <button class="btn btn-primary" onclick="openAddCommunityModal()">+ 新增帳號</button>
   </div>
   <div id="cm-grid" class="g3"></div>
+</div>
+
+<!-- ===== PAGE: Threads 腳本 ===== -->
+<div id="pg-threads" class="page">
+  <div class="fb" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">Threads 腳本庫</h2>
+      <p class="tm" style="margin-top:3px">熱門仿文腳本 · 角色炒話題回覆規劃</p>
+    </div>
+    <select id="th-dir-filter" onchange="renderThreads()" style="width:160px">
+      <option value="">全部方向</option>
+      <option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option>
+      <option>百家樂</option><option>老虎機</option><option>捕魚機</option>
+    </select>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+    <div>
+      <div class="fb" style="margin-bottom:12px">
+        <div style="font-size:.9rem;font-weight:600;color:var(--accent)">✍️ 仿文腳本</div>
+        <button class="btn btn-primary btn-sm" onclick="openAddThreadsPost()">+ 新增</button>
+      </div>
+      <div id="th-posts-list"></div>
+    </div>
+    <div>
+      <div class="fb" style="margin-bottom:12px">
+        <div style="font-size:.9rem;font-weight:600;color:var(--accent)">🔥 炒話題回覆串</div>
+        <button class="btn btn-primary btn-sm" onclick="openAddThreadsReply()">+ 新增</button>
+      </div>
+      <div id="th-replies-list"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ============ MODALS ============ -->
@@ -388,6 +420,82 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="fb" style="margin-top:6px">
       <button class="btn btn-outline" onclick="closeModal('modal-community')">取消</button>
       <button class="btn btn-primary" id="cm-save-btn" onclick="saveCommunity()">儲存帳號</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增仿文腳本 -->
+<div id="modal-threads-post" class="overlay">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="tp-title">新增仿文腳本</div><button class="mc" onclick="closeModal('modal-threads-post')">✕</button></div>
+    <input type="hidden" id="tp-id">
+    <div class="fr">
+      <div class="fg"><label>方向</label>
+        <select id="tp-dir"><option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option><option>百家樂</option><option>老虎機</option><option>捕魚機</option></select>
+      </div>
+      <div class="fg"><label>指定角色（選填）</label>
+        <select id="tp-persona"><option value="">不指定</option></select>
+      </div>
+    </div>
+    <div class="fg"><label>熱門參考帖 URL（選填）</label><input id="tp-ref-url" placeholder="https://www.threads.net/..."></div>
+    <div class="fg"><label>參考說明</label><textarea id="tp-ref-summary" rows="2" placeholder="這篇帖子的主題、風格、為什麼熱門"></textarea></div>
+    <div class="fg"><label>仿寫腳本 ✦</label><textarea id="tp-script" rows="5" placeholder="仿寫後的發文腳本內容"></textarea></div>
+    <div class="fr">
+      <div class="fg"><label>備註</label><input id="tp-note" placeholder="例：世足熱門開球前用"></div>
+      <div class="fg"><label>狀態</label>
+        <select id="tp-status"><option>草稿</option><option>備用</option><option>已發布</option></select>
+      </div>
+    </div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-threads-post')">取消</button>
+      <button class="btn btn-primary" onclick="saveThreadsPost()">儲存腳本</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增炒話題串 -->
+<div id="modal-threads-reply" class="overlay">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="tr-title">新增炒話題串</div><button class="mc" onclick="closeModal('modal-threads-reply')">✕</button></div>
+    <input type="hidden" id="tr-id">
+    <div class="fg"><label>目標串 URL（選填）</label><input id="tr-url" placeholder="https://www.threads.net/..."></div>
+    <div class="fg"><label>主題說明 ✦</label><textarea id="tr-summary" rows="2" placeholder="這個討論串的主題、關鍵字、背景說明"></textarea></div>
+    <div class="fr">
+      <div class="fg"><label>方向</label>
+        <select id="tr-dir"><option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option><option>百家樂</option><option>老虎機</option><option>捕魚機</option></select>
+      </div>
+      <div class="fg"><label>策略</label>
+        <select id="tr-strategy"><option>帶風向</option><option>引流/導到ys89</option><option>炒話題</option><option>真人互動</option></select>
+      </div>
+    </div>
+    <div class="fg"><label>狀態</label>
+      <select id="tr-status"><option>草稿</option><option>進行中</option><option>已完成</option></select>
+    </div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-threads-reply')">取消</button>
+      <button class="btn btn-primary" onclick="saveThreadsReply()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增角色回覆腳本 -->
+<div id="modal-threads-add-reply" class="overlay">
+  <div class="modal" style="max-width:480px">
+    <div class="mh"><div class="mt" id="tar-title">新增角色回覆</div><button class="mc" onclick="closeModal('modal-threads-add-reply')">✕</button></div>
+    <input type="hidden" id="tar-campaign-id">
+    <input type="hidden" id="tar-reply-id">
+    <div class="fg"><label>角色</label>
+      <select id="tar-persona"><option value="">選擇角色</option></select>
+    </div>
+    <div class="fg"><label>回覆腳本</label>
+      <textarea id="tar-script" rows="5" placeholder="這個角色的回覆腳本內容"></textarea>
+    </div>
+    <div class="fg"><label>狀態</label>
+      <select id="tar-status"><option>草稿</option><option>備用</option><option>已回覆</option></select>
+    </div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-threads-add-reply')">取消</button>
+      <button class="btn btn-primary" onclick="saveReplyScript()">儲存回覆</button>
     </div>
   </div>
 </div>
@@ -547,7 +655,7 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(sync) sync.textContent='已同步'
@@ -565,7 +673,7 @@ function nav(el,page){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
-  const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity}
+  const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threads:renderThreads}
   renders[page]&&renders[page]()
 }
 function openModal(id){document.getElementById(id).classList.add('show')}
@@ -1018,6 +1126,247 @@ function saveCommunity(){
   closeModal('modal-community')
   renderCommunity()
   toast(id?'帳號已更新':'帳號已新增')
+}
+
+// ===== THREADS SCRIPTS =====
+const ST_BADGE={草稿:'b-gray',備用:'b-yellow',已發布:'b-green',進行中:'b-warn',已完成:'b-green',已回覆:'b-green'}
+const STG_BADGE={帶風向:'b-red','引流/導到ys89':'b-green',炒話題:'b-warn',真人互動:'b-blue'}
+
+function renderThreads(){
+  renderThreadsPosts()
+  renderThreadsReplies()
+}
+
+function renderThreadsPosts(){
+  const all=DB.get('threads_posts')
+  const dir=document.getElementById('th-dir-filter')?.value
+  const list=dir?all.filter(p=>p.dir===dir):all
+  const wrap=document.getElementById('th-posts-list')
+  if(!list.length){wrap.innerHTML='<div class="card" style="text-align:center;padding:30px;color:var(--text3)">尚無仿文腳本<br><span style="font-size:.78rem">點右上角「+ 新增」開始建立</span></div>';return}
+  wrap.innerHTML=list.slice().reverse().map(p=>`
+    <div class="card" style="margin-bottom:10px">
+      <div class="fb" style="margin-bottom:8px">
+        <div class="flex" style="flex-wrap:wrap;gap:5px">
+          <span class="badge b-gray">${p.dir}</span>
+          ${p.personaName?`<span class="badge b-green">${p.personaName}</span>`:''}
+          <span class="badge ${ST_BADGE[p.status]||'b-gray'}">${p.status}</span>
+        </div>
+        <div class="flex">
+          <button class="btn btn-xs btn-outline" onclick="openEditThreadsPost('${p.id}')">編輯</button>
+          <button class="btn btn-xs btn-danger" onclick="delThreadsPost('${p.id}')">刪</button>
+        </div>
+      </div>
+      ${p.refSummary?`<div class="tm" style="margin-bottom:6px;font-size:.78rem">📎 ${p.refSummary.slice(0,60)}${p.refSummary.length>60?'…':''}</div>`:''}
+      ${p.refUrl?`<div style="margin-bottom:7px"><a href="${p.refUrl}" target="_blank" class="badge b-blue" style="text-decoration:none;font-size:.72rem">查看原帖 ↗</a></div>`:''}
+      <div style="background:#0B0B0D;border:1px solid var(--border);border-radius:7px;padding:10px 38px 10px 10px;font-size:.82rem;line-height:1.7;color:var(--text2);position:relative;white-space:pre-wrap;max-height:130px;overflow-y:auto">
+        ${p.script||'（尚無腳本）'}
+        ${p.script?`<button class="pcopy" onclick="cp(${JSON.stringify(p.script)},this)" style="top:5px;right:5px">複製</button>`:''}
+      </div>
+      ${p.note?`<div class="tm" style="margin-top:6px;font-size:.77rem">📌 ${p.note}</div>`:''}
+    </div>`).join('')
+}
+
+function renderThreadsReplies(){
+  const all=DB.get('threads_replies')
+  const dir=document.getElementById('th-dir-filter')?.value
+  const list=dir?all.filter(c=>c.dir===dir):all
+  const wrap=document.getElementById('th-replies-list')
+  if(!list.length){wrap.innerHTML='<div class="card" style="text-align:center;padding:30px;color:var(--text3)">尚無回覆串<br><span style="font-size:.78rem">點右上角「+ 新增」建立炒話題計畫</span></div>';return}
+  wrap.innerHTML=list.slice().reverse().map(c=>`
+    <div class="card" style="margin-bottom:10px">
+      <div class="fb" style="margin-bottom:8px">
+        <div class="flex" style="flex-wrap:wrap;gap:5px">
+          <span class="badge ${STG_BADGE[c.strategy]||'b-gray'}">${c.strategy}</span>
+          <span class="badge b-gray">${c.dir}</span>
+          <span class="badge ${ST_BADGE[c.status]||'b-gray'}">${c.status}</span>
+        </div>
+        <div class="flex">
+          <button class="btn btn-xs btn-outline" onclick="openEditThreadsReply('${c.id}')">編輯</button>
+          <button class="btn btn-xs btn-danger" onclick="delThreadsReply('${c.id}')">刪</button>
+        </div>
+      </div>
+      <div style="font-size:.85rem;color:var(--text);margin-bottom:6px">${c.summary||'（無說明）'}</div>
+      ${c.threadUrl?`<div style="margin-bottom:8px"><a href="${c.threadUrl}" target="_blank" class="badge b-blue" style="text-decoration:none;font-size:.72rem">查看討論串 ↗</a></div>`:''}
+      <div style="margin-top:4px">
+        ${(c.replies||[]).map(r=>`
+          <div style="background:#0B0B0D;border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:6px">
+            <div class="fb" style="margin-bottom:5px">
+              <div class="flex" style="gap:5px">
+                <span class="badge b-green" style="font-size:.7rem">${r.personaName}</span>
+                <span class="badge ${ST_BADGE[r.status]||'b-gray'}" style="font-size:.7rem">${r.status}</span>
+              </div>
+              <div class="flex" style="gap:4px">
+                ${r.script?`<button class="btn btn-xs btn-copy" onclick="cp(${JSON.stringify(r.script)},this)">複製</button>`:''}
+                <button class="btn btn-xs btn-outline" onclick="openEditReplyScript('${c.id}','${r.id}')">編輯</button>
+                <button class="btn btn-xs btn-danger" onclick="delReplyScript('${c.id}','${r.id}')">刪</button>
+              </div>
+            </div>
+            <div style="font-size:.8rem;color:var(--text2);white-space:pre-wrap;line-height:1.6;max-height:80px;overflow-y:auto">${r.script||'（尚無腳本）'}</div>
+          </div>`).join('')}
+        <button class="btn btn-xs btn-outline" style="width:100%;margin-top:2px" onclick="openAddReplyScript('${c.id}')">+ 新增角色回覆</button>
+      </div>
+    </div>`).join('')
+}
+
+function openAddThreadsPost(){
+  document.getElementById('tp-id').value=''
+  document.getElementById('tp-title').textContent='新增仿文腳本'
+  ;['tp-ref-url','tp-ref-summary','tp-script','tp-note'].forEach(i=>document.getElementById(i).value='')
+  document.getElementById('tp-status').value='草稿'
+  const personas=DB.get('personas')
+  document.getElementById('tp-persona').innerHTML='<option value="">不指定</option>'+personas.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')
+  openModal('modal-threads-post')
+}
+
+function openEditThreadsPost(id){
+  const p=DB.get('threads_posts').find(x=>x.id===id);if(!p)return
+  document.getElementById('tp-id').value=id
+  document.getElementById('tp-title').textContent='編輯仿文腳本'
+  document.getElementById('tp-dir').value=p.dir||'世足/運彩'
+  const personas=DB.get('personas')
+  document.getElementById('tp-persona').innerHTML='<option value="">不指定</option>'+personas.map(pe=>`<option value="${pe.id}"${pe.id===p.personaId?' selected':''}>${pe.name}</option>`).join('')
+  ;['tp-ref-url','tp-ref-summary','tp-script','tp-note'].forEach(i=>document.getElementById(i).value=p[i.replace('tp-','').replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]||'')
+  document.getElementById('tp-ref-url').value=p.refUrl||''
+  document.getElementById('tp-ref-summary').value=p.refSummary||''
+  document.getElementById('tp-script').value=p.script||''
+  document.getElementById('tp-note').value=p.note||''
+  document.getElementById('tp-status').value=p.status||'草稿'
+  openModal('modal-threads-post')
+}
+
+function saveThreadsPost(){
+  const id=document.getElementById('tp-id').value
+  const script=document.getElementById('tp-script').value.trim()
+  if(!script){toast('請填入仿寫腳本','err');return}
+  const personas=DB.get('personas')
+  const pid=document.getElementById('tp-persona').value
+  const persona=personas.find(p=>p.id===pid)
+  const posts=DB.get('threads_posts')
+  const obj={
+    dir:document.getElementById('tp-dir').value,
+    personaId:pid||'',personaName:persona?.name||'',
+    refUrl:document.getElementById('tp-ref-url').value,
+    refSummary:document.getElementById('tp-ref-summary').value,
+    script,note:document.getElementById('tp-note').value,
+    status:document.getElementById('tp-status').value,
+  }
+  if(id){const i=posts.findIndex(x=>x.id===id);if(i>=0)posts[i]={...posts[i],...obj}}
+  else posts.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
+  DB.set('threads_posts',posts)
+  closeModal('modal-threads-post')
+  renderThreadsPosts()
+  toast(id?'腳本已更新':'腳本已新增')
+}
+
+function delThreadsPost(id){
+  if(!confirm('確定刪除此腳本？'))return
+  DB.set('threads_posts',DB.get('threads_posts').filter(x=>x.id!==id))
+  renderThreadsPosts()
+  toast('已刪除')
+}
+
+function openAddThreadsReply(){
+  document.getElementById('tr-id').value=''
+  document.getElementById('tr-title').textContent='新增炒話題串'
+  ;['tr-url','tr-summary'].forEach(i=>document.getElementById(i).value='')
+  document.getElementById('tr-strategy').value='帶風向'
+  document.getElementById('tr-status').value='草稿'
+  openModal('modal-threads-reply')
+}
+
+function openEditThreadsReply(id){
+  const c=DB.get('threads_replies').find(x=>x.id===id);if(!c)return
+  document.getElementById('tr-id').value=id
+  document.getElementById('tr-title').textContent='編輯炒話題串'
+  document.getElementById('tr-url').value=c.threadUrl||''
+  document.getElementById('tr-summary').value=c.summary||''
+  document.getElementById('tr-dir').value=c.dir||'世足/運彩'
+  document.getElementById('tr-strategy').value=c.strategy||'帶風向'
+  document.getElementById('tr-status').value=c.status||'草稿'
+  openModal('modal-threads-reply')
+}
+
+function saveThreadsReply(){
+  const id=document.getElementById('tr-id').value
+  const summary=document.getElementById('tr-summary').value.trim()
+  if(!summary){toast('請填入主題說明','err');return}
+  const campaigns=DB.get('threads_replies')
+  const obj={
+    threadUrl:document.getElementById('tr-url').value,
+    summary,dir:document.getElementById('tr-dir').value,
+    strategy:document.getElementById('tr-strategy').value,
+    status:document.getElementById('tr-status').value,
+  }
+  if(id){const i=campaigns.findIndex(x=>x.id===id);if(i>=0)campaigns[i]={...campaigns[i],...obj}}
+  else campaigns.push({...obj,id:DB.id(),replies:[],createdAt:new Date().toISOString()})
+  DB.set('threads_replies',campaigns)
+  closeModal('modal-threads-reply')
+  renderThreadsReplies()
+  toast(id?'回覆串已更新':'回覆串已新增')
+}
+
+function delThreadsReply(id){
+  if(!confirm('確定刪除此回覆串及所有角色腳本？'))return
+  DB.set('threads_replies',DB.get('threads_replies').filter(x=>x.id!==id))
+  renderThreadsReplies()
+  toast('已刪除')
+}
+
+function openAddReplyScript(campaignId){
+  document.getElementById('tar-campaign-id').value=campaignId
+  document.getElementById('tar-reply-id').value=''
+  document.getElementById('tar-title').textContent='新增角色回覆'
+  document.getElementById('tar-script').value=''
+  document.getElementById('tar-status').value='草稿'
+  const personas=DB.get('personas')
+  document.getElementById('tar-persona').innerHTML='<option value="">選擇角色</option>'+personas.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')
+  openModal('modal-threads-add-reply')
+}
+
+function openEditReplyScript(campaignId,replyId){
+  const c=DB.get('threads_replies').find(x=>x.id===campaignId);if(!c)return
+  const r=(c.replies||[]).find(x=>x.id===replyId);if(!r)return
+  document.getElementById('tar-campaign-id').value=campaignId
+  document.getElementById('tar-reply-id').value=replyId
+  document.getElementById('tar-title').textContent='編輯角色回覆'
+  document.getElementById('tar-script').value=r.script||''
+  document.getElementById('tar-status').value=r.status||'草稿'
+  const personas=DB.get('personas')
+  document.getElementById('tar-persona').innerHTML='<option value="">選擇角色</option>'+personas.map(p=>`<option value="${p.id}"${p.id===r.personaId?' selected':''}>${p.name}</option>`).join('')
+  openModal('modal-threads-add-reply')
+}
+
+function saveReplyScript(){
+  const campaignId=document.getElementById('tar-campaign-id').value
+  const replyId=document.getElementById('tar-reply-id').value
+  const pid=document.getElementById('tar-persona').value
+  if(!pid){toast('請選擇角色','err');return}
+  const personas=DB.get('personas')
+  const persona=personas.find(p=>p.id===pid)
+  const campaigns=DB.get('threads_replies')
+  const ci=campaigns.findIndex(x=>x.id===campaignId);if(ci<0)return
+  if(!campaigns[ci].replies)campaigns[ci].replies=[]
+  const obj={personaId:pid,personaName:persona?.name||pid,script:document.getElementById('tar-script').value.trim(),status:document.getElementById('tar-status').value}
+  if(replyId){
+    const ri=campaigns[ci].replies.findIndex(x=>x.id===replyId)
+    if(ri>=0)campaigns[ci].replies[ri]={...campaigns[ci].replies[ri],...obj}
+  }else{
+    campaigns[ci].replies.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
+  }
+  DB.set('threads_replies',campaigns)
+  closeModal('modal-threads-add-reply')
+  renderThreadsReplies()
+  toast('回覆腳本已儲存')
+}
+
+function delReplyScript(campaignId,replyId){
+  if(!confirm('確定刪除此回覆腳本？'))return
+  const campaigns=DB.get('threads_replies')
+  const ci=campaigns.findIndex(x=>x.id===campaignId);if(ci<0)return
+  campaigns[ci].replies=(campaigns[ci].replies||[]).filter(x=>x.id!==replyId)
+  DB.set('threads_replies',campaigns)
+  renderThreadsReplies()
+  toast('已刪除')
 }
 
 // ===== INIT =====
