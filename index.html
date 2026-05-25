@@ -205,6 +205,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
         <option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option>
         <option>百家樂</option><option>老虎機</option><option>捕魚機</option><option>通用</option>
       </select>
+      <button class="btn btn-outline" onclick="openBatchGen()">📋 批次生成</button>
       <button class="btn btn-primary" onclick="openModal('modal-add-persona')">+ 新增角色</button>
     </div>
   </div>
@@ -359,6 +360,16 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="fg"><label>禁忌用詞</label><textarea id="ap-forbidden" rows="2" placeholder="不能出現的詞彙"></textarea></div>
     <div class="fg"><label>角色定位提示詞</label><textarea id="ap-role" rows="4" placeholder="完整角色定位提示詞"></textarea></div>
     <div class="fg"><label>圖文生圖提示詞</label><textarea id="ap-img" rows="5" placeholder="生圖用完整英文提示詞"></textarea></div>
+    <hr style="border:none;border-top:1px solid var(--border2);margin:14px 0">
+    <div style="font-size:.78rem;font-weight:600;color:var(--accent);margin-bottom:10px">📋 批次生成補充設定（選填，完整填寫後可一鍵批次生成所有發文提示詞）</div>
+    <div class="fg"><label>角色一句話定位</label><input id="ap-tagline" placeholder="例：一隻可愛但很會整理重點的足球觀測螃蟹"></div>
+    <div class="fg"><label>人設說法（一段話）</label><textarea id="ap-persona-desc" rows="2" placeholder="例：不是專業球評，也不是官方小編，而是球迷旁邊那隻拿著筆記板的小螃蟹"></textarea></div>
+    <div class="fr">
+      <div class="fg"><label>視覺風格</label><textarea id="ap-visual-style" rows="2" placeholder="例：可愛資訊圖卡、螃蟹吉祥物、球場背景、筆記卡、時鐘"></textarea></div>
+      <div class="fg"><label>主色系</label><input id="ap-color-scheme" placeholder="例：深藍、亮藍、白色、紅色點綴"></div>
+    </div>
+    <div class="fg"><label>禁用視覺風格</label><textarea id="ap-forbidden-style" rows="2" placeholder="例：不要賭博感、不要娛樂城畫面、不要籌碼、不要現金、不要 FIFA Logo、不要真實球員臉"></textarea></div>
+    <div class="fg"><label>SEO 關鍵字（逗號分隔，不要硬塞用）</label><input id="ap-seo-kw" placeholder="例：2026世界盃,世界盃賽程,世界盃台灣時間,世界盃轉播"></div>
     <div class="fb" style="margin-top:6px">
       <button class="btn btn-outline" onclick="closeModal('modal-add-persona')">取消</button>
       <button class="btn btn-primary" id="ap-save-btn" onclick="savePersona()">儲存角色</button>
@@ -445,6 +456,42 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <button class="btn btn-outline" onclick="closeModal('modal-add-article')">取消</button>
       <button class="btn btn-primary" onclick="saveArticle()">儲存文章</button>
     </div>
+  </div>
+</div>
+
+<!-- 批次生成發文提示詞 -->
+<div id="modal-batch-gen" class="overlay">
+  <div class="modal" style="max-width:980px;width:96vw;max-height:90vh;overflow-y:auto">
+    <div class="mh" style="position:sticky;top:0;z-index:10;background:#0d0b0a">
+      <div>
+        <div class="mt">📋 批次生成發文提示詞</div>
+        <div class="tm" style="font-size:.75rem;margin-top:2px">輸入文章 URL → 選方向 → 一鍵產生所有角色的完整AI提示詞</div>
+      </div>
+      <button class="mc" onclick="closeModal('modal-batch-gen')">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-bottom:12px">
+      <div class="fg" style="margin:0">
+        <label>文章 URL</label>
+        <input id="bg-url" placeholder="https://..." style="font-size:.82rem">
+      </div>
+      <div class="fg" style="margin:0;width:180px">
+        <label>發布方向篩選</label>
+        <select id="bg-dir" onchange="updateBgCount()">
+          <option value="">全部發文角色</option>
+          <option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option>
+          <option>百家樂</option><option>老虎機</option><option>捕魚機</option><option>通用</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg" style="margin-bottom:14px">
+      <label>文章發布方向說明（直接貼或手填，完整描述這篇文章的主題與關鍵詞）</label>
+      <textarea id="bg-summary" rows="3" placeholder="例：2026 世界盃觀賽懶人包／台灣球迷觀賽整理／賽程時間提醒／轉播資訊整理／48 隊新賽制介紹"></textarea>
+    </div>
+    <div class="fb" style="margin-bottom:16px">
+      <span id="bg-persona-count" style="color:var(--text3);font-size:.82rem"></span>
+      <button class="btn btn-primary" onclick="runBatchGen()">⚡ 生成全部提示詞</button>
+    </div>
+    <div id="bg-results"></div>
   </div>
 </div>
 
@@ -834,7 +881,7 @@ function openAddPersona(){
   document.getElementById('ap-id').value=''
   document.getElementById('ap-title').textContent='新增發文角色'
   document.getElementById('ap-save-btn').textContent='儲存角色'
-  ;['ap-name','ap-direction','ap-essence','ap-tone','ap-topics','ap-forbidden','ap-role','ap-img'].forEach(i=>document.getElementById(i).value='')
+  ;['ap-name','ap-direction','ap-essence','ap-tone','ap-topics','ap-forbidden','ap-role','ap-img','ap-tagline','ap-persona-desc','ap-visual-style','ap-color-scheme','ap-forbidden-style','ap-seo-kw'].forEach(i=>document.getElementById(i).value='')
   document.getElementById('ap-followers').value='0'
   openModal('modal-add-persona')
 }
@@ -854,6 +901,12 @@ function openEditPersona(id){
   document.getElementById('ap-forbidden').value=p.forbidden||''
   document.getElementById('ap-role').value=p.role||''
   document.getElementById('ap-img').value=p.img||''
+  document.getElementById('ap-tagline').value=p.tagline||''
+  document.getElementById('ap-persona-desc').value=p.personaDesc||''
+  document.getElementById('ap-visual-style').value=p.visualStyle||''
+  document.getElementById('ap-color-scheme').value=p.colorScheme||''
+  document.getElementById('ap-forbidden-style').value=p.forbiddenStyle||''
+  document.getElementById('ap-seo-kw').value=p.seoKeywords||''
   openModal('modal-add-persona')
 }
 
@@ -872,6 +925,12 @@ function savePersona(){
     forbidden:document.getElementById('ap-forbidden').value,
     role:document.getElementById('ap-role').value,
     img:document.getElementById('ap-img').value,
+    tagline:document.getElementById('ap-tagline').value,
+    personaDesc:document.getElementById('ap-persona-desc').value,
+    visualStyle:document.getElementById('ap-visual-style').value,
+    colorScheme:document.getElementById('ap-color-scheme').value,
+    forbiddenStyle:document.getElementById('ap-forbidden-style').value,
+    seoKeywords:document.getElementById('ap-seo-kw').value,
   }
   if(id){const i=personas.findIndex(x=>x.id===id);if(i>=0)personas[i]={...personas[i],...obj}}
   else personas.push({...obj,id:DB.id(),postPrompts:[],createdAt:new Date().toISOString()})
@@ -1071,6 +1130,7 @@ function renderArticles(){
             <div style="font-size:1.1rem;font-weight:700;color:${covPct===100?'var(--accent)':covPct>=50?'#fbbf24':'#f87171'}">${covPct}%</div>
             <div class="tm">覆蓋率</div>
           </div>
+          <button class="btn btn-xs btn-outline" onclick="openBatchGen('${(a.url||'').replace(/'/g,"\\'")}','${a.dir||''}','${(a.title||'').replace(/'/g,"\\'")}')">📋 批次生成</button>
           <button class="btn btn-xs btn-danger" onclick="delArticle('${a.id}')">刪除</button>
         </div>
       </div>
@@ -1516,6 +1576,131 @@ function delReplyScript(campaignId,replyId){
   DB.set('threads_replies',campaigns)
   renderThreadsReplies()
   toast('已刪除')
+}
+
+// ===== BATCH GEN =====
+function buildPersonaPrompt(p, url, summary){
+  const seoKw = p.seoKeywords
+    ? p.seoKeywords.split(',').map(k=>`   - ${k.trim()}`).join('\n')
+    : '   （依文章主題與角色方向自然選用）'
+  const visualForbidden = p.forbiddenStyle || p.forbidden ||
+    '不要賭博感、不要娛樂城畫面、不要籌碼現金、不要保證預測、不要真實官方Logo、不要真實球員臉'
+  return `你是一名資深社群內容企劃、角色 IP 設計師、SEO 文案編輯、IG 圖文設計顧問。
+
+請用「${p.name}」這個角色的人設，幫我整理這篇文章的 IG 社群發文整包。
+
+文章連結：
+${url}
+
+發布方向：
+${summary}
+
+角色設定：
+- 角色名稱：${p.name}
+- 角色一句話定位：${p.tagline||p.essence||'（依角色特色補充）'}
+- 人設說法：${p.personaDesc||p.role||'（依角色說明補充）'}
+- 內容領域：${p.topics||p.direction||''}
+- 語氣：${p.tone||''}
+- 視覺風格：${p.visualStyle||''}
+- 主色系：${p.colorScheme||''}
+- 禁用風格：${visualForbidden}
+
+請遵守以下規則：
+1. 必須先讀懂文章內容。
+2. 必須整理文章 1～3 個可引用重點。
+3. 文案中必須自然引用文章重點。
+4. 必須依照主題自然加入 2～4 個 SEO 關鍵字。
+   可使用但不要硬塞：
+${seoKw}
+5. 必須自然加入 1～3 個 YS89 品牌關鍵字。
+   可使用但不要硬塞：
+   - YS89
+   - 夜色
+   - YS89 ${p.direction||p.dir||''}資訊整理
+6. 不能硬塞關鍵字，必須像正常 IG 發文。
+7. 語氣要完全符合「${p.name}」的人設。
+8. 文案與 Hashtag 要放在一起，方便一次複製。
+9. 另外提供 Threads 短版。
+10. 提供輪播封面標題、6 頁架構、每頁圖文文案、封面圖提示詞、內頁提示詞、Hashtag、CTA。
+11. 所有文案使用繁體中文。
+12. 不要出現保證預測、保證命中、穩贏、必中、下注教學等字眼。
+13. 內容以資訊整理為主，不要做成賭博推廣。
+14. 圖像提示詞必須符合平台安全：無 FIFA 官方 Logo、無真實球隊 Logo、無真實球員臉、無賭博元素。
+
+輸出格式如下：
+
+1. 文章重點整理（1～3點，可自然放進IG文案）
+
+2. IG 發文文案（150～250字）
+   - 文案＋Hashtag 放同一區塊
+   - 開頭有角色感
+   - 自然引用文章重點
+   - 自然加入SEO及品牌關鍵字
+
+3. Threads 短版（80～150字，可帶1個CTA）
+
+4. IG 輪播封面標題 5 組（短、好讀、有收藏感、適合4:5封面）
+
+5. IG 輪播 6 頁架構（第1頁封面 → 第6頁CTA）
+
+6. 每頁圖文文字（每頁2～4行，短句清楚，手機可讀）
+
+7. 封面圖提示詞（4:5 IG輪播封面，符合角色視覺風格，預留標題安全區）
+
+8. 內頁圖提示詞（4:5 資訊卡，延續封面風格，版面乾淨）
+
+9. Hashtag（10～18個，主題相關，不放不相關熱門標籤）
+
+10. CTA 3種（不硬銷，以收藏/看完整整理/追蹤為主，符合角色口吻）`
+}
+
+function updateBgCount(){
+  const dir=document.getElementById('bg-dir')?.value
+  const personas=DB.get('personas')
+  const list=dir?personas.filter(p=>p.dir===dir):personas
+  const el=document.getElementById('bg-persona-count')
+  if(el) el.textContent=`共 ${list.length} 位角色`
+}
+
+function openBatchGen(url='', dir='', summary=''){
+  document.getElementById('bg-url').value=url
+  document.getElementById('bg-dir').value=dir
+  document.getElementById('bg-summary').value=summary
+  document.getElementById('bg-results').innerHTML=''
+  updateBgCount()
+  openModal('modal-batch-gen')
+}
+
+function runBatchGen(){
+  const url=document.getElementById('bg-url').value.trim()
+  const dir=document.getElementById('bg-dir').value
+  const summary=document.getElementById('bg-summary').value.trim()
+  if(!url){toast('請填入文章URL','err');return}
+  if(!summary){toast('請填入發布方向說明','err');return}
+  const personas=DB.get('personas')
+  const list=dir?personas.filter(p=>p.dir===dir):personas
+  if(!list.length){toast('沒有符合條件的角色','err');return}
+  const wrap=document.getElementById('bg-results')
+  wrap.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    ${list.map(p=>{
+      const prompt=buildPersonaPrompt(p,url,summary)
+      return`<div class="card">
+        <div class="fb" style="margin-bottom:10px">
+          <div>
+            <div style="font-weight:700;color:var(--accent)">${p.name}</div>
+            <div class="flex" style="gap:5px;margin-top:3px">
+              <span class="badge b-gray">${p.dir}</span>
+              ${p.tagline?`<span style="color:var(--text3);font-size:.72rem">${p.tagline.slice(0,30)}${p.tagline.length>30?'…':''}</span>`:'<span style="color:#f87171;font-size:.72rem">⚠ 尚未填角色一句話定位</span>'}
+            </div>
+          </div>
+          <button class="btn btn-sm btn-copy" onclick="cp(${JSON.stringify(prompt)},this)">複製提示詞</button>
+        </div>
+        <div style="background:#0B0B0D;border:1px solid var(--border);border-radius:7px;padding:10px;font-size:.75rem;color:var(--text3);max-height:160px;overflow-y:auto;white-space:pre-wrap;line-height:1.55">${prompt.slice(0,400)}…</div>
+        <div style="margin-top:8px;font-size:.72rem;color:var(--text3)">${prompt.length} 字元</div>
+      </div>`
+    }).join('')}
+  </div>`
+  toast(`已生成 ${list.length} 位角色的提示詞`)
 }
 
 // ===== ENTRANCES =====
