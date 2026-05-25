@@ -461,37 +461,49 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
 <!-- 批次生成發文提示詞 -->
 <div id="modal-batch-gen" class="overlay">
-  <div class="modal" style="max-width:980px;width:96vw;max-height:90vh;overflow-y:auto">
-    <div class="mh" style="position:sticky;top:0;z-index:10;background:#0d0b0a">
+  <div class="modal" style="max-width:980px;width:96vw;max-height:90vh;display:flex;flex-direction:column">
+    <div class="mh" style="flex-shrink:0">
       <div>
         <div class="mt">📋 批次生成發文提示詞</div>
-        <div class="tm" style="font-size:.75rem;margin-top:2px">輸入文章 URL → 選方向 → 一鍵產生所有角色的完整AI提示詞</div>
+        <div class="tm" style="font-size:.75rem;margin-top:2px">貼上文章 URL → 勾選角色 → 一鍵產生完整AI提示詞</div>
       </div>
       <button class="mc" onclick="closeModal('modal-batch-gen')">✕</button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-bottom:12px">
-      <div class="fg" style="margin:0">
-        <label>文章 URL</label>
-        <input id="bg-url" placeholder="https://..." style="font-size:.82rem">
+    <!-- URL -->
+    <div class="fg" style="flex-shrink:0;margin-bottom:12px">
+      <label>文章 URL</label>
+      <input id="bg-url" placeholder="https://..." style="font-size:.82rem">
+    </div>
+    <!-- Persona selector -->
+    <div style="flex-shrink:0;background:#0d0b0a;border:1px solid var(--border2);border-radius:9px;padding:12px 14px;margin-bottom:12px">
+      <div class="fb" style="margin-bottom:10px">
+        <div style="font-size:.8rem;font-weight:600;color:var(--text2)">選擇角色</div>
+        <div class="flex" style="gap:6px;align-items:center">
+          <select id="bg-dir" onchange="renderBgPersonaList()" style="width:160px;font-size:.8rem">
+            <option value="">全部方向</option>
+            <option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option>
+            <option>百家樂</option><option>老虎機</option><option>捕魚機</option><option>通用</option>
+          </select>
+          <button class="btn btn-xs btn-outline" onclick="toggleBgAll(true)">全選</button>
+          <button class="btn btn-xs btn-outline" onclick="toggleBgAll(false)">取消</button>
+          <span id="bg-persona-count" style="color:var(--text3);font-size:.78rem"></span>
+        </div>
       </div>
-      <div class="fg" style="margin:0;width:180px">
-        <label>發布方向篩選</label>
-        <select id="bg-dir" onchange="updateBgCount()">
-          <option value="">全部發文角色</option>
-          <option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option>
-          <option>百家樂</option><option>老虎機</option><option>捕魚機</option><option>通用</option>
-        </select>
-      </div>
+      <div id="bg-persona-list" style="display:flex;flex-wrap:wrap;gap:7px"></div>
     </div>
-    <div class="fg" style="margin-bottom:14px">
-      <label>文章發布方向說明（直接貼或手填，完整描述這篇文章的主題與關鍵詞）</label>
-      <textarea id="bg-summary" rows="3" placeholder="例：2026 世界盃觀賽懶人包／台灣球迷觀賽整理／賽程時間提醒／轉播資訊整理／48 隊新賽制介紹"></textarea>
+    <!-- Summary (optional) -->
+    <div class="fg" style="flex-shrink:0;margin-bottom:14px">
+      <label style="display:flex;align-items:center;gap:6px">
+        發布方向說明
+        <span style="background:#1a0e06;border:1px solid var(--border2);border-radius:4px;padding:2px 7px;font-size:.7rem;color:var(--text3);font-weight:400">選填 — 留空讓 AI 自行讀取文章重點</span>
+      </label>
+      <textarea id="bg-summary" rows="2" placeholder="留空 = AI 自己讀取 URL 並抓取重點／或手填：例：2026 世界盃觀賽懶人包／台灣球迷必知7件事"></textarea>
     </div>
-    <div class="fb" style="margin-bottom:16px">
-      <span id="bg-persona-count" style="color:var(--text3);font-size:.82rem"></span>
-      <button class="btn btn-primary" onclick="runBatchGen()">⚡ 生成全部提示詞</button>
+    <div class="fb" style="flex-shrink:0;margin-bottom:14px">
+      <div style="font-size:.78rem;color:var(--text3)">提示詞將逐一套入各角色的人設設定</div>
+      <button class="btn btn-primary" onclick="runBatchGen()">⚡ 生成選中角色提示詞</button>
     </div>
-    <div id="bg-results"></div>
+    <div id="bg-results" style="overflow-y:auto;flex:1"></div>
   </div>
 </div>
 
@@ -1582,9 +1594,12 @@ function delReplyScript(campaignId,replyId){
 function buildPersonaPrompt(p, url, summary){
   const seoKw = p.seoKeywords
     ? p.seoKeywords.split(',').map(k=>`   - ${k.trim()}`).join('\n')
-    : '   （依文章主題與角色方向自然選用）'
+    : '   （依文章主題與角色方向自然選用，不要硬塞）'
   const visualForbidden = p.forbiddenStyle || p.forbidden ||
     '不要賭博感、不要娛樂城畫面、不要籌碼現金、不要保證預測、不要真實官方Logo、不要真實球員臉'
+  const summaryBlock = summary.trim()
+    ? `發布方向：\n${summary.trim()}`
+    : `發布方向：\n（請自行讀取上方文章連結，整理這篇文章的核心主題、重點訊息與最適合的發文切入角度，作為後續所有輸出的依據）`
   return `你是一名資深社群內容企劃、角色 IP 設計師、SEO 文案編輯、IG 圖文設計顧問。
 
 請用「${p.name}」這個角色的人設，幫我整理這篇文章的 IG 社群發文整包。
@@ -1592,8 +1607,7 @@ function buildPersonaPrompt(p, url, summary){
 文章連結：
 ${url}
 
-發布方向：
-${summary}
+${summaryBlock}
 
 角色設定：
 - 角色名稱：${p.name}
@@ -1654,12 +1668,31 @@ ${seoKw}
 10. CTA 3種（不硬銷，以收藏/看完整整理/追蹤為主，符合角色口吻）`
 }
 
-function updateBgCount(){
+function renderBgPersonaList(){
   const dir=document.getElementById('bg-dir')?.value
   const personas=DB.get('personas')
   const list=dir?personas.filter(p=>p.dir===dir):personas
+  const wrap=document.getElementById('bg-persona-list')
+  if(!wrap)return
+  wrap.innerHTML=list.map(p=>`
+    <label style="cursor:pointer;display:flex;align-items:center;gap:5px;background:#0B0B0D;border:1px solid var(--border2);border-radius:6px;padding:5px 10px">
+      <input type="checkbox" class="bg-p-check" value="${p.id}" checked style="accent-color:var(--accent)">
+      <span style="font-size:.82rem;color:var(--text)">${p.name}</span>
+      <span class="badge b-gray" style="font-size:.68rem">${p.dir}</span>
+      ${!p.tagline&&!p.essence?`<span style="font-size:.68rem;color:#f87171">⚠缺人設</span>`:''}
+    </label>`).join('')
+  updateBgCount()
+}
+
+function updateBgCount(){
+  const checked=[...document.querySelectorAll('.bg-p-check:checked')]
   const el=document.getElementById('bg-persona-count')
-  if(el) el.textContent=`共 ${list.length} 位角色`
+  if(el) el.textContent=`已選 ${checked.length} 位`
+}
+
+function toggleBgAll(on){
+  document.querySelectorAll('.bg-p-check').forEach(c=>{c.checked=on})
+  updateBgCount()
 }
 
 function openBatchGen(url='', dir='', summary=''){
@@ -1667,19 +1700,18 @@ function openBatchGen(url='', dir='', summary=''){
   document.getElementById('bg-dir').value=dir
   document.getElementById('bg-summary').value=summary
   document.getElementById('bg-results').innerHTML=''
-  updateBgCount()
+  renderBgPersonaList()
   openModal('modal-batch-gen')
 }
 
 function runBatchGen(){
   const url=document.getElementById('bg-url').value.trim()
-  const dir=document.getElementById('bg-dir').value
   const summary=document.getElementById('bg-summary').value.trim()
   if(!url){toast('請填入文章URL','err');return}
-  if(!summary){toast('請填入發布方向說明','err');return}
+  const checkedIds=new Set([...document.querySelectorAll('.bg-p-check:checked')].map(c=>c.value))
+  if(!checkedIds.size){toast('請至少勾選一位角色','err');return}
   const personas=DB.get('personas')
-  const list=dir?personas.filter(p=>p.dir===dir):personas
-  if(!list.length){toast('沒有符合條件的角色','err');return}
+  const list=personas.filter(p=>checkedIds.has(p.id))
   const wrap=document.getElementById('bg-results')
   wrap.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
     ${list.map(p=>{
@@ -1690,18 +1722,20 @@ function runBatchGen(){
             <div style="font-weight:700;color:var(--accent)">${p.name}</div>
             <div class="flex" style="gap:5px;margin-top:3px">
               <span class="badge b-gray">${p.dir}</span>
-              ${p.tagline?`<span style="color:var(--text3);font-size:.72rem">${p.tagline.slice(0,30)}${p.tagline.length>30?'…':''}</span>`:'<span style="color:#f87171;font-size:.72rem">⚠ 尚未填角色一句話定位</span>'}
+              ${p.tagline?`<span style="color:var(--text3);font-size:.72rem">${p.tagline.slice(0,32)}…</span>`:'<span style="color:#f87171;font-size:.72rem">⚠ 尚未填角色一句話定位</span>'}
             </div>
           </div>
           <button class="btn btn-sm btn-copy" onclick="cp(${JSON.stringify(prompt)},this)">複製提示詞</button>
         </div>
-        <div style="background:#0B0B0D;border:1px solid var(--border);border-radius:7px;padding:10px;font-size:.75rem;color:var(--text3);max-height:160px;overflow-y:auto;white-space:pre-wrap;line-height:1.55">${prompt.slice(0,400)}…</div>
+        <div style="background:#0B0B0D;border:1px solid var(--border);border-radius:7px;padding:10px;font-size:.75rem;color:var(--text3);max-height:160px;overflow-y:auto;white-space:pre-wrap;line-height:1.55">${escHtml(prompt.slice(0,420))}…</div>
         <div style="margin-top:8px;font-size:.72rem;color:var(--text3)">${prompt.length} 字元</div>
       </div>`
     }).join('')}
   </div>`
   toast(`已生成 ${list.length} 位角色的提示詞`)
 }
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
 // ===== ENTRANCES =====
 const DEFAULT_ENTRANCES=[
