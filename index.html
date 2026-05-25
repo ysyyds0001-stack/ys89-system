@@ -250,10 +250,14 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="fb" style="margin-bottom:18px">
     <div>
       <h2 style="font-size:1.2rem;font-weight:700">社群號</h2>
-      <p class="tm" style="margin-top:3px">回覆帳號管理 · 人設語氣設定（部分尚未建立）</p>
+      <p class="tm" style="margin-top:3px">回覆帳號管理 · 人設語氣設定 · 每週KPI計畫</p>
     </div>
-    <button class="btn btn-primary" onclick="openAddCommunityModal()">+ 新增帳號</button>
+    <div class="flex">
+      <button class="btn btn-outline" onclick="openWeeklyKpi()">📋 本週KPI一覽</button>
+      <button class="btn btn-primary" onclick="openAddCommunityModal()">+ 新增帳號</button>
+    </div>
   </div>
+  <div id="cm-kpi-banner" style="margin-bottom:16px"></div>
   <div id="cm-grid" class="g3"></div>
 </div>
 
@@ -404,6 +408,20 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 </div>
 
+<!-- 本週KPI一覽 -->
+<div id="modal-weekly-kpi" class="overlay">
+  <div class="modal modal-lg">
+    <div class="mh">
+      <div>
+        <div class="mt" id="wk-title">本週KPI計畫</div>
+        <div class="tm" id="wk-subtitle" style="margin-top:3px;font-size:.78rem"></div>
+      </div>
+      <button class="mc" onclick="closeModal('modal-weekly-kpi')">✕</button>
+    </div>
+    <div id="wk-body"></div>
+  </div>
+</div>
+
 <!-- 社群號編輯 -->
 <div id="modal-community" class="overlay">
   <div class="modal">
@@ -414,6 +432,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="fg"><label>回覆方向</label><input id="cm-direction" placeholder="例：投資新手回覆、話題炒作"></div>
     <div class="fg"><label>人設描述</label><textarea id="cm-persona" rows="2" placeholder="帳號的人設與語氣（尚未確立可留空）"></textarea></div>
     <div class="fg"><label>語氣提示詞</label><textarea id="cm-prompt" rows="3" placeholder="回覆時的語氣風格提示詞"></textarea></div>
+    <div class="fg"><label>一週工事（每週例行任務）</label><textarea id="cm-week-tasks" rows="3" placeholder="例：週一 回覆3則Threads討論串&#10;週三 分享1篇ys89文章&#10;週五 炒2個熱門話題"></textarea></div>
     <div class="fg"><label>狀態</label>
       <select id="cm-status"><option>活躍</option><option>人設建立中</option><option>暫停</option></select>
     </div>
@@ -655,7 +674,7 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(sync) sync.textContent='已同步'
@@ -1062,7 +1081,53 @@ function delArticle(id){
   toast('文章已刪除')
 }
 
-// ===== COMMUNITY =====
+
+function openAddCommunityModal(){
+  document.getElementById('cm-id').value=''
+  document.getElementById('cm-modal-title').textContent='新增社群號'
+  document.getElementById('cm-save-btn').textContent='儲存帳號'
+  ;['cm-name','cm-direction','cm-persona','cm-prompt','cm-week-tasks'].forEach(i=>document.getElementById(i).value='')
+  document.getElementById('cm-followers').value='0'
+  document.getElementById('cm-status').value='人設建立中'
+  openModal('modal-community')
+}
+
+function openEditCommunity(id){
+  const a=DB.get('community').find(x=>x.id===id); if(!a)return
+  document.getElementById('cm-id').value=id
+  document.getElementById('cm-modal-title').textContent='編輯社群號'
+  document.getElementById('cm-save-btn').textContent='更新帳號'
+  document.getElementById('cm-name').value=a.name||''
+  document.getElementById('cm-followers').value=a.followers||0
+  document.getElementById('cm-direction').value=a.direction||''
+  document.getElementById('cm-persona').value=a.persona||''
+  document.getElementById('cm-prompt').value=a.prompt||''
+  document.getElementById('cm-week-tasks').value=a.weekTasks||''
+  document.getElementById('cm-status').value=a.status||'人設建立中'
+  openModal('modal-community')
+}
+
+function saveCommunity(){
+  const id=document.getElementById('cm-id').value
+  const name=document.getElementById('cm-name').value.trim()
+  if(!name){toast('請填入帳號名稱','err');return}
+  const list=DB.get('community')
+  const obj={name,followers:+document.getElementById('cm-followers').value||0,direction:document.getElementById('cm-direction').value,persona:document.getElementById('cm-persona').value,prompt:document.getElementById('cm-prompt').value,weekTasks:document.getElementById('cm-week-tasks').value,status:document.getElementById('cm-status').value}
+  if(id){const i=list.findIndex(x=>x.id===id);if(i>=0)list[i]={...list[i],...obj}}
+  else list.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
+  DB.set('community',list)
+  closeModal('modal-community')
+  renderCommunity()
+  toast(id?'帳號已更新':'帳號已新增')
+}
+
+// ===== WEEKLY KPI =====
+function getWeekKey(){
+  const d=new Date(),jan1=new Date(d.getFullYear(),0,1)
+  const wk=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7)
+  return`${d.getFullYear()}-W${String(wk).padStart(2,'0')}`
+}
+
 function renderCommunity(){
   const list=DB.get('community')
   const grid=document.getElementById('cm-grid')
@@ -1086,46 +1151,61 @@ function renderCommunity(){
         <div style="position:relative"><div class="pbox" style="max-height:80px">${a.prompt}</div>
         <button class="pcopy" onclick="cp(${JSON.stringify(a.prompt)},this)">複製</button></div>
       `:`<div style="margin-top:8px"><span class="badge b-warn">語氣提示詞待建立</span></div>`}
+      ${a.weekTasks?`<div class="sec">一週工事</div>
+        <div style="background:#0B0B0D;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:.78rem;color:var(--text2);white-space:pre-wrap;line-height:1.7">${a.weekTasks}</div>`:''}
     </div>`
   }).join('')
+  renderKpiBanner()
 }
 
-function openAddCommunityModal(){
-  document.getElementById('cm-id').value=''
-  document.getElementById('cm-modal-title').textContent='新增社群號'
-  document.getElementById('cm-save-btn').textContent='儲存帳號'
-  ;['cm-name','cm-direction','cm-persona','cm-prompt'].forEach(i=>document.getElementById(i).value='')
-  document.getElementById('cm-followers').value='0'
-  document.getElementById('cm-status').value='人設建立中'
-  openModal('modal-community')
+function renderKpiBanner(){
+  const allKpis=DB.get('weekly_kpis')
+  const thisWeek=getWeekKey()
+  const kpi=allKpis.find?.(x=>x.week===thisWeek)
+  const banner=document.getElementById('cm-kpi-banner')
+  if(!banner)return
+  if(!kpi){
+    banner.innerHTML=`<div style="background:#0d0b0a;border:1px dashed var(--border2);border-radius:8px;padding:12px 16px;color:var(--text3);font-size:.83rem">
+      📋 本週 (${thisWeek}) 尚無KPI計畫 — 點「本週KPI一覽」查看歷史，或等週一自動生成</div>`
+    return
+  }
+  const count=(kpi.plan||[]).length
+  banner.innerHTML=`<div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:8px;padding:12px 16px" class="fb">
+    <div>
+      <span style="color:var(--accent);font-weight:600">📋 ${thisWeek} KPI計畫</span>
+      <span class="tm" style="margin-left:8px">${count} 個帳號 · 生成於 ${new Date(kpi.createdAt).toLocaleString('zh-TW')}</span>
+    </div>
+    <button class="btn btn-xs btn-outline" onclick="openWeeklyKpi()">查看完整計畫</button>
+  </div>`
 }
 
-function openEditCommunity(id){
-  const a=DB.get('community').find(x=>x.id===id); if(!a)return
-  document.getElementById('cm-id').value=id
-  document.getElementById('cm-modal-title').textContent='編輯社群號'
-  document.getElementById('cm-save-btn').textContent='更新帳號'
-  document.getElementById('cm-name').value=a.name||''
-  document.getElementById('cm-followers').value=a.followers||0
-  document.getElementById('cm-direction').value=a.direction||''
-  document.getElementById('cm-persona').value=a.persona||''
-  document.getElementById('cm-prompt').value=a.prompt||''
-  document.getElementById('cm-status').value=a.status||'人設建立中'
-  openModal('modal-community')
-}
-
-function saveCommunity(){
-  const id=document.getElementById('cm-id').value
-  const name=document.getElementById('cm-name').value.trim()
-  if(!name){toast('請填入帳號名稱','err');return}
-  const list=DB.get('community')
-  const obj={name,followers:+document.getElementById('cm-followers').value||0,direction:document.getElementById('cm-direction').value,persona:document.getElementById('cm-persona').value,prompt:document.getElementById('cm-prompt').value,status:document.getElementById('cm-status').value}
-  if(id){const i=list.findIndex(x=>x.id===id);if(i>=0)list[i]={...list[i],...obj}}
-  else list.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
-  DB.set('community',list)
-  closeModal('modal-community')
-  renderCommunity()
-  toast(id?'帳號已更新':'帳號已新增')
+function openWeeklyKpi(){
+  const allKpis=DB.get('weekly_kpis')
+  const thisWeek=getWeekKey()
+  const kpi=allKpis.find?.(x=>x.week===thisWeek)
+  document.getElementById('wk-title').textContent=`本週KPI計畫 — ${thisWeek}`
+  document.getElementById('wk-subtitle').textContent=kpi?`生成於 ${new Date(kpi.createdAt).toLocaleString('zh-TW')}`:'本週尚無計畫，每週一自動生成'
+  const body=document.getElementById('wk-body')
+  if(!kpi||!(kpi.plan||[]).length){
+    body.innerHTML=`<div style="padding:32px;text-align:center;color:var(--text3)">
+      <div style="font-size:1.5rem;margin-bottom:8px">📭</div>
+      本週尚無KPI計畫<br>
+      <span style="font-size:.8rem">每週一 09:00 自動掃描所有帳號一週工事並生成計畫</span>
+      ${allKpis.length>0?`<hr style="margin:14px 0"><div style="font-size:.78rem;color:var(--text3)">歷史紀錄：${allKpis.slice(-3).reverse().map(k=>`<span class="badge b-gray" style="margin:2px">${k.week}</span>`).join('')}</div>`:''}
+    </div>`
+  }else{
+    body.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${(kpi.plan||[]).map(p=>`
+      <div class="card-sm">
+        <div class="fb" style="margin-bottom:8px">
+          <div><div style="font-weight:700;color:var(--accent)">${p.name}</div>
+          <div class="tm" style="font-size:.75rem">${p.direction||''}</div></div>
+          <span class="badge ${'活躍'===p.status?'b-green':'b-gray'}">${p.status||''}</span>
+        </div>
+        <div style="font-size:.82rem;color:var(--text2);white-space:pre-wrap;line-height:1.7">${p.kpis||p.weekTasks||'（無工事記錄）'}</div>
+      </div>`).join('')}
+    </div>`
+  }
+  openModal('modal-weekly-kpi')
 }
 
 // ===== THREADS SCRIPTS =====
