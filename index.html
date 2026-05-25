@@ -186,6 +186,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'articles')">文章庫</div>
   <div class="nav-tab" onclick="nav(this,'community')">社群號</div>
   <div class="nav-tab" onclick="nav(this,'threads')">📱 Threads</div>
+  <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口</div>
 </nav>
 
 <div id="toast"></div>
@@ -288,6 +289,45 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
         <button class="btn btn-primary btn-sm" onclick="openAddThreadsReply()">+ 新增</button>
       </div>
       <div id="th-replies-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE: 入口管理 ===== -->
+<div id="pg-entrances" class="page">
+  <div id="ent-today-banner" style="margin-bottom:20px"></div>
+  <div class="fb" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">入口管理</h2>
+      <p class="tm" style="margin-top:3px">管理所有 YS89 對外入口 · 設定每日導流路線</p>
+    </div>
+    <button class="btn btn-primary" onclick="openEditRouting()">✏️ 編輯週排程</button>
+  </div>
+  <div style="display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start">
+    <div>
+      <div class="card-title" style="margin-bottom:10px">常規入口</div>
+      <div id="ent-regular-list"></div>
+    </div>
+    <div>
+      <div class="card-title" style="margin-bottom:10px">⚽ 世界盃六大入口</div>
+      <div id="ent-worldcup-list" class="g3"></div>
+    </div>
+  </div>
+  <div style="margin-top:20px">
+    <div class="card-title" style="margin-bottom:10px">📅 週導流排程</div>
+    <div class="card" id="ent-schedule"></div>
+  </div>
+</div>
+
+<!-- 編輯週排程 -->
+<div id="modal-routing" class="overlay">
+  <div class="modal modal-lg">
+    <div class="mh"><div class="mt">編輯週導流排程</div><button class="mc" onclick="closeModal('modal-routing')">✕</button></div>
+    <p style="color:var(--text3);font-size:.82rem;margin-bottom:14px">勾選每天要優先引導訪客前往的入口（可多選）</p>
+    <div id="routing-form"></div>
+    <div class="fb" style="margin-top:16px">
+      <button class="btn btn-outline" onclick="closeModal('modal-routing')">取消</button>
+      <button class="btn btn-primary" onclick="saveRouting()">儲存排程</button>
     </div>
   </div>
 </div>
@@ -674,7 +714,7 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(sync) sync.textContent='已同步'
@@ -692,7 +732,7 @@ function nav(el,page){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
-  const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threads:renderThreads}
+  const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threads:renderThreads,entrances:renderEntrances}
   renders[page]&&renders[page]()
 }
 function openModal(id){document.getElementById(id).classList.add('show')}
@@ -1164,18 +1204,31 @@ function renderKpiBanner(){
   const kpi=allKpis.find?.(x=>x.week===thisWeek)
   const banner=document.getElementById('cm-kpi-banner')
   if(!banner)return
+  // Today's routing
+  const ents=DB.get('entrances').length?DB.get('entrances'):DEFAULT_ENTRANCES
+  const routing=DB.get('routing')||{}
+  const merged={...DEFAULT_ROUTING,...routing}
+  const todayIds=merged[getTodayKey()]||[]
+  const todayEnts=todayIds.map(id=>ents.find(e=>e.id===id)).filter(Boolean)
+  const routingHtml=todayEnts.length?`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px">
+    <span style="font-size:.73rem;color:var(--text3)">今日導流 →</span>
+    ${todayEnts.map(e=>`<a href="${e.url}" target="_blank" style="text-decoration:none"><span class="badge b-blue" style="font-size:.72rem">${e.icon} ${e.name}</span></a>`).join('')}
+  </div>`:''
   if(!kpi){
     banner.innerHTML=`<div style="background:#0d0b0a;border:1px dashed var(--border2);border-radius:8px;padding:12px 16px;color:var(--text3);font-size:.83rem">
-      📋 本週 (${thisWeek}) 尚無KPI計畫 — 點「本週KPI一覽」查看歷史，或等週一自動生成</div>`
+      📋 本週 (${thisWeek}) 尚無KPI計畫 — 點「本週KPI一覽」查看歷史，或等週一自動生成${routingHtml}</div>`
     return
   }
   const count=(kpi.plan||[]).length
-  banner.innerHTML=`<div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:8px;padding:12px 16px" class="fb">
-    <div>
-      <span style="color:var(--accent);font-weight:600">📋 ${thisWeek} KPI計畫</span>
-      <span class="tm" style="margin-left:8px">${count} 個帳號 · 生成於 ${new Date(kpi.createdAt).toLocaleString('zh-TW')}</span>
+  banner.innerHTML=`<div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:8px;padding:12px 16px">
+    <div class="fb">
+      <div>
+        <span style="color:var(--accent);font-weight:600">📋 ${thisWeek} KPI計畫</span>
+        <span class="tm" style="margin-left:8px">${count} 個帳號 · 生成於 ${new Date(kpi.createdAt).toLocaleString('zh-TW')}</span>
+      </div>
+      <button class="btn btn-xs btn-outline" onclick="openWeeklyKpi()">查看完整計畫</button>
     </div>
-    <button class="btn btn-xs btn-outline" onclick="openWeeklyKpi()">查看完整計畫</button>
+    ${routingHtml}
   </div>`
 }
 
@@ -1194,7 +1247,23 @@ function openWeeklyKpi(){
       ${allKpis.length>0?`<hr style="margin:14px 0"><div style="font-size:.78rem;color:var(--text3)">歷史紀錄：${allKpis.slice(-3).reverse().map(k=>`<span class="badge b-gray" style="margin:2px">${k.week}</span>`).join('')}</div>`:''}
     </div>`
   }else{
-    body.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${(kpi.plan||[]).map(p=>`
+    const ents=DB.get('entrances').length?DB.get('entrances'):DEFAULT_ENTRANCES
+  const routing=DB.get('routing')||{}
+  const merged={...DEFAULT_ROUTING,...routing}
+  const routingRow=DAYS.map(d=>{
+    const ids=merged[d]||[]
+    const names=ids.map(id=>ents.find(e=>e.id===id)).filter(Boolean).map(e=>`${e.icon}${e.name}`).join('、')
+    return `<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:.78rem">
+      <span style="width:32px;color:var(--text3);font-weight:600">${DAY_NAMES[d]}</span>
+      <span style="color:var(--text2)">${names||'未設定'}</span>
+    </div>`
+  }).join('')
+  body.innerHTML=`
+    <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:8px;padding:12px 16px;margin-bottom:16px">
+      <div style="font-size:.8rem;font-weight:600;color:var(--accent);margin-bottom:8px">📅 本週導流路線</div>
+      ${routingRow}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${(kpi.plan||[]).map(p=>`
       <div class="card-sm">
         <div class="fb" style="margin-bottom:8px">
           <div><div style="font-weight:700;color:var(--accent)">${p.name}</div>
@@ -1447,6 +1516,136 @@ function delReplyScript(campaignId,replyId){
   DB.set('threads_replies',campaigns)
   renderThreadsReplies()
   toast('已刪除')
+}
+
+// ===== ENTRANCES =====
+const DEFAULT_ENTRANCES=[
+  {id:'e1',name:'YS論壇優惠頁',url:'https://ys89.fun/promotions/',type:'forum',desc:'娛樂城優惠活動總覽',icon:'🏠'},
+  {id:'e2',name:'YS 官方 IG',url:'https://www.instagram.com/ys89_com/',type:'social',desc:'最新活動·玩家互動·IG導流',icon:'📸'},
+  {id:'e3',name:'ys89.fun',url:'https://ys89.fun/',type:'worldcup',desc:'夜色娛樂城品牌主站·投注攻略+推薦',icon:'⚽'},
+  {id:'e4',name:'ys89.games',url:'https://ys89.games/',type:'worldcup',desc:'賽程·直播·賠率綜合站',icon:'📺'},
+  {id:'e5',name:'ys89.info',url:'https://ys89.info/',type:'worldcup',desc:'台灣觀賽直播攻略（Elta/MOD/公視）',icon:'📡'},
+  {id:'e6',name:'ys89.biz',url:'https://ys89.biz/',type:'worldcup',desc:'世足賽投注攻略教學（讓分/串關）',icon:'💰'},
+  {id:'e7',name:'ys89.me',url:'https://ys89.me/',type:'worldcup',desc:'分組分析·球隊球星資料庫',icon:'🏆'},
+  {id:'e8',name:'fifa-worldcups.tw',url:'https://fifa-worldcups.tw/',type:'worldcup',desc:'純資訊站·AI搜尋優化',icon:'ℹ️'},
+]
+const DEFAULT_ROUTING={Mon:['e3','e1'],Tue:['e4'],Wed:['e5'],Thu:['e6'],Fri:['e7'],Sat:['e8','e2'],Sun:['e1','e2']}
+const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+const DAY_NAMES={Mon:'週一',Tue:'週二',Wed:'週三',Thu:'週四',Fri:'週五',Sat:'週六',Sun:'週日'}
+
+function getTodayKey(){
+  return['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date().getDay()]
+}
+
+function renderEntrances(){
+  renderTodayRouting()
+  const ents=DB.get('entrances').length?DB.get('entrances'):DEFAULT_ENTRANCES
+  const routing=DB.get('routing')||{}
+  const merged={...DEFAULT_ROUTING,...routing}
+  const regular=ents.filter(e=>e.type!=='worldcup')
+  const worldcup=ents.filter(e=>e.type==='worldcup')
+  document.getElementById('ent-regular-list').innerHTML=regular.map(e=>`
+    <div class="card" style="margin-bottom:10px">
+      <div class="fb" style="margin-bottom:5px">
+        <div style="font-weight:600;color:var(--accent)">${e.icon} ${e.name}</div>
+        <button class="btn btn-xs btn-copy" onclick="cp('${e.url}',this)">複製</button>
+      </div>
+      <div class="tm" style="font-size:.78rem;margin-bottom:5px">${e.desc}</div>
+      <div style="font-size:.7rem;color:var(--text3)">${e.url}</div>
+      <a href="${e.url}" target="_blank" class="btn btn-xs btn-outline" style="margin-top:8px">前往 ↗</a>
+    </div>`).join('')
+  document.getElementById('ent-worldcup-list').innerHTML=worldcup.map(e=>`
+    <div class="card">
+      <div class="fb" style="margin-bottom:5px">
+        <div style="font-weight:600;color:var(--accent)">${e.icon} ${e.name}</div>
+        <button class="btn btn-xs btn-copy" onclick="cp('${e.url}',this)">複製</button>
+      </div>
+      <div class="tm" style="font-size:.78rem;margin-bottom:5px">${e.desc}</div>
+      <div style="font-size:.7rem;color:var(--text3);margin-bottom:8px">${e.url}</div>
+      <a href="${e.url}" target="_blank" class="btn btn-xs btn-outline">前往 ↗</a>
+    </div>`).join('')
+  const todayKey=getTodayKey()
+  document.getElementById('ent-schedule').innerHTML=DAYS.map(d=>{
+    const ids=merged[d]||[]
+    const dayEnts=ids.map(id=>ents.find(e=>e.id===id)).filter(Boolean)
+    const isToday=d===todayKey
+    return`<div style="display:flex;align-items:center;gap:12px;padding:9px 0;${d!=='Sun'?'border-bottom:1px solid var(--border)':''}">
+      <div style="width:38px;font-size:.82rem;font-weight:600;${isToday?'color:var(--accent)':'color:var(--text3)'}">${DAY_NAMES[d]}</div>
+      ${isToday?'<span class="badge b-warn" style="font-size:.68rem">今天</span>':'<span style="width:34px"></span>'}
+      <div style="flex:1;display:flex;flex-wrap:wrap;gap:6px">
+        ${dayEnts.length?dayEnts.map(e=>`<a href="${e.url}" target="_blank" style="text-decoration:none"><span class="badge b-blue">${e.icon} ${e.name}</span></a>`).join(''):'<span style="color:var(--text3);font-size:.78rem">未設定</span>'}
+      </div>
+    </div>`
+  }).join('')
+}
+
+function renderTodayRouting(){
+  const ents=DB.get('entrances').length?DB.get('entrances'):DEFAULT_ENTRANCES
+  const routing=DB.get('routing')||{}
+  const merged={...DEFAULT_ROUTING,...routing}
+  const todayKey=getTodayKey()
+  const todayIds=merged[todayKey]||[]
+  const todayEnts=todayIds.map(id=>ents.find(e=>e.id===id)).filter(Boolean)
+  const banner=document.getElementById('ent-today-banner')
+  if(!banner)return
+  banner.innerHTML=`<div style="background:linear-gradient(135deg,#1a0e06,#0d0b0a);border:1px solid var(--amber);border-radius:12px;padding:16px 20px">
+    <div class="fb">
+      <div style="flex:1">
+        <div style="font-size:.75rem;color:var(--text3);margin-bottom:8px">🎯 今日（${DAY_NAMES[todayKey]}）導流目標 — 引導所有討論往這裡走</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px">
+          ${todayEnts.length?todayEnts.map(e=>`<a href="${e.url}" target="_blank" style="text-decoration:none">
+            <div style="background:#221408;border:1px solid var(--amber);border-radius:8px;padding:10px 16px;display:flex;align-items:center;gap:10px">
+              <span style="font-size:1.3rem">${e.icon}</span>
+              <div>
+                <div style="font-weight:600;color:var(--accent);font-size:.9rem">${e.name}</div>
+                <div style="font-size:.72rem;color:var(--text3)">${e.desc}</div>
+              </div>
+            </div></a>`).join(''):'<span style="color:var(--text3);font-size:.84rem">本日尚未設定 — 點「編輯週排程」設定</span>'}
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline" style="margin-left:16px" onclick="openEditRouting()">✏️ 排程</button>
+    </div>
+  </div>`
+}
+
+function openEditRouting(){
+  const ents=DB.get('entrances').length?DB.get('entrances'):DEFAULT_ENTRANCES
+  const routing=DB.get('routing')||{}
+  const merged={...DEFAULT_ROUTING,...routing}
+  const todayKey=getTodayKey()
+  document.getElementById('routing-form').innerHTML=DAYS.map(d=>{
+    const selected=merged[d]||[]
+    const isToday=d===todayKey
+    return`<div style="margin-bottom:14px">
+      <div style="font-size:.82rem;font-weight:600;margin-bottom:7px;${isToday?'color:var(--accent)':'color:var(--text2)'}">${DAY_NAMES[d]}${isToday?' ← 今天':''}</div>
+      <div id="rg-${d}" style="display:flex;flex-wrap:wrap;gap:6px">
+        ${ents.map(e=>{
+          const on=selected.includes(e.id)
+          return`<span class="badge ${on?'b-blue':'b-gray'}" style="cursor:pointer" data-id="${e.id}" data-day="${d}" onclick="toggleRtBadge(this)">${e.icon} ${e.name}</span>`
+        }).join('')}
+      </div>
+    </div>`
+  }).join('')
+  openModal('modal-routing')
+}
+
+function toggleRtBadge(el){
+  el.classList.toggle('b-blue')
+  el.classList.toggle('b-gray')
+}
+
+function saveRouting(){
+  const newRouting={}
+  DAYS.forEach(d=>{
+    const badges=[...document.querySelectorAll(`#rg-${d} span.b-blue`)]
+    newRouting[d]=badges.map(b=>b.dataset.id)
+  })
+  DB.set('routing',newRouting)
+  DB.push('routing').catch(()=>{})
+  closeModal('modal-routing')
+  renderEntrances()
+  renderKpiBanner()
+  toast('週排程已儲存')
 }
 
 // ===== INIT =====
