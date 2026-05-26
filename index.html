@@ -369,8 +369,11 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <select id="lk-f-account" onchange="renderLinks()" style="width:130px">
       <option value="">全部帳號</option>
       <option value="main">主帳</option>
-      <option value="role01">角色1</option><option value="role02">角色2</option>
-      <option value="role03">角色3</option><option value="role04">角色4</option><option value="role05">角色5</option>
+      <option value="aqi">阿奇</option>
+      <option value="daishen">世足大財神</option>
+      <option value="raider">世足排雷週記</option>
+      <option value="crab">蟹蟹世足觀測站</option>
+      <option value="kk">kk</option>
     </select>
     <select id="lk-f-status" onchange="renderLinks()" style="width:120px">
       <option value="">全部狀態</option>
@@ -401,8 +404,11 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <div class="fg"><label>帳號代碼</label>
         <select id="lk-account-code">
           <option value="main">main（主帳）</option>
-          <option value="role01">role01</option><option value="role02">role02</option>
-          <option value="role03">role03</option><option value="role04">role04</option><option value="role05">role05</option>
+          <option value="aqi">aqi（阿奇）</option>
+          <option value="daishen">daishen（世足大財神）</option>
+          <option value="raider">raider（世足排雷週記）</option>
+          <option value="crab">crab（蟹蟹世足觀測站）</option>
+          <option value="kk">kk</option>
         </select>
       </div>
     </div>
@@ -461,7 +467,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
         廣告：<code style="background:#1a1208;padding:2px 6px;border-radius:4px">yswc_ad_平台_受眾_素材編號</code>
       </div>
       <div class="fr" style="gap:20px;margin-bottom:12px">
-        <div><span style="color:var(--accent);font-weight:600">帳號代碼</span><br>main / role01～role05<br>(未來可改 kk / crab / mask / mark / uncle)</div>
+        <div><span style="color:var(--accent);font-weight:600">帳號代碼</span><br>main / aqi / daishen / raider / crab / kk</div>
         <div><span style="color:var(--accent);font-weight:600">平台代碼</span><br>ig / fb / threads / yt</div>
       </div>
       <div class="fr" style="gap:20px;margin-bottom:12px">
@@ -2078,16 +2084,16 @@ const DEFAULT_LINKS = [
   {id:'lk015',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'YouTube',placement:'desc',entryName:'官方LINE-YS',purpose:'lineys',useShortLink:true,shortLinkName:'yswc_main_yt_desc_lineys',shortLinkUrl:'',originalUrl:'https://lin.ee/w1pIBtuZ',isSeoAsset:false,status:'待建立',note:''},
   {id:'lk016',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'YouTube',placement:'desc',entryName:'官方LINE-體育專員',purpose:'linesport',useShortLink:true,shortLinkName:'yswc_main_yt_desc_linesport',shortLinkUrl:'',originalUrl:'https://lin.ee/pD3S0Z6',isSeoAsset:false,status:'待建立',note:''},
   // ── 角色帳 Bio ──
-  {id:'lk017',category:'角色帳Bio',accountCode:'role01',accountName:'角色1',platform:'IG',placement:'bio',entryName:'角色1 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role01_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
-  {id:'lk018',category:'角色帳Bio',accountCode:'role01',accountName:'角色1',platform:'Threads',placement:'bio',entryName:'角色1 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role01_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
-  {id:'lk019',category:'角色帳Bio',accountCode:'role02',accountName:'角色2',platform:'IG',placement:'bio',entryName:'角色2 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role02_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
-  {id:'lk020',category:'角色帳Bio',accountCode:'role02',accountName:'角色2',platform:'Threads',placement:'bio',entryName:'角色2 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role02_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
-  {id:'lk021',category:'角色帳Bio',accountCode:'role03',accountName:'角色3',platform:'IG',placement:'bio',entryName:'角色3 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role03_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
-  {id:'lk022',category:'角色帳Bio',accountCode:'role03',accountName:'角色3',platform:'Threads',placement:'bio',entryName:'角色3 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role03_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
-  {id:'lk023',category:'角色帳Bio',accountCode:'role04',accountName:'角色4',platform:'IG',placement:'bio',entryName:'角色4 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role04_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
-  {id:'lk024',category:'角色帳Bio',accountCode:'role04',accountName:'角色4',platform:'Threads',placement:'bio',entryName:'角色4 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role04_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
-  {id:'lk025',category:'角色帳Bio',accountCode:'role05',accountName:'角色5',platform:'IG',placement:'bio',entryName:'角色5 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role05_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
-  {id:'lk026',category:'角色帳Bio',accountCode:'role05',accountName:'角色5',platform:'Threads',placement:'bio',entryName:'角色5 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role05_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk017',category:'角色帳Bio',accountCode:'aqi',accountName:'阿奇',platform:'IG',placement:'bio',entryName:'阿奇 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_aqi_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk018',category:'角色帳Bio',accountCode:'aqi',accountName:'阿奇',platform:'Threads',placement:'bio',entryName:'阿奇 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_aqi_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk019',category:'角色帳Bio',accountCode:'daishen',accountName:'世足大財神',platform:'IG',placement:'bio',entryName:'世足大財神 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_daishen_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk020',category:'角色帳Bio',accountCode:'daishen',accountName:'世足大財神',platform:'Threads',placement:'bio',entryName:'世足大財神 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_daishen_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk021',category:'角色帳Bio',accountCode:'raider',accountName:'世足排雷週記',platform:'IG',placement:'bio',entryName:'世足排雷週記 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_raider_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk022',category:'角色帳Bio',accountCode:'raider',accountName:'世足排雷週記',platform:'Threads',placement:'bio',entryName:'世足排雷週記 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_raider_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk023',category:'角色帳Bio',accountCode:'crab',accountName:'蟹蟹世足觀測站',platform:'IG',placement:'bio',entryName:'蟹蟹世足觀測站 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_crab_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk024',category:'角色帳Bio',accountCode:'crab',accountName:'蟹蟹世足觀測站',platform:'Threads',placement:'bio',entryName:'蟹蟹世足觀測站 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_crab_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk025',category:'角色帳Bio',accountCode:'kk',accountName:'kk',platform:'IG',placement:'bio',entryName:'kk Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_kk_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk026',category:'角色帳Bio',accountCode:'kk',accountName:'kk',platform:'Threads',placement:'bio',entryName:'kk Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_kk_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
 ]
 
 function setLinkTab(tab, el){
@@ -2229,7 +2235,7 @@ function saveLink(){
   const obj={
     category:document.getElementById('lk-category').value,
     accountCode:document.getElementById('lk-account-code').value,
-    accountName:{main:'YS主帳',role01:'角色1',role02:'角色2',role03:'角色3',role04:'角色4',role05:'角色5'}[document.getElementById('lk-account-code').value]||'',
+    accountName:{main:'YS主帳',aqi:'阿奇',daishen:'世足大財神',raider:'世足排雷週記',crab:'蟹蟹世足觀測站',kk:'kk'}[document.getElementById('lk-account-code').value]||'',
     platform:document.getElementById('lk-platform').value,
     placement:document.getElementById('lk-placement').value,
     entryName:document.getElementById('lk-entry-name').value,
