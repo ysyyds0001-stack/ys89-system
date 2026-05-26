@@ -227,7 +227,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <div class="card-title" style="margin-bottom:0">發文記錄</div>
       <div class="flex">
         <select id="tf-persona" style="width:120px" onchange="renderPosts()"><option value="">全部角色</option></select>
-        <select id="tf-platform" style="width:100px" onchange="renderPosts()"><option value="">全部平台</option><option>IG</option><option>FB</option><option>IG+FB</option></select>
+        <select id="tf-platform" style="width:120px" onchange="renderPosts()"><option value="">全部平台</option><option>IG</option><option>FB</option><option>Threads</option><option>IG+FB</option><option>IG+Threads</option><option>FB+Threads</option><option>全平台</option></select>
       </div>
     </div>
     <div id="posts-table"></div>
@@ -400,7 +400,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <div class="fg"><label>發文角色</label><select id="po-persona"><option value="">選擇角色</option></select></div>
     </div>
     <div class="fr">
-      <div class="fg"><label>平台</label><select id="po-platform"><option>IG</option><option>FB</option><option>IG+FB</option></select></div>
+      <div class="fg"><label>平台</label><select id="po-platform"><option>IG</option><option>FB</option><option>Threads</option><option>IG+FB</option><option>IG+Threads</option><option>FB+Threads</option><option>全平台</option></select></div>
       <div class="fg"><label>引用文章</label><select id="po-article"><option value="">選擇文章</option></select></div>
     </div>
     <div class="fg"><label>主題摘要</label><input id="po-topic" placeholder="例：USDT走勢分析"></div>
@@ -1645,8 +1645,8 @@ ${seoKw}
 6. 不能硬塞關鍵字，必須像正常 IG 發文。
 7. 語氣要完全符合「${p.name}」的人設。
 8. 文案與 Hashtag 要放在一起，方便一次複製。
-9. 另外提供 Threads 短版。
-10. 提供輪播封面標題、6 頁架構、每頁圖文文案、封面圖提示詞、內頁提示詞、Hashtag、CTA。
+9. 另外提供 Threads 短版（Threads 是獨立平台，語氣更口語、不需要過多 Hashtag，以引發討論為主）。
+10. 提供 IG 輪播封面標題、6 頁架構、每頁圖文文案、封面圖提示詞、內頁提示詞、Hashtag、CTA。
 11. 所有文案使用繁體中文。
 12. 不要出現保證預測、保證命中、穩贏、必中、下注教學等字眼。
 13. 內容以資訊整理為主，不要做成賭博推廣。
@@ -1662,7 +1662,10 @@ ${seoKw}
    - 自然引用文章重點
    - 自然加入SEO及品牌關鍵字
 
-3. Threads 短版（80～150字，可帶1個CTA）
+3. Threads 貼文（80～150字）
+   - 口語、短句、引發討論感
+   - 不需要大量 Hashtag（0～3個即可）
+   - 可自然帶 1 個 CTA 或問句結尾
 
 4. IG 輪播封面標題 5 組（短、好讀、有收藏感、適合4:5封面）
 
