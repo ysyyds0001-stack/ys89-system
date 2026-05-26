@@ -304,10 +304,12 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     </div>
     <button class="btn btn-primary" onclick="openEditRouting()">✏️ 編輯週排程</button>
   </div>
-  <div style="display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start">
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start">
     <div>
       <div class="card-title" style="margin-bottom:10px">常規入口</div>
       <div id="ent-regular-list"></div>
+      <div class="card-title" style="margin-bottom:10px;margin-top:18px">💬 LINE 官方</div>
+      <div id="ent-line-list"></div>
     </div>
     <div>
       <div class="card-title" style="margin-bottom:10px">⚽ 世界盃六大入口</div>
@@ -1755,6 +1757,8 @@ function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(
 const DEFAULT_ENTRANCES=[
   {id:'e1',name:'YS論壇優惠頁',url:'https://ys89.fun/promotions/',type:'forum',desc:'娛樂城優惠活動總覽',icon:'🏠'},
   {id:'e2',name:'YS 官方 IG',url:'https://www.instagram.com/ys89_com/',type:'social',desc:'最新活動·玩家互動·IG導流',icon:'📸'},
+  {id:'e9',name:'官賴-YS',url:'https://lin.ee/w1pIBtuZ',type:'line',desc:'YS 主手機',icon:'💬'},
+  {id:'e10',name:'官方LINE-體育專員',url:'https://lin.ee/pD3S0Z6',type:'line',desc:'CP013 · 0970215405 · ysyyds0002@gmail.com',icon:'📋'},
   {id:'e3',name:'ys89.fun',url:'https://ys89.fun/',type:'worldcup',desc:'夜色娛樂城品牌主站·投注攻略+推薦',icon:'⚽'},
   {id:'e4',name:'ys89.games',url:'https://ys89.games/',type:'worldcup',desc:'賽程·直播·賠率綜合站',icon:'📺'},
   {id:'e5',name:'ys89.info',url:'https://ys89.info/',type:'worldcup',desc:'台灣觀賽直播攻略（Elta/MOD/公視）',icon:'📡'},
@@ -1775,18 +1779,32 @@ function renderEntrances(){
   const ents=DB.get('entrances').length?DB.get('entrances'):DEFAULT_ENTRANCES
   const routing=DB.get('routing')||{}
   const merged={...DEFAULT_ROUTING,...routing}
-  const regular=ents.filter(e=>e.type!=='worldcup')
+  const regular=ents.filter(e=>e.type==='forum'||e.type==='social')
+  const line=ents.filter(e=>e.type==='line')
   const worldcup=ents.filter(e=>e.type==='worldcup')
-  document.getElementById('ent-regular-list').innerHTML=regular.map(e=>`
+  const entCard=(e)=>`
     <div class="card" style="margin-bottom:10px">
       <div class="fb" style="margin-bottom:5px">
         <div style="font-weight:600;color:var(--accent)">${e.icon} ${e.name}</div>
         <button class="btn btn-xs btn-copy" onclick="cp('${e.url}',this)">複製</button>
       </div>
       <div class="tm" style="font-size:.78rem;margin-bottom:5px">${e.desc}</div>
-      <div style="font-size:.7rem;color:var(--text3)">${e.url}</div>
+      <div style="font-size:.7rem;color:var(--text3);word-break:break-all">${e.url}</div>
       <a href="${e.url}" target="_blank" class="btn btn-xs btn-outline" style="margin-top:8px">前往 ↗</a>
+    </div>`
+  document.getElementById('ent-regular-list').innerHTML=regular.map(entCard).join('')
+  document.getElementById('ent-line-list').innerHTML=line.length
+    ? line.map(e=>`
+    <div class="card" style="margin-bottom:10px;border-color:#06c755">
+      <div class="fb" style="margin-bottom:5px">
+        <div style="font-weight:600;color:#06c755">${e.icon} ${e.name}</div>
+        <button class="btn btn-xs btn-copy" onclick="cp('${e.url}',this)">複製</button>
+      </div>
+      <div style="font-size:.82rem;color:var(--text2);margin-bottom:5px;white-space:pre-wrap">${e.desc}</div>
+      <div style="font-size:.7rem;color:var(--text3);word-break:break-all">${e.url}</div>
+      <a href="${e.url}" target="_blank" class="btn btn-xs btn-outline" style="margin-top:8px;border-color:#06c755;color:#06c755">加入 LINE ↗</a>
     </div>`).join('')
+    : '<div class="tm" style="font-size:.8rem">尚未設定LINE入口</div>'
   document.getElementById('ent-worldcup-list').innerHTML=worldcup.map(e=>`
     <div class="card">
       <div class="fb" style="margin-bottom:5px">
