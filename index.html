@@ -803,6 +803,65 @@ const DB={
   id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
 }
 
+// ===== MIKE BOT =====
+const MIKE_TOKEN='8795790357:AAGN9DBgcmlsV_sTs1697s_94X7uaxfLzvw'
+const MIKE_CHAT='8579100990'
+const TG_API=`https://api.telegram.org/bot${MIKE_TOKEN}`
+
+async function sendToMike(text,extra={}){
+  try{
+    const r=await fetch(`${TG_API}/sendMessage`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:MIKE_CHAT,text,parse_mode:'HTML',disable_web_page_preview:true,...extra})
+    })
+    return r.ok
+  }catch(e){console.warn('mike:',e);return false}
+}
+
+async function syncArticleToMike(a){
+  const scripts=DB.get('threads_posts').filter(p=>!a.dir||p.dir===a.dir).slice(0,3)
+  const scriptLines=scripts.length
+    ? scripts.map((s,i)=>`  ${i+1}. ${s.script.replace(/\n/g,' ').slice(0,80)}…`).join('\n')
+    : '  （此方向尚無 Threads 腳本）'
+  const personas=DB.get('personas')
+  const needed=personas.filter(p=>p.dir===a.dir)
+  const todo=needed.filter(p=>!(a.postedBy||[]).find(x=>x.pid===p.id)).map(p=>`@${p.name}`).join(' ')
+  const lines=[
+    `📰 <b>新文章入庫</b>`,
+    ``,
+    `📌 ${a.title}`,
+    `📂 方向：${a.dir||'未分類'}`,
+    a.url?`🔗 ${a.url}`:'',
+    a.summary?`💡 ${a.summary.slice(0,60)}…`:'',
+    ``,
+    `📱 <b>對應 Threads 腳本（${scripts.length}篇）</b>`,
+    scriptLines,
+    ``,
+    `👤 待發角色：${todo||'（皆已發）'}`,
+    ``,
+    `💬 發布後回覆：`,
+    `<code>/done 角色名</code>  確認最新文章`,
+    `<code>/list</code>  查看待發清單`,
+  ].filter(x=>x!==null&&x!==undefined)
+  const ok=await sendToMike(lines.join('\n'))
+  if(ok)toast('✅ 已同步給 mike')
+  else toast('⚠️ mike 傳送失敗，請檢查網路','err')
+}
+
+async function notifyMikeNewScript(s){
+  const text=[
+    `📝 <b>新 Threads 腳本入庫</b>`,
+    ``,
+    `📂 方向：${s.dir||'未分類'}`,
+    s.personaName?`👤 角色：${s.personaName}`:'',
+    ``,
+    `腳本預覽：`,
+    s.script.slice(0,120)+(s.script.length>120?'…':''),
+  ].filter(Boolean).join('\n')
+  await sendToMike(text)
+}
+
 // ===== DEFAULT DATA =====
 const DEFAULT_PERSONAS=[
   {id:'p1',name:'Mark',followers:576,dir:'金流/USDT',direction:'出金/USDT/流水',
@@ -1307,6 +1366,7 @@ function renderArticles(){
             <div class="tm">覆蓋率</div>
           </div>
           <button class="btn btn-xs btn-outline" onclick="openBatchGen('${(a.url||'').replace(/'/g,"\\'")}','${a.dir||''}','${(a.title||'').replace(/'/g,"\\'")}')">📋 批次生成</button>
+          <button class="btn btn-xs" style="background:#229ED9;color:#fff;border:none;cursor:pointer;padding:3px 8px;border-radius:4px;font-size:.78rem" onclick="syncArticleToMike(DB.get('articles').find(x=>x.id==='${a.id}'))">📤 mike</button>
           <button class="btn btn-xs btn-danger" onclick="delArticle('${a.id}')">刪除</button>
         </div>
       </div>
@@ -1335,7 +1395,7 @@ function saveArticle(){
   const title=document.getElementById('at-title').value.trim()
   if(!title){toast('請填入文章標題','err');return}
   const arts=DB.get('articles')
-  arts.push({
+  const newArt={
     id:DB.id(),title,
     source:document.getElementById('at-source').value||'ys89.fun論壇',
     date:document.getElementById('at-date').value,
@@ -1343,11 +1403,13 @@ function saveArticle(){
     summary:document.getElementById('at-summary').value,
     url:document.getElementById('at-url').value,
     postedBy:[],lastUsed:null,createdAt:new Date().toISOString()
-  })
+  }
+  arts.push(newArt)
   DB.set('articles',arts)
   closeModal('modal-add-article')
   renderArticles()
   toast('文章已新增')
+  syncArticleToMike(newArt)
 }
 
 function delArticle(id){
@@ -1641,6 +1703,7 @@ function saveThreadsPost(){
   closeModal('modal-threads-post')
   renderThreadsPosts()
   toast(id?'腳本已更新':'腳本已新增')
+  if(!id) notifyMikeNewScript(obj)
 }
 
 function delThreadsPost(id){
