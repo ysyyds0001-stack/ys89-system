@@ -789,10 +789,17 @@ const DB={
   async pull(k){
     try{
       const r=await fetch(API+'/api/'+k)
-      if(r.ok){const d=await r.json();localStorage.setItem(K+k,JSON.stringify(d));return d}
+      if(r.ok){
+        const d=await r.json()
+        // Only overwrite localStorage when API actually has data; never wipe with empty
+        const hasData=Array.isArray(d)?d.length>0:(d&&typeof d==='object'&&Object.keys(d).length>0)
+        if(hasData){localStorage.setItem(K+k,JSON.stringify(d))}
+        return d
+      }
     }catch(e){}
     return this.get(k)
   },
+  push(k){return fetch(API+'/api/'+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(this.get(k))})},
   id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
 }
 
