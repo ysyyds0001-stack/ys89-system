@@ -186,6 +186,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'articles')">文章庫</div>
   <div class="nav-tab" onclick="nav(this,'community')">社群號</div>
   <div class="nav-tab" onclick="nav(this,'threads')">📱 Threads</div>
+  <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
   <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口</div>
 </nav>
 
@@ -331,6 +332,154 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="fb" style="margin-top:16px">
       <button class="btn btn-outline" onclick="closeModal('modal-routing')">取消</button>
       <button class="btn btn-primary" onclick="saveRouting()">儲存排程</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE: 短連結管理 ===== -->
+<div id="pg-links" class="page">
+  <!-- header -->
+  <div class="fb" style="margin-bottom:16px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">🔗 短連結管理</h2>
+      <p class="tm" style="margin-top:3px">YS89 世足社群短連結總控 · 命名/UTM/狀態追蹤</p>
+    </div>
+    <div class="flex">
+      <button class="btn btn-outline" onclick="openNamingRules()">📖 命名規則</button>
+      <button class="btn btn-primary" onclick="openAddLink()">+ 新增短連結</button>
+    </div>
+  </div>
+
+  <!-- category tabs -->
+  <div id="lk-tabs" style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:14px">
+    <div class="lk-tab active" onclick="setLinkTab('all',this)" style="padding:8px 16px;cursor:pointer;font-size:.85rem;border-bottom:2px solid var(--accent);margin-bottom:-2px;color:var(--accent)">全部</div>
+    <div class="lk-tab" onclick="setLinkTab('主帳固定入口',this)" style="padding:8px 16px;cursor:pointer;font-size:.85rem;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--text3)">主帳固定入口</div>
+    <div class="lk-tab" onclick="setLinkTab('角色帳Bio',this)" style="padding:8px 16px;cursor:pointer;font-size:.85rem;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--text3)">角色帳 Bio</div>
+    <div class="lk-tab" onclick="setLinkTab('貼文短連結',this)" style="padding:8px 16px;cursor:pointer;font-size:.85rem;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--text3)">貼文</div>
+    <div class="lk-tab" onclick="setLinkTab('廣告短連結',this)" style="padding:8px 16px;cursor:pointer;font-size:.85rem;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--text3)">廣告</div>
+  </div>
+
+  <!-- filters -->
+  <div class="flex" style="gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <input id="lk-search" placeholder="搜尋短連結名稱…" oninput="renderLinks()" style="width:220px;font-size:.82rem">
+    <select id="lk-f-platform" onchange="renderLinks()" style="width:130px">
+      <option value="">全部平台</option>
+      <option>IG</option><option>FB</option><option>Threads</option><option>YouTube</option>
+    </select>
+    <select id="lk-f-account" onchange="renderLinks()" style="width:130px">
+      <option value="">全部帳號</option>
+      <option value="main">主帳</option>
+      <option value="role01">角色1</option><option value="role02">角色2</option>
+      <option value="role03">角色3</option><option value="role04">角色4</option><option value="role05">角色5</option>
+    </select>
+    <select id="lk-f-status" onchange="renderLinks()" style="width:120px">
+      <option value="">全部狀態</option>
+      <option>待建立</option><option>待確認</option><option>使用中</option>
+      <option>測試中</option><option>暫停</option><option>已下架</option><option>表現佳</option><option>表現差</option>
+    </select>
+    <span id="lk-count" style="color:var(--text3);font-size:.8rem;align-self:center"></span>
+  </div>
+
+  <!-- stats bar -->
+  <div id="lk-stats" class="g4" style="margin-bottom:14px"></div>
+
+  <!-- table -->
+  <div id="lk-table" style="overflow-x:auto"></div>
+</div>
+
+<!-- modal: 新增/編輯短連結 -->
+<div id="modal-add-link" class="overlay">
+  <div class="modal modal-lg">
+    <div class="mh"><div class="mt" id="lk-modal-title">新增短連結</div><button class="mc" onclick="closeModal('modal-add-link')">✕</button></div>
+    <input type="hidden" id="lk-id">
+    <div class="fr">
+      <div class="fg"><label>分類</label>
+        <select id="lk-category">
+          <option>主帳固定入口</option><option>角色帳Bio</option><option>貼文短連結</option><option>廣告短連結</option>
+        </select>
+      </div>
+      <div class="fg"><label>帳號代碼</label>
+        <select id="lk-account-code">
+          <option value="main">main（主帳）</option>
+          <option value="role01">role01</option><option value="role02">role02</option>
+          <option value="role03">role03</option><option value="role04">role04</option><option value="role05">role05</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>平台</label>
+        <select id="lk-platform">
+          <option>IG</option><option>FB</option><option>Threads</option><option>YouTube</option>
+        </select>
+      </div>
+      <div class="fg"><label>位置</label>
+        <select id="lk-placement">
+          <option value="bio">bio</option><option value="post">post</option><option value="story">story</option>
+          <option value="comment">comment</option><option value="desc">desc</option><option value="ad">ad</option><option value="dm">dm</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>入口名稱</label><input id="lk-entry-name" placeholder="例：YS直播入口"></div>
+      <div class="fg"><label>目的代碼</label><input id="lk-purpose" placeholder="例：live"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>短連結名稱（自動產生）</label><input id="lk-short-name" placeholder="yswc_main_ig_bio_live"></div>
+      <div class="fg"><label>是否使用短連結</label>
+        <select id="lk-use-short"><option value="true">是</option><option value="false">否</option></select>
+      </div>
+    </div>
+    <div class="fg"><label>短連結網址</label><input id="lk-short-url" placeholder="https://...（短連結平台產出後填入）"></div>
+    <div class="fg"><label>原始網址</label><input id="lk-original-url" placeholder="https://..."></div>
+    <div class="fr">
+      <div class="fg"><label>是否 SEO 資產</label>
+        <select id="lk-is-seo"><option value="false">否</option><option value="true">是</option></select>
+      </div>
+      <div class="fg"><label>狀態</label>
+        <select id="lk-status">
+          <option>待建立</option><option>待確認</option><option>使用中</option>
+          <option>測試中</option><option>暫停</option><option>已下架</option><option>表現佳</option><option>表現差</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>備註</label><input id="lk-note" placeholder=""></div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-link')">取消</button>
+      <button class="btn btn-primary" onclick="saveLink()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- modal: 命名規則 -->
+<div id="modal-naming-rules" class="overlay">
+  <div class="modal modal-lg">
+    <div class="mh"><div class="mt">📖 短連結命名規則</div><button class="mc" onclick="closeModal('modal-naming-rules')">✕</button></div>
+    <div style="font-size:.83rem;line-height:1.9;color:var(--text2)">
+      <div style="margin-bottom:12px"><span style="color:var(--accent);font-weight:600">命名格式</span><br>
+        一般：<code style="background:#1a1208;padding:2px 6px;border-radius:4px">yswc_帳號_平台_位置_目的</code><br>
+        貼文：<code style="background:#1a1208;padding:2px 6px;border-radius:4px">yswc_帳號_平台_post_主題_MMDD</code><br>
+        廣告：<code style="background:#1a1208;padding:2px 6px;border-radius:4px">yswc_ad_平台_受眾_素材編號</code>
+      </div>
+      <div class="fr" style="gap:20px;margin-bottom:12px">
+        <div><span style="color:var(--accent);font-weight:600">帳號代碼</span><br>main / role01～role05<br>(未來可改 kk / crab / mask / mark / uncle)</div>
+        <div><span style="color:var(--accent);font-weight:600">平台代碼</span><br>ig / fb / threads / yt</div>
+      </div>
+      <div class="fr" style="gap:20px;margin-bottom:12px">
+        <div><span style="color:var(--accent);font-weight:600">位置代碼</span><br>bio / post / story / comment / desc / ad / dm</div>
+        <div><span style="color:var(--accent);font-weight:600">目的代碼</span><br>live / forum / lineys / linesport<br>register / promo / schedule / taiwantime<br>104matches / risk / freewatch</div>
+      </div>
+      <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:8px;padding:12px 14px">
+        <div style="color:var(--accent);font-weight:600;margin-bottom:6px">注意事項</div>
+        <ol style="margin:0;padding-left:18px;color:var(--text2)">
+          <li>未登記的短連結不得上線。</li>
+          <li>SEO頁面不使用短連結。</li>
+          <li>主帳固定入口需依平台分開產生短連結。</li>
+          <li>角色帳 Bio 一個平台一條短連結。</li>
+          <li>廣告連結與自然貼文連結不可共用。</li>
+          <li>貼文短連結只用於重點貼文，不是每篇都產。</li>
+          <li>所有短連結名稱必須符合 yswc_帳號_平台_位置_目的 格式。</li>
+        </ol>
+      </div>
     </div>
   </div>
 </div>
@@ -775,7 +924,7 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(sync) sync.textContent='已同步'
@@ -793,7 +942,7 @@ function nav(el,page){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
-  const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threads:renderThreads,entrances:renderEntrances}
+  const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threads:renderThreads,entrances:renderEntrances,links:renderLinks}
   renders[page]&&renders[page]()
 }
 function openModal(id){document.getElementById(id).classList.add('show')}
@@ -1898,6 +2047,220 @@ function saveRouting(){
   renderKpiBanner()
   toast('週排程已儲存')
 }
+
+// ===== SHORT LINKS =====
+let _lkTab = 'all'
+
+const LK_STATUS_BADGE = {
+  '待建立':'b-gray','待確認':'b-yellow','使用中':'b-green','測試中':'b-warn',
+  '暫停':'b-gray','已下架':'b-gray','表現佳':'b-green2','表現差':'b-red'
+}
+
+const DEFAULT_LINKS = [
+  // ── 主帳 IG ──
+  {id:'lk001',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'IG',placement:'bio',entryName:'YS直播入口',purpose:'live',useShortLink:true,shortLinkName:'yswc_main_ig_bio_live',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:''},
+  {id:'lk002',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'IG',placement:'bio',entryName:'YS論壇',purpose:'forum',useShortLink:false,shortLinkName:'yswc_main_ig_bio_forum_original',shortLinkUrl:'',originalUrl:'https://ys89.fun/',isSeoAsset:true,status:'使用中',note:'SEO資產，放原始網址'},
+  {id:'lk003',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'IG',placement:'bio',entryName:'官方LINE-YS',purpose:'lineys',useShortLink:true,shortLinkName:'yswc_main_ig_bio_lineys',shortLinkUrl:'',originalUrl:'https://lin.ee/w1pIBtuZ',isSeoAsset:false,status:'待建立',note:''},
+  {id:'lk004',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'IG',placement:'bio',entryName:'官方LINE-體育專員',purpose:'linesport',useShortLink:true,shortLinkName:'yswc_main_ig_bio_linesport',shortLinkUrl:'',originalUrl:'https://lin.ee/pD3S0Z6',isSeoAsset:false,status:'待建立',note:''},
+  // ── 主帳 FB ──
+  {id:'lk005',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'FB',placement:'bio',entryName:'YS直播入口',purpose:'live',useShortLink:true,shortLinkName:'yswc_main_fb_bio_live',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:''},
+  {id:'lk006',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'FB',placement:'bio',entryName:'YS論壇',purpose:'forum',useShortLink:false,shortLinkName:'yswc_main_fb_bio_forum_original',shortLinkUrl:'',originalUrl:'https://ys89.fun/',isSeoAsset:true,status:'使用中',note:'SEO資產，放原始網址'},
+  {id:'lk007',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'FB',placement:'bio',entryName:'官方LINE-YS',purpose:'lineys',useShortLink:true,shortLinkName:'yswc_main_fb_bio_lineys',shortLinkUrl:'',originalUrl:'https://lin.ee/w1pIBtuZ',isSeoAsset:false,status:'待建立',note:''},
+  {id:'lk008',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'FB',placement:'bio',entryName:'官方LINE-體育專員',purpose:'linesport',useShortLink:true,shortLinkName:'yswc_main_fb_bio_linesport',shortLinkUrl:'',originalUrl:'https://lin.ee/pD3S0Z6',isSeoAsset:false,status:'待建立',note:''},
+  // ── 主帳 Threads ──
+  {id:'lk009',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'Threads',placement:'bio',entryName:'YS直播入口',purpose:'live',useShortLink:true,shortLinkName:'yswc_main_threads_bio_live',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:''},
+  {id:'lk010',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'Threads',placement:'bio',entryName:'YS論壇',purpose:'forum',useShortLink:false,shortLinkName:'yswc_main_threads_bio_forum_original',shortLinkUrl:'',originalUrl:'https://ys89.fun/',isSeoAsset:true,status:'使用中',note:'SEO資產，放原始網址'},
+  {id:'lk011',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'Threads',placement:'bio',entryName:'官方LINE-YS',purpose:'lineys',useShortLink:true,shortLinkName:'yswc_main_threads_bio_lineys',shortLinkUrl:'',originalUrl:'https://lin.ee/w1pIBtuZ',isSeoAsset:false,status:'待建立',note:''},
+  {id:'lk012',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'Threads',placement:'bio',entryName:'官方LINE-體育專員',purpose:'linesport',useShortLink:true,shortLinkName:'yswc_main_threads_bio_linesport',shortLinkUrl:'',originalUrl:'https://lin.ee/pD3S0Z6',isSeoAsset:false,status:'待建立',note:''},
+  // ── 主帳 YouTube ──
+  {id:'lk013',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'YouTube',placement:'desc',entryName:'YS直播入口',purpose:'live',useShortLink:true,shortLinkName:'yswc_main_yt_desc_live',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:''},
+  {id:'lk014',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'YouTube',placement:'desc',entryName:'YS論壇',purpose:'forum',useShortLink:false,shortLinkName:'yswc_main_yt_desc_forum_original',shortLinkUrl:'',originalUrl:'https://ys89.fun/',isSeoAsset:true,status:'使用中',note:'SEO資產，放原始網址'},
+  {id:'lk015',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'YouTube',placement:'desc',entryName:'官方LINE-YS',purpose:'lineys',useShortLink:true,shortLinkName:'yswc_main_yt_desc_lineys',shortLinkUrl:'',originalUrl:'https://lin.ee/w1pIBtuZ',isSeoAsset:false,status:'待建立',note:''},
+  {id:'lk016',category:'主帳固定入口',accountCode:'main',accountName:'YS主帳',platform:'YouTube',placement:'desc',entryName:'官方LINE-體育專員',purpose:'linesport',useShortLink:true,shortLinkName:'yswc_main_yt_desc_linesport',shortLinkUrl:'',originalUrl:'https://lin.ee/pD3S0Z6',isSeoAsset:false,status:'待建立',note:''},
+  // ── 角色帳 Bio ──
+  {id:'lk017',category:'角色帳Bio',accountCode:'role01',accountName:'角色1',platform:'IG',placement:'bio',entryName:'角色1 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role01_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk018',category:'角色帳Bio',accountCode:'role01',accountName:'角色1',platform:'Threads',placement:'bio',entryName:'角色1 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role01_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk019',category:'角色帳Bio',accountCode:'role02',accountName:'角色2',platform:'IG',placement:'bio',entryName:'角色2 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role02_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk020',category:'角色帳Bio',accountCode:'role02',accountName:'角色2',platform:'Threads',placement:'bio',entryName:'角色2 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role02_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk021',category:'角色帳Bio',accountCode:'role03',accountName:'角色3',platform:'IG',placement:'bio',entryName:'角色3 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role03_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk022',category:'角色帳Bio',accountCode:'role03',accountName:'角色3',platform:'Threads',placement:'bio',entryName:'角色3 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role03_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk023',category:'角色帳Bio',accountCode:'role04',accountName:'角色4',platform:'IG',placement:'bio',entryName:'角色4 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role04_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk024',category:'角色帳Bio',accountCode:'role04',accountName:'角色4',platform:'Threads',placement:'bio',entryName:'角色4 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role04_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk025',category:'角色帳Bio',accountCode:'role05',accountName:'角色5',platform:'IG',placement:'bio',entryName:'角色5 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role05_ig_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+  {id:'lk026',category:'角色帳Bio',accountCode:'role05',accountName:'角色5',platform:'Threads',placement:'bio',entryName:'角色5 Bio',purpose:'bio',useShortLink:true,shortLinkName:'yswc_role05_threads_bio',shortLinkUrl:'',originalUrl:'',isSeoAsset:false,status:'待建立',note:'單一情境導流'},
+]
+
+function setLinkTab(tab, el){
+  _lkTab=tab
+  document.querySelectorAll('.lk-tab').forEach(t=>{
+    t.style.color='var(--text3)'
+    t.style.borderBottomColor='transparent'
+  })
+  if(el){el.style.color='var(--accent)';el.style.borderBottomColor='var(--accent)'}
+  renderLinks()
+}
+
+function renderLinks(){
+  const all=DB.get('links').length?DB.get('links'):DEFAULT_LINKS
+  const search=(document.getElementById('lk-search')?.value||'').toLowerCase()
+  const pf=document.getElementById('lk-f-platform')?.value||''
+  const ac=document.getElementById('lk-f-account')?.value||''
+  const st=document.getElementById('lk-f-status')?.value||''
+  let list=all
+  if(_lkTab!=='all') list=list.filter(l=>l.category===_lkTab)
+  if(pf) list=list.filter(l=>l.platform===pf)
+  if(ac) list=list.filter(l=>l.accountCode===ac)
+  if(st) list=list.filter(l=>l.status===st)
+  if(search) list=list.filter(l=>(l.shortLinkName||'').toLowerCase().includes(search)||(l.entryName||'').toLowerCase().includes(search))
+
+  // stats
+  const total=list.length
+  const pending=list.filter(l=>l.status==='待建立').length
+  const active=list.filter(l=>l.status==='使用中'||l.status==='表現佳').length
+  const seo=list.filter(l=>l.isSeoAsset).length
+  document.getElementById('lk-stats').innerHTML=`
+    <div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:var(--accent)">${total}</div><div class="tm">總條數</div></div>
+    <div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:#f87171">${pending}</div><div class="tm">待建立</div></div>
+    <div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:#4ade80">${active}</div><div class="tm">使用中</div></div>
+    <div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:#60a5fa">${seo}</div><div class="tm">SEO原始網址</div></div>`
+  document.getElementById('lk-count').textContent=`共 ${total} 筆`
+
+  if(!list.length){
+    document.getElementById('lk-table').innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">無符合資料</div>'
+    return
+  }
+
+  document.getElementById('lk-table').innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.8rem">
+    <thead><tr style="background:#0d0b0a;text-align:left">
+      <th style="padding:8px 10px;color:var(--text3);white-space:nowrap">編號</th>
+      <th style="padding:8px 10px;color:var(--text3)">帳號</th>
+      <th style="padding:8px 10px;color:var(--text3)">平台</th>
+      <th style="padding:8px 10px;color:var(--text3)">入口</th>
+      <th style="padding:8px 10px;color:var(--text3)">類型</th>
+      <th style="padding:8px 10px;color:var(--text3)">短連結名稱</th>
+      <th style="padding:8px 10px;color:var(--text3)">短連結</th>
+      <th style="padding:8px 10px;color:var(--text3)">狀態</th>
+      <th style="padding:8px 10px;color:var(--text3)">操作</th>
+    </tr></thead>
+    <tbody>${list.map((l,i)=>{
+      const typeBadge=l.isSeoAsset
+        ?'<span class="badge b-blue" style="font-size:.68rem">SEO原始網址</span>'
+        :l.category==='廣告短連結'
+          ?'<span class="badge" style="background:#5b21b6;color:#fff;font-size:.68rem">廣告追蹤</span>'
+          :'<span class="badge b-green" style="font-size:.68rem">短連結追蹤</span>'
+      const hasUrl=l.shortLinkUrl&&l.shortLinkUrl.length>3
+      const utmUrl=l.originalUrl&&l.originalUrl.length>3
+        ?`${l.originalUrl}${l.originalUrl.includes('?')?'&':'?'}utm_source=${l.platform.toLowerCase()}&utm_medium=${l.placement}&utm_campaign=wc2026&utm_content=${l.accountCode}_${l.purpose}`
+        :''
+      return`<tr style="border-bottom:1px solid var(--border);${i%2?'background:#0a0908':''}">
+        <td style="padding:7px 10px;color:var(--text3);font-size:.72rem">${l.id}</td>
+        <td style="padding:7px 10px;white-space:nowrap">
+          <div style="font-weight:600;font-size:.82rem">${l.accountName}</div>
+          <div style="color:var(--text3);font-size:.7rem">${l.accountCode}</div>
+        </td>
+        <td style="padding:7px 10px"><span class="badge b-gray">${l.platform}</span></td>
+        <td style="padding:7px 10px;max-width:130px">
+          <div style="font-size:.82rem">${l.entryName}</div>
+          ${l.note?`<div style="color:var(--text3);font-size:.7rem">${l.note.slice(0,24)}</div>`:''}
+        </td>
+        <td style="padding:7px 10px">${typeBadge}</td>
+        <td style="padding:7px 10px;max-width:200px">
+          <div style="font-family:monospace;font-size:.75rem;color:var(--accent);word-break:break-all">${l.shortLinkName||'—'}</div>
+          <button class="btn btn-xs btn-copy" style="margin-top:3px" onclick="cp('${l.shortLinkName||''}',this)">複製名稱</button>
+        </td>
+        <td style="padding:7px 10px;min-width:120px">
+          ${l.isSeoAsset||!l.useShortLink
+            ?`<div style="font-size:.72rem;color:var(--text3)">${(l.originalUrl||'').slice(0,30)||'—'}</div>
+               ${l.originalUrl?`<button class="btn btn-xs btn-copy" style="margin-top:3px" onclick="cp('${l.originalUrl}',this)">複製網址</button>`:''}`
+            :hasUrl
+              ?`<div style="font-size:.72rem;color:#4ade80;word-break:break-all">${l.shortLinkUrl.slice(0,30)}</div>
+                <div class="flex" style="gap:3px;margin-top:3px;flex-wrap:wrap">
+                  <button class="btn btn-xs btn-copy" onclick="cp('${l.shortLinkUrl}',this)">複製</button>
+                  ${utmUrl?`<button class="btn btn-xs btn-outline" onclick="cp(${JSON.stringify(utmUrl)},this)">複製UTM</button>`:''}
+                </div>`
+              :`<span style="color:#f87171;font-size:.72rem">待建立短連結</span>`
+          }
+        </td>
+        <td style="padding:7px 10px"><span class="badge ${LK_STATUS_BADGE[l.status]||'b-gray'}">${l.status}</span></td>
+        <td style="padding:7px 10px;white-space:nowrap">
+          <button class="btn btn-xs btn-outline" onclick="openEditLink('${l.id}')">編輯</button>
+          <button class="btn btn-xs btn-danger" onclick="delLink('${l.id}')">刪</button>
+        </td>
+      </tr>`
+    }).join('')}
+    </tbody>
+  </table>`
+}
+
+function openAddLink(){
+  document.getElementById('lk-id').value=''
+  document.getElementById('lk-modal-title').textContent='新增短連結'
+  ;['lk-short-url','lk-original-url','lk-entry-name','lk-purpose','lk-short-name','lk-note'].forEach(i=>document.getElementById(i).value='')
+  document.getElementById('lk-status').value='待建立'
+  document.getElementById('lk-use-short').value='true'
+  document.getElementById('lk-is-seo').value='false'
+  openModal('modal-add-link')
+}
+
+function openEditLink(id){
+  const all=DB.get('links').length?DB.get('links'):DEFAULT_LINKS
+  const l=all.find(x=>x.id===id); if(!l)return
+  document.getElementById('lk-id').value=id
+  document.getElementById('lk-modal-title').textContent='編輯短連結'
+  document.getElementById('lk-category').value=l.category||'主帳固定入口'
+  document.getElementById('lk-account-code').value=l.accountCode||'main'
+  document.getElementById('lk-platform').value=l.platform||'IG'
+  document.getElementById('lk-placement').value=l.placement||'bio'
+  document.getElementById('lk-entry-name').value=l.entryName||''
+  document.getElementById('lk-purpose').value=l.purpose||''
+  document.getElementById('lk-short-name').value=l.shortLinkName||''
+  document.getElementById('lk-use-short').value=l.useShortLink?'true':'false'
+  document.getElementById('lk-short-url').value=l.shortLinkUrl||''
+  document.getElementById('lk-original-url').value=l.originalUrl||''
+  document.getElementById('lk-is-seo').value=l.isSeoAsset?'true':'false'
+  document.getElementById('lk-status').value=l.status||'待建立'
+  document.getElementById('lk-note').value=l.note||''
+  openModal('modal-add-link')
+}
+
+function saveLink(){
+  const id=document.getElementById('lk-id').value
+  const all=DB.get('links').length?DB.get('links'):[...DEFAULT_LINKS]
+  const obj={
+    category:document.getElementById('lk-category').value,
+    accountCode:document.getElementById('lk-account-code').value,
+    accountName:{main:'YS主帳',role01:'角色1',role02:'角色2',role03:'角色3',role04:'角色4',role05:'角色5'}[document.getElementById('lk-account-code').value]||'',
+    platform:document.getElementById('lk-platform').value,
+    placement:document.getElementById('lk-placement').value,
+    entryName:document.getElementById('lk-entry-name').value,
+    purpose:document.getElementById('lk-purpose').value,
+    useShortLink:document.getElementById('lk-use-short').value==='true',
+    shortLinkName:document.getElementById('lk-short-name').value,
+    shortLinkUrl:document.getElementById('lk-short-url').value,
+    originalUrl:document.getElementById('lk-original-url').value,
+    isSeoAsset:document.getElementById('lk-is-seo').value==='true',
+    status:document.getElementById('lk-status').value,
+    note:document.getElementById('lk-note').value,
+  }
+  if(id){const i=all.findIndex(x=>x.id===id);if(i>=0)all[i]={...all[i],...obj}}
+  else all.push({...obj,id:'lk'+Date.now()})
+  DB.set('links',all)
+  DB.push('links').catch(()=>{})
+  closeModal('modal-add-link')
+  renderLinks()
+  toast(id?'短連結已更新':'短連結已新增')
+}
+
+function delLink(id){
+  if(!confirm('確定刪除此短連結記錄？'))return
+  const all=DB.get('links').length?DB.get('links'):[...DEFAULT_LINKS]
+  DB.set('links',all.filter(x=>x.id!==id))
+  DB.push('links').catch(()=>{})
+  renderLinks()
+  toast('已刪除')
+}
+
+function openNamingRules(){openModal('modal-naming-rules')}
 
 // ===== INIT =====
 initData().then(()=>renderPersonas())
