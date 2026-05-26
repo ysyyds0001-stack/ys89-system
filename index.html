@@ -583,12 +583,12 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="modal" style="max-width:420px">
     <div class="mh"><div class="mt">更新發文數據</div><button class="mc" onclick="closeModal('modal-metrics')">✕</button></div>
     <input type="hidden" id="um-id">
-    <div class="fg" style="margin-bottom:10px">
-      <label style="margin-bottom:6px;display:block">已發布平台（可多選）</label>
-      <div style="display:flex;gap:14px;flex-wrap:wrap">
-        <label style="display:flex;align-items:center;gap:6px;font-size:.88rem;cursor:pointer"><input type="checkbox" id="um-plat-ig" value="IG"> IG</label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:.88rem;cursor:pointer"><input type="checkbox" id="um-plat-fb" value="FB"> FB</label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:.88rem;cursor:pointer"><input type="checkbox" id="um-plat-threads" value="Threads"> Threads</label>
+    <div style="margin-bottom:14px">
+      <div style="font-size:.78rem;color:#8A7D74;margin-bottom:8px">已發布平台（點選切換）</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div id="pt-IG"      onclick="togglePlat(this)" style="padding:5px 16px;border-radius:20px;cursor:pointer;font-size:.85rem;border:1px solid var(--border2);color:var(--text3);user-select:none">IG</div>
+        <div id="pt-FB"      onclick="togglePlat(this)" style="padding:5px 16px;border-radius:20px;cursor:pointer;font-size:.85rem;border:1px solid var(--border2);color:var(--text3);user-select:none">FB</div>
+        <div id="pt-Threads" onclick="togglePlat(this)" style="padding:5px 16px;border-radius:20px;cursor:pointer;font-size:.85rem;border:1px solid var(--border2);color:var(--text3);user-select:none">Threads</div>
       </div>
     </div>
     <div class="fr"><div class="fg"><label>瀏覽次數</label><input type="number" id="um-views"></div><div class="fg"><label>已觸及帳號</label><input type="number" id="um-reach"></div></div>
@@ -1292,13 +1292,28 @@ function savePost(){
   toast('發文記錄已儲存')
 }
 
+function togglePlat(el){
+  const on=el.dataset.on==='1'
+  el.dataset.on=on?'0':'1'
+  el.style.background=on?'':'var(--accent)'
+  el.style.color=on?'var(--text3)':'#fff'
+  el.style.borderColor=on?'var(--border2)':'var(--accent)'
+}
+
 function openMetrics(id){
   const p=DB.get('posts').find(x=>x.id===id); if(!p)return
   document.getElementById('um-id').value=id
   ;['views','reach','likes','comments','saves','shares'].forEach(k=>document.getElementById('um-'+k).value=p[k]||0)
-  // 預勾已發平台
+  // 重設平台按鈕
   const plats=p.platforms||(p.platform?[p.platform]:[])
-  ;['IG','FB','Threads'].forEach(pl=>{ const cb=document.getElementById('um-plat-'+pl.toLowerCase()); if(cb)cb.checked=plats.includes(pl) })
+  ;['IG','FB','Threads'].forEach(pl=>{
+    const el=document.getElementById('pt-'+pl); if(!el)return
+    const on=plats.includes(pl)
+    el.dataset.on=on?'1':'0'
+    el.style.background=on?'var(--accent)':''
+    el.style.color=on?'#fff':'var(--text3)'
+    el.style.borderColor=on?'var(--accent)':'var(--border2)'
+  })
   openModal('modal-metrics')
 }
 
@@ -1307,7 +1322,7 @@ function updateMetrics(){
   const posts=DB.get('posts')
   const i=posts.findIndex(x=>x.id===id); if(i<0)return
   ;['views','reach','likes','comments','saves','shares'].forEach(k=>posts[i][k]=+document.getElementById('um-'+k).value||0)
-  const plats=['IG','FB','Threads'].filter(pl=>document.getElementById('um-plat-'+pl.toLowerCase())?.checked)
+  const plats=['IG','FB','Threads'].filter(pl=>document.getElementById('pt-'+pl)?.dataset.on==='1')
   posts[i].platforms=plats
   DB.set('posts',posts)
   closeModal('modal-metrics')
