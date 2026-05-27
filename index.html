@@ -2622,10 +2622,47 @@ function renderCast(){
     :'🏆 <b style="color:var(--accent)">世足賽事進行中</b>'
 
   // ── 今日完整腳本卡（含定位 + 時間軸 + 台詞）──
+  // 各角色主角台詞模板（帶入真實文章標題）
+  const PERSONA_LINE_TPL={
+    '阿奇':         (t,s)=>`${t} — 賽前最值得追的走勢整理 👉 ${s}`,
+    'kk':           (t,s)=>`${t} 整理好了，一頁全搞定 👉 ${s}`,
+    '蟹蟹世足觀測站': (t,s)=>`${t} 整理好了，各隊近況跟分析都在 👉 ${s}`,
+    '世足大財神':    (t,s)=>`${t} 大局方向分析出來了 👉 ${s}`,
+    '世足排雷週記':  (t,s)=>`${t} 這週排雷整理好了，開賽前看一遍 👉 ${s}`,
+  }
+
   function buildScriptCard(pname){
     const ps=PERSONA_SCRIPTS[pname]; if(!ps) return''
     const si=PERSONA_SITES[pname]||{}
     const prof=ps.profile||{}
+
+    // 動態從文章庫找最新未發文章
+    const allPersonas=DB.get('personas')
+    const allArticles=DB.get('articles')
+    const persona=allPersonas.find(p=>p.name===pname)
+    const latestArt=persona
+      ?allArticles.filter(a=>{
+          if(a.dir!==persona.dir)return false
+          return!(a.postedBy||[]).find(x=>x.pid===persona.id)
+        }).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt))[0]
+      :null
+
+    // 主角台詞：有文章 → 動態生成；無文章 → 顯示警告
+    const dynamicLine=latestArt
+      ?(PERSONA_LINE_TPL[pname]?PERSONA_LINE_TPL[pname](latestArt.title,si.label):latestArt.title+' 👉 '+si.label)
+      :null
+
+    const artStatusBlock=latestArt
+      ?`<div style="background:#0a1208;border:1px solid #1a3a1a;border-radius:6px;padding:7px 10px;margin:8px 0">
+          <div style="font-size:.65rem;color:#4ade80;font-weight:700;margin-bottom:3px">📄 引用文章（文章庫最新待發）</div>
+          <div style="font-size:.8rem;font-weight:600;color:var(--text)">${latestArt.title}</div>
+          ${latestArt.url?`<a href="${latestArt.url}" target="_blank" style="font-size:.67rem;color:#60a5fa;text-decoration:none;margin-top:2px;display:block">↗ ${latestArt.url}</a>`:'<div style="font-size:.67rem;color:var(--text3);margin-top:1px">（文章尚無網址，請補上）</div>'}
+        </div>`
+      :`<div style="background:#1a0808;border:1px solid #3a1515;border-radius:6px;padding:8px 10px;margin:8px 0">
+          <div style="font-size:.73rem;color:#f87171;font-weight:700">⚠ 文章庫無此角色的待發文章</div>
+          <div style="font-size:.69rem;color:var(--text3);margin-top:3px;margin-bottom:6px">主角台詞無法對接真實內容，請先在文章庫新增文章</div>
+          <button class="btn btn-xs btn-outline" onclick="document.querySelector('.nav-tab[onclick*=articles]').click()">前往文章庫新增 →</button>
+        </div>`
 
     // 定位卡
     const profileHtml=`
@@ -2640,7 +2677,7 @@ function renderCast(){
         </div>
       </div>`
 
-    // 時間軸腳本
+    // 時間軸腳本（主角台詞動態帶入）
     const steps=[]
     const opener=getCastById(ps.opener.id)
     steps.push({badge:'🔥 開場',time:ps.timeSlot,who:opener?.name||ps.opener.id,gc:opener?.gc||'#ffd43b',line:ps.opener.line,isTime:true})
@@ -2648,7 +2685,9 @@ function renderCast(){
       const c=getCastById(s.id)
       steps.push({badge:i===0?'💬 支援':'',who:c?.name||s.id,gc:c?.gc||'#4fc3f7',line:s.line})
     })
-    steps.push({badge:'⭐ 主角登場',who:pname,gc:'#D4542A',line:ps.persona_line})
+    // 主角登場：有文章用動態台詞，否則留範本標示未完成
+    const personaStepLine=dynamicLine||`[⚠ 請先在文章庫新增文章] ${ps.persona_line}`
+    steps.push({badge:'⭐ 主角登場',who:pname,gc:dynamicLine?'#D4542A':'#6b7280',line:personaStepLine,noArt:!dynamicLine})
     ps.reactors.forEach((r,i)=>{
       const c=getCastById(r.id)
       steps.push({badge:i===0?'👥 反應':'',who:c?.name||r.id,gc:c?.gc||'#a78bfa',line:r.line})
@@ -2662,7 +2701,9 @@ function renderCast(){
         </div>
         <div>
           <div style="font-weight:700;font-size:.82rem;color:${s.gc};margin-bottom:4px">${s.who}</div>
-          <div style="font-size:.8rem;color:var(--text);line-height:1.55;background:#0a0908;border-left:3px solid ${s.gc}60;padding:7px 11px;border-radius:0 6px 6px 0;cursor:pointer" onclick="cp(${JSON.stringify(s.line)},this)" title="點擊複製">${s.line}</div>
+          <div style="font-size:.8rem;color:${s.noArt?'#6b7280':'var(--text)'};line-height:1.55;background:#0a0908;border-left:3px solid ${s.gc}60;padding:7px 11px;border-radius:0 6px 6px 0;${s.noArt?'':'cursor:pointer'}" ${s.noArt?'':'onclick="cp('+JSON.stringify(s.line)+',this)" title="點擊複製"'}>${s.line}</div>
+          ${s.noArt?`<div style="font-size:.67rem;color:#f87171;margin-top:3px">↑ 文章庫有文章後會自動帶入</div>`:''}
+          ${s.badge==='⭐ 主角登場'?artStatusBlock:''}
         </div>
       </div>`).join('')
 
@@ -2673,14 +2714,15 @@ function renderCast(){
         <div style="font-size:.77rem;color:var(--text2);line-height:1.65;white-space:pre-line">${ps.strangerComment}</div>
       </div>`:''
 
-    return`<div class="card" style="border-color:var(--accent)30">
+    return`<div class="card" style="border-color:${dynamicLine?'var(--accent)30':'#3a1515'}">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">
         <div>
           <div style="font-size:1rem;font-weight:700;color:var(--accent)">${pname}</div>
           <div style="font-size:.73rem;color:#60a5fa;margin-top:3px">→ ${si.label||''} · ${si.desc||''}</div>
         </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span style="font-size:.68rem;color:var(--text3)">上工時段：<b style="color:var(--text2)">${ps.timeSlot||'—'}</b></span>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+          <span style="font-size:.68rem;color:var(--text3)">上工：<b style="color:var(--text2)">${ps.timeSlot||'—'}</b></span>
+          ${dynamicLine?`<span style="font-size:.67rem;background:#0a1208;border:1px solid #1a3a1a;border-radius:10px;padding:2px 8px;color:#4ade80">✓ 文章已備妥</span>`:`<span style="font-size:.67rem;background:#1a0808;border:1px solid #3a1515;border-radius:10px;padding:2px 8px;color:#f87171">✗ 無待發文章</span>`}
           <button class="btn btn-xs btn-copy" onclick="cp(${JSON.stringify(si.url||'')},this)">複製連結</button>
         </div>
       </div>
