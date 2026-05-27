@@ -990,67 +990,122 @@ const PERSONA_SCHEDULE={
   0:['蟹蟹世足觀測站','世足大財神'],
 }
 
-// 每個世足角色的完整台詞腳本
+// 每個世足角色的完整台詞腳本（含定位卡、時段、陌生人留言策略）
 const PERSONA_SCRIPTS={
   '阿奇':{
-    opener:{id:'bs',line:'今晚賽程超多，不知道該看哪場好😵‍💫'},
+    profile:{
+      slogan:'熱血數據派，球迷圈的賠率分析達人',
+      tone:'有觀點、條理清晰、不包牌不保證',
+      postType:'賠率走勢分析 / 賽事數據解讀 / 今日推薦場次',
+      postFreq:'每日1篇主發文 + 2-3則回覆別人',
+      mainAction:'主發話者：每天主動發賽事或賠率分析',
+      strangerRule:'找 #世足分析 #世足賠率 的陌生人貼文，以「我也有在觀察這個盤面」切入，補充數據觀點，絕不推薦只分析',
+    },
+    timeSlot:'晚間 20:00',
+    context:'世足開賽倒數，賠率開始活動，各隊名單確認中',
+    opener:{id:'bs',line:'最近有沒有人在盯世足賠率？感覺巴西跟法國的盤面在動'},
     support:[
-      {id:'bam',line:'對啊，然後賠率差超多，有人整理嗎？'},
-      {id:'miya',line:'我也想知道！今晚到底哪幾場值得看'},
+      {id:'bam',line:'對啊！我看上週比差蠻多，但看不太懂在動什麼'},
+      {id:'miya',line:'賠率這個我完全不懂，有沒有比較好懂的說明'},
     ],
-    persona_line:'賽程、直播、賠率我都整理好了，今晚推薦這幾場 👉 ys89.games',
+    persona_line:'盤面在動是因為歐洲資金在進場，我整理了最新各隊賠率走勢，開賽倒數這段最值得追 👉 ys89.games',
     reactors:[
-      {id:'zahra',line:'謝謝！終於有人整理了🙏'},
-      {id:'axiang',line:'馬上去看！'},
+      {id:'zahra',line:'阿奇真的太有料了👏'},
+      {id:'axiang',line:'馬上存書籤！'},
     ],
+    strangerComment:'建議台詞：「賠率這邊有在動，最近歐洲盤資金方向蠻明顯的，有整理可以參考」\n目標串：#世足2026預測 #世足賠率分析 相關討論',
   },
   'kk':{
-    opener:{id:'miya',line:'想找個世足懶人包，分組、積分、球星資料全部都有那種📊'},
+    profile:{
+      slogan:'碎嘴球迷，懶人包收王，說話有梗沒廢話',
+      tone:'口語調皮、諧音梗、像朋友隨手傳的那種',
+      postType:'賽程懶人包 / 台灣時間表 / 分組趣味整理',
+      postFreq:'每日1-2篇，短文+表情多，像朋友隨手發的',
+      mainAction:'主發話者：每天發輕鬆世足話題，帶動氣氛',
+      strangerRule:'找任何#世足倒數 #世足2026話題，隨意插嘴，輕鬆不壓力，像路人路過留一句',
+    },
+    timeSlot:'早上 09:00',
+    context:'世足開賽倒數，球迷瘋狂找台灣時間版賽程、搶排假',
+    opener:{id:'miya',line:'世足還有幾天啊！我已經開始算了😂'},
     support:[
-      {id:'zahra',line:'對啊！每次都要分開查超麻煩'},
-      {id:'bam',line:'球隊資料跟歷史成績也要，誰有推薦？'},
+      {id:'zahra',line:'我假都排好了哈哈哈，但台灣的比賽時間好像很多場在半夜'},
+      {id:'bam',line:'台灣時間有人整理好的嗎？自己換算好麻煩'},
     ],
-    persona_line:'整合型資訊站，分組積分賠率球星全部一頁搞定 👉 fifa-worldcups.tw',
+    persona_line:'有整理！全賽程台灣時間版、48隊分組、死亡組在哪，一頁全搞定 👉 fifa-worldcups.tw',
     reactors:[
-      {id:'lanlin',line:'收藏！👍'},
-      {id:'anne',line:'這個設計超清楚'},
+      {id:'lanlin',line:'存！👍'},
+      {id:'anne',line:'這頁真的超清楚！'},
     ],
+    strangerComment:'建議台詞：「倒數可以先存這個，台灣時間版的，不用自己換算」\n目標串：#世足2026倒數 #世足賽程 #看球時間 相關討論',
   },
   '蟹蟹世足觀測站':{
-    opener:{id:'bs',line:'B組也太亂了吧，葡萄牙、摩洛哥、法國這組誰能解釋？🤯'},
+    profile:{
+      slogan:'細心觀察者，像朋友主動傳你比賽細節',
+      tone:'平靜準確、不誇張，像朋友傳訊通知你',
+      postType:'分組出線分析 / 各隊近況 / 賽事提醒',
+      postFreq:'每日1篇分析圖文，搭配1-2則回覆',
+      mainAction:'主發話者：每天發分組或球隊深度觀察',
+      strangerRule:'找 #世足分組 #世足預測 的貼文，以朋友補充口吻插入，提供有料資訊',
+    },
+    timeSlot:'下午 14:00',
+    context:'世足倒數，48隊分組複雜度史上最高，分組分析是最熱話題',
+    opener:{id:'bs',line:'這屆48隊分組也太複雜了吧，哪組你們覺得是死亡組'},
     support:[
-      {id:'miya',line:'完全看不懂！晉級條件也太複雜'},
-      {id:'bam',line:'這組每場都是關鍵賽，根本沒冷場'},
+      {id:'miya',line:'對啊！每組感覺都有強隊，完全猜不出誰穩出線'},
+      {id:'bam',line:'擴大到48隊分組真的更難判斷了'},
     ],
-    persona_line:'這組我整理分析過了，分組積分跟各隊關鍵數據都在這 👉 ys89.me',
+    persona_line:'各組出線熱門、死亡組分析、各隊最新戰力我都整理好了，開賽前看最完整 👉 ys89.me',
     reactors:[
-      {id:'zahra',line:'謝謝整理！這樣清楚多了'},
-      {id:'axiang',line:'原來是這樣，學到了'},
+      {id:'zahra',line:'謝謝蟹蟹！馬上去看'},
+      {id:'axiang',line:'觀測站超詳細我愛🦀'},
     ],
+    strangerComment:'建議台詞：「這屆48隊分組確實複雜很多，各組實力對比有整理，可以先看一下」\n目標串：#世足分組預測 #世足2026哪組最強 相關討論',
   },
   '世足大財神':{
-    opener:{id:'jack',line:'讓分盤我怎麼老是猜反方向🤦，讓分0.5跟讓1球到底哪裡不一樣'},
+    profile:{
+      slogan:'大局觀分析師，觀察風向，方向不保證',
+      tone:'沉著專業、財神感、不激進、只說方向',
+      postType:'冠軍熱門走勢 / 大局賠率方向 / 賽事風向分析',
+      postFreq:'每日1篇走勢或投注方向分析',
+      mainAction:'主發話者：每天發一篇大局觀，低調專業感',
+      strangerRule:'找 #世足奪冠預測 #運彩方向 的貼文，以大局觀切入，不給結論只給角度',
+    },
+    timeSlot:'晚間 19:00',
+    context:'世足倒數，奪冠熱門與賠率走勢成為最熱討論焦點',
+    opener:{id:'jack',line:'你們覺得這屆冠軍最有可能是誰？法國還是巴西'},
     support:[
-      {id:'bs',line:'我也搞不懂！每次看盤口都一頭霧水'},
-      {id:'bam',line:'求圖解！讓分原理有沒有人說清楚的'},
+      {id:'bs',line:'法國陣容真的嚇到我，不過巴西在南美資格賽壓線過有點擔心'},
+      {id:'bam',line:'我覺得也可能有黑馬，上屆阿根廷也沒幾個人預到'},
     ],
-    persona_line:'讓分有幾個核心口訣，我整理了圖解攻略，看完馬上懂 👉 ys89.biz',
+    persona_line:'這屆冠軍格局我觀察一段時間了，賠率走勢跟媒體方向都有整合，大局方向分析在這 👉 ys89.biz',
     reactors:[
-      {id:'miya',line:'終於有人解釋清楚了！'},
-      {id:'jason',line:'這個解說比我看過的都清楚'},
+      {id:'miya',line:'大財神說話就是不一樣👏'},
+      {id:'jason',line:'這個分析角度很有意思'},
     ],
+    strangerComment:'建議台詞：「這屆格局比較特殊，賠率移動方向蠻值得觀察的，比最終結果更有參考價值」\n目標串：#世足奪冠熱門 #世足2026賠率 相關討論',
   },
   '世足排雷週記':{
-    opener:{id:'miya',line:'台灣要看世足直播好難找啊😭，電視沒轉播，手機app又一直lag'},
+    profile:{
+      slogan:'理性提醒者，每週幫球迷排開判斷盲點',
+      tone:'謹慎友善、不聳動、像理性朋友說「等一下」',
+      postType:'常見盲點整理 / 判斷陷阱提醒 / 風險意識教育',
+      postFreq:'每日1則短提醒，每週1篇深度排雷',
+      mainAction:'主發話者：每天發一則風險意識提醒，建立信任感',
+      strangerRule:'找 #世足必勝 #運彩保證 類誇張聲稱的貼文，以溫和平衡視角插入，不攻擊只補充',
+    },
+    timeSlot:'早上 10:30',
+    context:'世足倒數，很多球迷開始下注，最常見盲點是全押熱門與主客場迷思',
+    opener:{id:'miya',line:'我朋友說他世足要全押巴西，我覺得這樣合理嗎😅'},
     support:[
-      {id:'bam',line:'我也是！用免費的畫質超差'},
-      {id:'zahra',line:'剛好錯過關鍵進球，氣死'},
+      {id:'bam',line:'全押單隊感覺風險很高？'},
+      {id:'zahra',line:'上屆也很多人押熱門隊結果輸慘'},
     ],
-    persona_line:'台灣看直播攻略我都整理好了，免費＋穩定的管道都在這 👉 ys89.info',
+    persona_line:'全押熱門隊是最常見的盲點之一，這週整理了5個在世足前最容易踩的坑，開賽前看一遍 👉 ys89.info',
     reactors:[
-      {id:'axiang',line:'救命恩人！'},
-      {id:'anne',line:'幫我省了好多時間🙏'},
+      {id:'axiang',line:'這個真的要看一下！'},
+      {id:'anne',line:'排雷週記每次都戳中我🙏'},
     ],
+    strangerComment:'建議台詞：「世足前有幾個常見盲點特別容易踩，尤其剛開始看盤的，可以先了解一下」\n目標串：#世足投注 #運彩新手 #世足必押 類貼文的留言區',
   },
 }
 
@@ -2552,68 +2607,111 @@ function openNamingRules(){openModal('modal-naming-rules')}
 
 // ===== CAST / 劇本 =====
 function renderCast(){
-  const DOW=new Date().getDay()
+  const now=new Date()
+  const DOW=now.getDay()
   const DAY_NAMES=['週日','週一','週二','週三','週四','週五','週六']
   const todayPersonas=PERSONA_SCHEDULE[DOW]||[]
 
-  // ── 今日兩位世足角色完整腳本 ──
+  // 世足倒數計算（2026-06-11開賽）
+  const wcStart=new Date('2026-06-11T00:00:00+08:00')
+  const msLeft=wcStart-now
+  const daysLeft=Math.ceil(msLeft/(1000*60*60*24))
+  const wcBanner=daysLeft>0
+    ?`⏳ 世足開賽倒數 <b style="color:var(--accent);font-size:1.1em">${daysLeft}</b> 天　·　目前處於 <b>賽前熱身期</b>，各隊名單確認中，賠率開始活動`
+    :daysLeft===0?'🏆 <b style="color:var(--accent)">世足今日開賽！</b>'
+    :'🏆 <b style="color:var(--accent)">世足賽事進行中</b>'
+
+  // ── 今日完整腳本卡（含定位 + 時間軸 + 台詞）──
   function buildScriptCard(pname){
     const ps=PERSONA_SCRIPTS[pname]; if(!ps) return''
     const si=PERSONA_SITES[pname]||{}
+    const prof=ps.profile||{}
+
+    // 定位卡
+    const profileHtml=`
+      <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:8px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:.72rem;color:var(--accent);font-weight:700;margin-bottom:8px">📌 角色定位</div>
+        <div style="display:grid;grid-template-columns:70px 1fr;gap:5px 10px;font-size:.76rem;line-height:1.6">
+          <span style="color:var(--text3)">定位</span><span>${prof.slogan||''}</span>
+          <span style="color:var(--text3)">語氣</span><span>${prof.tone||''}</span>
+          <span style="color:var(--text3)">發文類型</span><span>${prof.postType||''}</span>
+          <span style="color:var(--text3)">發文頻率</span><span>${prof.postFreq||''}</span>
+          <span style="color:var(--text3)">主要任務</span><span style="color:#fbbf24">${prof.mainAction||''}</span>
+        </div>
+      </div>`
+
+    // 時間軸腳本
     const steps=[]
     const opener=getCastById(ps.opener.id)
-    steps.push({badge:'🔥 開場',who:opener?.name||ps.opener.id,gc:opener?.gc||'#ffd43b',line:ps.opener.line})
+    steps.push({badge:'🔥 開場',time:ps.timeSlot,who:opener?.name||ps.opener.id,gc:opener?.gc||'#ffd43b',line:ps.opener.line,isTime:true})
     ps.support.forEach((s,i)=>{
       const c=getCastById(s.id)
       steps.push({badge:i===0?'💬 支援':'',who:c?.name||s.id,gc:c?.gc||'#4fc3f7',line:s.line})
     })
-    steps.push({badge:'⭐ 主角',who:pname,gc:'#D4542A',line:ps.persona_line})
+    steps.push({badge:'⭐ 主角登場',who:pname,gc:'#D4542A',line:ps.persona_line})
     ps.reactors.forEach((r,i)=>{
       const c=getCastById(r.id)
       steps.push({badge:i===0?'👥 反應':'',who:c?.name||r.id,gc:c?.gc||'#a78bfa',line:r.line})
     })
+
     const stepsHtml=steps.map((s,i)=>`
-      <div style="display:grid;grid-template-columns:60px 1fr;gap:8px;padding:9px 0;${i<steps.length-1?'border-bottom:1px solid var(--border)':''}">
-        <div style="text-align:right;padding-top:2px">
-          ${s.badge?`<span style="font-size:.63rem;color:${s.gc};white-space:nowrap;font-weight:600">${s.badge}</span>`:''}
+      <div style="display:grid;grid-template-columns:72px 1fr;gap:8px;padding:9px 0;${i<steps.length-1?'border-bottom:1px solid var(--border)':''}">
+        <div style="text-align:right;padding-top:2px;display:flex;flex-direction:column;align-items:flex-end;gap:2px">
+          ${s.badge?`<span style="font-size:.62rem;color:${s.gc};white-space:nowrap;font-weight:700">${s.badge}</span>`:''}
+          ${s.isTime&&s.time?`<span style="font-size:.6rem;color:var(--text3);white-space:nowrap">${s.time}</span>`:''}
         </div>
         <div>
           <div style="font-weight:700;font-size:.82rem;color:${s.gc};margin-bottom:4px">${s.who}</div>
-          <div style="font-size:.8rem;color:var(--text);line-height:1.55;background:#0a0908;border-left:3px solid ${s.gc}60;padding:6px 10px;border-radius:0 6px 6px 0;cursor:pointer" onclick="cp(${JSON.stringify(s.line)},this)">${s.line}</div>
+          <div style="font-size:.8rem;color:var(--text);line-height:1.55;background:#0a0908;border-left:3px solid ${s.gc}60;padding:7px 11px;border-radius:0 6px 6px 0;cursor:pointer" onclick="cp(${JSON.stringify(s.line)},this)" title="點擊複製">${s.line}</div>
         </div>
       </div>`).join('')
+
+    // 陌生人留言建議
+    const strangerHtml=ps.strangerComment?`
+      <div style="background:#0f0c06;border:1px solid #2a2010;border-radius:8px;padding:10px 13px;margin-top:14px">
+        <div style="font-size:.7rem;color:#fbbf24;font-weight:700;margin-bottom:6px">🗣 陌生人底下留言策略</div>
+        <div style="font-size:.77rem;color:var(--text2);line-height:1.65;white-space:pre-line">${ps.strangerComment}</div>
+      </div>`:''
+
     return`<div class="card" style="border-color:var(--accent)30">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">
         <div>
           <div style="font-size:1rem;font-weight:700;color:var(--accent)">${pname}</div>
           <div style="font-size:.73rem;color:#60a5fa;margin-top:3px">→ ${si.label||''} · ${si.desc||''}</div>
         </div>
-        <button class="btn btn-xs btn-copy" onclick="cp(${JSON.stringify(si.url||'')},this)">複製連結</button>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span style="font-size:.68rem;color:var(--text3)">上工時段：<b style="color:var(--text2)">${ps.timeSlot||'—'}</b></span>
+          <button class="btn btn-xs btn-copy" onclick="cp(${JSON.stringify(si.url||'')},this)">複製連結</button>
+        </div>
       </div>
-      <div style="font-size:.68rem;color:var(--text3);margin-bottom:6px">點台詞可複製</div>
+      ${profileHtml}
+      <div style="font-size:.68rem;color:var(--text3);margin-bottom:6px">💬 今日情境台詞（點擊台詞可複製）</div>
+      <div style="font-size:.7rem;color:#fbbf24;margin-bottom:8px;font-style:italic">情境：${ps.context||''}</div>
       ${stepsHtml}
+      ${strangerHtml}
     </div>`
   }
 
-  // ── 今日 Threads 真人任務清單 ──
+  // ── 今日 Threads 真人任務（帶時間）──
   const todayTasks={}
   todayPersonas.forEach(pname=>{
     const ps=PERSONA_SCRIPTS[pname]; if(!ps) return
-    const addTask=(id,type,line)=>{
+    const addTask=(id,type,line,time)=>{
       if(!todayTasks[id]) todayTasks[id]=[]
-      todayTasks[id].push({type,persona:pname,line})
+      todayTasks[id].push({type,persona:pname,line,time})
     }
-    addTask(ps.opener.id,'🔥 開場',ps.opener.line)
-    ps.support.forEach(s=>addTask(s.id,'💬 支援',s.line))
-    ps.reactors.forEach(r=>addTask(r.id,'👥 反應',r.line))
+    addTask(ps.opener.id,'🔥 開場',ps.opener.line,ps.timeSlot)
+    ps.support.forEach(s=>addTask(s.id,'💬 支援',s.line,''))
+    ps.reactors.forEach(r=>addTask(r.id,'👥 反應',r.line,''))
   })
   const taskCardsHtml=Object.entries(todayTasks).map(([id,tasks])=>{
     const c=getCastById(id); if(!c) return''
     const rows=tasks.map(t=>`
       <div style="margin-top:8px;background:#0a0908;border-radius:6px;border-left:3px solid ${c.gc}55;padding:8px 10px">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
-          <span style="font-size:.65rem;color:${c.gc};font-weight:600">${t.type}</span>
-          <span style="font-size:.68rem;color:var(--text3)">配合 ${t.persona}</span>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap">
+          <span style="font-size:.65rem;color:${c.gc};font-weight:700">${t.type}</span>
+          <span style="font-size:.67rem;color:var(--text3)">配合 ${t.persona}</span>
+          ${t.time?`<span style="font-size:.65rem;color:var(--text3);background:#1a1008;padding:1px 6px;border-radius:10px">${t.time}</span>`:''}
         </div>
         <div style="font-size:.8rem;color:var(--text);line-height:1.5">${t.line}</div>
         <button class="btn btn-xs btn-copy" style="margin-top:6px" onclick="cp(${JSON.stringify(t.line)},this)">複製台詞</button>
@@ -2630,7 +2728,7 @@ function renderCast(){
     </div>`
   }).filter(Boolean).join('')
 
-  // ── 本週排班（週一→週日順序顯示）──
+  // ── 本週排班 ──
   const weekOrder=[1,2,3,4,5,6,0]
   const dayLabel={1:'週一',2:'週二',3:'週三',4:'週四',5:'週五',6:'週六',0:'週日'}
   const weekCardsHtml=weekOrder.map(day=>{
@@ -2640,12 +2738,16 @@ function renderCast(){
       <div style="font-size:.7rem;color:${isToday?'var(--accent)':'var(--text3)'};font-weight:${isToday?700:400};margin-bottom:6px">${dayLabel[day]}${isToday?' ◀':''}</div>
       ${ps.map((p,i)=>{
         const si=PERSONA_SITES[p]||{}
-        return`${i?'<div style="border-top:1px solid var(--border);margin:5px 0"></div>':''}<div style="font-size:.77rem;font-weight:600;color:var(--text)">${p}</div><div style="font-size:.64rem;color:#60a5fa;margin-top:1px">${si.label||''}</div>`
+        const psc=PERSONA_SCRIPTS[p]||{}
+        return`${i?'<div style="border-top:1px solid var(--border);margin:5px 0"></div>':''}
+          <div style="font-size:.77rem;font-weight:600;color:var(--text)">${p}</div>
+          <div style="font-size:.63rem;color:#60a5fa">${si.label||''}</div>
+          <div style="font-size:.62rem;color:var(--text3)">${psc.timeSlot||''}</div>`
       }).join('')}
     </div>`
   }).join('')
 
-  // ── 角色關係（折疊在下方）──
+  // ── 角色關係（折疊）──
   const groups=['生活圈','話題圈','YS主帳','獨立真人']
   const groupColors={'生活圈':'#4fc3f7','話題圈':'#ffd43b','YS主帳':'#f97316','獨立真人':'#a78bfa'}
   const relHtml=groups.map(g=>{
@@ -2673,9 +2775,12 @@ function renderCast(){
   }).join('')
 
   document.getElementById('cast-page').innerHTML=`
+    <!-- 世足時間線 Banner -->
+    <div style="background:#1a1008;border:1px solid #3a2010;border-radius:10px;padding:12px 18px;margin-bottom:18px;font-size:.82rem;color:var(--text2)">${wcBanner}</div>
+
     <!-- 今日出場 -->
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <h2 style="font-size:1rem;font-weight:700">${DAY_NAMES[DOW]}出場陣容</h2>
+      <h2 style="font-size:1rem;font-weight:700">${DAY_NAMES[DOW]} 出場陣容</h2>
       ${todayPersonas.map(p=>`<span style="background:#1a0c04;border:1px solid var(--accent)50;border-radius:20px;padding:3px 12px;font-size:.8rem;color:var(--accent)">${p}</span>`).join('')}
     </div>
     <div class="g2" style="margin-bottom:20px">${todayPersonas.map(buildScriptCard).join('')}</div>
@@ -2692,11 +2797,11 @@ function renderCast(){
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px">${weekCardsHtml}</div>
     </div>
 
-    <!-- 角色關係地圖 -->
-    <div style="cursor:pointer;margin-bottom:10px" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
-      <h3 style="font-size:.9rem;font-weight:600;color:var(--text3)">🎭 角色關係地圖 <span style="font-size:.75rem">（點擊展開/收合）</span></h3>
+    <!-- 角色關係地圖（折疊）-->
+    <div style="cursor:pointer;margin-bottom:10px;padding:8px 12px;background:var(--g1);border:1px solid var(--border);border-radius:8px" onclick="const n=this.nextElementSibling;n.style.display=n.style.display==='none'?'block':'none'">
+      <span style="font-size:.88rem;font-weight:600;color:var(--text3)">🎭 角色關係地圖 ▾（點擊展開）</span>
     </div>
-    <div style="display:none"><div class="g2">${relHtml}</div></div>
+    <div style="display:none;margin-bottom:20px"><div class="g2">${relHtml}</div></div>
   `
 }
 
