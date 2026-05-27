@@ -188,6 +188,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'threads')">📱 Threads</div>
   <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
   <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口</div>
+  <div class="nav-tab" onclick="nav(this,'cast')">🎬 劇本</div>
 </nav>
 
 <div id="toast"></div>
@@ -388,6 +389,17 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
   <!-- table -->
   <div id="lk-table" style="overflow-x:auto"></div>
+</div>
+
+<!-- ===== PAGE: 劇本 ===== -->
+<div id="pg-cast" class="page">
+  <div class="fb" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">🎬 今日劇本</h2>
+      <p class="tm" style="margin-top:3px">每日互動分工 · 角色關係 · 出場安排</p>
+    </div>
+  </div>
+  <div id="cast-page"></div>
 </div>
 
 <!-- modal: 新增/編輯短連結 -->
@@ -870,6 +882,103 @@ async function notifyMikeNewScript(s){
   await sendToMike(text)
 }
 
+// ===== CAST & RELATIONSHIP DATA =====
+const CAST=[
+  // 生活圈
+  {id:'miya',name:'Miya',followers:393,visible:true,group:'生活圈',gc:'#4fc3f7',role:'橋接核心',knows:['zahra','lanlin','axiang','bs','bam'],behavior:'最活躍橋接者，自然帶出話題'},
+  {id:'zahra',name:'zahra',followers:71,visible:true,group:'生活圈',gc:'#4fc3f7',role:'回應者',knows:['miya','lanlin'],behavior:'偶爾回應Miya，增加真實感'},
+  {id:'lanlin',name:'lan Lin',followers:68,visible:true,group:'生活圈',gc:'#4fc3f7',role:'潛水者',knows:['miya','zahra'],behavior:'安靜型，偶爾按讚短留言'},
+  {id:'axiang',name:'阿象',followers:58,visible:true,group:'生活圈',gc:'#4fc3f7',role:'粉絲型',knows:['miya'],behavior:'追蹤Miya，像普通粉絲插入'},
+  {id:'ni',name:'倪',followers:57,visible:false,group:'生活圈',gc:'#4fc3f7',role:'路人',knows:[],behavior:'偶爾在熱門串留一句話'},
+  // 話題圈
+  {id:'bs',name:'BS',followers:183,visible:true,group:'話題圈',gc:'#ffd43b',role:'引燃者',knows:['miya','jack'],behavior:'主動開話題串，引導討論方向'},
+  {id:'jack',name:'Jack是個柴迷',followers:76,visible:false,group:'話題圈',gc:'#ffd43b',role:'方向引導',knows:['bs'],behavior:'只在BS的串或相關話題出現'},
+  // YS主帳圈
+  {id:'ysig',name:'YS主IG',followers:12,visible:true,group:'YS主帳',gc:'#f97316',role:'品牌帳',knows:[],behavior:'品牌帳，放大聲量'},
+  {id:'bam',name:'Bam班',followers:122,visible:true,group:'YS主帳',gc:'#f97316',role:'對外橋接',knows:['miya','luna','steven','alice','ysig'],behavior:'對外像普通球迷，YS圈唯一對外窗口'},
+  {id:'luna',name:'Luna',followers:106,visible:false,group:'YS主帳',gc:'#f97316',role:'內部',knows:['bam','steven','alice'],behavior:'不公開，只在YS圈互動'},
+  {id:'steven',name:'Steven.C',followers:33,visible:false,group:'YS主帳',gc:'#f97316',role:'內部',knows:['bam','luna','alice'],behavior:'偶爾幫公開帖按讚'},
+  {id:'alice',name:'愛麗絲',followers:14,visible:false,group:'YS主帳',gc:'#f97316',role:'內部',knows:['bam','luna','steven'],behavior:'安靜潛水，罕見留言'},
+  // 獨立真人
+  {id:'anne',name:'Anne',followers:58,visible:true,group:'獨立真人',gc:'#a78bfa',role:'路人',knows:['jason'],behavior:'偶爾在熱門串出現'},
+  {id:'jason',name:'Jason Chen',followers:52,visible:true,group:'獨立真人',gc:'#a78bfa',role:'路人',knows:['anne','linjy'],behavior:'偶爾在體育話題留言'},
+  {id:'linjy',name:'林家益',followers:44,visible:false,group:'獨立真人',gc:'#a78bfa',role:'路人',knows:['jason'],behavior:'幾乎只按讚'},
+  {id:'mien',name:'米恩',followers:35,visible:false,group:'獨立真人',gc:'#a78bfa',role:'路人',knows:[],behavior:'偶爾說一句感想'},
+  {id:'jakusiba',name:'jakusiba',followers:12,visible:true,group:'獨立真人',gc:'#a78bfa',role:'路人',knows:[],behavior:'增加真實感的路人'},
+]
+
+// 世足角色專責導流網站
+const PERSONA_SITES={
+  '阿奇':        {site:'e4',label:'ys89.games',url:'https://ys89.games/live-104',desc:'賽程・直播・賠率'},
+  'kk':          {site:'e8',label:'fifa-worldcups.tw',url:'https://fifa-worldcups.tw',desc:'純資訊站・AEO'},
+  '蟹蟹世足觀測站':{site:'e7',label:'ys89.me',url:'https://ys89.me/live-104',desc:'分組分析・球隊球星'},
+  '世足大財神':   {site:'e6',label:'ys89.biz',url:'https://ys89.biz/live-104',desc:'投注攻略教學'},
+  '強棒大叔':     {site:'e5',label:'ys89.info',url:'https://ys89.info/live-104',desc:'台灣觀賽直播攻略'},
+  '世足排雷週記': {site:'e5',label:'ys89.info',url:'https://ys89.info/live-104',desc:'台灣觀賽直播攻略'},
+}
+
+// 每個入口的每日劇本安排
+const DAILY_SCRIPTS={
+  e3:{persona:null,openerIds:['bs','bam'],supportIds:['miya','jack'],reactorIds:['zahra','axiang'],
+    script:[
+      {who:'BS',act:'開場'},
+      {who:'Miya',act:'回覆'},
+      {who:'Bam班',act:'加入'},
+      {who:'世足角色各自發文',act:'導入站'},
+    ],note:'品牌主站日，全員簡短出現建立存在感'},
+  e4:{persona:'阿奇',openerIds:['bs'],supportIds:['bam','miya'],reactorIds:['axiang','zahra'],
+    script:[
+      {who:'BS',act:'發「今晚哪場值得看？」'},
+      {who:'Miya',act:'回覆猜測'},
+      {who:'Bam班',act:'補充賽程疑問'},
+      {who:'阿奇',act:'出現 → 提供賽程賠率 → ys89.games'},
+    ],note:'阿奇登場，陌生人在話題串自然現身'},
+  e5:{persona:'強棒大叔',openerIds:['miya'],supportIds:['bam','zahra'],reactorIds:['axiang','anne'],
+    script:[
+      {who:'Miya',act:'發「找不到直播好煩😭」'},
+      {who:'zahra',act:'回覆「我也是！」'},
+      {who:'Bam班',act:'說自己用電視盒畫質差'},
+      {who:'強棒大叔',act:'出現 → 提供台灣直播攻略 → ys89.info'},
+    ],note:'生活痛點引出達人現身，最自然的轉換'},
+  e6:{persona:'世足大財神',openerIds:['jack'],supportIds:['bs','bam'],reactorIds:['miya','jason'],
+    script:[
+      {who:'Jack是個柴迷',act:'開「讓分概念我怎麼老猜錯方向」'},
+      {who:'BS',act:'說「我也搞不懂讓分」'},
+      {who:'Bam班',act:'說「求圖解！」'},
+      {who:'世足大財神',act:'出現 → 投注攻略教學 → ys89.biz'},
+    ],note:'Jack+BS製造學習需求，大財神以達人身份解答'},
+  e7:{persona:'蟹蟹世足觀測站',openerIds:['bs'],supportIds:['miya','bam'],reactorIds:['zahra','axiang'],
+    script:[
+      {who:'BS',act:'發「B組局勢誰能解釋一下？」'},
+      {who:'Miya',act:'回覆「我也完全看不懂！」'},
+      {who:'Bam班',act:'說「這組太亂了」'},
+      {who:'蟹蟹世足觀測站',act:'出現 → 分組深度分析 → ys89.me'},
+    ],note:'困惑引出觀測站，分析型角色自然登場'},
+  e8:{persona:'kk',openerIds:['miya'],supportIds:['zahra','bam'],reactorIds:['lanlin','anne'],
+    script:[
+      {who:'Miya',act:'發「週末有球看就是爽🙌」'},
+      {who:'zahra',act:'回覆「今晚幾點？」'},
+      {who:'Bam班',act:'回覆「我都準備好了」'},
+      {who:'kk',act:'插入 → 懶人包 → fifa-worldcups.tw'},
+    ],note:'週末輕鬆氛圍，kk以碎嘴風格帶出資訊站'},
+  e2:{persona:null,openerIds:['bam'],supportIds:['miya','bs'],reactorIds:['zahra','luna'],
+    script:[
+      {who:'Bam班',act:'在Threads分享YS IG有趣內容'},
+      {who:'Miya',act:'按讚＋轉推'},
+      {who:'BS',act:'評論'},
+      {who:'YS主IG',act:'回覆互動'},
+    ],note:'YS IG聲量日，主要放大觸及'},
+  e1:{persona:null,openerIds:['bs','bam'],supportIds:['miya','jack'],reactorIds:['jason','anne'],
+    script:[
+      {who:'BS',act:'發本週看球總結'},
+      {who:'Bam班',act:'提到YS論壇有活動'},
+      {who:'Jack是個柴迷',act:'補充優惠資訊'},
+      {who:'Miya',act:'說「去看看！」'},
+    ],note:'週收尾，引導到論壇優惠頁轉換'},
+}
+
+function getCastById(id){return CAST.find(c=>c.id===id)}
+
 // ===== DEFAULT DATA =====
 const DEFAULT_PERSONAS=[
   {id:'p1',name:'Mark',followers:576,dir:'金流/USDT',direction:'出金/USDT/流水',
@@ -1022,7 +1131,7 @@ function nav(el,page){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
-  const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threads:renderThreads,entrances:renderEntrances,links:renderLinks}
+  const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threads:renderThreads,entrances:renderEntrances,links:renderLinks,cast:renderCast}
   renders[page]&&renders[page]()
 }
 function openModal(id){document.getElementById(id).classList.add('show')}
@@ -2365,6 +2474,131 @@ function delLink(id){
 }
 
 function openNamingRules(){openModal('modal-naming-rules')}
+
+// ===== CAST / 劇本 =====
+function renderCast(){
+  const DOW=new Date().getDay()
+  const WEEK_KEYS=['e7','e1','e2','e3','e4','e5','e6']
+  const DAY_NAMES=['週日','週一','週二','週三','週四','週五','週六']
+  const todayKey=WEEK_KEYS[DOW]
+  const todayScript=DAILY_SCRIPTS[todayKey]||{}
+
+  function castChip(id,badge=''){
+    const c=getCastById(id)
+    if(!c)return`<span style="background:#1a1008;padding:3px 10px;border-radius:20px;font-size:.78rem;color:var(--text3)">${id}</span>`
+    return`<span style="background:#1a1008;padding:3px 10px;border-radius:20px;font-size:.78rem;color:${c.gc};border:1px solid ${c.gc}40">${c.name}${badge}</span>`
+  }
+
+  const todayPersona=todayScript.persona||null
+  const siteInfo=todayPersona?PERSONA_SITES[todayPersona]:null
+
+  const todayPersonaBlock=todayPersona
+    ?`<div style="background:#1a0c04;border:1px solid var(--accent)40;border-radius:8px;padding:12px 16px;margin-bottom:12px">
+        <div style="font-size:.72rem;color:var(--text3);margin-bottom:3px">今日主角</div>
+        <div style="font-size:1.05rem;font-weight:700;color:var(--accent)">${todayPersona}</div>
+        ${siteInfo?`<div style="font-size:.77rem;color:var(--text3);margin-top:3px">導流 → <span style="color:#60a5fa">${siteInfo.label}</span> · ${siteInfo.desc}</div>`:''}
+      </div>`
+    :`<div style="background:#1a1008;border:1px solid var(--border2);border-radius:8px;padding:12px 16px;margin-bottom:12px">
+        <div style="font-size:.72rem;color:var(--text3);margin-bottom:3px">今日主題</div>
+        <div style="font-size:.88rem;font-weight:600;color:var(--text2)">${todayScript.note||''}</div>
+      </div>`
+
+  const scriptSteps=(todayScript.script||[]).map((s,i)=>`
+    <div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;${i<(todayScript.script||[]).length-1?'border-bottom:1px solid var(--border)':''}">
+      <div style="min-width:20px;height:20px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px">${i+1}</div>
+      <div>
+        <div style="font-weight:600;font-size:.84rem;color:var(--text)">${s.who}</div>
+        <div style="font-size:.8rem;color:var(--text2);margin-top:2px">${s.act}</div>
+      </div>
+    </div>`).join('')
+
+  const openerChips=(todayScript.openerIds||[]).map(id=>castChip(id,' 🔥')).join(' ')
+  const supportChips=(todayScript.supportIds||[]).map(id=>castChip(id)).join(' ')
+  const reactorChips=(todayScript.reactorIds||[]).map(id=>castChip(id)).join(' ')
+
+  const weekCards=DAY_NAMES.map((dayName,i)=>{
+    const key=WEEK_KEYS[i]
+    const ds=DAILY_SCRIPTS[key]||{}
+    const isToday=i===DOW
+    const p=ds.persona
+    const si=p?PERSONA_SITES[p]:null
+    return`<div style="background:${isToday?'#1c1008':'var(--g1)'};border:1px solid ${isToday?'var(--accent)':'var(--border)'};border-radius:8px;padding:10px 12px;${isToday?'box-shadow:0 0 10px rgba(212,84,42,.18)':''}">
+      <div style="font-size:.7rem;color:${isToday?'var(--accent)':'var(--text3)'};font-weight:${isToday?'700':'400'};margin-bottom:4px">${dayName}${isToday?' ◀':''}
+      </div>
+      ${p
+        ?`<div style="font-weight:600;font-size:.8rem;color:var(--text)">${p}</div>
+           ${si?`<div style="font-size:.68rem;color:#60a5fa;margin-top:2px">${si.label}</div>`:''}`
+        :`<div style="font-size:.74rem;color:var(--text3);line-height:1.3">${(ds.note||key).slice(0,14)}</div>`
+      }
+    </div>`
+  }).join('')
+
+  const groups=['生活圈','話題圈','YS主帳','獨立真人']
+  const groupColors={'生活圈':'#4fc3f7','話題圈':'#ffd43b','YS主帳':'#f97316','獨立真人':'#a78bfa'}
+  const castGroupCards=groups.map(g=>{
+    const members=CAST.filter(c=>c.group===g)
+    const rows=members.map(c=>{
+      const knowsNames=c.knows.map(kid=>getCastById(kid)?.name||kid).join('、')
+      return`<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start">
+        <div style="min-width:34px">
+          <div style="width:34px;height:34px;border-radius:50%;background:#1a1008;border:2px solid ${c.gc}55;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:${c.gc}">${c.name.slice(0,2)}</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:2px">
+            <span style="font-weight:600;font-size:.84rem">${c.name}</span>
+            <span style="font-size:.68rem;color:var(--text3)">${c.followers}粉</span>
+            <span style="background:#1a1008;padding:1px 6px;border-radius:20px;font-size:.67rem;color:${c.gc}">${c.role}</span>
+            <span style="font-size:.67rem;color:${c.visible?'#4ade80':'var(--text3)'}">●${c.visible?'公開':'私密'}</span>
+          </div>
+          <div style="font-size:.76rem;color:var(--text2)">${c.behavior}</div>
+          <div style="font-size:.7rem;color:var(--text3);margin-top:2px">${knowsNames?'認識：'+knowsNames:'（不認識其他人）'}</div>
+        </div>
+      </div>`
+    }).join('')
+    return`<div class="card" style="margin-bottom:14px">
+      <div style="font-size:.9rem;font-weight:700;color:${groupColors[g]};border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:4px">${g} <span style="font-weight:400;font-size:.76rem;color:var(--text3)">${members.length}人</span></div>
+      ${rows}
+    </div>`
+  }).join('')
+
+  document.getElementById('cast-page').innerHTML=`
+    <div class="g2" style="margin-bottom:18px">
+      <div>
+        <div class="card" style="border-color:var(--accent)40">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="card-title" style="margin-bottom:0">📅 ${DAY_NAMES[DOW]} 劇本</div>
+            <span class="badge b-warn" style="font-size:.68rem">${(todayScript.note||'').slice(0,14)}</span>
+          </div>
+          ${todayPersonaBlock}
+          <div style="margin-bottom:10px">
+            <div style="font-size:.7rem;color:var(--text3);margin-bottom:5px">🔥 開場帳號</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap">${openerChips||'—'}</div>
+          </div>
+          <div style="margin-bottom:10px">
+            <div style="font-size:.7rem;color:var(--text3);margin-bottom:5px">💬 支援帳號</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap">${supportChips||'—'}</div>
+          </div>
+          <div>
+            <div style="font-size:.7rem;color:var(--text3);margin-bottom:5px">👥 反應帳號</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap">${reactorChips||'—'}</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:10px">🎬 步驟腳本</div>
+          ${scriptSteps}
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-title" style="margin-bottom:12px">📆 本週排班</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px">${weekCards}</div>
+    </div>
+    <h3 style="font-size:.92rem;font-weight:600;color:var(--text2);margin-bottom:12px">🎭 角色關係地圖</h3>
+    <div class="g2">${castGroupCards}</div>
+  `
+}
 
 // ===== INIT =====
 initData().then(()=>renderPersonas())
