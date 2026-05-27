@@ -979,6 +979,81 @@ const DAILY_SCRIPTS={
 
 function getCastById(id){return CAST.find(c=>c.id===id)}
 
+// 5個世足角色每日排班：每天2位，7天輪替
+const PERSONA_SCHEDULE={
+  1:['阿奇','世足大財神'],
+  2:['kk','蟹蟹世足觀測站'],
+  3:['世足排雷週記','阿奇'],
+  4:['世足大財神','kk'],
+  5:['蟹蟹世足觀測站','世足排雷週記'],
+  6:['阿奇','kk'],
+  0:['蟹蟹世足觀測站','世足大財神'],
+}
+
+// 每個世足角色的完整台詞腳本
+const PERSONA_SCRIPTS={
+  '阿奇':{
+    opener:{id:'bs',line:'今晚賽程超多，不知道該看哪場好😵‍💫'},
+    support:[
+      {id:'bam',line:'對啊，然後賠率差超多，有人整理嗎？'},
+      {id:'miya',line:'我也想知道！今晚到底哪幾場值得看'},
+    ],
+    persona_line:'賽程、直播、賠率我都整理好了，今晚推薦這幾場 👉 ys89.games',
+    reactors:[
+      {id:'zahra',line:'謝謝！終於有人整理了🙏'},
+      {id:'axiang',line:'馬上去看！'},
+    ],
+  },
+  'kk':{
+    opener:{id:'miya',line:'想找個世足懶人包，分組、積分、球星資料全部都有那種📊'},
+    support:[
+      {id:'zahra',line:'對啊！每次都要分開查超麻煩'},
+      {id:'bam',line:'球隊資料跟歷史成績也要，誰有推薦？'},
+    ],
+    persona_line:'整合型資訊站，分組積分賠率球星全部一頁搞定 👉 fifa-worldcups.tw',
+    reactors:[
+      {id:'lanlin',line:'收藏！👍'},
+      {id:'anne',line:'這個設計超清楚'},
+    ],
+  },
+  '蟹蟹世足觀測站':{
+    opener:{id:'bs',line:'B組也太亂了吧，葡萄牙、摩洛哥、法國這組誰能解釋？🤯'},
+    support:[
+      {id:'miya',line:'完全看不懂！晉級條件也太複雜'},
+      {id:'bam',line:'這組每場都是關鍵賽，根本沒冷場'},
+    ],
+    persona_line:'這組我整理分析過了，分組積分跟各隊關鍵數據都在這 👉 ys89.me',
+    reactors:[
+      {id:'zahra',line:'謝謝整理！這樣清楚多了'},
+      {id:'axiang',line:'原來是這樣，學到了'},
+    ],
+  },
+  '世足大財神':{
+    opener:{id:'jack',line:'讓分盤我怎麼老是猜反方向🤦，讓分0.5跟讓1球到底哪裡不一樣'},
+    support:[
+      {id:'bs',line:'我也搞不懂！每次看盤口都一頭霧水'},
+      {id:'bam',line:'求圖解！讓分原理有沒有人說清楚的'},
+    ],
+    persona_line:'讓分有幾個核心口訣，我整理了圖解攻略，看完馬上懂 👉 ys89.biz',
+    reactors:[
+      {id:'miya',line:'終於有人解釋清楚了！'},
+      {id:'jason',line:'這個解說比我看過的都清楚'},
+    ],
+  },
+  '世足排雷週記':{
+    opener:{id:'miya',line:'台灣要看世足直播好難找啊😭，電視沒轉播，手機app又一直lag'},
+    support:[
+      {id:'bam',line:'我也是！用免費的畫質超差'},
+      {id:'zahra',line:'剛好錯過關鍵進球，氣死'},
+    ],
+    persona_line:'台灣看直播攻略我都整理好了，免費＋穩定的管道都在這 👉 ys89.info',
+    reactors:[
+      {id:'axiang',line:'救命恩人！'},
+      {id:'anne',line:'幫我省了好多時間🙏'},
+    ],
+  },
+}
+
 // ===== DEFAULT DATA =====
 const DEFAULT_PERSONAS=[
   {id:'p1',name:'Mark',followers:576,dir:'金流/USDT',direction:'出金/USDT/流水',
@@ -2478,125 +2553,150 @@ function openNamingRules(){openModal('modal-naming-rules')}
 // ===== CAST / 劇本 =====
 function renderCast(){
   const DOW=new Date().getDay()
-  const WEEK_KEYS=['e7','e1','e2','e3','e4','e5','e6']
   const DAY_NAMES=['週日','週一','週二','週三','週四','週五','週六']
-  const todayKey=WEEK_KEYS[DOW]
-  const todayScript=DAILY_SCRIPTS[todayKey]||{}
+  const todayPersonas=PERSONA_SCHEDULE[DOW]||[]
 
-  function castChip(id,badge=''){
-    const c=getCastById(id)
-    if(!c)return`<span style="background:#1a1008;padding:3px 10px;border-radius:20px;font-size:.78rem;color:var(--text3)">${id}</span>`
-    return`<span style="background:#1a1008;padding:3px 10px;border-radius:20px;font-size:.78rem;color:${c.gc};border:1px solid ${c.gc}40">${c.name}${badge}</span>`
+  // ── 今日兩位世足角色完整腳本 ──
+  function buildScriptCard(pname){
+    const ps=PERSONA_SCRIPTS[pname]; if(!ps) return''
+    const si=PERSONA_SITES[pname]||{}
+    const steps=[]
+    const opener=getCastById(ps.opener.id)
+    steps.push({badge:'🔥 開場',who:opener?.name||ps.opener.id,gc:opener?.gc||'#ffd43b',line:ps.opener.line})
+    ps.support.forEach((s,i)=>{
+      const c=getCastById(s.id)
+      steps.push({badge:i===0?'💬 支援':'',who:c?.name||s.id,gc:c?.gc||'#4fc3f7',line:s.line})
+    })
+    steps.push({badge:'⭐ 主角',who:pname,gc:'#D4542A',line:ps.persona_line})
+    ps.reactors.forEach((r,i)=>{
+      const c=getCastById(r.id)
+      steps.push({badge:i===0?'👥 反應':'',who:c?.name||r.id,gc:c?.gc||'#a78bfa',line:r.line})
+    })
+    const stepsHtml=steps.map((s,i)=>`
+      <div style="display:grid;grid-template-columns:60px 1fr;gap:8px;padding:9px 0;${i<steps.length-1?'border-bottom:1px solid var(--border)':''}">
+        <div style="text-align:right;padding-top:2px">
+          ${s.badge?`<span style="font-size:.63rem;color:${s.gc};white-space:nowrap;font-weight:600">${s.badge}</span>`:''}
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:${s.gc};margin-bottom:4px">${s.who}</div>
+          <div style="font-size:.8rem;color:var(--text);line-height:1.55;background:#0a0908;border-left:3px solid ${s.gc}60;padding:6px 10px;border-radius:0 6px 6px 0;cursor:pointer" onclick="cp(${JSON.stringify(s.line)},this)">${s.line}</div>
+        </div>
+      </div>`).join('')
+    return`<div class="card" style="border-color:var(--accent)30">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:1rem;font-weight:700;color:var(--accent)">${pname}</div>
+          <div style="font-size:.73rem;color:#60a5fa;margin-top:3px">→ ${si.label||''} · ${si.desc||''}</div>
+        </div>
+        <button class="btn btn-xs btn-copy" onclick="cp(${JSON.stringify(si.url||'')},this)">複製連結</button>
+      </div>
+      <div style="font-size:.68rem;color:var(--text3);margin-bottom:6px">點台詞可複製</div>
+      ${stepsHtml}
+    </div>`
   }
 
-  const todayPersona=todayScript.persona||null
-  const siteInfo=todayPersona?PERSONA_SITES[todayPersona]:null
-
-  const todayPersonaBlock=todayPersona
-    ?`<div style="background:#1a0c04;border:1px solid var(--accent)40;border-radius:8px;padding:12px 16px;margin-bottom:12px">
-        <div style="font-size:.72rem;color:var(--text3);margin-bottom:3px">今日主角</div>
-        <div style="font-size:1.05rem;font-weight:700;color:var(--accent)">${todayPersona}</div>
-        ${siteInfo?`<div style="font-size:.77rem;color:var(--text3);margin-top:3px">導流 → <span style="color:#60a5fa">${siteInfo.label}</span> · ${siteInfo.desc}</div>`:''}
-      </div>`
-    :`<div style="background:#1a1008;border:1px solid var(--border2);border-radius:8px;padding:12px 16px;margin-bottom:12px">
-        <div style="font-size:.72rem;color:var(--text3);margin-bottom:3px">今日主題</div>
-        <div style="font-size:.88rem;font-weight:600;color:var(--text2)">${todayScript.note||''}</div>
-      </div>`
-
-  const scriptSteps=(todayScript.script||[]).map((s,i)=>`
-    <div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;${i<(todayScript.script||[]).length-1?'border-bottom:1px solid var(--border)':''}">
-      <div style="min-width:20px;height:20px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px">${i+1}</div>
-      <div>
-        <div style="font-weight:600;font-size:.84rem;color:var(--text)">${s.who}</div>
-        <div style="font-size:.8rem;color:var(--text2);margin-top:2px">${s.act}</div>
+  // ── 今日 Threads 真人任務清單 ──
+  const todayTasks={}
+  todayPersonas.forEach(pname=>{
+    const ps=PERSONA_SCRIPTS[pname]; if(!ps) return
+    const addTask=(id,type,line)=>{
+      if(!todayTasks[id]) todayTasks[id]=[]
+      todayTasks[id].push({type,persona:pname,line})
+    }
+    addTask(ps.opener.id,'🔥 開場',ps.opener.line)
+    ps.support.forEach(s=>addTask(s.id,'💬 支援',s.line))
+    ps.reactors.forEach(r=>addTask(r.id,'👥 反應',r.line))
+  })
+  const taskCardsHtml=Object.entries(todayTasks).map(([id,tasks])=>{
+    const c=getCastById(id); if(!c) return''
+    const rows=tasks.map(t=>`
+      <div style="margin-top:8px;background:#0a0908;border-radius:6px;border-left:3px solid ${c.gc}55;padding:8px 10px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+          <span style="font-size:.65rem;color:${c.gc};font-weight:600">${t.type}</span>
+          <span style="font-size:.68rem;color:var(--text3)">配合 ${t.persona}</span>
+        </div>
+        <div style="font-size:.8rem;color:var(--text);line-height:1.5">${t.line}</div>
+        <button class="btn btn-xs btn-copy" style="margin-top:6px" onclick="cp(${JSON.stringify(t.line)},this)">複製台詞</button>
+      </div>`).join('')
+    return`<div style="background:var(--g1);border:1px solid var(--border);border-radius:8px;padding:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:30px;height:30px;border-radius:50%;background:#1a1008;border:2px solid ${c.gc}55;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:${c.gc};flex-shrink:0">${c.name.slice(0,2)}</div>
+        <div>
+          <div style="font-weight:600;font-size:.86rem">${c.name}</div>
+          <div style="font-size:.67rem;color:var(--text3)">${c.group} · ${c.visible?'公開':'私密'}</div>
+        </div>
       </div>
-    </div>`).join('')
+      ${rows}
+    </div>`
+  }).filter(Boolean).join('')
 
-  const openerChips=(todayScript.openerIds||[]).map(id=>castChip(id,' 🔥')).join(' ')
-  const supportChips=(todayScript.supportIds||[]).map(id=>castChip(id)).join(' ')
-  const reactorChips=(todayScript.reactorIds||[]).map(id=>castChip(id)).join(' ')
-
-  const weekCards=DAY_NAMES.map((dayName,i)=>{
-    const key=WEEK_KEYS[i]
-    const ds=DAILY_SCRIPTS[key]||{}
-    const isToday=i===DOW
-    const p=ds.persona
-    const si=p?PERSONA_SITES[p]:null
-    return`<div style="background:${isToday?'#1c1008':'var(--g1)'};border:1px solid ${isToday?'var(--accent)':'var(--border)'};border-radius:8px;padding:10px 12px;${isToday?'box-shadow:0 0 10px rgba(212,84,42,.18)':''}">
-      <div style="font-size:.7rem;color:${isToday?'var(--accent)':'var(--text3)'};font-weight:${isToday?'700':'400'};margin-bottom:4px">${dayName}${isToday?' ◀':''}
-      </div>
-      ${p
-        ?`<div style="font-weight:600;font-size:.8rem;color:var(--text)">${p}</div>
-           ${si?`<div style="font-size:.68rem;color:#60a5fa;margin-top:2px">${si.label}</div>`:''}`
-        :`<div style="font-size:.74rem;color:var(--text3);line-height:1.3">${(ds.note||key).slice(0,14)}</div>`
-      }
+  // ── 本週排班（週一→週日順序顯示）──
+  const weekOrder=[1,2,3,4,5,6,0]
+  const dayLabel={1:'週一',2:'週二',3:'週三',4:'週四',5:'週五',6:'週六',0:'週日'}
+  const weekCardsHtml=weekOrder.map(day=>{
+    const isToday=DOW===day
+    const ps=PERSONA_SCHEDULE[day]||[]
+    return`<div style="background:${isToday?'#1c1008':'var(--g1)'};border:1px solid ${isToday?'var(--accent)':'var(--border)'};border-radius:8px;padding:10px 12px;${isToday?'box-shadow:0 0 12px rgba(212,84,42,.2)':''}">
+      <div style="font-size:.7rem;color:${isToday?'var(--accent)':'var(--text3)'};font-weight:${isToday?700:400};margin-bottom:6px">${dayLabel[day]}${isToday?' ◀':''}</div>
+      ${ps.map((p,i)=>{
+        const si=PERSONA_SITES[p]||{}
+        return`${i?'<div style="border-top:1px solid var(--border);margin:5px 0"></div>':''}<div style="font-size:.77rem;font-weight:600;color:var(--text)">${p}</div><div style="font-size:.64rem;color:#60a5fa;margin-top:1px">${si.label||''}</div>`
+      }).join('')}
     </div>`
   }).join('')
 
+  // ── 角色關係（折疊在下方）──
   const groups=['生活圈','話題圈','YS主帳','獨立真人']
   const groupColors={'生活圈':'#4fc3f7','話題圈':'#ffd43b','YS主帳':'#f97316','獨立真人':'#a78bfa'}
-  const castGroupCards=groups.map(g=>{
+  const relHtml=groups.map(g=>{
     const members=CAST.filter(c=>c.group===g)
     const rows=members.map(c=>{
-      const knowsNames=c.knows.map(kid=>getCastById(kid)?.name||kid).join('、')
-      return`<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start">
-        <div style="min-width:34px">
-          <div style="width:34px;height:34px;border-radius:50%;background:#1a1008;border:2px solid ${c.gc}55;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:${c.gc}">${c.name.slice(0,2)}</div>
-        </div>
+      const knows=c.knows.map(kid=>getCastById(kid)?.name||kid).join('、')
+      return`<div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);align-items:flex-start">
+        <div style="width:30px;height:30px;border-radius:50%;background:#1a1008;border:2px solid ${c.gc}50;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:${c.gc};flex-shrink:0">${c.name.slice(0,2)}</div>
         <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:2px">
-            <span style="font-weight:600;font-size:.84rem">${c.name}</span>
-            <span style="font-size:.68rem;color:var(--text3)">${c.followers}粉</span>
-            <span style="background:#1a1008;padding:1px 6px;border-radius:20px;font-size:.67rem;color:${c.gc}">${c.role}</span>
-            <span style="font-size:.67rem;color:${c.visible?'#4ade80':'var(--text3)'}">●${c.visible?'公開':'私密'}</span>
+          <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+            <span style="font-weight:600;font-size:.82rem">${c.name}</span>
+            <span style="font-size:.66rem;color:var(--text3)">${c.followers}粉</span>
+            <span style="background:#1a1008;padding:1px 6px;border-radius:20px;font-size:.65rem;color:${c.gc}">${c.role}</span>
+            <span style="font-size:.65rem;color:${c.visible?'#4ade80':'var(--text3)'}">●${c.visible?'公開':'私密'}</span>
           </div>
-          <div style="font-size:.76rem;color:var(--text2)">${c.behavior}</div>
-          <div style="font-size:.7rem;color:var(--text3);margin-top:2px">${knowsNames?'認識：'+knowsNames:'（不認識其他人）'}</div>
+          <div style="font-size:.74rem;color:var(--text2);margin-top:2px">${c.behavior}</div>
+          <div style="font-size:.68rem;color:var(--text3);margin-top:1px">${knows?'認識：'+knows:'（路人，不認識其他人）'}</div>
         </div>
       </div>`
     }).join('')
-    return`<div class="card" style="margin-bottom:14px">
-      <div style="font-size:.9rem;font-weight:700;color:${groupColors[g]};border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:4px">${g} <span style="font-weight:400;font-size:.76rem;color:var(--text3)">${members.length}人</span></div>
+    return`<div class="card" style="margin-bottom:12px">
+      <div style="font-size:.88rem;font-weight:700;color:${groupColors[g]};border-bottom:1px solid var(--border);padding-bottom:7px;margin-bottom:4px">${g} <span style="font-weight:400;font-size:.74rem;color:var(--text3)">${members.length}人</span></div>
       ${rows}
     </div>`
   }).join('')
 
   document.getElementById('cast-page').innerHTML=`
-    <div class="g2" style="margin-bottom:18px">
-      <div>
-        <div class="card" style="border-color:var(--accent)40">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <div class="card-title" style="margin-bottom:0">📅 ${DAY_NAMES[DOW]} 劇本</div>
-            <span class="badge b-warn" style="font-size:.68rem">${(todayScript.note||'').slice(0,14)}</span>
-          </div>
-          ${todayPersonaBlock}
-          <div style="margin-bottom:10px">
-            <div style="font-size:.7rem;color:var(--text3);margin-bottom:5px">🔥 開場帳號</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap">${openerChips||'—'}</div>
-          </div>
-          <div style="margin-bottom:10px">
-            <div style="font-size:.7rem;color:var(--text3);margin-bottom:5px">💬 支援帳號</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap">${supportChips||'—'}</div>
-          </div>
-          <div>
-            <div style="font-size:.7rem;color:var(--text3);margin-bottom:5px">👥 反應帳號</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap">${reactorChips||'—'}</div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="card">
-          <div class="card-title" style="margin-bottom:10px">🎬 步驟腳本</div>
-          ${scriptSteps}
-        </div>
-      </div>
+    <!-- 今日出場 -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <h2 style="font-size:1rem;font-weight:700">${DAY_NAMES[DOW]}出場陣容</h2>
+      ${todayPersonas.map(p=>`<span style="background:#1a0c04;border:1px solid var(--accent)50;border-radius:20px;padding:3px 12px;font-size:.8rem;color:var(--accent)">${p}</span>`).join('')}
     </div>
-    <div class="card" style="margin-bottom:18px">
-      <div class="card-title" style="margin-bottom:12px">📆 本週排班</div>
-      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px">${weekCards}</div>
+    <div class="g2" style="margin-bottom:20px">${todayPersonas.map(buildScriptCard).join('')}</div>
+
+    <!-- Threads 真人任務 -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title" style="margin-bottom:14px">👥 今日 Threads 真人任務分配</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px">${taskCardsHtml}</div>
     </div>
-    <h3 style="font-size:.92rem;font-weight:600;color:var(--text2);margin-bottom:12px">🎭 角色關係地圖</h3>
-    <div class="g2">${castGroupCards}</div>
+
+    <!-- 本週排班 -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title" style="margin-bottom:12px">📆 本週世足角色排班（每天2位）</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px">${weekCardsHtml}</div>
+    </div>
+
+    <!-- 角色關係地圖 -->
+    <div style="cursor:pointer;margin-bottom:10px" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+      <h3 style="font-size:.9rem;font-weight:600;color:var(--text3)">🎭 角色關係地圖 <span style="font-size:.75rem">（點擊展開/收合）</span></h3>
+    </div>
+    <div style="display:none"><div class="g2">${relHtml}</div></div>
   `
 }
 
