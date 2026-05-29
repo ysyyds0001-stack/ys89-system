@@ -573,6 +573,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <div class="fg"><label>引用文章</label><select id="po-article"><option value="">選擇文章</option></select></div>
     </div>
     <div class="fg"><label>主題摘要</label><input id="po-topic" placeholder="例：USDT走勢分析"></div>
+    <div class="fg"><label>🔗 貼文連結（選填，發布後填入）</label><input id="po-posturl" type="url" placeholder="https://www.instagram.com/p/... 或 threads.net/@..."></div>
     <hr>
     <div class="tm" style="margin-bottom:10px">流量數據（發文後填入）</div>
     <div class="fr">
@@ -595,6 +596,10 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="modal" style="max-width:420px">
     <div class="mh"><div class="mt">更新發文數據</div><button class="mc" onclick="closeModal('modal-metrics')">✕</button></div>
     <input type="hidden" id="um-id">
+    <div class="fg" style="margin-bottom:12px">
+      <label>🔗 貼文連結（發布後填入，可直接跳轉查看）</label>
+      <input id="um-posturl" type="url" placeholder="https://www.instagram.com/p/... 或 threads.net/@...">
+    </div>
     <div style="margin-bottom:14px">
       <div style="font-size:.78rem;color:#8A7D74;margin-bottom:8px">已發布平台（點選切換）</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -609,6 +614,23 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="fb" style="margin-top:6px">
       <button class="btn btn-outline" onclick="closeModal('modal-metrics')">取消</button>
       <button class="btn btn-primary" onclick="updateMetrics()">更新</button>
+    </div>
+  </div>
+</div>
+
+<!-- 設定貼文連結 -->
+<div id="modal-set-posturl" class="overlay">
+  <div class="modal" style="max-width:400px">
+    <div class="mh"><div class="mt">🔗 設定貼文連結</div><button class="mc" onclick="closeModal('modal-set-posturl')">✕</button></div>
+    <input type="hidden" id="spu-id">
+    <div class="fg">
+      <label>已發布貼文的網址（IG / FB / Threads）</label>
+      <input id="spu-url" type="url" placeholder="https://www.instagram.com/p/...">
+    </div>
+    <div style="font-size:.72rem;color:var(--text3);margin-top:6px">填入後可在發文追蹤一鍵跳轉查看發布文案</div>
+    <div class="fb" style="margin-top:12px">
+      <button class="btn btn-outline" onclick="closeModal('modal-set-posturl')">取消</button>
+      <button class="btn btn-primary" onclick="savePostUrl()">儲存連結</button>
     </div>
   </div>
 </div>
@@ -633,6 +655,22 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <button class="btn btn-outline" onclick="closeModal('modal-add-article')">取消</button>
       <button class="btn btn-primary" onclick="saveArticle()">儲存文章</button>
     </div>
+  </div>
+</div>
+
+<!-- 更換腳本 -->
+<div id="modal-cast-update" class="overlay">
+  <div class="modal" style="max-width:920px;width:96vw;max-height:88vh;display:flex;flex-direction:column">
+    <div class="mh" style="flex-shrink:0">
+      <div>
+        <div class="mt">🔄 更換腳本主題</div>
+        <div id="cu-subtitle" class="tm" style="font-size:.75rem;margin-top:2px"></div>
+      </div>
+      <button class="mc" onclick="closeModal('modal-cast-update')">✕</button>
+    </div>
+    <div id="cu-context-bar" style="flex-shrink:0;font-size:.77rem;padding:8px 12px;background:#0d0b0a;border:1px solid var(--border2);border-radius:7px;margin-bottom:12px;color:var(--text2)"></div>
+    <div id="cu-threads-ref" style="flex-shrink:0;margin-bottom:10px"></div>
+    <div id="cu-scripts" style="overflow-y:auto;flex:1"></div>
   </div>
 </div>
 
@@ -979,7 +1017,365 @@ const DAILY_SCRIPTS={
 
 function getCastById(id){return CAST.find(c=>c.id===id)}
 
-// 5個世足角色每日排班：每天2位，7天輪替
+// ===== CAST_SCRIPTS_DB：每個世足角色的4種腳本變體 =====
+const CAST_SCRIPTS_DB={
+  '阿奇':[
+    {
+      id:'aqi-v1',
+      tag:'🔥 熱門',
+      topic:'歐洲資金賠率走勢',
+      angle:'歐洲盤口大量資金湧入，解析哪隊賠率正在被壓低',
+      context:'世足開賽前兩週，歐洲博彩公司盤面出現明顯資金方向，巴西與法國賠率齊跌',
+      opener:{id:'bs',line:'最近有沒有人在盯世足賠率？感覺巴西跟法國的盤面在動'},
+      support:[
+        {id:'bam',line:'對啊我上週看差蠻多，但看不太懂在動什麼'},
+        {id:'miya',line:'賠率這個我完全不懂，有沒有比較好懂的說明'},
+      ],
+      reactors:[
+        {id:'zahra',line:'阿奇真的太有料了👏'},
+        {id:'axiang',line:'馬上存書籤！'},
+      ],
+      strangerComment:'建議台詞：「賠率這邊有在動，最近歐洲盤資金方向蠻明顯的，有整理可以參考」\n目標串：#世足2026 #世足賠率 #運彩分析 相關討論',
+    },
+    {
+      id:'aqi-v2',
+      tag:'💀 死亡組',
+      topic:'死亡之組賠率拆解',
+      angle:'史上最強死亡組形成，組內三隊賠率差距竟然不到0.3',
+      context:'世足48隊分組確定，E組被球迷稱為史上最強死亡之組，三強賠率幾乎並列',
+      opener:{id:'bs',line:'你們覺得這屆哪組是死亡之組？E組那三隊賠率幾乎一樣耶'},
+      support:[
+        {id:'bam',line:'對！我看賠率差距超小，誰出線都說不準'},
+        {id:'miya',line:'死亡組的話是不是三隊都有機會出線？還是一定有爆冷'},
+      ],
+      reactors:[
+        {id:'zahra',line:'這分析真的超細，我沒想到這個角度'},
+        {id:'jack',line:'阿奇的賠率解讀沒在怕🔥'},
+      ],
+      strangerComment:'建議台詞：「死亡組賠率有個有趣現象，三強幾乎並列代表市場也預測不到，有整理詳細版」\n目標串：#世足分組 #世足死亡組 #世足2026分組 相關討論',
+    },
+    {
+      id:'aqi-v3',
+      tag:'⚠ 傷兵',
+      topic:'傷兵消息影響盤口',
+      angle:'主力前鋒疑似傷兵，對應隊伍賠率在24小時內急速移動',
+      context:'開賽前兩週熱身賽頻繁，多支強隊主力出現傷兵疑雲，賠率盤口隨即劇烈波動',
+      opener:{id:'bs',line:'聽說有幾支強隊的主力在熱身賽受傷了，賠率有沒有在動'},
+      support:[
+        {id:'bam',line:'有！我剛剛看到某隊賠率突然跳很多，但不知道為什麼'},
+        {id:'miya',line:'傷兵消息真的會影響這麼大嗎？'},
+      ],
+      reactors:[
+        {id:'zahra',line:'這個真的很重要，開賽前傷兵最容易被忽略'},
+        {id:'axiang',line:'阿奇每次都追得很緊！'},
+      ],
+      strangerComment:'建議台詞：「傷兵消息跟賠率的連動速度比大家想的快很多，有整理最新幾個值得注意的案例」\n目標串：#世足賠率 #世足傷兵 #運彩分析 相關討論',
+    },
+    {
+      id:'aqi-v4',
+      tag:'🏹 黑馬',
+      topic:'冷門黑馬賠率值',
+      angle:'賠率超過10倍的黑馬隊，分析哪隊有實質出線潛力',
+      context:'世足歷史上每屆都有爆冷，本屆賠率超10倍的黑馬隊中有幾支戰力被市場低估',
+      opener:{id:'bs',line:'你們有沒有在關注黑馬隊？感覺有幾支被嚴重低估了'},
+      support:[
+        {id:'bam',line:'黑馬賠率是不是超高？感覺風險很大'},
+        {id:'miya',line:'歷史上有沒有賠率超高但真的爆冷的例子'},
+      ],
+      reactors:[
+        {id:'zahra',line:'這個角度我最感興趣！'},
+        {id:'jack',line:'冷門賠率值的分析，阿奇出手就是不一樣'},
+      ],
+      strangerComment:'建議台詞：「冷門黑馬不是全部都值得押，但有幾支的賠率確實被低估了，有整理分析角度」\n目標串：#黑馬預測 #世足賠率 #世足2026 相關討論',
+    },
+  ],
+
+  'kk':[
+    {
+      id:'kk-v1',
+      tag:'⏰ 觀賽',
+      topic:'台灣時間觀賽指南',
+      angle:'48場賽程轉成台灣時間，整理哪些場次適合不熬夜看',
+      context:'世足開賽在即，台灣球迷最大痛點是時差，大量搜尋台灣時間版賽程',
+      opener:{id:'miya',line:'世足還有幾天啊！我已經開始算了😂'},
+      support:[
+        {id:'zahra',line:'我假都排好了哈哈，但台灣比賽時間好像很多在半夜'},
+        {id:'bam',line:'台灣時間有人整理好的嗎？自己換算好麻煩'},
+      ],
+      reactors:[
+        {id:'lanlin',line:'存！👍'},
+        {id:'anne',line:'這頁真的超清楚！'},
+      ],
+      strangerComment:'建議台詞：「倒數可以先存這個，台灣時間版的，不用自己換算」\n目標串：#世足2026倒數 #世足賽程 #世足台灣時間 相關討論',
+    },
+    {
+      id:'kk-v2',
+      tag:'😂 梗圖',
+      topic:'分組趣評哪組最難',
+      angle:'用最懶的方式評論每組難度，哪組出線隊命運最慘',
+      context:'48隊分組確定，球迷開始瘋狂討論哪組最慘、哪隊出線路最輕鬆',
+      opener:{id:'miya',line:'剛看完分組，某組真的太慘了吧😂😂'},
+      support:[
+        {id:'zahra',line:'哪組？快說哪組最慘'},
+        {id:'bam',line:'感覺每組都有強隊，到底哪組算輕鬆'},
+      ],
+      reactors:[
+        {id:'lanlin',line:'kk的分析笑死我🤣'},
+        {id:'anne',line:'這評論方式怎麼這麼好懂哈哈'},
+      ],
+      strangerComment:'建議台詞：「分組趣評懶人包有出，這樣看最快知道哪組最慘哪組最好混」\n目標串：#世足分組 #世足2026分組 #世足死亡組 相關討論',
+    },
+    {
+      id:'kk-v3',
+      tag:'🎯 冷門',
+      topic:'黑馬隊押注梗',
+      angle:'用聊天口吻討論哪隊是今年最值得賭一把的黑馬',
+      context:'開賽前球迷圈開始討論冷門黑馬，押黑馬話題流量高，帶有娛樂討論感',
+      opener:{id:'miya',line:'有沒有人想過押黑馬？感覺這屆有幾隊很值得'},
+      support:[
+        {id:'zahra',line:'黑馬有哪幾隊比較被討論的？'},
+        {id:'bam',line:'上屆阿根廷算黑馬嗎哈哈，感覺有點難預測'},
+      ],
+      reactors:[
+        {id:'lanlin',line:'kk的黑馬名單我要存起來！'},
+        {id:'jack',line:'這個梗也太準了😂'},
+      ],
+      strangerComment:'建議台詞：「黑馬討論好熱鬧，整理了幾個最多人討論的冷門方向，可以看看」\n目標串：#黑馬預測 #世足2026 #世足押注梗 相關討論',
+    },
+    {
+      id:'kk-v4',
+      tag:'⭐ 球星',
+      topic:'球星焦點討論',
+      angle:'這屆最值得追蹤的10個球星，哪個最可能成為頭條',
+      context:'世足前球迷瘋搜各大球星狀態，姆巴佩、哈蘭德、維尼修斯話題度爆棚',
+      opener:{id:'miya',line:'你們這屆最期待看哪個球星啊？'},
+      support:[
+        {id:'zahra',line:'我必看姆巴佩！他狀態最近怎樣？'},
+        {id:'bam',line:'哈蘭德感覺這屆很猛，挪威那組我要特別關注'},
+      ],
+      reactors:[
+        {id:'lanlin',line:'這個清單幫了大忙！'},
+        {id:'anne',line:'kk整理的就是清楚哈哈'},
+      ],
+      strangerComment:'建議台詞：「球星焦點這邊有整理，看誰最值得追、誰狀態有疑慮，超好懶」\n目標串：#世足球星 #世足2026 #姆巴佩 #哈蘭德 相關討論',
+    },
+  ],
+
+  '蟹蟹世足觀測站':[
+    {
+      id:'crab-v1',
+      tag:'📊 出線',
+      topic:'分組出線分析哪隊最穩',
+      angle:'從積分制度與組內對戰拆解，哪隊是最穩出線的保險選擇',
+      context:'48隊分組確定，三隊制組合讓出線預測更複雜，各組最穩出線隊分析熱度最高',
+      opener:{id:'bs',line:'這屆48隊分組也太複雜了吧，哪組你們覺得是死亡組'},
+      support:[
+        {id:'miya',line:'每組感覺都有強隊，完全猜不出誰穩出線'},
+        {id:'bam',line:'擴大到48隊這樣分析更難判斷了'},
+      ],
+      reactors:[
+        {id:'zahra',line:'謝謝蟹蟹！馬上去看'},
+        {id:'axiang',line:'觀測站超詳細我愛🦀'},
+      ],
+      strangerComment:'建議台詞：「這屆48隊分組確實複雜很多，各組實力對比有整理，可以先看一下」\n目標串：#世足分組 #世足預測 #世足2026分組 相關討論',
+    },
+    {
+      id:'crab-v2',
+      tag:'📋 備戰',
+      topic:'各隊備戰近況報告',
+      angle:'整理8大熱門隊最新熱身賽結果、陣容測試方向與教練訪問重點',
+      context:'開賽前三週各隊進入密集備戰，熱身賽成績與陣容確認是球迷最關注的情報',
+      opener:{id:'bs',line:'最近各隊熱身賽打得怎樣？我沒時間追，有沒有人整理'},
+      support:[
+        {id:'miya',line:'我有看到法國輸了一場熱身賽，但不確定有沒有影響'},
+        {id:'bam',line:'熱身賽輸贏重要嗎？還是看正式賽表現？'},
+      ],
+      reactors:[
+        {id:'zahra',line:'蟹蟹這個整理超及時！'},
+        {id:'axiang',line:'觀測站的情報真的很難找到替代🦀'},
+      ],
+      strangerComment:'建議台詞：「各隊備戰近況有整理，包含熱身賽成績跟陣容測試，現在看剛好」\n目標串：#世足備戰 #世足熱身賽 #世足2026 相關討論',
+    },
+    {
+      id:'crab-v3',
+      tag:'🗓 場次',
+      topic:'本週重點場次提醒',
+      angle:'從48場賽程中精選本週最值得關注的5場，附對戰背景與看點',
+      context:'賽程公布後球迷需要幫助篩選重點場次，本週焦點場次整理是高搜尋話題',
+      opener:{id:'bs',line:'這週有哪些世足相關的場次值得看？賽程太多了'},
+      support:[
+        {id:'miya',line:'我都不知道從哪場開始看，選擇困難症發作'},
+        {id:'bam',line:'分組賽哪些場比較關鍵？還是都差不多'},
+      ],
+      reactors:[
+        {id:'zahra',line:'這週場次選得太準了！'},
+        {id:'axiang',line:'蟹蟹選場眼光真的不一樣🦀'},
+      ],
+      strangerComment:'建議台詞：「本週重點場次有整理，附說明為什麼值得看，不用每場都追」\n目標串：#世足賽程 #世足2026 #世足本週場次 相關討論',
+    },
+    {
+      id:'crab-v4',
+      tag:'🏥 傷兵',
+      topic:'陣容確認傷兵更新',
+      angle:'整理開賽前各隊最新傷兵名單，影響出賽陣容的關鍵情報',
+      context:'開賽前兩週各隊公布傷兵名單，主力球員出賽狀況直接影響分析與投注判斷',
+      opener:{id:'bs',line:'有沒有最新的傷兵消息？感覺很多隊的主力狀況不明'},
+      support:[
+        {id:'miya',line:'我看到幾個主力球員說受傷了，但不知道嚴不嚴重'},
+        {id:'bam',line:'傷兵這塊真的很難追，哪裡有整理'},
+      ],
+      reactors:[
+        {id:'zahra',line:'蟹蟹這個更新真的很重要！'},
+        {id:'axiang',line:'這份名單我要馬上存🦀'},
+      ],
+      strangerComment:'建議台詞：「傷兵名單剛整理好，哪些主力狀況有疑慮、哪些確認出賽，開賽前看最實用」\n目標串：#世足傷兵 #世足陣容 #世足2026 相關討論',
+    },
+  ],
+
+  '世足大財神':[
+    {
+      id:'god-v1',
+      tag:'👑 冠軍',
+      topic:'冠軍熱門大格局',
+      angle:'從歷史奪冠規律與本屆陣容深度，分析最有冠軍相的三支隊伍',
+      context:'世足倒數，奪冠熱門與賠率走勢成為最熱討論焦點，市場對法國、巴西、英格蘭高度關注',
+      opener:{id:'jack',line:'你們覺得這屆冠軍最有可能是誰？法國還是巴西'},
+      support:[
+        {id:'bs',line:'法國陣容真的嚇到我，不過巴西在南美資格賽壓線過有點擔心'},
+        {id:'bam',line:'我覺得也可能有黑馬，上屆阿根廷也沒幾個人預到'},
+      ],
+      reactors:[
+        {id:'miya',line:'大財神說話就是不一樣👏'},
+        {id:'jason',line:'這個分析角度很有意思'},
+      ],
+      strangerComment:'建議台詞：「這屆格局比較特殊，賠率移動方向蠻值得觀察的，比最終結果更有參考價值」\n目標串：#世足奪冠熱門 #世足2026賠率 相關討論',
+    },
+    {
+      id:'god-v2',
+      tag:'🌍 格局',
+      topic:'歐洲vs南美格局分析',
+      angle:'從歷屆奪冠分佈看歐洲與南美的交替霸權，今屆誰更佔優？',
+      context:'世足史上冠軍只在歐洲與南美之間輪替，本屆兩大洲各有強隊，格局討論熱度高',
+      opener:{id:'jack',line:'這屆感覺是歐洲vs南美的對決格局，你們怎麼看'},
+      support:[
+        {id:'bs',line:'歐洲這屆真的很強，法國英格蘭西班牙都很猛'},
+        {id:'bam',line:'南美也不差啊，阿根廷衛冕、巴西這次備戰很認真'},
+      ],
+      reactors:[
+        {id:'miya',line:'大財神的大格局分析每次都看得過癮👏'},
+        {id:'jason',line:'這個切入點很少人這樣看，有意思'},
+      ],
+      strangerComment:'建議台詞：「歐洲vs南美的格局討論方向有整理，從賠率層面看比純粹猜更有邏輯」\n目標串：#世足奪冠 #世足格局 #世足2026預測 相關討論',
+    },
+    {
+      id:'god-v3',
+      tag:'🏹 黑馬',
+      topic:'黑馬冷門方向',
+      angle:'從賠率被低估的角度篩選3支最值得關注的非傳統強隊',
+      context:'每屆世足都有爆冷，本屆幾支非傳統強隊在資格賽展現驚人戰力，賠率仍偏高',
+      opener:{id:'jack',line:'大家有沒有在看冷門黑馬方向？感覺有隊被嚴重忽視'},
+      support:[
+        {id:'bs',line:'黑馬賠率那麼高，值得押嗎？'},
+        {id:'bam',line:'我比較好奇哪些黑馬是真有實力，哪些只是話題'},
+      ],
+      reactors:[
+        {id:'miya',line:'大財神這個分析我需要仔細看！'},
+        {id:'jason',line:'黑馬方向從大格局切入，這才有深度'},
+      ],
+      strangerComment:'建議台詞：「黑馬不是只看賠率高，要看賠率是否真的被低估，這個角度有整理方向」\n目標串：#黑馬預測 #世足冷門 #世足2026 相關討論',
+    },
+    {
+      id:'god-v4',
+      tag:'⏳ 倒數',
+      topic:'決賽前最後賠率機會',
+      angle:'歷史數據顯示開賽前兩週是賠率佈局的黃金窗口期',
+      context:'開賽前約15天，賠率尚未因賽事結果大幅收窄，是布局最後空間最大的時間點',
+      opener:{id:'jack',line:'聽說開賽前的賠率跟開賽後差很多？有沒有人了解'},
+      support:[
+        {id:'bs',line:'我只知道賽事進行中賠率會變，但不知道幅度有多大'},
+        {id:'bam',line:'所以現在還有操作空間嗎？'},
+      ],
+      reactors:[
+        {id:'miya',line:'這個窗口概念第一次聽到，很受用👏'},
+        {id:'jason',line:'大財神點出的方向永遠是大家沒想到的'},
+      ],
+      strangerComment:'建議台詞：「開賽前的賠率窗口是有限的，時間點的判斷比選隊更重要，有整理這個觀點」\n目標串：#世足賠率 #世足2026 #運彩分析 相關討論',
+    },
+  ],
+
+  '世足排雷週記':[
+    {
+      id:'radar-v1',
+      tag:'⚠ 盲點',
+      topic:'賽前5大押注盲點',
+      angle:'整理球迷最常在世足前就踩中的5個判斷錯誤',
+      context:'世足倒數，大量新手球迷開始下注，賽前常見盲點如全押熱門、忽視陣容深度等最需提醒',
+      opener:{id:'miya',line:'我朋友說他世足要全押巴西，我覺得這樣合理嗎😅'},
+      support:[
+        {id:'bam',line:'全押單隊感覺風險很高？'},
+        {id:'zahra',line:'上屆也很多人押熱門隊結果輸慘'},
+      ],
+      reactors:[
+        {id:'axiang',line:'這個真的要看一下！'},
+        {id:'anne',line:'排雷週記每次都戳中我🙏'},
+      ],
+      strangerComment:'建議台詞：「世足前有幾個常見盲點特別容易踩，尤其剛開始看盤的，可以先了解一下」\n目標串：#世足投注 #運彩新手 #世足2026 相關討論',
+    },
+    {
+      id:'radar-v2',
+      tag:'🪤 陷阱',
+      topic:'賠率陷阱別追',
+      angle:'說明為什麼賠率突然變低不代表值得追，反而可能是陷阱',
+      context:'開賽前賠率快速波動，很多球迷看到賠率下降就衝動追注，這是最常見的情緒性錯誤',
+      opener:{id:'miya',line:'我看到某隊賠率跌得很快，是不是代表值得押？'},
+      support:[
+        {id:'bam',line:'賠率跌好快感覺很香，但又覺得哪裡怪怪的'},
+        {id:'zahra',line:'賠率下降代表什麼？大家都在押嗎'},
+      ],
+      reactors:[
+        {id:'axiang',line:'原來追跌賠率這麼危險😨'},
+        {id:'anne',line:'這個真的提醒到我，差點衝動了'},
+      ],
+      strangerComment:'建議台詞：「賠率急跌的時候反而要停下來想一想，這是常見的追注陷阱，有說明邏輯」\n目標串：#世足賠率 #運彩陷阱 #世足投注 相關討論',
+    },
+    {
+      id:'radar-v3',
+      tag:'🔗 串關',
+      topic:'串關組合常見錯誤',
+      angle:'世足最受歡迎的串關玩法，3個最容易讓人虧損的組合錯誤',
+      context:'世足期間串關是最熱門的投注方式，但很多人不了解串關的風險累加機制而遭受重損',
+      opener:{id:'miya',line:'我在研究串關，感覺賠率很高但不知道有什麼坑'},
+      support:[
+        {id:'bam',line:'串關聽起來很賺，但到底難在哪裡'},
+        {id:'zahra',line:'我朋友說他串關輸很多，但我不懂為什麼'},
+      ],
+      reactors:[
+        {id:'axiang',line:'串關這塊我真的需要好好看！'},
+        {id:'anne',line:'這個週記出得太及時了🙏'},
+      ],
+      strangerComment:'建議台詞：「串關有幾個常見錯誤組合，特別是世足這種賽事密集期，有整理可以先看」\n目標串：#世足串關 #運彩串關 #世足投注 相關討論',
+    },
+    {
+      id:'radar-v4',
+      tag:'😤 情緒',
+      topic:'情緒決策警告',
+      angle:'主場加油情結、喜愛球星效應，如何讓球迷做出完全不理性的押注',
+      context:'世足最容易讓球迷用情感代替邏輯下注，台灣球迷尤其有亞洲隊加持情結',
+      opener:{id:'miya',line:'我超喜歡梅西，所以阿根廷我一定要押😂'},
+      support:[
+        {id:'bam',line:'我也是哈哈，明知道有風險但就是覺得要押'},
+        {id:'zahra',line:'這是情感投注還是分析投注？感覺不一樣'},
+      ],
+      reactors:[
+        {id:'axiang',line:'被說中了🫣 但還是想押梅西'},
+        {id:'anne',line:'排雷週記每次都在打臉我哈哈🙏'},
+      ],
+      strangerComment:'建議台詞：「喜歡哪隊跟押哪隊是兩件事，情緒決策是世足最常見的虧損原因，有整理」\n目標串：#世足投注 #運彩情緒 #世足2026 相關討論',
+    },
+  ],
+}
+
+// 5個世足角色每日排班：每天2位，7天輪替：每天2位，7天輪替
 const PERSONA_SCHEDULE={
   1:['阿奇','世足大財神'],
   2:['kk','蟹蟹世足觀測站'],
@@ -1277,10 +1673,27 @@ function toast(msg,type='ok'){
   t._timer=setTimeout(()=>t.style.display='none',2200)
 }
 function cp(text,btn){
-  navigator.clipboard.writeText(text).then(()=>{
-    if(btn){const o=btn.textContent;btn.textContent='已複製!';setTimeout(()=>btn.textContent=o,1500)}
+  if(!text){toast('無內容可複製','err');return}
+  const done=()=>{
+    if(btn){const o=btn.textContent;btn.textContent='✅已複製!';setTimeout(()=>btn.textContent=o,1800)}
     else toast('已複製到剪貼簿')
-  })
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(()=>{
+      // fallback：file:// 或無權限時用 execCommand
+      const ta=document.createElement('textarea')
+      ta.value=text;ta.style.position='fixed';ta.style.opacity='0'
+      document.body.appendChild(ta);ta.focus();ta.select()
+      try{document.execCommand('copy');done()}catch(e){toast('複製失敗，請手動複製','err')}
+      document.body.removeChild(ta)
+    })
+  } else {
+    const ta=document.createElement('textarea')
+    ta.value=text;ta.style.position='fixed';ta.style.opacity='0'
+    document.body.appendChild(ta);ta.focus();ta.select()
+    try{document.execCommand('copy');done()}catch(e){toast('複製失敗','err')}
+    document.body.removeChild(ta)
+  }
 }
 
 // ===== PERSONAS =====
@@ -1315,7 +1728,7 @@ function renderPersonas(){
           <div style="color:var(--text2);line-height:1.5">${pp.prompt.slice(0,90)}${pp.prompt.length>90?'…':''}</div>
           <div class="fb" style="margin-top:4px">
             <span class="tm">${new Date(pp.createdAt).toLocaleDateString('zh-TW')}</span>
-            <button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.72rem" onclick="cp(${JSON.stringify(pp.prompt)})">複製</button>
+            <button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.72rem" data-cp="${escAttr(pp.prompt)}" onclick="cpd(this)">複製</button>
           </div>
         </div>`).join('')}</div>`:''}
     </div>`
@@ -1334,11 +1747,11 @@ function openPersonaDetail(id){
     </div>
     ${p.role?`<div style="margin-bottom:14px">
       <div class="sec" style="margin-top:0">角色定位提示詞</div>
-      <div style="position:relative"><div class="pbox">${p.role}</div><button class="pcopy" onclick="cp(${JSON.stringify(p.role)},this)">複製</button></div>
+      <div style="position:relative"><div class="pbox">${p.role}</div><button class="pcopy" data-cp="${escAttr(p.role)}" onclick="cpd(this)">複製</button></div>
     </div>`:''}
     ${p.img?`<div style="margin-bottom:14px">
       <div class="sec">圖文生圖提示詞</div>
-      <div style="position:relative"><div class="pbox">${p.img}</div><button class="pcopy" onclick="cp(${JSON.stringify(p.img)},this)">複製</button></div>
+      <div style="position:relative"><div class="pbox">${p.img}</div><button class="pcopy" data-cp="${escAttr(p.img)}" onclick="cpd(this)">複製</button></div>
     </div>`:''}
     <div>
       <div class="fb" style="margin-bottom:8px">
@@ -1350,7 +1763,7 @@ function openPersonaDetail(id){
         <div style="background:#080e09;border:1px solid var(--border);border-radius:7px;padding:10px;margin-bottom:8px">
           <div class="fb" style="margin-bottom:5px">
             <span class="tm">${new Date(pp.createdAt).toLocaleString('zh-TW')}</span>
-            <button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.77rem" onclick="cp(${JSON.stringify(pp.prompt)})">複製</button>
+            <button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.77rem" data-cp="${escAttr(pp.prompt)}" onclick="cpd(this)">複製</button>
           </div>
           <div style="font-size:.82rem;color:var(--text2);white-space:pre-wrap;line-height:1.6">${pp.prompt}</div>
           ${pp.note?`<div class="tm" style="margin-top:4px">備註：${pp.note}</div>`:''}
@@ -1477,13 +1890,15 @@ function renderPosts(){
   const wrap=document.getElementById('posts-table')
   if(!posts.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無發文記錄</div>';return}
   wrap.innerHTML=`<div style="overflow-x:auto"><table>
-    <thead><tr><th>日期</th><th>角色</th><th>平台</th><th>主題</th><th>引用文章</th><th>👀瀏覽</th><th>👁觸及</th><th>👍讚</th><th>💬留言</th><th>🔖儲存</th><th>🔄分享</th><th>操作</th></tr></thead>
+    <thead><tr><th>日期</th><th>角色</th><th>平台</th><th>主題</th><th>引用文章</th><th>貼文連結</th><th>👀瀏覽</th><th>👁觸及</th><th>👍讚</th><th>💬留言</th><th>🔖儲存</th><th>🔄分享</th><th>操作</th></tr></thead>
     <tbody>${posts.map(p=>`<tr>
       <td style="white-space:nowrap">${p.date||'—'}</td>
       <td><span class="badge b-green">${p.personaName||'—'}</span></td>
       <td>${(p.platforms&&p.platforms.length?p.platforms:[p.platform]).filter(Boolean).map(pl=>`<span class="badge b-blue" style="margin-right:2px">${pl}</span>`).join('')||'—'}</td>
       <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.topic||''}">${p.topic||'—'}</td>
       <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.77rem" class="tm" title="${p.articleTitle||''}">${p.articleTitle||'—'}</td>
+      <td style="white-space:nowrap;text-align:center">${p.postUrl?`<a href="${escAttr(p.postUrl)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px">🔗 查看</a>`:''}
+        <button class="btn btn-xs btn-outline" onclick="openSetPostUrl('${p.id}')" title="${p.postUrl?'編輯連結':'添加貼文連結'}">${p.postUrl?'✏':'＋連結'}</button></td>
       <td>${p.views||0}</td><td>${p.reach||0}</td><td>${p.likes||0}</td><td>${p.comments||0}</td><td>${p.saves||0}</td><td>${p.shares||0}</td>
       <td class="flex" style="gap:5px"><button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新</button><button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button></td>
     </tr>`).join('')}</tbody>
@@ -1519,6 +1934,7 @@ function savePost(){
     platform:document.getElementById('po-platform').value,
     articleId:aid,articleTitle:a?.title||'',
     topic:document.getElementById('po-topic').value,
+    postUrl:document.getElementById('po-posturl')?.value?.trim()||'',
     likes:+document.getElementById('po-likes').value||0,
     comments:+document.getElementById('po-comments').value||0,
     shares:+document.getElementById('po-shares').value||0,
@@ -1542,6 +1958,7 @@ function togglePlat(el){
 function openMetrics(id){
   const p=DB.get('posts').find(x=>x.id===id); if(!p)return
   document.getElementById('um-id').value=id
+  document.getElementById('um-posturl').value=p.postUrl||''
   ;['views','reach','likes','comments','saves','shares'].forEach(k=>document.getElementById('um-'+k).value=p[k]||0)
   // 重設平台按鈕
   const plats=p.platforms||(p.platform?[p.platform]:[])
@@ -1563,6 +1980,7 @@ function updateMetrics(){
   ;['views','reach','likes','comments','saves','shares'].forEach(k=>posts[i][k]=+document.getElementById('um-'+k).value||0)
   const plats=['IG','FB','Threads'].filter(pl=>document.getElementById('pt-'+pl)?.dataset.on==='1')
   posts[i].platforms=plats
+  posts[i].postUrl=document.getElementById('um-posturl')?.value?.trim()||posts[i].postUrl||''
   DB.set('posts',posts)
   closeModal('modal-metrics')
   renderPosts()
@@ -1585,6 +2003,25 @@ function delPost(id){
   }
   renderPosts()
   toast('已刪除')
+}
+
+function openSetPostUrl(id){
+  const p=DB.get('posts').find(x=>x.id===id); if(!p)return
+  document.getElementById('spu-id').value=id
+  document.getElementById('spu-url').value=p.postUrl||''
+  openModal('modal-set-posturl')
+}
+
+function savePostUrl(){
+  const id=document.getElementById('spu-id').value
+  const url=document.getElementById('spu-url').value.trim()
+  const posts=DB.get('posts')
+  const i=posts.findIndex(x=>x.id===id); if(i<0)return
+  posts[i].postUrl=url
+  DB.set('posts',posts)
+  closeModal('modal-set-posturl')
+  renderPosts()
+  toast(url?'🔗 貼文連結已儲存':'連結已清除')
 }
 
 // ===== ARTICLES =====
@@ -1733,10 +2170,15 @@ function getWeekKey(){
   return`${d.getFullYear()}-W${String(wk).padStart(2,'0')}`
 }
 
+window._cmPrompts={}
+function cpCmPrompt(id,btn){cp(window._cmPrompts[id]||'',btn)}
+
 function renderCommunity(){
   const list=DB.get('community')
   const grid=document.getElementById('cm-grid')
   if(!list.length){grid.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">尚無帳號</div>';return}
+  window._cmPrompts={}
+  list.forEach(a=>{if(a.prompt)window._cmPrompts[a.id]=a.prompt})
   grid.innerHTML=list.map(a=>{
     const sc={'活躍':'b-green','人設建立中':'b-yellow','暫停':'b-red'}[a.status]||'b-gray'
     return`<div class="ccard">
@@ -1754,7 +2196,7 @@ function renderCommunity(){
       <div style="font-size:.82rem;color:var(--text2)">${a.persona||'尚未建立'}</div>
       ${a.prompt?`<div class="sec">語氣提示詞</div>
         <div style="position:relative"><div class="pbox" style="max-height:80px">${a.prompt}</div>
-        <button class="pcopy" onclick="cp(${JSON.stringify(a.prompt)},this)">複製</button></div>
+        <button class="pcopy" onclick="cpCmPrompt('${a.id}',this)">複製</button></div>
       `:`<div style="margin-top:8px"><span class="badge b-warn">語氣提示詞待建立</span></div>`}
       ${a.weekTasks?`<div class="sec">一週工事</div>
         <div style="background:#0B0B0D;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:.78rem;color:var(--text2);white-space:pre-wrap;line-height:1.7">${a.weekTasks}</div>`:''}
@@ -1874,7 +2316,7 @@ function renderThreadsPosts(){
       ${p.refUrl?`<div style="margin-bottom:7px"><a href="${p.refUrl}" target="_blank" class="badge b-blue" style="text-decoration:none;font-size:.72rem">查看原帖 ↗</a></div>`:''}
       <div style="background:#0B0B0D;border:1px solid var(--border);border-radius:7px;padding:10px 38px 10px 10px;font-size:.82rem;line-height:1.7;color:var(--text2);position:relative;white-space:pre-wrap;max-height:130px;overflow-y:auto">
         ${p.script||'（尚無腳本）'}
-        ${p.script?`<button class="pcopy" onclick="cp(${JSON.stringify(p.script)},this)" style="top:5px;right:5px">複製</button>`:''}
+        ${p.script?`<button class="pcopy" data-cp="${escAttr(p.script)}" onclick="cpd(this)" style="top:5px;right:5px">複製</button>`:''}
       </div>
       ${p.note?`<div class="tm" style="margin-top:6px;font-size:.77rem">📌 ${p.note}</div>`:''}
     </div>`).join('')
@@ -1910,7 +2352,7 @@ function renderThreadsReplies(){
                 <span class="badge ${ST_BADGE[r.status]||'b-gray'}" style="font-size:.7rem">${r.status}</span>
               </div>
               <div class="flex" style="gap:4px">
-                ${r.script?`<button class="btn btn-xs btn-copy" onclick="cp(${JSON.stringify(r.script)},this)">複製</button>`:''}
+                ${r.script?`<button class="btn btn-xs btn-copy" data-cp="${escAttr(r.script)}" onclick="cpd(this)">複製</button>`:''}
                 <button class="btn btn-xs btn-outline" onclick="openEditReplyScript('${c.id}','${r.id}')">編輯</button>
                 <button class="btn btn-xs btn-danger" onclick="delReplyScript('${c.id}','${r.id}')">刪</button>
               </div>
@@ -2212,6 +2654,9 @@ function openBatchGen(url='', dir='', summary=''){
   openModal('modal-batch-gen')
 }
 
+window._bgPrompts={}
+function cpBgPrompt(pid,btn){cp(window._bgPrompts[pid]||'',btn)}
+
 function runBatchGen(){
   const url=document.getElementById('bg-url').value.trim()
   const summary=document.getElementById('bg-summary').value.trim()
@@ -2220,10 +2665,12 @@ function runBatchGen(){
   if(!checkedIds.size){toast('請至少勾選一位角色','err');return}
   const personas=DB.get('personas')
   const list=personas.filter(p=>checkedIds.has(p.id))
+  window._bgPrompts={}
+  list.forEach(p=>{ window._bgPrompts[p.id]=buildPersonaPrompt(p,url,summary) })
   const wrap=document.getElementById('bg-results')
   wrap.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
     ${list.map(p=>{
-      const prompt=buildPersonaPrompt(p,url,summary)
+      const prompt=window._bgPrompts[p.id]
       return`<div class="card">
         <div class="fb" style="margin-bottom:10px">
           <div>
@@ -2233,7 +2680,7 @@ function runBatchGen(){
               ${p.tagline?`<span style="color:var(--text3);font-size:.72rem">${p.tagline.slice(0,32)}…</span>`:'<span style="color:#f87171;font-size:.72rem">⚠ 尚未填角色一句話定位</span>'}
             </div>
           </div>
-          <button class="btn btn-sm btn-copy" onclick="cp(${JSON.stringify(prompt)},this)">複製提示詞</button>
+          <button class="btn btn-sm btn-copy" onclick="cpBgPrompt('${p.id}',this)">複製提示詞</button>
         </div>
         <div style="background:#0B0B0D;border:1px solid var(--border);border-radius:7px;padding:10px;font-size:.75rem;color:var(--text3);max-height:160px;overflow-y:auto;white-space:pre-wrap;line-height:1.55">${escHtml(prompt.slice(0,420))}…</div>
         <div style="margin-top:8px;font-size:.72rem;color:var(--text3)">${prompt.length} 字元</div>
@@ -2244,6 +2691,8 @@ function runBatchGen(){
 }
 
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escAttr(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}
+function cpd(el){cp(el.dataset.cp||'',el)}
 
 // ===== ENTRANCES =====
 const DEFAULT_ENTRANCES=[
@@ -2519,7 +2968,7 @@ function renderLinks(){
               ?`<div style="font-size:.72rem;color:#4ade80;word-break:break-all">${l.shortLinkUrl.slice(0,30)}</div>
                 <div class="flex" style="gap:3px;margin-top:3px;flex-wrap:wrap">
                   <button class="btn btn-xs btn-copy" onclick="cp('${l.shortLinkUrl}',this)">複製</button>
-                  ${utmUrl?`<button class="btn btn-xs btn-outline" onclick="cp(${JSON.stringify(utmUrl)},this)">複製UTM</button>`:''}
+                  ${utmUrl?`<button class="btn btn-xs btn-outline" data-cp="${escAttr(utmUrl)}" onclick="cpd(this)">複製UTM</button>`:''}
                 </div>`
               :`<span style="color:#f87171;font-size:.72rem">待建立短連結</span>`
           }
@@ -2606,6 +3055,76 @@ function delLink(id){
 function openNamingRules(){openModal('modal-naming-rules')}
 
 // ===== CAST / 劇本 =====
+window._castOverride = window._castOverride || {}
+
+function openCastUpdate(pname) {
+  document.getElementById('cu-subtitle').textContent = `角色：${pname}`
+  const daysLeft = Math.ceil((new Date('2026-06-11T00:00:00+08:00') - new Date()) / (1000*60*60*24))
+  const phase = daysLeft > 14 ? '賽前熱身期' : daysLeft > 0 ? '開賽前衝刺期' : '賽事進行中'
+  document.getElementById('cu-context-bar').innerHTML =
+    `⏳ 世足倒數 <b style="color:var(--accent)">${daysLeft > 0 ? daysLeft+'天' : '已開賽'}</b> · 目前：<b>${phase}</b>　｜　為 <b style="color:var(--accent)">${pname}</b> 選擇今日腳本主題`
+
+  // 仿文腳本參考
+  const threadsScripts = (DB.get('threads_posts') || []).slice(0, 3)
+  const refHtml = threadsScripts.length
+    ? `<div style="background:#0a0908;border:1px solid var(--border2);border-radius:7px;padding:10px 12px">
+        <div style="font-size:.7rem;color:#fbbf24;font-weight:700;margin-bottom:6px">📝 仿文腳本參考（可作為腳本靈感）</div>
+        <div style="display:flex;gap:8px;overflow-x:auto">${threadsScripts.map(t=>`
+          <div style="flex-shrink:0;width:220px;background:#0d0b0a;border:1px solid var(--border);border-radius:6px;padding:8px 10px">
+            <div style="font-size:.67rem;color:#60a5fa;margin-bottom:4px">${t.dir||''}</div>
+            <div style="font-size:.75rem;color:var(--text2);line-height:1.5;overflow:hidden;max-height:60px">${(t.script||'').slice(0,80)}…</div>
+          </div>`).join('')}
+        </div>
+      </div>` : ''
+  document.getElementById('cu-threads-ref').innerHTML = refHtml
+
+  const scripts = (CAST_SCRIPTS_DB || {})[pname] || []
+  const currentOverride = window._castOverride[pname]
+  document.getElementById('cu-scripts').innerHTML =
+    `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">` +
+    scripts.map((s, i) => {
+      const isActive = currentOverride?.id === s.id
+      return `<div style="background:${isActive?'#0d1a0d':'var(--g1)'};border:1px solid ${isActive?'var(--accent)':'var(--border2)'};border-radius:10px;padding:14px;cursor:pointer" onclick="applyCastScript('${pname}',${i})">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="display:flex;gap:6px;align-items:center">
+            <span style="background:#1a1206;border:1px solid #3a2a10;border-radius:10px;padding:2px 8px;font-size:.68rem;color:#fbbf24">${s.tag}</span>
+            <span style="font-size:.85rem;font-weight:700;color:var(--accent)">${s.topic}</span>
+          </div>
+          ${isActive ? '<span style="font-size:.68rem;color:#4ade80;font-weight:700">✓ 使用中</span>' : ''}
+        </div>
+        <div style="font-size:.75rem;color:var(--text2);margin-bottom:8px">${s.angle}</div>
+        <div style="font-size:.72rem;color:var(--text3);line-height:1.5;background:#0a0908;border-radius:5px;padding:7px 9px">
+          <div style="color:#ffd43b;margin-bottom:3px">情境：${s.context.slice(0,50)}…</div>
+          <div><b>開場：</b>${s.opener.line.slice(0,40)}…</div>
+        </div>
+        <button class="btn btn-sm ${isActive?'btn-outline':'btn-primary'}" style="width:100%;margin-top:10px">${isActive?'已套用此腳本':'套用此腳本'}</button>
+      </div>`
+    }).join('') +
+    (window._castOverride[pname] ? `<div style="grid-column:1/-1;text-align:center;padding:6px">
+      <button class="btn btn-xs btn-outline" onclick="applyCastScript('${pname}',-1)">↩ 還原預設腳本</button>
+    </div>` : '') +
+    `</div>`
+
+  openModal('modal-cast-update')
+}
+
+function applyCastScript(pname, idx) {
+  if (idx === -1) {
+    delete window._castOverride[pname]
+    closeModal('modal-cast-update')
+    renderCast()
+    toast(`${pname} 已還原預設腳本`)
+    return
+  }
+  const scripts = (CAST_SCRIPTS_DB || {})[pname] || []
+  const s = scripts[idx]
+  if (!s) return
+  window._castOverride[pname] = s
+  closeModal('modal-cast-update')
+  renderCast()
+  toast(`✅ ${pname} 腳本已換為：${s.topic}`)
+}
+
 function renderCast(){
   const now=new Date()
   const DOW=now.getDay()
@@ -2632,7 +3151,8 @@ function renderCast(){
   }
 
   function buildScriptCard(pname){
-    const ps=PERSONA_SCRIPTS[pname]; if(!ps) return''
+    const _override = window._castOverride?.[pname]
+    const ps = (_override ? {...PERSONA_SCRIPTS[pname], ..._override, profile: PERSONA_SCRIPTS[pname]?.profile} : PERSONA_SCRIPTS[pname]); if(!ps) return''
     const si=PERSONA_SITES[pname]||{}
     const prof=ps.profile||{}
 
@@ -2701,7 +3221,7 @@ function renderCast(){
         </div>
         <div>
           <div style="font-weight:700;font-size:.82rem;color:${s.gc};margin-bottom:4px">${s.who}</div>
-          <div style="font-size:.8rem;color:${s.noArt?'#6b7280':'var(--text)'};line-height:1.55;background:#0a0908;border-left:3px solid ${s.gc}60;padding:7px 11px;border-radius:0 6px 6px 0;${s.noArt?'':'cursor:pointer'}" ${s.noArt?'':'onclick="cp('+JSON.stringify(s.line)+',this)" title="點擊複製"'}>${s.line}</div>
+          <div style="font-size:.8rem;color:${s.noArt?'#6b7280':'var(--text)'};line-height:1.55;background:#0a0908;border-left:3px solid ${s.gc}60;padding:7px 11px;border-radius:0 6px 6px 0;${s.noArt?'':'cursor:pointer'}" ${s.noArt?'':('data-cp="'+escAttr(s.line)+'" onclick="cpd(this)" title="點擊複製"')}>${s.line}</div>
           ${s.noArt?`<div style="font-size:.67rem;color:#f87171;margin-top:3px">↑ 文章庫有文章後會自動帶入</div>`:''}
           ${s.badge==='⭐ 主角登場'?artStatusBlock:''}
         </div>
@@ -2723,7 +3243,8 @@ function renderCast(){
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
           <span style="font-size:.68rem;color:var(--text3)">上工：<b style="color:var(--text2)">${ps.timeSlot||'—'}</b></span>
           ${dynamicLine?`<span style="font-size:.67rem;background:#0a1208;border:1px solid #1a3a1a;border-radius:10px;padding:2px 8px;color:#4ade80">✓ 文章已備妥</span>`:`<span style="font-size:.67rem;background:#1a0808;border:1px solid #3a1515;border-radius:10px;padding:2px 8px;color:#f87171">✗ 無待發文章</span>`}
-          <button class="btn btn-xs btn-copy" onclick="cp(${JSON.stringify(si.url||'')},this)">複製連結</button>
+          <button class="btn btn-xs btn-copy" data-cp="${escAttr(si.url||'')}" onclick="cpd(this)">複製連結</button>
+          <button class="btn btn-xs btn-outline" onclick="openCastUpdate('${pname}')">🔄 換腳本</button>
         </div>
       </div>
       ${profileHtml}
@@ -2810,7 +3331,7 @@ function renderCast(){
           ${t.time?`<span style="font-size:.65rem;color:var(--text3);background:#1a1008;padding:1px 6px;border-radius:10px">${t.time}</span>`:''}
         </div>
         <div style="font-size:.8rem;color:var(--text);line-height:1.5">${t.line}</div>
-        <button class="btn btn-xs btn-copy" style="margin-top:6px" onclick="cp(${JSON.stringify(t.line)},this)">複製台詞</button>
+        <button class="btn btn-xs btn-copy" style="margin-top:6px" data-cp="${escAttr(t.line)}" onclick="cpd(this)">複製台詞</button>
       </div>`).join('')
     return`<div style="background:var(--g1);border:1px solid var(--border);border-radius:8px;padding:12px">
       <div style="display:flex;align-items:center;gap:8px">
