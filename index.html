@@ -1065,6 +1065,7 @@ const CAST=[
 
 // 世足角色專責導流網站
 const PERSONA_SITES={
+  'YS主帳':      {site:'ys',label:'ys89.com',url:'https://ys89.com/',desc:'YS89 官方主入口 · 世足資訊中心'},
   '阿奇':        {site:'e4',label:'ys89.games',url:'https://ys89.games/live-104',desc:'賽程・直播・賠率'},
   'kk':          {site:'e8',label:'fifa-worldcups.tw',url:'https://fifa-worldcups.tw',desc:'純資訊站・AEO'},
   '蟹蟹世足觀測站':{site:'e7',label:'ys89.me',url:'https://ys89.me/live-104',desc:'分組分析・球隊球星'},
@@ -1493,15 +1494,55 @@ const CAST_SCRIPTS_DB={
   ],
 }
 
-// 5個世足角色每日排班：每天2位，7天輪替：每天2位，7天輪替
+// YS主帳每天出場 + 5個世足角色每日輪替（每天2位）
 const PERSONA_SCHEDULE={
-  1:['阿奇','世足大財神'],
-  2:['kk','蟹蟹世足觀測站'],
-  3:['世足排雷週記','阿奇'],
-  4:['世足大財神','kk'],
-  5:['蟹蟹世足觀測站','世足排雷週記'],
-  6:['阿奇','kk'],
-  0:['蟹蟹世足觀測站','世足大財神'],
+  1:['YS主帳','阿奇','世足大財神'],
+  2:['YS主帳','kk','蟹蟹世足觀測站'],
+  3:['YS主帳','世足排雷週記','阿奇'],
+  4:['YS主帳','世足大財神','kk'],
+  5:['YS主帳','蟹蟹世足觀測站','世足排雷週記'],
+  6:['YS主帳','阿奇','kk'],
+  0:['YS主帳','蟹蟹世足觀測站','世足大財神'],
+}
+
+// ── YS主帳倒數內容日曆（每天對應要發什麼）──────────────────
+const WC_COUNTDOWN_CALENDAR={
+  8:{type:'📅 賽程發布',label:'發完整賽程 × 台灣時間',platform:'IG + Threads',
+    goal:'建立實用形象，讓球迷收藏存書籤',
+    copyA:`⚽ 2026 世界盃完整賽程 × 台灣時間對照表\n\n倒數 8 天！幫大家整理好了 🗓\n台灣人追球最痛就是時差，這次一表搞定\n\n📍 開幕戰：6/11（三）墨西哥 vs 巴拿馬\n台灣時間 ▶ 早上 8:00\n\n賽程完整版 + 直播入口\n👉 ys89.com`,
+    copyB:`世界盃倒數 8 天 ⏳\n\n你的追球時刻表備好了嗎？\n台灣時間對照表整理完成\n開賽不再手忙腳亂 ✅\n\n存起來 → 👉 ys89.com`},
+  7:{type:'🔥 話題炒作',label:'發互動話題',platform:'Threads',
+    goal:'引發留言互動，製造討論熱度',
+    copyA:`這屆世界盃你最看好哪一隊？ 🏆\n\n倒數 7 天，評論區告訴我你的選擇 👇\n\nA. 法國　B. 阿根廷　C. 巴西　D. 黑馬爆冷\n\n賠率分析參考 👉 ys89.com`,
+    copyB:`這屆世界盃哪場最值得熬夜看？\n\n留言告訴我你的清單 ⚽\n更多熱門場次分析 👉 ys89.com`},
+  6:{type:'📺 直播入口',label:'發免費直播入口整理',platform:'IG',
+    goal:'提供直播資訊，增加收藏觸及',
+    copyA:`世界盃免費直播入口整理 📺\n\n倒數 6 天！入口先備好\n開賽當天再找真的來不及 😅\n\n免費看球入口整理在這 👉 ys89.com`,
+    copyB:`開賽倒數 6 天\n還不知道去哪看直播？\n\n不用另外找，賽程・直播・論壇全在這\n👉 ys89.com`},
+  5:{type:'⚽ 黑馬分析',label:'發黑馬球隊分析',platform:'Threads',
+    goal:'深度內容，建立專業感',
+    copyA:`這屆最被低估的 5 支隊伍 🧐\n\n倒數 5 天，賠率分析出來了\n賠率高不代表沒希望，這幾隊要注意 👇\n\n完整分析 👉 ys89.com`,
+    copyB:`世界盃倒數 5 天\n\n黑馬出頭的機率比你想的大\n傳統強隊這次未必穩\n\n詳細賠率分析 👉 ys89.com`},
+  4:{type:'🗳 互動投票',label:'發投票互動貼文',platform:'Threads + IG',
+    goal:'提升互動率，製造留言熱度',
+    copyA:`你覺得這屆冠軍是誰？ 🏆\n\n倒數 4 天，現在猜還不算遲\n評論區留下你的答案 👇\n\n賠率參考 👉 ys89.com`,
+    copyB:`小調查 📊\n\n世界盃倒數 4 天\n最多人猜誰奪冠？留言告訴我\n\n我來整理結果 + 賠率分析\n👉 ys89.com`},
+  3:{type:'🔗 入口整合',label:'發資訊入口總整理',platform:'IG + Threads',
+    goal:'YS89主入口一次曝光，為後兩天衝刺鋪墊',
+    copyA:`世界盃全資訊一站搞定 📌\n\n倒數 3 天，所有你需要的都在這：\n✅ 完整賽程 + 台灣時間\n✅ 免費直播入口\n✅ 球隊賠率分析\n✅ 論壇熱門討論\n\n👉 ys89.com`,
+    copyB:`開賽倒數 3 天\n\n追球懶人包整理完成\n不用到處找資料，這裡全都有\n\n賽程・直播・論壇・賠率\n👉 ys89.com`},
+  2:{type:'🎁 活動預告',label:'發活動預告',platform:'IG + Threads',
+    goal:'製造期待感，導流到平台',
+    copyA:`世界盃後天開踢 🎉\n\nYS89 世界盃特別企劃上線了\n詳細活動直接去看\n\n👉 ys89.com`,
+    copyB:`倒數 2 天\n\nYS89 有活動 🎁\n說太多怕你不信，去看就知道\n👉 ys89.com`},
+  1:{type:'⏰ 倒數衝刺',label:'發倒數最後衝刺',platform:'IG + Threads',
+    goal:'最後全面導流，製造開賽期待感',
+    copyA:`明天開踢了！ ⚽🔥\n\n世界盃倒數最後 1 天\nYS89 帶你追球，準備好了嗎？\n\n賽程・直播・討論全在這\n👉 ys89.com`,
+    copyB:`明天！世界盃開幕！\n\n別說我沒提醒你，這裡全備好了：\n賽程 ✅ 直播 ✅ 討論 ✅\n\n明天準時追球 👉 ys89.com`},
+  0:{type:'🔴 開賽直播',label:'今天開賽！發即時互動',platform:'Threads 即時',
+    goal:'開賽最高熱度，即時互動衝觸及',
+    copyA:`🔴 世界盃今天開踢！\n\n直播在這 👉 ys89.com\n邊看邊討論，評論區開放 ⚽🔥\n加油你最喜歡的隊伍！`,
+    copyB:`世界盃開踢！！！🔴\n\n即時直播 + 討論串\n👉 ys89.com`},
 }
 
 // 每個世足角色的完整台詞腳本（含定位卡、時段、陌生人留言策略）
@@ -1743,7 +1784,7 @@ const DEFAULT_COMMUNITY=[
   {id:'c5', name:'Ian Lin',   group:'A',role:'男性視角補充',            followers:68,  direction:'世足分析 / 球賽觀點', persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
   {id:'c6', name:'倪',        group:'A',role:'短句引導 / 製造討論',    followers:57,  direction:'世足 / 娛樂城話題',   persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
   // B 組：論壇轉接組
-  {id:'c7', name:'YS主IG',   group:'B',role:'官方入口與資訊發布',      followers:12,  direction:'賽程 / 入口 / 直播整理',    persona:'官方帳號語氣、專業、親切',prompt:'',weekTasks:'',status:'活躍'},
+  // YS主IG 已獨立為「YS主帳」發文角色，不在水軍號管理範圍
   {id:'c8', name:'Bam班',    group:'B',role:'男生朋友感轉接',          followers:122, direction:'論壇引流 / 哥們推薦',        persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
   {id:'c9', name:'Luna',     group:'B',role:'觀望型女生提問',          followers:106, direction:'世足 / 直播入口',            persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
   {id:'c10',name:'Steven.C', group:'B',role:'短句補充 / 鞏固話題',    followers:33,  direction:'論壇 / 資訊頁補充',          persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
@@ -2365,15 +2406,7 @@ function _genKpi(gid, name, role, daysLeft){
       `每天：Threads 1 則短問（「開賽第一場你看嗎？」「有人在追世足賠率嗎？」）`,
       `⚡ 目標：短句引導，讓B組的回應更自然`
     ].join('\n'),
-    // ── B 組 ──
-    'YS主IG':[
-      `${wc}`,
-      `週一：發「世足完整賽程 + 台灣時間對照表」（附YS89論壇連結）`,
-      `週三：發「免費直播入口整理 TOP3」資訊圖文`,
-      `週五：發「世界盃最強討論串在哪裡？YS89論壇搶先看」`,
-      `每天：1 則限動（倒數/賽程資訊/入口）`,
-      `⚡ 目標：成為世足資訊權威帳號，每則都帶YS89入口`
-    ].join('\n'),
+    // ── B 組（YS主帳已獨立移至「發文角色/劇本」）──
     'Bam班':[
       `${wc}`,
       `每天：1 則Threads接A組話題並自然帶出論壇（「其實可以整理成一篇，賽程、直播都放一起」）`,
@@ -2500,7 +2533,6 @@ const WATER_ARMY_GROUPS=[
     purpose:'把A組製造的話題接到 YS89 論壇、免費直播入口、世界盃資訊頁。',
     dailyKpi:['YS主IG 發 1 篇或 1 則限動','Bam班 每天 1 則發文或 Threads','其他帳號留言 3～6 則','每天至少 1 次導到論壇 / 免費直播入口'],
     accounts:[
-      {name:'YS主IG',role:'官方入口與資訊發布',direction:'賽程 / 入口 / 直播整理',persona:'官方帳號風格，資訊型發文，賽程/入口/直播整理，提供有用資訊但不官僚',prompt:'語氣偏官方但親民，重點是提供有用資訊，固定帶入 YS89 論壇或直播入口連結',weekTasks:'每天發1篇入口/資訊文（賽程、直播、論壇）\n每天1則限動推廣\n週一發週賽程整理圖'},
       {name:'Bam班',role:'男生朋友感轉接',direction:'論壇引流 / 哥們推薦',persona:'哥們語氣，自然引導，像朋友分享資源，不像廣告',prompt:'哥們口吻，分享感，如「其實可以整理成一篇，賽程、直播、餐廳都放一起」，自然帶出論壇連結',weekTasks:'每天1則Threads接話題並帶入論壇連結\n每天留言3則哥們語氣引導到資訊頁'},
       {name:'Luna',role:'觀望型女生提問',direction:'世足 / 直播入口',persona:'女生，對世足有興趣但有疑問，被引導型，詢問後讓B組主帳回應',prompt:'詢問式，被動接受推薦，如「免費直播入口也要，開賽前才找很焦慮」',weekTasks:'每天留言2則問問題讓Bam班/YS主IG回應\n每週主發1篇觀望型提問'},
       {name:'Steven.C',role:'短句補充 / 鞏固話題',direction:'論壇 / 資訊頁補充',persona:'低調補充者，一句話加強轉接效果',prompt:'極短，補充一個正向觀點，如「這個整理不錯」「可以存起來」',weekTasks:'每天留言3則短句補充在論壇轉接串'},
@@ -3889,6 +3921,108 @@ function renderCast(){
     :daysLeft===0?'🏆 <b style="color:var(--accent)">世足今日開賽！</b>'
     :'🏆 <b style="color:var(--accent)">世足賽事進行中</b>'
 
+  // ── YS主帳：倒數日曆卡 ──────────────────────────────────
+  function buildYsMainCard(){
+    const cal=WC_COUNTDOWN_CALENDAR[Math.max(daysLeft,0)]||WC_COUNTDOWN_CALENDAR[0]
+    const si=PERSONA_SITES['YS主帳']||{}
+    const today=now.toISOString().split('T')[0]
+    // 找今日是否已有發文記錄
+    const posts=DB.get('posts')
+    const ysPersona=(DB.get('personas')||[]).find(p=>p.name==='YS主帳')
+    const todayPosted=ysPersona?posts.some(p=>p.personaId===ysPersona.id&&p.date===today):false
+    return`<div class="card" style="border:2px solid #f59e0b60;grid-column:1/-1;margin-bottom:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:1rem;font-weight:700;color:#f59e0b">YS主帳 <span style="font-size:.72rem;background:#f59e0b20;border:1px solid #f59e0b50;border-radius:10px;padding:2px 8px;margin-left:6px">每日必發</span></div>
+          <div style="font-size:.73rem;color:#f59e0b90;margin-top:2px">→ ${si.label||''} · ${si.desc||''}</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:.72rem;background:#f59e0b20;border:1px solid #f59e0b60;border-radius:8px;padding:3px 10px;color:#f59e0b;font-weight:700">${cal.type}</span>
+          <span style="font-size:.72rem;color:var(--text3)">建議平台：${cal.platform}</span>
+          ${todayPosted?`<span style="font-size:.67rem;background:#0a1208;border:1px solid #1a3a1a;border-radius:10px;padding:2px 8px;color:#4ade80">✓ 今日已記錄</span>`:`<span style="font-size:.67rem;background:#1a0808;border:1px solid #3a1515;border-radius:10px;padding:2px 8px;color:#f87171">✗ 今日未記錄</span>`}
+          <button class="btn btn-xs btn-copy" data-cp="${escAttr(si.url||'')}" onclick="cpd(this)">複製連結</button>
+        </div>
+      </div>
+      <!-- 今日任務說明 -->
+      <div style="display:grid;grid-template-columns:1fr 3fr;gap:12px;margin-bottom:12px">
+        <div style="background:#0a0908;border:1px solid #f59e0b30;border-radius:8px;padding:12px">
+          <div style="font-size:.7rem;color:#f59e0b;font-weight:700;margin-bottom:8px">📋 今日任務</div>
+          <div style="font-size:.82rem;color:var(--text);font-weight:600;margin-bottom:6px">${cal.label}</div>
+          <div style="font-size:.73rem;color:var(--text3);line-height:1.6;margin-bottom:8px">${cal.goal}</div>
+          <div style="font-size:.7rem;color:#f59e0b;font-weight:600">🎯 倒數 ${daysLeft > 0 ? daysLeft+'天' : '開賽！'}</div>
+        </div>
+        <div>
+          <div style="font-size:.72rem;color:var(--text3);margin-bottom:8px">✍️ 今日文案（點擊台詞可複製，擇一使用）</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:#0a0908;border:1px solid #f59e0b30;border-radius:7px;padding:10px">
+              <div style="font-size:.65rem;color:#f59e0b;font-weight:700;margin-bottom:6px">版本 A</div>
+              <div style="font-size:.77rem;color:var(--text2);line-height:1.7;white-space:pre-wrap;cursor:pointer;background:#0d0b0a;border-left:3px solid #f59e0b60;padding:7px 10px;border-radius:0 6px 6px 0" data-cp="${escAttr(cal.copyA)}" onclick="cpd(this)" title="點擊複製">${cal.copyA}</div>
+            </div>
+            <div style="background:#0a0908;border:1px solid #f59e0b20;border-radius:7px;padding:10px">
+              <div style="font-size:.65rem;color:#f59e0b80;font-weight:700;margin-bottom:6px">版本 B</div>
+              <div style="font-size:.77rem;color:var(--text2);line-height:1.7;white-space:pre-wrap;cursor:pointer;background:#0d0b0a;border-left:3px solid #f59e0b40;padding:7px 10px;border-radius:0 6px 6px 0" data-cp="${escAttr(cal.copyB)}" onclick="cpd(this)" title="點擊複製">${cal.copyB}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 8天日曆速覽 -->
+      <div style="display:flex;gap:5px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--border)">
+        <span style="font-size:.68rem;color:var(--text3);padding-top:3px">本週日曆：</span>
+        ${Object.entries(WC_COUNTDOWN_CALENDAR).filter(([k])=>+k>=0&&+k<=8).sort((a,b)=>+b[0]-+a[0]).map(([k,v])=>`
+          <span style="font-size:.68rem;padding:3px 8px;border-radius:10px;border:1px solid ${+k===Math.max(daysLeft,0)?'#f59e0b':'var(--border2)'};background:${+k===Math.max(daysLeft,0)?'#f59e0b20':'transparent'};color:${+k===Math.max(daysLeft,0)?'#f59e0b':'var(--text3)'}">
+            倒數${k}: ${v.label.replace(/^(發|今天)/,'')}
+          </span>`).join('')}
+      </div>
+    </div>`
+  }
+
+  // ── 水軍今日分工摘要卡 ──────────────────────────────────────
+  function buildArmySummaryCard(){
+    const kpis=DB.get('weekly_kpis')||[]
+    const week=`${now.getFullYear()}-W${String(Math.ceil(((now-new Date(now.getFullYear(),0,1))/86400000+new Date(now.getFullYear(),0,1).getDay()+1)/7)).padStart(2,'0')}`
+    const todayKpi=kpis.find(x=>x.week===week)
+    const gcol={'A':'#ef4444','B':'#3b82f6','C':'#22c55e'}
+    const gName={'A':'流量吸引組','B':'論壇轉接組','C':'平台直球推廣組'}
+    const groupData={'A':[],'B':[],'C':[]}
+    if(todayKpi){(todayKpi.plan||[]).forEach(p=>{if(groupData[p.group])groupData[p.group].push(p)})}
+    const todayStr=now.toISOString().split('T')[0]
+    // 炒話題今日記錄
+    const ttActivities=(DB.get('thread_activities')||[]).filter(a=>a.date===todayStr)
+    return`<div class="card" style="border-color:#1e1a10;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div class="card-title" style="margin-bottom:0">🎯 今日水軍分工</div>
+        <div class="flex" style="gap:6px">
+          <span style="font-size:.72rem;color:var(--text3)">總計：${Object.values(groupData).flat().length} 個帳號出動</span>
+          <button class="btn btn-xs btn-outline" onclick="generateWeeklyKpi();toast('KPI 已重新生成')">⚡ 重新生成KPI</button>
+        </div>
+      </div>
+      ${['A','B','C'].map(g=>{
+        const accs=groupData[g]||[]; if(!accs.length) return''
+        return`<div style="margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span style="font-size:.75rem;font-weight:700;color:${gcol[g]}">${g} 組・${gName[g]}</span>
+            <span style="font-size:.68rem;color:var(--text3)">${accs.map(a=>a.name).join(' / ')}</span>
+          </div>
+          ${accs.length?`<div style="background:#0a0908;border:1px solid ${gcol[g]}20;border-radius:7px;padding:8px 10px">
+            <div style="font-size:.73rem;color:var(--text2);line-height:1.65">${(accs[0].kpis||'').split('\n').filter((l,i)=>i<3&&l.trim()).join('　·　')}</div>
+          </div>`:''}
+        </div>`
+      }).join('')}
+      ${ttActivities.length?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <div style="font-size:.73rem;color:#f59e0b;font-weight:700;margin-bottom:6px">🔥 今日炒話題記錄 ${ttActivities.length} 筆</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${ttActivities.map(a=>`
+          <span style="font-size:.7rem;background:#1a1006;border:1px solid #3a2a10;border-radius:10px;padding:3px 10px">
+            ${a.personaName} · ${a.strategy}
+            ${a.url?`· <a href="${escAttr(a.url)}" target="_blank" style="color:#60a5fa">查看</a>`:''}
+          </span>`).join('')}
+        </div>
+      </div>`:''}
+      ${!todayKpi?`<div style="text-align:center;padding:8px;font-size:.77rem;color:var(--text3);border-top:1px solid var(--border);margin-top:8px">
+        本週KPI未生成 → <button class="btn btn-xs btn-primary" onclick="generateWeeklyKpi()">⚡ 立即生成</button>
+      </div>`:''}
+    </div>`
+  }
+
   // ── 今日完整腳本卡（含定位 + 時間軸 + 台詞）──
   // 各角色主角台詞模板（帶入真實文章標題）
   const PERSONA_LINE_TPL={
@@ -4140,16 +4274,32 @@ function renderCast(){
     </div>`
   }).join('')
 
+  // 分離 YS主帳 和 WC 角色
+  const ysMainPersonas=todayPersonas.filter(p=>p==='YS主帳')
+  const wcPersonas=todayPersonas.filter(p=>p!=='YS主帳')
+
   document.getElementById('cast-page').innerHTML=`
     <!-- 世足時間線 Banner -->
     <div style="background:#1a1008;border:1px solid #3a2010;border-radius:10px;padding:12px 18px;margin-bottom:18px;font-size:.82rem;color:var(--text2)">${wcBanner}</div>
 
-    <!-- 今日出場 -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <h2 style="font-size:1rem;font-weight:700">${DAY_NAMES[DOW]} 出場陣容</h2>
-      ${todayPersonas.map(p=>`<span style="background:#1a0c04;border:1px solid var(--accent)50;border-radius:20px;padding:3px 12px;font-size:.8rem;color:var(--accent)">${p}</span>`).join('')}
+    <!-- YS主帳今日任務（獨立區塊） -->
+    <div style="margin-bottom:22px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <h2 style="font-size:1rem;font-weight:700;color:#f59e0b">⭐ YS主帳 今日任務</h2>
+        <span style="font-size:.72rem;color:var(--text3)">每天獨立發文，不依賴排班</span>
+      </div>
+      ${buildYsMainCard()}
     </div>
-    <div class="g2" style="margin-bottom:20px">${todayPersonas.map(buildScriptCard).join('')}</div>
+
+    <!-- 今日水軍分工摘要 -->
+    ${buildArmySummaryCard()}
+
+    <!-- 今日WC角色出場 -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <h2 style="font-size:1rem;font-weight:700">${DAY_NAMES[DOW]} 世足角色出場</h2>
+      ${wcPersonas.map(p=>`<span style="background:#1a0c04;border:1px solid var(--accent)50;border-radius:20px;padding:3px 12px;font-size:.8rem;color:var(--accent)">${p}</span>`).join('')}
+    </div>
+    <div class="g2" style="margin-bottom:20px">${wcPersonas.map(buildScriptCard).join('')}</div>
 
     <!-- 補充任務 -->
     <div class="card" style="margin-bottom:20px;border-color:#3a2010">
