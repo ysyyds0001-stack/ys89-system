@@ -259,11 +259,17 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     </div>
     <div class="flex">
       <button class="btn btn-outline" onclick="openWeeklyKpi()">📋 本週KPI一覽</button>
+      <button class="btn btn-outline" onclick="initWaterArmyAccounts()" title="載入A/B/C三組完整17個帳號設定">🔄 初始化帳號設定</button>
       <button class="btn btn-primary" onclick="openAddCommunityModal()">+ 新增帳號</button>
     </div>
   </div>
   <div id="cm-kpi-banner" style="margin-bottom:16px"></div>
-  <div id="cm-grid" class="g3"></div>
+  <!-- 全矩陣KPI看板 -->
+  <div id="cm-matrix-kpi" style="margin-bottom:20px"></div>
+  <!-- 閉環示意 -->
+  <div id="cm-loop-ref" style="margin-bottom:20px"></div>
+  <!-- A/B/C 分組帳號 -->
+  <div id="cm-grid"></div>
 </div>
 
 <!-- ===== PAGE: 炒話題追蹤 ===== -->
@@ -820,9 +826,19 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="modal">
     <div class="mh"><div class="mt" id="cm-modal-title">新增水軍號</div><button class="mc" onclick="closeModal('modal-community')">✕</button></div>
     <input type="hidden" id="cm-id">
-    <div class="fr"><div class="fg"><label>帳號名稱</label><input id="cm-name" placeholder="例：Miya"></div>
-    <div class="fg"><label>粉絲數</label><input type="number" id="cm-followers" placeholder="0"></div></div>
-    <div class="fg"><label>回覆方向</label><input id="cm-direction" placeholder="例：投資新手回覆、話題炒作"></div>
+    <div class="fr">
+      <div class="fg"><label>所屬組別</label>
+        <select id="cm-group">
+          <option value="A">A 組 — 流量吸引組</option>
+          <option value="B">B 組 — 論壇轉接組</option>
+          <option value="C">C 組 — 平台直球推廣組</option>
+        </select>
+      </div>
+      <div class="fg"><label>帳號名稱</label><input id="cm-name" placeholder="例：Miya"></div>
+      <div class="fg"><label>粉絲數</label><input type="number" id="cm-followers" placeholder="0"></div>
+    </div>
+    <div class="fg"><label>角色定位</label><input id="cm-role" placeholder="例：話題發起 / 提問型主發"></div>
+    <div class="fg"><label>回覆方向</label><input id="cm-direction" placeholder="例：世足話題、品牌曝光"></div>
     <div class="fg"><label>人設描述</label><textarea id="cm-persona" rows="2" placeholder="帳號的人設與語氣（尚未確立可留空）"></textarea></div>
     <div class="fg"><label>語氣提示詞</label><textarea id="cm-prompt" rows="3" placeholder="回覆時的語氣風格提示詞"></textarea></div>
     <div class="fg"><label>一週工事（每週例行任務）</label><textarea id="cm-week-tasks" rows="3" placeholder="例：週一 回覆3則Threads討論串&#10;週三 分享1篇ys89文章&#10;週五 炒2個熱門話題"></textarea></div>
@@ -2239,8 +2255,9 @@ function openAddCommunityModal(){
   document.getElementById('cm-id').value=''
   document.getElementById('cm-modal-title').textContent='新增水軍號'
   document.getElementById('cm-save-btn').textContent='儲存帳號'
-  ;['cm-name','cm-direction','cm-persona','cm-prompt','cm-week-tasks'].forEach(i=>document.getElementById(i).value='')
+  ;['cm-name','cm-role','cm-direction','cm-persona','cm-prompt','cm-week-tasks'].forEach(i=>document.getElementById(i).value='')
   document.getElementById('cm-followers').value='0'
+  document.getElementById('cm-group').value='A'
   document.getElementById('cm-status').value='人設建立中'
   openModal('modal-community')
 }
@@ -2250,7 +2267,9 @@ function openEditCommunity(id){
   document.getElementById('cm-id').value=id
   document.getElementById('cm-modal-title').textContent='編輯水軍號'
   document.getElementById('cm-save-btn').textContent='更新帳號'
+  document.getElementById('cm-group').value=a.group||'A'
   document.getElementById('cm-name').value=a.name||''
+  document.getElementById('cm-role').value=a.role||''
   document.getElementById('cm-followers').value=a.followers||0
   document.getElementById('cm-direction').value=a.direction||''
   document.getElementById('cm-persona').value=a.persona||''
@@ -2265,7 +2284,16 @@ function saveCommunity(){
   const name=document.getElementById('cm-name').value.trim()
   if(!name){toast('請填入帳號名稱','err');return}
   const list=DB.get('community')
-  const obj={name,followers:+document.getElementById('cm-followers').value||0,direction:document.getElementById('cm-direction').value,persona:document.getElementById('cm-persona').value,prompt:document.getElementById('cm-prompt').value,weekTasks:document.getElementById('cm-week-tasks').value,status:document.getElementById('cm-status').value}
+  const obj={
+    name, group:document.getElementById('cm-group').value,
+    role:document.getElementById('cm-role').value,
+    followers:+document.getElementById('cm-followers').value||0,
+    direction:document.getElementById('cm-direction').value,
+    persona:document.getElementById('cm-persona').value,
+    prompt:document.getElementById('cm-prompt').value,
+    weekTasks:document.getElementById('cm-week-tasks').value,
+    status:document.getElementById('cm-status').value
+  }
   if(id){const i=list.findIndex(x=>x.id===id);if(i>=0)list[i]={...list[i],...obj}}
   else list.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
   DB.set('community',list)
@@ -2284,35 +2312,179 @@ function getWeekKey(){
 window._cmPrompts={}
 function cpCmPrompt(id,btn){cp(window._cmPrompts[id]||'',btn)}
 
+// ── 水軍號三組完整設定資料 ──────────────────────────────────
+const WATER_ARMY_GROUPS=[
+  {
+    id:'A',name:'A 組：流量吸引組',color:'#ef4444',
+    purpose:'拉觸及、拉留言、做話題。由A組發起提問/生活感內容，引爆互動量。',
+    dailyKpi:['主發 1～2 篇','Threads 2～4 則','留言 5～8 則','⚠ 不要每天放註冊連結'],
+    accounts:[
+      {name:'Miya',role:'話題發起 / 提問型主發',direction:'世足話題 / 生活互動',persona:'暖女生，愛分享生活，對世足開始感興趣，常拋出問題讓人回答，語氣自然親切',prompt:'語氣自然親切，常用「大家覺得？」「有沒有人知道？」帶動互動，偶爾加表情符號，不放連結',weekTasks:'每天1則提問式Threads（世足/看球話題）\n每天留言5則附和相關討論\n每週主發2篇世足懶人包/賽程話題'},
+      {name:'BS',role:'流量觸及輔助',direction:'世足話題',persona:'低調男生，偶爾發文，多以留言方式出現，語氣隨性像路過網友',prompt:'短句附和，語氣隨性，如「這也想知道」「對吧好奇怪」，極少超過2行',weekTasks:'每天Threads 2則附和熱門討論\n每天留言3則在世足相關串'},
+      {name:'阿象',role:'生活感留言',direction:'世足看球 / 生活場景',persona:'愛看球、愛聚會的男生，有生活感，喜歡提到一群人聚在一起看球',prompt:'帶入生活場景，語氣接地氣，如「一群人看球才爽」「要找大螢幕的地方」',weekTasks:'每天留言3則帶生活場景（看球聚會/世足情境）\n每週發1則看球場景貼文'},
+      {name:'zahra',role:'活躍互動 / 製造熱度',direction:'世足話題 / 熱門互動',persona:'積極、熱情，快速回應任何話題，是討論串裡最先接話的人',prompt:'簡短有力，常用表情符號，快速接話製造熱度，不超過3行',weekTasks:'每天留言5則在熱門世足討論串\n每天Threads 1則即時互動'},
+      {name:'Ian Lin',role:'男性視角補充',direction:'世足分析 / 球賽觀點',persona:'普通男生，看球老玩家，會補充資訊感的觀點',prompt:'男生視角，補充資訊感，語氣平實，如「這隊最近狀態確實不行」',weekTasks:'每天留言3則補充男性視角\n每週Threads 2則球賽觀點'},
+      {name:'倪',role:'短句引導 / 製造討論',direction:'世足 / 娛樂城話題',persona:'簡短發言者，一句話讓人想回應，不多說但每句都有效',prompt:'極短句，1～2行，拋問題或補一個觀點，如「台灣時間需要，每次都看錯」',weekTasks:'每天留言5則短句互動\n每天Threads 1則短問'},
+    ]
+  },
+  {
+    id:'B',name:'B 組：論壇轉接組',color:'#3b82f6',
+    purpose:'把A組製造的話題接到 YS89 論壇、免費直播入口、世界盃資訊頁。',
+    dailyKpi:['YS主IG 發 1 篇或 1 則限動','Bam班 每天 1 則發文或 Threads','其他帳號留言 3～6 則','每天至少 1 次導到論壇 / 免費直播入口'],
+    accounts:[
+      {name:'YS主IG',role:'官方入口與資訊發布',direction:'賽程 / 入口 / 直播整理',persona:'官方帳號風格，資訊型發文，賽程/入口/直播整理，提供有用資訊但不官僚',prompt:'語氣偏官方但親民，重點是提供有用資訊，固定帶入 YS89 論壇或直播入口連結',weekTasks:'每天發1篇入口/資訊文（賽程、直播、論壇）\n每天1則限動推廣\n週一發週賽程整理圖'},
+      {name:'Bam班',role:'男生朋友感轉接',direction:'論壇引流 / 哥們推薦',persona:'哥們語氣，自然引導，像朋友分享資源，不像廣告',prompt:'哥們口吻，分享感，如「其實可以整理成一篇，賽程、直播、餐廳都放一起」，自然帶出論壇連結',weekTasks:'每天1則Threads接話題並帶入論壇連結\n每天留言3則哥們語氣引導到資訊頁'},
+      {name:'Luna',role:'觀望型女生提問',direction:'世足 / 直播入口',persona:'女生，對世足有興趣但有疑問，被引導型，詢問後讓B組主帳回應',prompt:'詢問式，被動接受推薦，如「免費直播入口也要，開賽前才找很焦慮」',weekTasks:'每天留言2則問問題讓Bam班/YS主IG回應\n每週主發1篇觀望型提問'},
+      {name:'Steven.C',role:'短句補充 / 鞏固話題',direction:'論壇 / 資訊頁補充',persona:'低調補充者，一句話加強轉接效果',prompt:'極短，補充一個正向觀點，如「這個整理不錯」「可以存起來」',weekTasks:'每天留言3則短句補充在論壇轉接串'},
+      {name:'愛麗絲',role:'收藏 / 限動轉貼 / 女生互動',direction:'YS89資訊 / 女生話題',persona:'喜歡收藏好資源的女生，愛轉貼，互動感強',prompt:'女生語氣，收藏感，如「存起來了」「這個有用謝謝分享」',weekTasks:'每天留言2則收藏感回應\n每週轉貼2則YS主IG內容\n每週發1則女生視角貼文'},
+    ]
+  },
+  {
+    id:'C',name:'C 組：平台直球推廣組',color:'#22c55e',
+    purpose:'直接推 YS89、平台好玩、註冊、活動。每天最多 1～2 隻帳號直推，不要全組一起推。',
+    dailyKpi:['平台直球文 1 篇','Threads 1～2 則','留言補品牌 3～5 則','⚠ 每天最多 1～2 隻帳號直推'],
+    accounts:[
+      {name:'Anne',role:'女生直球提醒',direction:'YS89平台 / 女生視角',persona:'已入坑的女生，直接說YS89好用，體驗分享感',prompt:'女生語氣，直接推薦，帶入體驗感，如「世界盃在YS89下注感覺比較安心 有品牌」',weekTasks:'每天1則直球推廣Threads\n每天留言3則品牌補充'},
+      {name:'米恩',role:'新手提問轉推',direction:'YS89新手引導',persona:'新手疑問後被推薦，再自己推薦別人，新手友善語氣',prompt:'新手語氣，問完然後分享答案，帶出YS89，如「我用YS89 大家呢？」',weekTasks:'每天留言2則新手問題接話\n每週主發2篇新手體驗文'},
+      {name:'Jack是個柴迷',role:'搞笑粗暴推廣',direction:'YS89幽默推廣',persona:'幽默、直白，搞笑方式推廣，誇張但可愛',prompt:'搞笑語氣，誇張但可愛，如「免費直播入口先收啦，開打才問真的會被笑」',weekTasks:'每週3則搞笑Threads推廣\n每天留言2則幽默品牌補充'},
+      {name:'Jason Chen',role:'普通玩家口吻',direction:'YS89體驗分享',persona:'一般玩家，分享體驗，語氣平實，不誇張',prompt:'普通玩家語氣，體驗分享感，如「YS89這波世界盃可以蹲，賽程、直播、論壇都有」',weekTasks:'每天1則體驗Threads\n每天留言2則玩家視角'},
+      {name:'林家益',role:'短句玩家提醒',direction:'YS89品牌補充',persona:'短句發言，精準點到品牌優點',prompt:'極短，1～2句，點出YS89一個具體優點，如「看球、看盤、看討論，入口先備好」',weekTasks:'每天留言3則短句品牌補充'},
+      {name:'世足大財神-體育代理',role:'體育代理 / 活動主推',direction:'YS89體育活動 / 賠率',persona:'體育活動代理人，專業推廣體育投注和活動，聚焦賠率、優惠',prompt:'專業但接地氣，如「YS89體育這波會熱」，聚焦體育活動、賠率、優惠',weekTasks:'每天1篇體育活動主推文\n每週3則賠率分析Threads\n每天留言3則體育話題補充'},
+    ]
+  }
+]
+
+function initWaterArmyAccounts(){
+  if(!confirm('將載入A/B/C三組共17個帳號完整設定（已存在的帳號會依名稱更新，不重複新增）\n\n確定執行？'))return
+  const list=DB.get('community')
+  let added=0,updated=0
+  WATER_ARMY_GROUPS.forEach(g=>{
+    g.accounts.forEach(a=>{
+      const existing=list.find(x=>x.name===a.name)
+      const obj={name:a.name,group:g.id,role:a.role,direction:a.direction,persona:a.persona,prompt:a.prompt,weekTasks:a.weekTasks,followers:existing?.followers||0,status:existing?.status||'活躍'}
+      if(existing){Object.assign(existing,obj);updated++}
+      else{list.push({...obj,id:DB.id(),createdAt:new Date().toISOString()});added++}
+    })
+  })
+  DB.set('community',list)
+  renderCommunity()
+  toast(`✅ 完成：新增 ${added} 個、更新 ${updated} 個帳號`)
+}
+
 function renderCommunity(){
   const list=DB.get('community')
   const grid=document.getElementById('cm-grid')
-  if(!list.length){grid.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">尚無帳號</div>';return}
   window._cmPrompts={}
   list.forEach(a=>{if(a.prompt)window._cmPrompts[a.id]=a.prompt})
-  grid.innerHTML=list.map(a=>{
-    const sc={'活躍':'b-green','人設建立中':'b-yellow','暫停':'b-red'}[a.status]||'b-gray'
-    return`<div class="ccard">
-      <div class="fb" style="margin-bottom:8px">
-        <div><div class="pname" style="font-size:.95rem">${a.name}</div><div class="pdir">${a.direction||''}</div></div>
-        <div class="flex">
-          <span class="badge ${sc}">${a.status}</span>
-          <button class="btn btn-xs btn-outline" onclick="openEditCommunity('${a.id}')">編輯</button>
+
+  // ── 全矩陣KPI看板 ──
+  const matrixEl=document.getElementById('cm-matrix-kpi')
+  if(matrixEl){
+    matrixEl.innerHTML=`
+    <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:10px;padding:14px 18px">
+      <div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:12px">📊 全矩陣每日最低 KPI 目標</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px">
+        ${[['A 流量組','主發1篇 · Threads2則 · 留言5則','#ef4444'],['B 轉接組','論壇文1篇 · 留言3則','#3b82f6'],['C 推廣組','直球文1篇 · 留言3則','#22c55e'],['全矩陣合計','主文3篇 · Threads4~8則 · 留言12~20則','#f59e0b']].map(([t,v,c])=>`
+          <div style="background:#0a0908;border:1px solid ${c}30;border-radius:8px;padding:10px 12px">
+            <div style="font-size:.7rem;color:${c};font-weight:700;margin-bottom:5px">${t}</div>
+            <div style="font-size:.76rem;color:var(--text2);line-height:1.6">${v}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:.73rem;color:var(--text3);margin-bottom:6px">週內容比例建議：</div>
+      <div style="display:flex;gap:0;border-radius:6px;overflow:hidden;height:22px">
+        ${[['世足話題/提問','30%','#ef4444'],['賽程表/台灣時間','25%','#f59e0b'],['直播/論壇入口','20%','#3b82f6'],['YS89好玩/體育','15%','#22c55e'],['註冊/活動/優惠','10%','#8b5cf6']].map(([l,p,c])=>`
+          <div style="flex:${parseInt(p)};background:${c};display:flex;align-items:center;justify-content:center;font-size:.6rem;color:#fff;font-weight:700;padding:0 2px;overflow:hidden;white-space:nowrap" title="${l} ${p}">${parseInt(p)>15?p:''}</div>`).join('')}
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+        ${[['世足話題/提問','30%','#ef4444'],['賽程表/台灣時間','25%','#f59e0b'],['直播/論壇入口','20%','#3b82f6'],['YS89好玩/體育','15%','#22c55e'],['註冊/活動/優惠','10%','#8b5cf6']].map(([l,p,c])=>`
+          <span style="font-size:.68rem;color:var(--text3)"><span style="display:inline-block;width:8px;height:8px;background:${c};border-radius:2px;margin-right:3px"></span>${l} <b style="color:${c}">${p}</b></span>`).join('')}
+      </div>
+    </div>`
+  }
+
+  // ── 閉環示意 ──
+  const loopEl=document.getElementById('cm-loop-ref')
+  if(loopEl){
+    const steps=[
+      {step:'STEP 1',group:'A 流量組',color:'#ef4444',act:'Miya 發話題提問，zahra/倪/阿象留言熱場，製造自然互動量'},
+      {step:'STEP 2',group:'B 轉接（接話）',color:'#3b82f6',act:'Luna/Steven 提出需求，Bam班順勢說「可以整理成一篇」'},
+      {step:'STEP 3',group:'B 轉接（導流）',color:'#60a5fa',act:'YS主IG 發出賽程/入口文，愛麗絲收藏，Bam班補一句帶連結'},
+      {step:'STEP 4',group:'C 推廣組',color:'#22c55e',act:'Jason Chen/Jack/林家益 在話題熱的時候補一句品牌，不要同時全出'},
+    ]
+    loopEl.innerHTML=`
+    <div style="background:#0a0908;border:1px solid var(--border2);border-radius:10px;padding:14px 18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent)">🔄 三組閉環操盤流程示意</div>
+        <span style="font-size:.68rem;color:var(--text3)">每輪話題操盤的標準流程</span>
+      </div>
+      <div style="display:flex;gap:0;align-items:stretch">
+        ${steps.map((s,i)=>`
+          <div style="flex:1;border:1px solid ${s.color}40;border-radius:8px;padding:10px;margin:0 ${i<steps.length-1?'4px':'0px'} 0 ${i>0?'4px':'0px'}">
+            <div style="font-size:.65rem;color:${s.color};font-weight:700;margin-bottom:3px">${s.step}</div>
+            <div style="font-size:.72rem;color:var(--text);font-weight:600;margin-bottom:5px">${s.group}</div>
+            <div style="font-size:.7rem;color:var(--text3);line-height:1.5">${s.act}</div>
+          </div>
+          ${i<steps.length-1?`<div style="display:flex;align-items:center;color:var(--text3);font-size:1rem;padding:0 2px">→</div>`:''}`).join('')}
+      </div>
+    </div>`
+  }
+
+  // ── A/B/C 分組帳號卡 ──
+  if(!list.length){
+    grid.innerHTML=`<div style="padding:40px;text-align:center;color:var(--text3)">尚無帳號<br><span style="font-size:.78rem">點「初始化帳號設定」一鍵載入三組17個帳號</span></div>`
+    renderKpiBanner(); return
+  }
+  const byGroup={'A':[],'B':[],'C':[],'':[]};
+  list.forEach(a=>{(byGroup[a.group||'']||byGroup['']).push(a)})
+
+  grid.innerHTML=WATER_ARMY_GROUPS.map(g=>{
+    const accs=byGroup[g.id]||[]
+    const sc={'A':'#ef4444','B':'#3b82f6','C':'#22c55e'}[g.id]
+    if(!accs.length)return''
+    return`
+    <div style="margin-bottom:24px">
+      <div style="background:${sc}15;border:1px solid ${sc}40;border-radius:10px;padding:12px 16px;margin-bottom:12px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:.95rem;font-weight:700;color:${sc}">${g.name}</div>
+            <div style="font-size:.75rem;color:var(--text3);margin-top:3px">用途：${g.purpose}</div>
+          </div>
+          <div style="background:#0a0908;border:1px solid ${sc}30;border-radius:7px;padding:7px 12px">
+            <div style="font-size:.65rem;color:${sc};font-weight:700;margin-bottom:4px">每日KPI</div>
+            ${g.dailyKpi.map(k=>`<div style="font-size:.73rem;color:${k.startsWith('⚠')?'#f87171':'var(--text2)'};line-height:1.6">• ${k}</div>`).join('')}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+          ${accs.map(a=>`<span style="background:${sc}20;border:1px solid ${sc}40;border-radius:12px;padding:2px 10px;font-size:.73rem;color:${sc};font-weight:600">${a.name}</span>`).join('')}
+          <span style="font-size:.72rem;color:var(--text3);padding:2px 6px">${accs.length} 個帳號</span>
         </div>
       </div>
-      <div class="flex" style="margin-bottom:8px">
-        <span class="tm">粉絲</span><span style="color:var(--accent);font-weight:600">${a.followers||0}</span>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">
+        ${accs.map(a=>{
+          const ss={'活躍':'b-green','人設建立中':'b-yellow','暫停':'b-red'}[a.status]||'b-gray'
+          return`<div class="ccard" style="border-color:${sc}25">
+            <div class="fb" style="margin-bottom:6px">
+              <div>
+                <div style="font-size:.9rem;font-weight:700;color:var(--text)">${a.name}</div>
+                <div style="font-size:.7rem;color:${sc};margin-top:2px;font-weight:600">${a.role||''}</div>
+                <div style="font-size:.68rem;color:var(--text3)">${a.direction||''}</div>
+              </div>
+              <div class="flex" style="flex-direction:column;align-items:flex-end;gap:4px">
+                <span class="badge ${ss}" style="font-size:.65rem">${a.status}</span>
+                <button class="btn btn-xs btn-outline" onclick="openEditCommunity('${a.id}')">編輯</button>
+              </div>
+            </div>
+            ${a.persona?`<div style="font-size:.74rem;color:var(--text2);line-height:1.5;margin-bottom:6px;background:#0a0908;border-radius:5px;padding:5px 8px">${a.persona.slice(0,80)}${a.persona.length>80?'…':''}</div>`:''}
+            ${a.prompt?`<div style="position:relative"><div class="pbox" style="max-height:55px;font-size:.72rem">${a.prompt}</div>
+              <button class="pcopy" onclick="cpCmPrompt('${a.id}',this)" style="font-size:.62rem;padding:2px 6px">複製</button></div>`
+              :`<span class="badge b-warn" style="font-size:.65rem">語氣提示詞待建立</span>`}
+            ${a.weekTasks?`<div style="font-size:.7rem;color:var(--text3);margin-top:6px;padding:5px 8px;background:#0a0908;border-radius:5px;white-space:pre-wrap;line-height:1.6">${a.weekTasks}</div>`:''}
+          </div>`
+        }).join('')}
       </div>
-      <div class="sec" style="margin-top:0">人設描述</div>
-      <div style="font-size:.82rem;color:var(--text2)">${a.persona||'尚未建立'}</div>
-      ${a.prompt?`<div class="sec">語氣提示詞</div>
-        <div style="position:relative"><div class="pbox" style="max-height:80px">${a.prompt}</div>
-        <button class="pcopy" onclick="cpCmPrompt('${a.id}',this)">複製</button></div>
-      `:`<div style="margin-top:8px"><span class="badge b-warn">語氣提示詞待建立</span></div>`}
-      ${a.weekTasks?`<div class="sec">一週工事</div>
-        <div style="background:#0B0B0D;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:.78rem;color:var(--text2);white-space:pre-wrap;line-height:1.7">${a.weekTasks}</div>`:''}
     </div>`
-  }).join('')
+  }).join('')+(byGroup[''].length?`<div><div style="font-size:.8rem;color:var(--text3);margin-bottom:8px">未分組帳號</div><div class="g3">${byGroup[''].map(a=>`<div class="ccard"><div class="fb"><div><div class="pname">${a.name}</div><div class="pdir">${a.direction||''}</div></div><button class="btn btn-xs btn-outline" onclick="openEditCommunity('${a.id}')">編輯</button></div></div>`).join('')}</div></div>`:'')
+
   renderKpiBanner()
 }
 
