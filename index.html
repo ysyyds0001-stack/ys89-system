@@ -184,7 +184,8 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab active" onclick="nav(this,'personas')">發文角色</div>
   <div class="nav-tab" onclick="nav(this,'tracker')">發文追蹤</div>
   <div class="nav-tab" onclick="nav(this,'articles')">文章庫</div>
-  <div class="nav-tab" onclick="nav(this,'community')">社群號</div>
+  <div class="nav-tab" onclick="nav(this,'community')">社群水軍號</div>
+  <div class="nav-tab" onclick="nav(this,'threadtracker')">🔥 炒話題追蹤</div>
   <div class="nav-tab" onclick="nav(this,'threads')">📱 Threads</div>
   <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
   <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口</div>
@@ -253,8 +254,8 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 <div id="pg-community" class="page">
   <div class="fb" style="margin-bottom:18px">
     <div>
-      <h2 style="font-size:1.2rem;font-weight:700">社群號</h2>
-      <p class="tm" style="margin-top:3px">回覆帳號管理 · 人設語氣設定 · 每週KPI計畫</p>
+      <h2 style="font-size:1.2rem;font-weight:700">社群水軍號</h2>
+      <p class="tm" style="margin-top:3px">水軍號管理 · 人設設定 · 路徑目標 · 每週KPI計畫</p>
     </div>
     <div class="flex">
       <button class="btn btn-outline" onclick="openWeeklyKpi()">📋 本週KPI一覽</button>
@@ -263,6 +264,25 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
   <div id="cm-kpi-banner" style="margin-bottom:16px"></div>
   <div id="cm-grid" class="g3"></div>
+</div>
+
+<!-- ===== PAGE: 炒話題追蹤 ===== -->
+<div id="pg-threadtracker" class="page">
+  <div class="fb" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">🔥 炒話題追蹤</h2>
+      <p class="tm" style="margin-top:3px">每日炒話題記錄 · 隔日成效追蹤 · 連結速達</p>
+    </div>
+    <div class="flex">
+      <select id="tt-filter-persona" style="width:120px" onchange="renderThreadTracker()"><option value="">全部角色</option></select>
+      <select id="tt-filter-status" style="width:100px" onchange="renderThreadTracker()">
+        <option value="">全部狀態</option><option>待記錄</option><option>已記錄</option>
+      </select>
+      <button class="btn btn-primary" onclick="openAddThreadActivity()">+ 新增炒話題</button>
+    </div>
+  </div>
+  <div id="tt-today-banner" style="margin-bottom:16px"></div>
+  <div id="tt-table"></div>
 </div>
 
 <!-- ===== PAGE: Threads 腳本 ===== -->
@@ -277,6 +297,15 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option>
       <option>百家樂</option><option>老虎機</option><option>捕魚機</option>
     </select>
+  </div>
+  <!-- URL 投餵靈感區 -->
+  <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:10px;padding:14px 16px;margin-bottom:20px">
+    <div style="font-size:.85rem;font-weight:600;color:var(--accent);margin-bottom:10px">🔗 投餵熱門帖 URL → 生成仿文靈感提示詞</div>
+    <div style="display:flex;gap:8px">
+      <input id="th-inspire-url" placeholder="貼入 Threads 熱門帖的網址..." style="flex:1">
+      <button class="btn btn-primary" onclick="genThreadInspire()">✨ 生成靈感</button>
+    </div>
+    <div id="th-inspire-result" style="margin-top:10px"></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
     <div>
@@ -658,6 +687,56 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 </div>
 
+<!-- 新增炒話題記錄 -->
+<div id="modal-thread-activity" class="overlay">
+  <div class="modal" style="max-width:560px">
+    <div class="mh"><div class="mt" id="ta-modal-title">新增炒話題記錄</div><button class="mc" onclick="closeModal('modal-thread-activity')">✕</button></div>
+    <input type="hidden" id="ta-id">
+    <div class="fr">
+      <div class="fg"><label>日期</label><input type="date" id="ta-date"></div>
+      <div class="fg"><label>角色</label><select id="ta-persona"><option value="">選擇角色</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>策略</label>
+        <select id="ta-strategy">
+          <option>帶風向</option><option>引流/導到ys89</option><option>炒話題</option><option>品牌曝光</option><option>真人互動</option>
+        </select>
+      </div>
+      <div class="fg"><label>方向</label>
+        <select id="ta-dir">
+          <option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option><option>百家樂</option><option>老虎機</option><option>捕魚機</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>主題摘要</label><input id="ta-topic" placeholder="例：世足倒數10天 你支持哪一隊"></div>
+    <div class="fg"><label>Threads 貼文連結（選填，發布後填入）</label><input id="ta-url" type="url" placeholder="https://www.threads.net/@xxx/post/..."></div>
+    <div class="fg"><label>發文內容（選填，貼上腳本）</label><textarea id="ta-content" rows="3" placeholder="貼上實際發文內容"></textarea></div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-thread-activity')">取消</button>
+      <button class="btn btn-primary" onclick="saveThreadActivity()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 記錄炒話題成效 -->
+<div id="modal-thread-metrics" class="overlay">
+  <div class="modal" style="max-width:420px">
+    <div class="mh"><div class="mt">📊 記錄炒話題成效</div><button class="mc" onclick="closeModal('modal-thread-metrics')">✕</button></div>
+    <input type="hidden" id="tm-id">
+    <div id="tm-info" style="background:#0a0908;border:1px solid var(--border2);border-radius:6px;padding:8px 10px;margin-bottom:12px;font-size:.8rem;color:var(--text2)"></div>
+    <div class="fr"><div class="fg"><label>❤️ 按讚</label><input type="number" id="tm-likes" placeholder="0"></div><div class="fg"><label>💬 回覆</label><input type="number" id="tm-replies" placeholder="0"></div></div>
+    <div class="fr"><div class="fg"><label>🔁 轉發</label><input type="number" id="tm-reposts" placeholder="0"></div><div class="fg"><label>👁 瀏覽</label><input type="number" id="tm-views" placeholder="0"></div></div>
+    <div class="fr"><div class="fg"><label>➕ 漲粉</label><input type="number" id="tm-follows" placeholder="0"></div><div class="fg"><label>備註</label><input id="tm-notes" placeholder="觀察"></div></div>
+    <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:6px;padding:8px 10px;margin:10px 0;font-size:.73rem;color:var(--text3)">
+      💡 也可以傳截圖給 Mike bot，bot 會自動辨識並記錄
+    </div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-thread-metrics')">取消</button>
+      <button class="btn btn-primary" onclick="saveThreadMetrics()">更新成效</button>
+    </div>
+  </div>
+</div>
+
 <!-- 更換腳本 -->
 <div id="modal-cast-update" class="overlay">
   <div class="modal" style="max-width:920px;width:96vw;max-height:88vh;display:flex;flex-direction:column">
@@ -739,7 +818,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 <!-- 社群號編輯 -->
 <div id="modal-community" class="overlay">
   <div class="modal">
-    <div class="mh"><div class="mt" id="cm-modal-title">新增社群號</div><button class="mc" onclick="closeModal('modal-community')">✕</button></div>
+    <div class="mh"><div class="mt" id="cm-modal-title">新增水軍號</div><button class="mc" onclick="closeModal('modal-community')">✕</button></div>
     <input type="hidden" id="cm-id">
     <div class="fr"><div class="fg"><label>帳號名稱</label><input id="cm-name" placeholder="例：Miya"></div>
     <div class="fg"><label>粉絲數</label><input type="number" id="cm-followers" placeholder="0"></div></div>
@@ -747,6 +826,25 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="fg"><label>人設描述</label><textarea id="cm-persona" rows="2" placeholder="帳號的人設與語氣（尚未確立可留空）"></textarea></div>
     <div class="fg"><label>語氣提示詞</label><textarea id="cm-prompt" rows="3" placeholder="回覆時的語氣風格提示詞"></textarea></div>
     <div class="fg"><label>一週工事（每週例行任務）</label><textarea id="cm-week-tasks" rows="3" placeholder="例：週一 回覆3則Threads討論串&#10;週三 分享1篇ys89文章&#10;週五 炒2個熱門話題"></textarea></div>
+    <div style="background:#0a0908;border:1px solid var(--border2);border-radius:7px;padding:10px 12px;margin-bottom:10px">
+      <div style="font-size:.72rem;color:var(--accent);font-weight:700;margin-bottom:8px">🎯 路徑目標參考（發文/回覆時引導方向）</div>
+      <div style="font-size:.73rem;color:var(--text3);margin-bottom:6px">平台入口：</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+        <span class="badge b-green" style="cursor:pointer" onclick="cpInline('https://ys89.com/')">ys89.com</span>
+        <span class="badge b-green" style="cursor:pointer" onclick="cpInline('https://ys89.fun/')">ys89.fun</span>
+        <span class="badge b-green" style="cursor:pointer" onclick="cpInline('https://ys89.me/live-104')">ys89.me</span>
+        <span class="badge b-green" style="cursor:pointer" onclick="cpInline('https://ys89.info/live-104')">ys89.info</span>
+        <span class="badge b-green" style="cursor:pointer" onclick="cpInline('https://ys89.biz/live-104')">ys89.biz</span>
+        <span class="badge b-blue" style="cursor:pointer" onclick="cpInline('https://fifa-worldcups.tw')">fifa-worldcups.tw</span>
+      </div>
+      <div style="font-size:.73rem;color:var(--text3);margin-bottom:6px">品牌曝光角度（點擊複製）：</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span class="badge b-warn" style="cursor:pointer" onclick="cpInline('請問有人聽過ys89嗎？最近朋友推薦我試試')">聽過ys89嗎</span>
+        <span class="badge b-warn" style="cursor:pointer" onclick="cpInline('我都是用YS89 大家呢？')">我都用ys89</span>
+        <span class="badge b-warn" style="cursor:pointer" onclick="cpInline('世界盃在YS89下注感覺比較安心 有品牌')">ys89安心</span>
+        <span class="badge b-warn" style="cursor:pointer" onclick="cpInline('YS89這個娛樂城世足賠率還不錯 有人用嗎')">ys89賠率</span>
+      </div>
+    </div>
     <div class="fg"><label>狀態</label>
       <select id="cm-status"><option>活躍</option><option>人設建立中</option><option>暫停</option></select>
     </div>
@@ -1639,7 +1737,7 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(sync) sync.textContent='已同步'
@@ -1657,7 +1755,7 @@ function nav(el,page){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
-  const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threads:renderThreads,entrances:renderEntrances,links:renderLinks,cast:renderCast}
+  const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,threads:renderThreads,entrances:renderEntrances,links:renderLinks,cast:renderCast}
   renders[page]&&renders[page]()
 }
 function openModal(id){document.getElementById(id).classList.add('show')}
@@ -2013,10 +2111,23 @@ function openSetPostUrl(id){
 }
 
 function savePostUrl(){
-  const id=document.getElementById('spu-id').value
+  const rawId=document.getElementById('spu-id').value
   const url=document.getElementById('spu-url').value.trim()
+  // 若是 thread: 前綴，儲存到 thread_activities
+  if(rawId.startsWith('thread:')){
+    const id=rawId.replace('thread:','')
+    const list=DB.get('thread_activities')||[]
+    const i=list.findIndex(x=>x.id===id); if(i<0)return
+    list[i].url=url
+    DB.set('thread_activities',list)
+    closeModal('modal-set-posturl')
+    renderThreadTracker()
+    toast(url?'🔗 炒話題連結已儲存':'連結已清除')
+    return
+  }
+  // 原本 post URL 儲存邏輯
   const posts=DB.get('posts')
-  const i=posts.findIndex(x=>x.id===id); if(i<0)return
+  const i=posts.findIndex(x=>x.id===rawId); if(i<0)return
   posts[i].postUrl=url
   DB.set('posts',posts)
   closeModal('modal-set-posturl')
@@ -2126,7 +2237,7 @@ function delArticle(id){
 
 function openAddCommunityModal(){
   document.getElementById('cm-id').value=''
-  document.getElementById('cm-modal-title').textContent='新增社群號'
+  document.getElementById('cm-modal-title').textContent='新增水軍號'
   document.getElementById('cm-save-btn').textContent='儲存帳號'
   ;['cm-name','cm-direction','cm-persona','cm-prompt','cm-week-tasks'].forEach(i=>document.getElementById(i).value='')
   document.getElementById('cm-followers').value='0'
@@ -2137,7 +2248,7 @@ function openAddCommunityModal(){
 function openEditCommunity(id){
   const a=DB.get('community').find(x=>x.id===id); if(!a)return
   document.getElementById('cm-id').value=id
-  document.getElementById('cm-modal-title').textContent='編輯社群號'
+  document.getElementById('cm-modal-title').textContent='編輯水軍號'
   document.getElementById('cm-save-btn').textContent='更新帳號'
   document.getElementById('cm-name').value=a.name||''
   document.getElementById('cm-followers').value=a.followers||0
@@ -2693,6 +2804,7 @@ function runBatchGen(){
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function escAttr(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}
 function cpd(el){cp(el.dataset.cp||'',el)}
+function cpInline(text){cp(text);toast('已複製：'+text.slice(0,20)+'…')}
 
 // ===== ENTRANCES =====
 const DEFAULT_ENTRANCES=[
@@ -3053,6 +3165,248 @@ function delLink(id){
 }
 
 function openNamingRules(){openModal('modal-naming-rules')}
+
+// ===== THREADS INSPIRATION（URL 投餵 → 靈感）=====
+function genThreadInspire(){
+  const url = document.getElementById('th-inspire-url').value.trim()
+  const result = document.getElementById('th-inspire-result')
+  if(!url){ toast('請先填入 Threads 帖子網址','err'); return }
+
+  // 取出所有 YS89 入口網址
+  const ysUrls = ['https://ys89.com/', 'https://ys89.fun/', 'https://ys89.me/live-104', 'https://ys89.info/live-104', 'https://ys89.biz/live-104', 'https://fifa-worldcups.tw']
+  const randomUrl = ysUrls[Math.floor(Math.random()*ysUrls.length)]
+
+  const prompt = `你是一個Threads社群操盤手，專門為娛樂城YS89做社群行銷。
+
+請參考以下這則熱門Threads帖子的URL，為我生成3個不同角度的仿文腳本：
+${url}
+
+要求：
+1. 保留原帖的話題熱度與互動感
+2. 自然融入世界盃話題（目前世足倒數中）
+3. 適時提到YS89或引導至 ${randomUrl}
+4. 語氣真實、像真人在分享，不能像廣告
+5. 每個版本給一個角色標籤（例：新手玩家/老玩家/路過觀眾）
+
+輸出格式：
+版本A [角色]：腳本內容
+版本B [角色]：腳本內容
+版本C [角色]：腳本內容`
+
+  result.innerHTML = `
+    <div style="background:#0a0908;border:1px solid var(--border2);border-radius:7px;padding:10px 12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:.75rem;color:#fbbf24;font-weight:700">✨ 生成完成 — 複製提示詞後貼到 AI 工具</div>
+        <button class="btn btn-xs btn-copy" data-cp="${escAttr(prompt)}" onclick="cpd(this)">複製提示詞</button>
+      </div>
+      <div style="font-size:.73rem;color:var(--text3);background:#0d0b0a;border-radius:5px;padding:8px 10px;max-height:120px;overflow-y:auto;white-space:pre-wrap;line-height:1.6">${escAttr(prompt)}</div>
+      <div style="margin-top:8px;display:flex;gap:6px">
+        <button class="btn btn-xs btn-primary" onclick="openAddThreadsPost()">+ 存入仿文腳本庫</button>
+        <button class="btn btn-xs btn-outline" onclick="document.getElementById('tp-ref-url').value='${escAttr(url)}';openAddThreadsPost()">+ 帶入URL新增</button>
+      </div>
+    </div>`
+}
+
+// ===== THREAD TRACKER（炒話題追蹤）=====
+
+const TT_STRATEGY_COLOR = {
+  '帶風向':'#ef4444','引流/導到ys89':'#22c55e','炒話題':'#f59e0b',
+  '品牌曝光':'#3b82f6','真人互動':'#a78bfa'
+}
+
+function renderThreadTracker(){
+  const today = new Date().toISOString().split('T')[0]
+  const daysLeft = Math.ceil((new Date('2026-06-11T00:00:00+08:00') - new Date()) / (1000*60*60*24))
+
+  // 世足倒數 banner
+  const banner = document.getElementById('tt-today-banner')
+  if(banner){
+    banner.innerHTML = `<div style="background:#1a1008;border:1px solid #3a2010;border-radius:10px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div style="font-size:.82rem;color:var(--text2)">
+        ⏳ 世足開賽倒數 <b style="color:var(--accent);font-size:1.1em">${daysLeft > 0 ? daysLeft+'天' : '已開賽'}</b>
+        &nbsp;·&nbsp; 今日：<b style="color:var(--text)">${today}</b>
+      </div>
+      <div style="font-size:.75rem;color:var(--text3)">炒話題記錄後隔日點「記錄成效」填入數據</div>
+    </div>`
+  }
+
+  // 填充角色下拉
+  const personaSel = document.getElementById('tt-filter-persona')
+  if(personaSel && personaSel.options.length <= 1){
+    DB.get('personas').forEach(p=>{
+      const o=document.createElement('option'); o.value=p.name; o.textContent=p.name
+      personaSel.appendChild(o)
+    })
+  }
+
+  let list = (DB.get('thread_activities')||[]).slice().reverse()
+  const pf = document.getElementById('tt-filter-persona')?.value
+  const sf = document.getElementById('tt-filter-status')?.value
+  if(pf) list = list.filter(a=>a.personaName===pf)
+  if(sf) list = list.filter(a=>a.status===sf)
+
+  const wrap = document.getElementById('tt-table')
+  if(!list.length){
+    wrap.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">尚無炒話題記錄<br><span style="font-size:.78rem">點右上角「+ 新增炒話題」開始記錄</span></div>'
+    return
+  }
+
+  // 分組：今日 + 近期
+  const todayItems = list.filter(a=>a.date===today)
+  const pastItems  = list.filter(a=>a.date!==today)
+
+  const renderRow = a => {
+    const sc = TT_STRATEGY_COLOR[a.strategy]||'#8A7D74'
+    const hasMetrics = a.likes||a.replies||a.reposts||a.views
+    return `<tr>
+      <td style="white-space:nowrap">${a.date}</td>
+      <td><span class="badge b-green">${a.personaName||'—'}</span></td>
+      <td><span style="color:${sc};font-size:.78rem;font-weight:600">${a.strategy||'—'}</span></td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.topic||'—'}</td>
+      <td style="white-space:nowrap;text-align:center">
+        ${a.url ? `<a href="${escAttr(a.url)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px">🔗 查看</a>` : ''}
+        <button class="btn btn-xs btn-outline" onclick="openSetThreadUrl('${a.id}')" title="設定連結">${a.url?'✏':'＋連結'}</button>
+      </td>
+      <td style="white-space:nowrap;text-align:center">
+        ${hasMetrics
+          ? `<span style="font-size:.77rem;color:var(--text2)">❤${a.likes||0} 💬${a.replies||0} 👁${a.views||0}</span>`
+          : `<span style="font-size:.73rem;color:#f87171">待記錄</span>`}
+      </td>
+      <td class="flex" style="gap:4px">
+        <button class="btn btn-xs btn-primary" onclick="openThreadMetrics('${a.id}')">📊 ${hasMetrics?'更新':'記錄成效'}</button>
+        <button class="btn btn-xs btn-outline" onclick="openEditThreadActivity('${a.id}')">✏</button>
+        <button class="btn btn-xs btn-danger" onclick="delThreadActivity('${a.id}')">刪</button>
+      </td>
+    </tr>`
+  }
+
+  const tableHead = `<table><thead><tr>
+    <th>日期</th><th>角色</th><th>策略</th><th>主題</th><th>貼文連結</th><th>成效</th><th>操作</th>
+  </tr></thead>`
+
+  let html = '<div style="overflow-x:auto">'
+  if(todayItems.length){
+    html += `<div style="font-size:.82rem;font-weight:700;color:var(--accent);margin-bottom:8px">📅 今日（${today}）— ${todayItems.length} 筆</div>`
+    html += tableHead + `<tbody>${todayItems.map(renderRow).join('')}</tbody></table>`
+  }
+  if(pastItems.length){
+    html += `<div style="font-size:.82rem;font-weight:700;color:var(--text3);margin:16px 0 8px">📋 近期記錄</div>`
+    html += tableHead + `<tbody>${pastItems.slice(0,20).map(renderRow).join('')}</tbody></table>`
+  }
+  html += '</div>'
+  wrap.innerHTML = html
+}
+
+function openAddThreadActivity(){
+  document.getElementById('ta-id').value = ''
+  document.getElementById('ta-modal-title').textContent = '新增炒話題記錄'
+  document.getElementById('ta-date').value = new Date().toISOString().split('T')[0]
+  document.getElementById('ta-url').value = ''
+  document.getElementById('ta-topic').value = ''
+  document.getElementById('ta-content').value = ''
+  // 填充角色選單
+  const sel = document.getElementById('ta-persona')
+  sel.innerHTML = '<option value="">選擇角色</option>'
+  DB.get('personas').forEach(p=>{
+    sel.innerHTML += `<option value="${p.id}|${p.name}">${p.name}</option>`
+  })
+  openModal('modal-thread-activity')
+}
+
+function openEditThreadActivity(id){
+  const a = (DB.get('thread_activities')||[]).find(x=>x.id===id); if(!a)return
+  document.getElementById('ta-id').value = id
+  document.getElementById('ta-modal-title').textContent = '編輯炒話題記錄'
+  document.getElementById('ta-date').value = a.date||''
+  document.getElementById('ta-url').value = a.url||''
+  document.getElementById('ta-topic').value = a.topic||''
+  document.getElementById('ta-content').value = a.content||''
+  document.getElementById('ta-strategy').value = a.strategy||'帶風向'
+  document.getElementById('ta-dir').value = a.dir||'世足/運彩'
+  const sel = document.getElementById('ta-persona')
+  sel.innerHTML = '<option value="">選擇角色</option>'
+  DB.get('personas').forEach(p=>{
+    const selected = p.id === a.personaId ? ' selected' : ''
+    sel.innerHTML += `<option value="${p.id}|${p.name}"${selected}>${p.name}</option>`
+  })
+  openModal('modal-thread-activity')
+}
+
+function saveThreadActivity(){
+  const id = document.getElementById('ta-id').value
+  const pval = document.getElementById('ta-persona').value
+  const [personaId, personaName] = pval ? pval.split('|') : ['','']
+  const obj = {
+    date: document.getElementById('ta-date').value,
+    personaId, personaName,
+    strategy: document.getElementById('ta-strategy').value,
+    dir: document.getElementById('ta-dir').value,
+    topic: document.getElementById('ta-topic').value.trim(),
+    url: document.getElementById('ta-url').value.trim(),
+    content: document.getElementById('ta-content').value.trim(),
+    status: '待記錄',
+    likes:0, replies:0, reposts:0, views:0, follows:0, notes:'',
+    updatedAt: new Date().toISOString()
+  }
+  const list = DB.get('thread_activities')||[]
+  if(id){
+    const i=list.findIndex(x=>x.id===id)
+    if(i>=0) list[i]={...list[i],...obj}
+  } else {
+    list.push({...obj, id:DB.id(), createdAt:new Date().toISOString()})
+  }
+  DB.set('thread_activities', list)
+  closeModal('modal-thread-activity')
+  renderThreadTracker()
+  toast(id?'炒話題記錄已更新':'炒話題記錄已新增')
+}
+
+function openThreadMetrics(id){
+  const a = (DB.get('thread_activities')||[]).find(x=>x.id===id); if(!a)return
+  document.getElementById('tm-id').value = id
+  document.getElementById('tm-info').innerHTML =
+    `<b style="color:var(--accent)">${a.personaName}</b> · ${a.strategy} · ${a.date}<br>
+     <span style="color:var(--text3)">${a.topic||''}</span>`
+  document.getElementById('tm-likes').value = a.likes||0
+  document.getElementById('tm-replies').value = a.replies||0
+  document.getElementById('tm-reposts').value = a.reposts||0
+  document.getElementById('tm-views').value = a.views||0
+  document.getElementById('tm-follows').value = a.follows||0
+  document.getElementById('tm-notes').value = a.notes||''
+  openModal('modal-thread-metrics')
+}
+
+function saveThreadMetrics(){
+  const id = document.getElementById('tm-id').value
+  const list = DB.get('thread_activities')||[]
+  const i = list.findIndex(x=>x.id===id); if(i<0)return
+  list[i].likes    = +document.getElementById('tm-likes').value||0
+  list[i].replies  = +document.getElementById('tm-replies').value||0
+  list[i].reposts  = +document.getElementById('tm-reposts').value||0
+  list[i].views    = +document.getElementById('tm-views').value||0
+  list[i].follows  = +document.getElementById('tm-follows').value||0
+  list[i].notes    = document.getElementById('tm-notes').value.trim()
+  list[i].status   = '已記錄'
+  list[i].updatedAt = new Date().toISOString()
+  DB.set('thread_activities', list)
+  closeModal('modal-thread-metrics')
+  renderThreadTracker()
+  toast('成效已記錄')
+}
+
+function openSetThreadUrl(id){
+  const a = (DB.get('thread_activities')||[]).find(x=>x.id===id); if(!a)return
+  document.getElementById('spu-id').value = 'thread:'+id
+  document.getElementById('spu-url').value = a.url||''
+  openModal('modal-set-posturl')
+}
+
+function delThreadActivity(id){
+  if(!confirm('確定刪除這筆炒話題記錄？'))return
+  DB.set('thread_activities', (DB.get('thread_activities')||[]).filter(x=>x.id!==id))
+  renderThreadTracker()
+  toast('已刪除')
+}
 
 // ===== CAST / 劇本 =====
 window._castOverride = window._castOverride || {}
