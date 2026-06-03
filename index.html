@@ -189,6 +189,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'threads')">📱 Threads</div>
   <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
   <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口</div>
+  <div class="nav-tab" onclick="nav(this,'todo')">📋 今日待辦</div>
   <div class="nav-tab" onclick="nav(this,'cast')">🎬 劇本</div>
 </nav>
 
@@ -271,6 +272,55 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div id="cm-loop-ref" style="margin-bottom:20px"></div>
   <!-- A/B/C 分組帳號 -->
   <div id="cm-grid"></div>
+</div>
+
+<!-- ===== PAGE: 今日待辦 ===== -->
+<div id="pg-todo" class="page">
+  <div class="fb" style="margin-bottom:16px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">📋 今日待辦</h2>
+      <p class="tm" style="margin-top:3px" id="todo-subtitle">YS主帳 + 世足角色 + 水軍三組 · 每日執行清單</p>
+    </div>
+    <div class="flex">
+      <button class="btn btn-outline" onclick="clearDoneTodos()">✓ 清除已完成</button>
+      <button class="btn btn-outline" onclick="openQuickScript()">🎬 快速拆解劇本</button>
+      <button class="btn btn-primary" onclick="initTodayTodos(true)">🔄 重新整理今日清單</button>
+    </div>
+  </div>
+  <!-- 進度條 -->
+  <div id="todo-progress" style="margin-bottom:16px"></div>
+  <!-- 快速輸入列 -->
+  <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:10px;padding:12px 16px;margin-bottom:18px">
+    <div style="font-size:.8rem;font-weight:600;color:var(--accent);margin-bottom:8px">⚡ 快速加入今日任務</div>
+    <div style="display:flex;gap:8px">
+      <input id="quick-todo-text" placeholder="輸入任務描述，或貼 Threads URL..." style="flex:1;font-size:.82rem">
+      <select id="quick-todo-account" style="width:130px;font-size:.82rem">
+        <option value="">選擇帳號</option>
+        <option value="YS主帳">⭐ YS主帳</option>
+        <optgroup label="世足角色">
+          <option>阿奇</option><option>kk</option><option>蟹蟹世足觀測站</option>
+          <option>世足大財神</option><option>世足排雷週記</option>
+        </optgroup>
+        <optgroup label="A組 水軍">
+          <option>Miya</option><option>BS</option><option>阿象</option>
+          <option>zahra</option><option>Ian Lin</option><option>倪</option>
+        </optgroup>
+        <optgroup label="B組 水軍">
+          <option>Bam班</option><option>Luna</option><option>Steven.C</option><option>愛麗絲</option>
+        </optgroup>
+        <optgroup label="C組 水軍">
+          <option>Anne</option><option>米恩</option><option>Jack是個柴迷</option>
+          <option>Jason Chen</option><option>林家益</option><option>世足大財神-體育代理</option>
+        </optgroup>
+      </select>
+      <select id="quick-todo-platform" style="width:100px;font-size:.82rem">
+        <option>Threads</option><option>IG</option><option>FB</option><option>限動</option><option>留言</option>
+      </select>
+      <button class="btn btn-primary" onclick="quickAddTodo()">＋ 加入</button>
+    </div>
+  </div>
+  <!-- 待辦清單 -->
+  <div id="todo-list"></div>
 </div>
 
 <!-- ===== PAGE: 炒話題追蹤 ===== -->
@@ -650,6 +700,62 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="fb" style="margin-top:6px">
       <button class="btn btn-outline" onclick="closeModal('modal-metrics')">取消</button>
       <button class="btn btn-primary" onclick="updateMetrics()">更新</button>
+    </div>
+  </div>
+</div>
+
+<!-- 快速拆解劇本 -->
+<div id="modal-quick-script" class="overlay">
+  <div class="modal" style="max-width:860px;width:96vw;max-height:90vh;display:flex;flex-direction:column">
+    <div class="mh" style="flex-shrink:0">
+      <div>
+        <div class="mt">🎬 快速拆解劇本 → 今日待辦</div>
+        <div class="tm" style="font-size:.75rem;margin-top:2px">貼入話題來源 → 為每個帳號分配任務 → 一鍵加入今日清單</div>
+      </div>
+      <button class="mc" onclick="closeModal('modal-quick-script')">✕</button>
+    </div>
+    <!-- 輸入來源 -->
+    <div style="flex-shrink:0;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div class="fg">
+        <label>來源 URL（選填）</label>
+        <input id="qs-url" type="url" placeholder="https://www.threads.net/... 或活動頁網址">
+      </div>
+      <div class="fg">
+        <label>話題摘要 ✦</label>
+        <input id="qs-topic" placeholder="例：世足台灣時間詢問帖，400留言熱門">
+      </div>
+    </div>
+    <!-- 帳號任務分配 -->
+    <div style="overflow-y:auto;flex:1">
+      <div id="qs-accounts"></div>
+    </div>
+    <div class="fb" style="flex-shrink:0;margin-top:10px;border-top:1px solid var(--border);padding-top:10px">
+      <div style="font-size:.78rem;color:var(--text3)" id="qs-selected-count">已選 0 個帳號</div>
+      <div class="flex">
+        <button class="btn btn-outline" onclick="closeModal('modal-quick-script')">取消</button>
+        <button class="btn btn-primary" onclick="applyQuickScript()">✅ 加入今日待辦</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 手動新增 Todo -->
+<div id="modal-add-todo" class="overlay">
+  <div class="modal" style="max-width:420px">
+    <div class="mh"><div class="mt">新增待辦任務</div><button class="mc" onclick="closeModal('modal-add-todo')">✕</button></div>
+    <input type="hidden" id="at-id">
+    <div class="fr">
+      <div class="fg"><label>帳號</label><input id="at-account" placeholder="例：Miya"></div>
+      <div class="fg"><label>平台</label>
+        <select id="at-platform"><option>Threads</option><option>IG</option><option>FB</option><option>限動</option><option>留言</option></select>
+      </div>
+    </div>
+    <div class="fg"><label>任務說明</label><input id="at-action" placeholder="例：發提問式Threads 1則"></div>
+    <div class="fg"><label>文案（選填，可複製使用）</label><textarea id="at-copy" rows="3" placeholder="貼入文案草稿..."></textarea></div>
+    <div class="fg"><label>來源連結（選填）</label><input id="at-url" type="url" placeholder="https://..."></div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-todo')">取消</button>
+      <button class="btn btn-primary" onclick="saveTodo()">儲存</button>
     </div>
   </div>
 </div>
@@ -1802,7 +1908,7 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(sync) sync.textContent='已同步'
@@ -1821,7 +1927,8 @@ function nav(el,page){
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
   const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,threads:renderThreads,entrances:renderEntrances,links:renderLinks,cast:renderCast}
-  renders[page]&&renders[page]()
+  if(page==='todo'){initTodayTodos(false);renderTodo()}
+  else renders[page]&&renders[page]()
 }
 function openModal(id){document.getElementById(id).classList.add('show')}
 function closeModal(id){document.getElementById(id).classList.remove('show')}
@@ -4328,6 +4435,371 @@ function renderCast(){
     </div>
     <div style="display:none;margin-bottom:20px"><div class="g2">${relHtml}</div></div>
   `
+}
+
+// ===== TODAY'S TODO SYSTEM =====
+
+const TODO_GROUPS = [
+  { key: 'ys_main',    label: '⭐ YS主帳',      color: '#f59e0b' },
+  { key: 'persona',    label: '🎬 世足角色',     color: '#D4542A' },
+  { key: 'water_A',    label: '🔴 A組 流量吸引', color: '#ef4444' },
+  { key: 'water_B',    label: '🔵 B組 論壇轉接', color: '#3b82f6' },
+  { key: 'water_C',    label: '🟢 C組 平台推廣', color: '#22c55e' },
+  { key: 'custom',     label: '📌 自訂任務',     color: '#8b5cf6' },
+]
+
+// 每個帳號預設的建議動作（用在快速拆解劇本）
+const ACCOUNT_DEFAULT_ACTIONS = {
+  'YS主帳':     { group:'ys_main',  platform:'IG+Threads', action:'發資訊型主文 + 帶YS89入口連結' },
+  '阿奇':       { group:'persona',  platform:'Threads',     action:'發賠率/走勢分析主文' },
+  'kk':         { group:'persona',  platform:'Threads',     action:'發話題整理主文' },
+  '蟹蟹世足觀測站':{ group:'persona',platform:'Threads',    action:'發球隊/分組分析' },
+  '世足大財神':  { group:'persona',  platform:'Threads',    action:'發投注攻略/方向分析' },
+  '世足排雷週記':{ group:'persona',  platform:'Threads',    action:'發排雷/風險提示文' },
+  'Miya':       { group:'water_A',  platform:'Threads',     action:'發起提問式互動 1則' },
+  'BS':         { group:'water_A',  platform:'Threads',     action:'附和熱門討論 2則' },
+  '阿象':       { group:'water_A',  platform:'Threads',     action:'帶入看球生活場景 3則留言' },
+  'zahra':      { group:'water_A',  platform:'Threads',     action:'快速接話製造熱度 5則留言' },
+  'Ian Lin':    { group:'water_A',  platform:'Threads',     action:'補充男性視角 3則留言' },
+  '倪':         { group:'water_A',  platform:'Threads',     action:'短句引導 5則留言' },
+  'Bam班':      { group:'water_B',  platform:'Threads',     action:'接話並自然帶入論壇連結 1則' },
+  'Luna':       { group:'water_B',  platform:'Threads',     action:'詢問式留言 2則（讓Bam接）' },
+  'Steven.C':   { group:'water_B',  platform:'Threads',     action:'短句補充可信度 3則留言' },
+  '愛麗絲':     { group:'water_B',  platform:'限動',        action:'收藏/轉貼資訊 + 2則留言' },
+  'Anne':       { group:'water_C',  platform:'Threads',     action:'直球推廣 1則（僅輪到時）' },
+  '米恩':       { group:'water_C',  platform:'Threads',     action:'新手引導+推薦 2則留言' },
+  'Jack是個柴迷':{ group:'water_C', platform:'Threads',     action:'幽默品牌補充 2則留言' },
+  'Jason Chen': { group:'water_C',  platform:'Threads',     action:'玩家體驗分享 1則' },
+  '林家益':     { group:'water_C',  platform:'Threads',     action:'短句品牌補充 3則留言' },
+  '世足大財神-體育代理':{ group:'water_C', platform:'Threads', action:'體育活動/賠率推廣 1則' },
+}
+
+function getTodayStr(){ return new Date().toISOString().split('T')[0] }
+
+// 自動生成今日待辦（force=true 會重新生成，false 只在沒有時才生成）
+function initTodayTodos(force){
+  const today = getTodayStr()
+  let todos = DB.get('daily_todos') || []
+  const existing = todos.filter(t => t.date === today)
+  if(!force && existing.length > 0) { renderTodo(); return }
+
+  // 移除今日舊的自動生成（保留手動新增的 custom）
+  todos = todos.filter(t => t.date !== today || t.type === 'custom')
+
+  const wcStart = new Date('2026-06-11T00:00:00+08:00')
+  const daysLeft = Math.ceil((wcStart - new Date()) / (1000*60*60*24))
+  const cal = WC_COUNTDOWN_CALENDAR[Math.max(daysLeft,0)] || WC_COUNTDOWN_CALENDAR[0]
+  const DOW = new Date().getDay()
+  const wcPersonas = PERSONA_SCHEDULE[DOW]?.filter(p => p !== 'YS主帳') || []
+
+  // 1. YS主帳 今日日曆任務
+  todos.push({
+    id: DB.id(), date: today, type: 'ys_main', group: 'ys_main',
+    account: 'YS主帳', platform: cal.platform,
+    action: cal.label + '（' + cal.type + '）',
+    copy: cal.copyA, copyB: cal.copyB,
+    note: cal.goal, done: false,
+    sortOrder: 0, createdAt: new Date().toISOString()
+  })
+
+  // 2. 今日WC角色
+  wcPersonas.forEach((p, i) => {
+    todos.push({
+      id: DB.id(), date: today, type: 'persona', group: 'persona',
+      account: p, platform: 'Threads',
+      action: '今日主文 + 回覆討論串 3則',
+      note: '見劇本 Tab 查看完整腳本', done: false,
+      sortOrder: 10 + i, createdAt: new Date().toISOString()
+    })
+  })
+
+  // 3. A組 水軍核心每日任務
+  const aCore = [
+    { account:'Miya',    action:'提問式Threads 1則（世足話題）',   platform:'Threads' },
+    { account:'zahra',   action:'留言5則在熱門世足討論串',          platform:'留言' },
+    { account:'倪',      action:'短句引導留言5則',                   platform:'留言' },
+    { account:'阿象',    action:'生活場景留言3則',                   platform:'留言' },
+  ]
+  aCore.forEach((t, i) => todos.push({
+    id: DB.id(), date: today, type: 'water_army', group: 'water_A',
+    account: t.account, platform: t.platform, action: t.action,
+    done: false, sortOrder: 20 + i, createdAt: new Date().toISOString()
+  }))
+
+  // 4. B組 水軍核心任務
+  const bCore = [
+    { account:'Bam班',   action:'接話題+帶論壇連結 1則',   platform:'Threads' },
+    { account:'Luna',    action:'詢問式留言2則（讓Bam接）', platform:'留言' },
+    { account:'愛麗絲',  action:'收藏感回應2則',           platform:'限動' },
+  ]
+  bCore.forEach((t, i) => todos.push({
+    id: DB.id(), date: today, type: 'water_army', group: 'water_B',
+    account: t.account, platform: t.platform, action: t.action,
+    done: false, sortOrder: 30 + i, createdAt: new Date().toISOString()
+  }))
+
+  // 5. C組 每天輪流推廣（依日期輪轉）
+  const cAccounts = ['Anne','米恩','Jack是個柴迷','Jason Chen','林家益','世足大財神-體育代理']
+  const todayPushIdx = new Date().getDate() % cAccounts.length
+  const cDirect = cAccounts[todayPushIdx]
+  todos.push({
+    id: DB.id(), date: today, type: 'water_army', group: 'water_C',
+    account: cDirect, platform: 'Threads',
+    action: '今日直推帳號（輪值）— 直球推廣1則',
+    note: '只有今日輪值帳號做直推，其他做品牌感留言即可',
+    done: false, sortOrder: 40, createdAt: new Date().toISOString()
+  })
+  ;['Jason Chen','林家益'].filter(a=>a!==cDirect).forEach((a,i) => {
+    todos.push({
+      id: DB.id(), date: today, type: 'water_army', group: 'water_C',
+      account: a, platform: '留言', action: '品牌感留言3則（不直推）',
+      done: false, sortOrder: 41+i, createdAt: new Date().toISOString()
+    })
+  })
+
+  DB.set('daily_todos', todos)
+  renderTodo()
+  if(force) toast('✅ 今日待辦已重新整理')
+}
+
+function renderTodo(){
+  const today = getTodayStr()
+  const todos = (DB.get('daily_todos') || []).filter(t => t.date === today)
+    .sort((a, b) => (a.sortOrder||0) - (b.sortOrder||0))
+
+  // 進度條
+  const done = todos.filter(t => t.done).length
+  const total = todos.length
+  const pct = total ? Math.round(done/total*100) : 0
+  const pcolor = pct >= 100 ? '#22c55e' : pct >= 60 ? '#f59e0b' : '#D4542A'
+  const prog = document.getElementById('todo-progress')
+  if(prog) prog.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="flex:1;background:#1a1510;border-radius:20px;height:8px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${pcolor};border-radius:20px;transition:.3s"></div>
+      </div>
+      <div style="font-size:.82rem;color:${pcolor};font-weight:700;white-space:nowrap">${done} / ${total} 完成 (${pct}%)</div>
+      ${pct===100?'<span style="font-size:.8rem;color:#22c55e">🎉 今日全部完成！</span>':''}
+    </div>`
+
+  const sub = document.getElementById('todo-subtitle')
+  if(sub) sub.textContent = today + ' · ' + (pct===100?'全部完成 🎉':`${total-done} 項待完成`)
+
+  const wrap = document.getElementById('todo-list')
+  if(!wrap) return
+
+  if(!todos.length){
+    wrap.innerHTML = `<div style="padding:40px;text-align:center;color:var(--text3)">
+      今日清單是空的<br>
+      <button class="btn btn-primary" style="margin-top:12px" onclick="initTodayTodos(true)">🔄 自動生成今日清單</button>
+    </div>`
+    return
+  }
+
+  const byGroup = {}
+  TODO_GROUPS.forEach(g => byGroup[g.key] = [])
+  todos.forEach(t => { const k = t.group || 'custom'; if(byGroup[k]) byGroup[k].push(t); else byGroup['custom'].push(t) })
+
+  wrap.innerHTML = TODO_GROUPS.map(g => {
+    const items = byGroup[g.key] || []
+    if(!items.length) return ''
+    const doneCount = items.filter(t => t.done).length
+    return `
+    <div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:${g.color}15;border:1px solid ${g.color}40;border-radius:8px;margin-bottom:8px">
+        <div style="font-size:.82rem;font-weight:700;color:${g.color}">${g.label}</div>
+        <div style="font-size:.72rem;color:${doneCount===items.length?'#22c55e':'var(--text3)'}">
+          ${doneCount}/${items.length} 完成
+          ${doneCount===items.length?'✅':''}
+        </div>
+      </div>
+      ${items.map(t => renderTodoItem(t, g.color)).join('')}
+    </div>`
+  }).join('')
+}
+
+function renderTodoItem(t, color){
+  const hasCopy = t.copy || t.copyB
+  return `
+  <div id="todo-${t.id}" style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:${t.done?'#0a0a0a':'#0d0b0a'};border:1px solid ${t.done?'var(--border)':color+'30'};border-radius:8px;margin-bottom:6px;opacity:${t.done?'0.6':'1'}">
+    <!-- 勾選框 -->
+    <div onclick="toggleTodo('${t.id}')" style="width:20px;height:20px;border:2px solid ${t.done?'#22c55e':color};border-radius:5px;flex-shrink:0;cursor:pointer;margin-top:2px;display:flex;align-items:center;justify-content:center;background:${t.done?'#22c55e':'transparent'}">
+      ${t.done?'<span style="color:#fff;font-size:.7rem;font-weight:700">✓</span>':''}
+    </div>
+    <!-- 內容 -->
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px">
+        <span style="font-weight:700;font-size:.87rem;color:${t.done?'var(--text3)':'var(--text)'};${t.done?'text-decoration:line-through':''}">${t.account}</span>
+        <span style="font-size:.68rem;padding:2px 7px;background:${color}20;border-radius:10px;color:${color}">${t.platform}</span>
+        <span style="font-size:.78rem;color:${t.done?'var(--text3)':'var(--text2)'};${t.done?'text-decoration:line-through':''}">${t.action}</span>
+      </div>
+      ${t.note?`<div style="font-size:.7rem;color:var(--text3);margin-bottom:4px">💡 ${t.note}</div>`:''}
+      ${hasCopy?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">
+        ${t.copy?`<button class="btn btn-xs btn-copy" data-cp="${escAttr(t.copy)}" onclick="cpd(this)">📋 複製文案A</button>`:''}
+        ${t.copyB?`<button class="btn btn-xs btn-outline" data-cp="${escAttr(t.copyB)}" onclick="cpd(this)" style="font-size:.68rem">📋 文案B</button>`:''}
+      </div>`:''}
+    </div>
+    <!-- 操作按鈕 -->
+    <div class="flex" style="flex-shrink:0;gap:4px">
+      <button class="btn btn-xs btn-outline" onclick="openEditTodo('${t.id}')" title="編輯">✏</button>
+      <button class="btn btn-xs btn-danger" onclick="deleteTodo('${t.id}')" title="刪除">✕</button>
+    </div>
+  </div>`
+}
+
+function toggleTodo(id){
+  const todos = DB.get('daily_todos') || []
+  const i = todos.findIndex(t => t.id === id); if(i<0) return
+  todos[i].done = !todos[i].done
+  todos[i].doneAt = todos[i].done ? new Date().toISOString() : null
+  DB.set('daily_todos', todos)
+  renderTodo()
+}
+
+function deleteTodo(id){
+  DB.set('daily_todos', (DB.get('daily_todos')||[]).filter(t => t.id !== id))
+  renderTodo()
+}
+
+function clearDoneTodos(){
+  if(!confirm('清除今日所有已完成的任務？')) return
+  const today = getTodayStr()
+  DB.set('daily_todos', (DB.get('daily_todos')||[]).filter(t => !(t.date===today && t.done)))
+  renderTodo()
+  toast('已清除完成項目')
+}
+
+function quickAddTodo(){
+  const text = document.getElementById('quick-todo-text').value.trim()
+  const account = document.getElementById('quick-todo-account').value
+  const platform = document.getElementById('quick-todo-platform').value
+  if(!text){ toast('請輸入任務內容','err'); return }
+  const def = ACCOUNT_DEFAULT_ACTIONS[account] || {}
+  const todos = DB.get('daily_todos') || []
+  todos.push({
+    id: DB.id(), date: getTodayStr(),
+    type: 'custom', group: def.group || 'custom',
+    account: account || '未指定', platform,
+    action: text, done: false,
+    sortOrder: 999, createdAt: new Date().toISOString()
+  })
+  DB.set('daily_todos', todos)
+  document.getElementById('quick-todo-text').value = ''
+  document.getElementById('quick-todo-account').value = ''
+  renderTodo()
+  toast('已加入待辦')
+}
+
+function openEditTodo(id){
+  const t = (DB.get('daily_todos')||[]).find(x => x.id===id); if(!t) return
+  document.getElementById('at-id').value = id
+  document.getElementById('at-account').value = t.account || ''
+  document.getElementById('at-platform').value = t.platform || 'Threads'
+  document.getElementById('at-action').value = t.action || ''
+  document.getElementById('at-copy').value = t.copy || ''
+  document.getElementById('at-url').value = t.sourceUrl || ''
+  openModal('modal-add-todo')
+}
+
+function saveTodo(){
+  const id = document.getElementById('at-id').value
+  const account = document.getElementById('at-account').value.trim()
+  const action = document.getElementById('at-action').value.trim()
+  if(!account||!action){ toast('帳號和任務說明必填','err'); return }
+  const def = ACCOUNT_DEFAULT_ACTIONS[account] || {}
+  const todos = DB.get('daily_todos') || []
+  const obj = {
+    account, platform: document.getElementById('at-platform').value,
+    action, copy: document.getElementById('at-copy').value,
+    sourceUrl: document.getElementById('at-url').value,
+    group: def.group || 'custom', type: 'custom'
+  }
+  if(id){
+    const i = todos.findIndex(t => t.id===id); if(i>=0) todos[i]={...todos[i],...obj}
+  } else {
+    todos.push({...obj, id:DB.id(), date:getTodayStr(), done:false, sortOrder:999, createdAt:new Date().toISOString()})
+  }
+  DB.set('daily_todos', todos)
+  closeModal('modal-add-todo')
+  renderTodo()
+  toast('已儲存')
+}
+
+// ─── 快速拆解劇本 ──────────────────────────────────────────────
+function openQuickScript(){
+  document.getElementById('qs-url').value = ''
+  document.getElementById('qs-topic').value = ''
+  // 渲染帳號網格
+  const accounts = Object.entries(ACCOUNT_DEFAULT_ACTIONS)
+  const gcol = { ys_main:'#f59e0b', persona:'#D4542A', water_A:'#ef4444', water_B:'#3b82f6', water_C:'#22c55e' }
+  const gLabel = { ys_main:'YS主帳', persona:'WC角色', water_A:'A組', water_B:'B組', water_C:'C組' }
+  const byGrp = {}
+  accounts.forEach(([name, def]) => {
+    if(!byGrp[def.group]) byGrp[def.group] = []
+    byGrp[def.group].push([name, def])
+  })
+  document.getElementById('qs-accounts').innerHTML =
+    ['ys_main','persona','water_A','water_B','water_C'].map(g => {
+      const items = byGrp[g] || []
+      return `<div style="margin-bottom:12px">
+        <div style="font-size:.75rem;font-weight:700;color:${gcol[g]};margin-bottom:6px">${gLabel[g]}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px">
+          ${items.map(([name, def]) => `
+          <label style="display:flex;align-items:flex-start;gap:8px;background:#0a0908;border:1px solid ${gcol[g]}20;border-radius:7px;padding:8px 10px;cursor:pointer" id="qsa-${name.replace(/\s+/g,'_')}">
+            <input type="checkbox" value="${escAttr(name)}" class="qs-check" style="margin-top:2px;flex-shrink:0" checked onchange="updateQsCount()">
+            <div style="min-width:0">
+              <div style="font-size:.8rem;font-weight:600;color:var(--text);margin-bottom:2px">${name}</div>
+              <input class="qs-action" value="${escAttr(def.action)}" placeholder="任務說明" style="font-size:.72rem;background:transparent;border:none;color:var(--text3);width:100%;padding:0;outline:none">
+              <select class="qs-platform" style="font-size:.68rem;background:transparent;border:none;color:${gcol[g]};padding:0;margin-top:2px">
+                ${['Threads','IG','FB','限動','留言'].map(p=>`<option ${p===def.platform?'selected':''}>${p}</option>`).join('')}
+              </select>
+            </div>
+          </label>`).join('')}
+        </div>
+      </div>`
+    }).join('')
+  updateQsCount()
+  openModal('modal-quick-script')
+}
+
+function updateQsCount(){
+  const count = document.querySelectorAll('.qs-check:checked').length
+  const el = document.getElementById('qs-selected-count')
+  if(el) el.textContent = `已選 ${count} 個帳號`
+}
+
+function applyQuickScript(){
+  const url = document.getElementById('qs-url').value.trim()
+  const topic = document.getElementById('qs-topic').value.trim()
+  if(!topic){ toast('請填入話題摘要','err'); return }
+
+  const todos = DB.get('daily_todos') || []
+  const today = getTodayStr()
+  const checks = document.querySelectorAll('.qs-check:checked')
+  let added = 0
+
+  checks.forEach(cb => {
+    const label = cb.closest('label')
+    const account = cb.value
+    const action = label.querySelector('.qs-action').value.trim() || '執行今日任務'
+    const platform = label.querySelector('.qs-platform').value
+    const def = ACCOUNT_DEFAULT_ACTIONS[account] || {}
+    todos.push({
+      id: DB.id(), date: today,
+      type: 'custom', group: def.group || 'custom',
+      account, platform, action,
+      sourceUrl: url, scriptTopic: topic,
+      note: topic ? '來源：' + topic.slice(0,40) : '',
+      done: false, sortOrder: 900 + added,
+      createdAt: new Date().toISOString()
+    })
+    added++
+  })
+
+  DB.set('daily_todos', todos)
+  closeModal('modal-quick-script')
+  renderTodo()
+  toast(`✅ 已加入 ${added} 項待辦`)
 }
 
 // ===== INIT =====
