@@ -4299,39 +4299,60 @@ function renderCast(){
   }
   const supplementHtml=todayPersonas.map(buildSupplementCard).join('')
 
-  // ── 今日 Threads 真人任務（帶時間）──
-  const todayTasks={}
-  todayPersonas.forEach(pname=>{
+  // ── 今日 Threads 真人任務（每人只顯示一篇，可切換）──
+  // 全域儲存供 switchCastTask() 存取
+  window._todayTasks = {}
+  wcPersonas.forEach(pname=>{
     const ps=PERSONA_SCRIPTS[pname]; if(!ps) return
     const addTask=(id,type,line,time)=>{
-      if(!todayTasks[id]) todayTasks[id]=[]
-      todayTasks[id].push({type,persona:pname,line,time})
+      if(!window._todayTasks[id]) window._todayTasks[id]=[]
+      window._todayTasks[id].push({type,persona:pname,line,time})
     }
     addTask(ps.opener.id,'🔥 開場',ps.opener.line,ps.timeSlot)
     ps.support.forEach(s=>addTask(s.id,'💬 支援',s.line,''))
     ps.reactors.forEach(r=>addTask(r.id,'👥 反應',r.line,''))
   })
-  const taskCardsHtml=Object.entries(todayTasks).map(([id,tasks])=>{
+  window._castTaskOverride=window._castTaskOverride||{}
+
+  const taskCardsHtml=Object.entries(window._todayTasks).map(([id,tasks])=>{
     const c=getCastById(id); if(!c) return''
-    const rows=tasks.map(t=>`
-      <div style="margin-top:8px;background:#0a0908;border-radius:6px;border-left:3px solid ${c.gc}55;padding:8px 10px">
+    // 每個帳號只顯示「當前選擇」的那一篇，衝突時可切換
+    const selIdx=Math.min(window._castTaskOverride[id]||0, tasks.length-1)
+    const t=tasks[selIdx]
+    const hasConflict=tasks.length>1
+    return`<div style="background:var(--g1);border:1px solid ${hasConflict?'#f59e0b40':'var(--border)'};border-radius:8px;padding:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:30px;height:30px;border-radius:50%;background:#1a1008;border:2px solid ${c.gc}55;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:${c.gc};flex-shrink:0">${c.name.slice(0,2)}</div>
+          <div>
+            <div style="font-weight:600;font-size:.86rem">${c.name}</div>
+            <div style="font-size:.67rem;color:var(--text3)">${c.group} · ${c.visible?'公開':'私密'}</div>
+          </div>
+        </div>
+        ${hasConflict?`
+        <div style="text-align:right">
+          <div style="font-size:.65rem;color:#f59e0b;margin-bottom:3px">⚠ 兩篇腳本都需要此人</div>
+          <button class="btn btn-xs btn-outline" style="border-color:#f59e0b;color:#f59e0b" onclick="switchCastTask('${id}')">
+            🔄 切換 (${selIdx+1}/${tasks.length})
+          </button>
+        </div>`:``}
+      </div>
+      <!-- 當前選中的任務 -->
+      <div style="background:#0a0908;border-radius:6px;border-left:3px solid ${c.gc}55;padding:8px 10px">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap">
           <span style="font-size:.65rem;color:${c.gc};font-weight:700">${t.type}</span>
-          <span style="font-size:.67rem;color:var(--text3)">配合 ${t.persona}</span>
+          <span style="font-size:.67rem;color:var(--text3)">配合 <b style="color:var(--text2)">${t.persona}</b></span>
           ${t.time?`<span style="font-size:.65rem;color:var(--text3);background:#1a1008;padding:1px 6px;border-radius:10px">${t.time}</span>`:''}
         </div>
-        <div style="font-size:.8rem;color:var(--text);line-height:1.5">${t.line}</div>
+        <div style="font-size:.8rem;color:var(--text);line-height:1.55;cursor:pointer" data-cp="${escAttr(t.line)}" onclick="cpd(this)" title="點擊複製">${t.line}</div>
         <button class="btn btn-xs btn-copy" style="margin-top:6px" data-cp="${escAttr(t.line)}" onclick="cpd(this)">複製台詞</button>
-      </div>`).join('')
-    return`<div style="background:var(--g1);border:1px solid var(--border);border-radius:8px;padding:12px">
-      <div style="display:flex;align-items:center;gap:8px">
-        <div style="width:30px;height:30px;border-radius:50%;background:#1a1008;border:2px solid ${c.gc}55;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:${c.gc};flex-shrink:0">${c.name.slice(0,2)}</div>
-        <div>
-          <div style="font-weight:600;font-size:.86rem">${c.name}</div>
-          <div style="font-size:.67rem;color:var(--text3)">${c.group} · ${c.visible?'公開':'私密'}</div>
-        </div>
       </div>
-      ${rows}
+      ${hasConflict?`
+      <!-- 另一篇可切換的預覽 -->
+      <div style="margin-top:6px;background:#0d0b08;border-radius:5px;border:1px dashed #3a2a10;padding:6px 9px;opacity:.55">
+        <div style="font-size:.63rem;color:var(--text3);margin-bottom:3px">💤 備用（切換後使用）· 配合 ${tasks[(selIdx+1)%tasks.length].persona}</div>
+        <div style="font-size:.73rem;color:var(--text3);line-height:1.5">${tasks[(selIdx+1)%tasks.length].line.slice(0,60)}…</div>
+      </div>`:``}
     </div>`
   }).filter(Boolean).join('')
 
@@ -4800,6 +4821,17 @@ function applyQuickScript(){
   closeModal('modal-quick-script')
   renderTodo()
   toast(`✅ 已加入 ${added} 項待辦`)
+}
+
+// ── 切換水軍支援對象（任務卡衝突解決）──────────────────────────
+function switchCastTask(id){
+  const tasks=window._todayTasks?.[id]||[]
+  if(tasks.length<=1)return
+  window._castTaskOverride=window._castTaskOverride||{}
+  const curr=window._castTaskOverride[id]||0
+  window._castTaskOverride[id]=(curr+1)%tasks.length
+  renderCast()
+  toast(`${getCastById(id)?.name} 切換至配合「${tasks[window._castTaskOverride[id]].persona}」`)
 }
 
 // ===== INIT =====
