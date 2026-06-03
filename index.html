@@ -259,8 +259,9 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     </div>
     <div class="flex">
       <button class="btn btn-outline" onclick="openWeeklyKpi()">📋 本週KPI一覽</button>
+      <button class="btn btn-primary" onclick="generateWeeklyKpi()">⚡ 一鍵帶入本週KPI</button>
       <button class="btn btn-outline" onclick="initWaterArmyAccounts()" title="載入A/B/C三組完整17個帳號設定">🔄 初始化帳號設定</button>
-      <button class="btn btn-primary" onclick="openAddCommunityModal()">+ 新增帳號</button>
+      <button class="btn btn-outline" onclick="openAddCommunityModal()">+ 新增帳號</button>
     </div>
   </div>
   <div id="cm-kpi-banner" style="margin-bottom:16px"></div>
@@ -809,15 +810,18 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
 <!-- 本週KPI一覽 -->
 <div id="modal-weekly-kpi" class="overlay">
-  <div class="modal modal-lg">
-    <div class="mh">
+  <div class="modal" style="max-width:1100px;width:97vw;max-height:90vh;display:flex;flex-direction:column">
+    <div class="mh" style="flex-shrink:0">
       <div>
         <div class="mt" id="wk-title">本週KPI計畫</div>
         <div class="tm" id="wk-subtitle" style="margin-top:3px;font-size:.78rem"></div>
       </div>
-      <button class="mc" onclick="closeModal('modal-weekly-kpi')">✕</button>
+      <div class="flex">
+        <button class="btn btn-primary btn-sm" onclick="closeModal('modal-weekly-kpi');generateWeeklyKpi()">⚡ 重新生成</button>
+        <button class="mc" onclick="closeModal('modal-weekly-kpi')">✕</button>
+      </div>
     </div>
-    <div id="wk-body"></div>
+    <div id="wk-body" style="overflow-y:auto;flex:1;padding-top:4px"></div>
   </div>
 </div>
 
@@ -2313,6 +2317,166 @@ function getWeekKey(){
   return`${d.getFullYear()}-W${String(wk).padStart(2,'0')}`
 }
 
+// 依角色/組別/世足倒數產生本週工事文字
+function _genKpi(gid, name, role, daysLeft){
+  const d=daysLeft, tag=d>7?'賽前熱身':d>0?'開賽倒數衝刺':'賽事進行中'
+  const wc=d>0?`⏳ 世足倒數 ${d} 天`:'🏆 世足賽事進行中'
+
+  const KPI={
+    // ── A 組 ──
+    Miya:[
+      `${wc}（${tag}）`,
+      `週一：「距離世界盃只剩 ${d} 天，第一場你要看嗎？台灣時間幾點開踢？」`,
+      `週三：「世界盃台灣時間對照表，有沒有人整理好的？一直在找⋯」`,
+      `週五：主發1篇「世足懶人包」正文（引入賽程/直播/台灣時間）`,
+      `每天：留言 5 則在世足討論串 → 拋問題等B組接`,
+      `⚡ 目標：製造提問互動量，為B組導流鋪路`
+    ].join('\n'),
+    BS:[
+      `${wc}`,
+      `每天：Threads 2 則附和熱門世足討論（「我也在等這場」「這隊真的很強」）`,
+      `每天：留言 3 則在Miya/熱門串下接話`,
+      `週四：「剛查了一下賠率，這屆真的很難預測」`,
+      `⚡ 目標：增加觸及率，讓A組的話題有更多回覆數`
+    ].join('\n'),
+    阿象:[
+      `${wc}`,
+      `每天：留言 3 則帶生活場景（「已經約好朋友一起看，要找大螢幕的地方」）`,
+      `週二：「有沒有酒吧有轉播？大螢幕才有氣氛」`,
+      `週末：發1則看球聚會場景貼文`,
+      `⚡ 目標：帶入真實生活場景，讓話題更有情感共鳴`
+    ].join('\n'),
+    zahra:[
+      `${wc}`,
+      `每天：留言 5 則快速接話在熱門世足討論串（表情符號為主，短句）`,
+      `每天：Threads 1 則即時互動（「好期待！！」「這組死亡組吧😱」）`,
+      `⚡ 目標：製造留言熱度，讓討論串保持活躍`
+    ].join('\n'),
+    'Ian Lin':[
+      `${wc}`,
+      `每天：留言 3 則補充球賽分析視角（「這隊主力受傷，賠率有在動」）`,
+      `週三：Threads「這屆最值得押寶的3支隊伍，我的看法」`,
+      `週五：Threads「世足賽前賠率分析：哪隊被低估了」`,
+      `⚡ 目標：建立分析感，讓A組話題有深度`
+    ].join('\n'),
+    倪:[
+      `${wc}`,
+      `每天：留言 5 則短句（「台灣時間需要」「免費直播入口也要」「這組死亡組」）`,
+      `每天：Threads 1 則短問（「開賽第一場你看嗎？」「有人在追世足賠率嗎？」）`,
+      `⚡ 目標：短句引導，讓B組的回應更自然`
+    ].join('\n'),
+    // ── B 組 ──
+    'YS主IG':[
+      `${wc}`,
+      `週一：發「世足完整賽程 + 台灣時間對照表」（附YS89論壇連結）`,
+      `週三：發「免費直播入口整理 TOP3」資訊圖文`,
+      `週五：發「世界盃最強討論串在哪裡？YS89論壇搶先看」`,
+      `每天：1 則限動（倒數/賽程資訊/入口）`,
+      `⚡ 目標：成為世足資訊權威帳號，每則都帶YS89入口`
+    ].join('\n'),
+    'Bam班':[
+      `${wc}`,
+      `每天：1 則Threads接A組話題並自然帶出論壇（「其實可以整理成一篇，賽程、直播都放一起」）`,
+      `每天：留言 3 則哥們語氣引導（「我朋友都去YS89看資訊，整理蠻全的」）`,
+      `週三：自然放出YS89論壇連結（「有人整理好的資料，這篇可以看一下 👉」）`,
+      `⚡ 目標：每天至少1次把話題接到YS89論壇`
+    ].join('\n'),
+    Luna:[
+      `${wc}`,
+      `每天：2 則詢問式留言（讓Bam班/YS主IG來回應）`,
+      `週二：主發1篇「我一直不知道世足台灣時間在哪找，有整理好的嗎⋯」`,
+      `週四：留言「免費直播入口開賽前才找真的很焦慮」`,
+      `⚡ 目標：製造被引導的需求感，讓B組主帳接話更自然`
+    ].join('\n'),
+    'Steven.C':[
+      `${wc}`,
+      `每天：3 則短句補充（「這個整理不錯」「可以存起來」「這篇有用謝謝」）`,
+      `⚡ 目標：在B組導流貼文下加強可信度`
+    ].join('\n'),
+    愛麗絲:[
+      `${wc}`,
+      `每天：2 則收藏感回應（「已存書籤」「存起來了謝謝」）`,
+      `週三、週五：各轉貼1則YS主IG內容至限動`,
+      `週末：發1則「世足資訊整理推薦」女生視角貼文`,
+      `⚡ 目標：女生互動、收藏擴散，讓資訊帖觸及更廣`
+    ].join('\n'),
+    // ── C 組（每天最多1~2隻直推）──
+    Anne:[
+      `${wc}`,
+      `週二（直推）：「世界盃要來了，YS89這波蹲起來，賽程直播論壇都有」`,
+      `週五（直推）：「倒數 ${Math.max(d-2,1)} 天，YS89體育入口先備好，不然開賽來不及」`,
+      `其他天：留言 3 則品牌補充（不帶連結）`,
+      `⚡ 每週最多直推 2 次，其他天品牌感留言為主`
+    ].join('\n'),
+    米恩:[
+      `${wc}`,
+      `週三（直推）：「新手問：哪裡看世足賽程和台灣時間比較完整？」→ 自答 YS89`,
+      `其他天：留言 2 則新手提問式接話`,
+      `週末：主發1篇「世足新手必看：這些入口先存好」`,
+      `⚡ 目標：新手引導，讓看起來是真實用戶推薦`
+    ].join('\n'),
+    'Jack是個柴迷':[
+      `${wc}`,
+      `週四（幽默直推）：「免費直播入口先收啦，開打才問真的會被笑😂」`,
+      `週六：「世足看盤不會？去YS89看討論串就好，超多老司機在分析」`,
+      `其他天：留言 2 則幽默品牌補充`,
+      `⚡ 目標：搞笑語氣讓推廣不像廣告`
+    ].join('\n'),
+    'Jason Chen':[
+      `${wc}`,
+      `每天：1 則體驗Threads（「YS89這波世界盃可以蹲，賽程直播論壇都有，懶人友善」）`,
+      `每天：留言 2 則玩家視角補充（「用YS89看賽程還不錯，不用到處找」）`,
+      `⚡ 目標：普通玩家語氣，讓品牌出現在日常對話中`
+    ].join('\n'),
+    林家益:[
+      `${wc}`,
+      `每天：留言 3 則短句品牌補充（「看球、看盤、看討論，入口先備好」）`,
+      `週三：「YS89體育入口這波穩」`,
+      `⚡ 目標：短句精準補強品牌存在感`
+    ].join('\n'),
+    '世足大財神-體育代理':[
+      `${wc}`,
+      `每天：1 篇體育活動/賠率相關主文`,
+      `週一：「世足開賽倒數，這週賠率有哪些變化值得注意？」`,
+      `週三：Threads「本屆世足最被低估的5隊，賠率分析」`,
+      `週六、週日：「YS89體育本週活動整理，入口在這裡 👉」`,
+      `每天：留言 3 則體育話題補充`,
+      `⚡ 目標：建立體育代理人設，活動+賠率雙管齊下`
+    ].join('\n')
+  }
+  return KPI[name]||`${wc}\n${role}\n• Threads 1~2 則\n• 留言 3~5 則`
+}
+
+function generateWeeklyKpi(){
+  const wcStart=new Date('2026-06-11T00:00:00+08:00')
+  const daysLeft=Math.ceil((wcStart-new Date())/(1000*60*60*24))
+  const phase=daysLeft>7?'賽前熱身期':daysLeft>0?'開賽倒數衝刺':'賽事進行中'
+  const week=getWeekKey()
+  const cmList=DB.get('community')
+
+  const plan=[]
+  WATER_ARMY_GROUPS.forEach(g=>{
+    g.accounts.forEach(acc=>{
+      const dbAcc=cmList.find(x=>x.name===acc.name)||{}
+      plan.push({
+        name:acc.name, group:g.id, groupName:g.name,
+        role:acc.role, direction:acc.direction,
+        status:dbAcc.status||'活躍',
+        kpis:_genKpi(g.id,acc.name,acc.role,daysLeft)
+      })
+    })
+  })
+
+  const record={week,plan,daysLeft,phase,createdAt:new Date().toISOString()}
+  const allKpis=DB.get('weekly_kpis')||[]
+  const idx=allKpis.findIndex(x=>x.week===week)
+  if(idx>=0) allKpis[idx]=record; else allKpis.push(record)
+  DB.set('weekly_kpis',allKpis)
+  renderKpiBanner()
+  openWeeklyKpi()
+  toast('✅ 本週KPI計畫已生成（'+plan.length+' 個帳號）')
+}
+
 window._cmPrompts={}
 function cpCmPrompt(id,btn){cp(window._cmPrompts[id]||'',btn)}
 
@@ -2538,44 +2702,92 @@ function openWeeklyKpi(){
   const thisWeek=getWeekKey()
   const kpi=allKpis.find?.(x=>x.week===thisWeek)
   document.getElementById('wk-title').textContent=`本週KPI計畫 — ${thisWeek}`
-  document.getElementById('wk-subtitle').textContent=kpi?`生成於 ${new Date(kpi.createdAt).toLocaleString('zh-TW')}`:'本週尚無計畫，每週一自動生成'
+  document.getElementById('wk-subtitle').textContent=kpi
+    ?`⏳ 世足倒數 ${kpi.daysLeft} 天 (${kpi.phase}) · 生成於 ${new Date(kpi.createdAt).toLocaleString('zh-TW')}`
+    :'本週尚無計畫 — 點「⚡ 一鍵帶入本週KPI」立即生成'
   const body=document.getElementById('wk-body')
+
   if(!kpi||!(kpi.plan||[]).length){
     body.innerHTML=`<div style="padding:32px;text-align:center;color:var(--text3)">
-      <div style="font-size:1.5rem;margin-bottom:8px">📭</div>
-      本週尚無KPI計畫<br>
-      <span style="font-size:.8rem">每週一 09:00 自動掃描所有帳號一週工事並生成計畫</span>
-      ${allKpis.length>0?`<hr style="margin:14px 0"><div style="font-size:.78rem;color:var(--text3)">歷史紀錄：${allKpis.slice(-3).reverse().map(k=>`<span class="badge b-gray" style="margin:2px">${k.week}</span>`).join('')}</div>`:''}
+      <div style="font-size:1.5rem;margin-bottom:8px">📭</div>本週尚無KPI計畫<br>
+      <button class="btn btn-primary" style="margin-top:12px" onclick="closeModal('modal-weekly-kpi');generateWeeklyKpi()">⚡ 立即生成本週KPI</button>
+      ${allKpis.length>0?`<hr style="margin:14px 0;border-color:var(--border)"><div style="font-size:.78rem;color:var(--text3)">歷史：${allKpis.slice(-3).reverse().map(k=>`<span class="badge b-gray" style="margin:2px;cursor:pointer" onclick="showKpiWeek('${k.week}')">${k.week}</span>`).join('')}</div>`:''}
     </div>`
-  }else{
-    const ents=DB.get('entrances').length?DB.get('entrances'):DEFAULT_ENTRANCES
-  const routing=DB.get('routing')||{}
-  const merged={...DEFAULT_ROUTING,...routing}
-  const routingRow=DAYS.map(d=>{
-    const ids=merged[d]||[]
-    const names=ids.map(id=>ents.find(e=>e.id===id)).filter(Boolean).map(e=>`${e.icon}${e.name}`).join('、')
-    return `<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:.78rem">
-      <span style="width:32px;color:var(--text3);font-weight:600">${DAY_NAMES[d]}</span>
-      <span style="color:var(--text2)">${names||'未設定'}</span>
+    return openModal('modal-weekly-kpi')
+  }
+
+  // ── 全矩陣合計 ──
+  const gcol={'A':'#ef4444','B':'#3b82f6','C':'#22c55e'}
+  const summary=`
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
+    ${[['A','流量吸引組','主文1篇 · Threads2則 · 留言5則','6個帳號'],['B','論壇轉接組','論壇文1篇 · 每天1次導流 · 留言3則','5個帳號'],['C','平台直球推廣組','直球文1篇（輪流） · 留言3則','6個帳號']].map(([g,n,kpi,cnt])=>`
+      <div style="background:${gcol[g]}15;border:1px solid ${gcol[g]}40;border-radius:8px;padding:10px 12px">
+        <div style="font-size:.7rem;color:${gcol[g]};font-weight:700;margin-bottom:4px">${g} 組 · ${n}</div>
+        <div style="font-size:.73rem;color:var(--text2);line-height:1.6">${kpi}</div>
+        <div style="font-size:.67rem;color:var(--text3);margin-top:4px">${cnt}</div>
+      </div>`).join('')}
+  </div>
+  <div style="background:#0d0b0a;border:1px solid #f59e0b40;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:.78rem;color:var(--text2)">
+    <b style="color:#f59e0b">📊 全矩陣週目標：</b> 主文 3 篇 · Threads 20～30 則 · 留言 70～100 則 · 每天至少 1 次論壇/入口導流
+  </div>`
+
+  // ── A/B/C 分組顯示 ──
+  const byGroup={'A':[],'B':[],'C':[]}
+  ;(kpi.plan||[]).forEach(p=>{if(byGroup[p.group])byGroup[p.group].push(p)})
+
+  const groupHtml=['A','B','C'].map(g=>{
+    const accs=byGroup[g]||[]
+    if(!accs.length)return''
+    const gInfo=WATER_ARMY_GROUPS.find(x=>x.id===g)||{}
+    return`
+    <div style="margin-bottom:20px">
+      <div style="background:${gcol[g]}15;border:1px solid ${gcol[g]}40;border-radius:8px;padding:8px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <span style="font-size:.85rem;font-weight:700;color:${gcol[g]}">${g} 組：${gInfo.name?.replace(/^[ABC] 組：/,'')}</span>
+          <span style="font-size:.72rem;color:var(--text3);margin-left:8px">${gInfo.purpose||''}</span>
+        </div>
+        <div style="display:flex;gap:4px">${(gInfo.dailyKpi||[]).slice(0,2).map(k=>`<span style="font-size:.65rem;background:${gcol[g]}20;border-radius:10px;padding:2px 8px;color:${gcol[g]}">${k}</span>`).join('')}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px">
+        ${accs.map(p=>`
+        <div style="background:#0a0908;border:1px solid ${gcol[g]}25;border-radius:8px;padding:10px 12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div>
+              <span style="font-weight:700;font-size:.88rem;color:var(--text)">${p.name}</span>
+              <span style="font-size:.68rem;color:${gcol[g]};margin-left:6px">${p.role||''}</span>
+            </div>
+            <span class="badge ${'活躍'===p.status?'b-green':'b-yellow'}" style="font-size:.63rem">${p.status||'活躍'}</span>
+          </div>
+          <div style="font-size:.76rem;color:var(--text2);white-space:pre-wrap;line-height:1.75;background:#0d0b0a;border-radius:5px;padding:7px 9px">${p.kpis||p.weekTasks||'（待設定）'}</div>
+        </div>`).join('')}
+      </div>
     </div>`
   }).join('')
-  body.innerHTML=`
-    <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:8px;padding:12px 16px;margin-bottom:16px">
-      <div style="font-size:.8rem;font-weight:600;color:var(--accent);margin-bottom:8px">📅 本週導流路線</div>
-      ${routingRow}
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${(kpi.plan||[]).map(p=>`
-      <div class="card-sm">
-        <div class="fb" style="margin-bottom:8px">
-          <div><div style="font-weight:700;color:var(--accent)">${p.name}</div>
-          <div class="tm" style="font-size:.75rem">${p.direction||''}</div></div>
-          <span class="badge ${'活躍'===p.status?'b-green':'b-gray'}">${p.status||''}</span>
-        </div>
-        <div style="font-size:.82rem;color:var(--text2);white-space:pre-wrap;line-height:1.7">${p.kpis||p.weekTasks||'（無工事記錄）'}</div>
-      </div>`).join('')}
-    </div>`
-  }
+
+  body.innerHTML=summary+groupHtml
   openModal('modal-weekly-kpi')
+}
+
+function showKpiWeek(week){
+  const kpi=(DB.get('weekly_kpis')||[]).find(x=>x.week===week)
+  if(!kpi)return
+  // 暫時設為當週後開啟
+  const orig=DB.get('weekly_kpis')
+  document.getElementById('wk-title').textContent=`KPI計畫 — ${week}`
+  document.getElementById('wk-subtitle').textContent=`歷史查閱 · 生成於 ${new Date(kpi.createdAt).toLocaleString('zh-TW')}`
+  const body=document.getElementById('wk-body')
+  const gcol={'A':'#ef4444','B':'#3b82f6','C':'#22c55e'}
+  const byGroup={'A':[],'B':[],'C':[]}
+  ;(kpi.plan||[]).forEach(p=>{if(byGroup[p.group])byGroup[p.group].push(p)})
+  body.innerHTML=['A','B','C'].map(g=>{
+    const accs=byGroup[g]||[]; if(!accs.length)return''
+    return`<div style="margin-bottom:16px"><div style="font-weight:700;color:${gcol[g]};font-size:.83rem;margin-bottom:8px">${g} 組</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${accs.map(p=>`
+      <div style="background:#0a0908;border:1px solid ${gcol[g]}20;border-radius:7px;padding:9px 11px">
+        <div style="font-weight:700;color:var(--text);font-size:.85rem;margin-bottom:5px">${p.name} <span style="font-size:.68rem;color:${gcol[g]}">${p.role||''}</span></div>
+        <div style="font-size:.75rem;color:var(--text2);white-space:pre-wrap;line-height:1.7">${p.kpis||p.weekTasks||'—'}</div>
+      </div>`).join('')}</div></div>`
+  }).join('')
 }
 
 // ===== THREADS SCRIPTS =====
