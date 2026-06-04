@@ -3621,24 +3621,26 @@ function renderLinks(){
   const search=(document.getElementById('lk-search')?.value||'').toLowerCase()
   const pf=document.getElementById('lk-f-platform')?.value||''
   const ac=document.getElementById('lk-f-account')?.value||''
-  const st=document.getElementById('lk-f-status')?.value||''
   let list=all
   if(_lkTab!=='all') list=list.filter(l=>l.category===_lkTab)
   if(pf) list=list.filter(l=>l.platform===pf)
   if(ac) list=list.filter(l=>l.accountCode===ac)
-  if(st) list=list.filter(l=>l.status===st)
-  if(search) list=list.filter(l=>(l.shortLinkName||'').toLowerCase().includes(search)||(l.entryName||'').toLowerCase().includes(search))
+  if(search) list=list.filter(l=>
+    (l.accountName||'').toLowerCase().includes(search)||
+    (l.entryName||'').toLowerCase().includes(search)||
+    (l.shortLinkUrl||'').toLowerCase().includes(search)||
+    (l.originalUrl||'').toLowerCase().includes(search)||
+    (l.placement||'').toLowerCase().includes(search)
+  )
 
-  // stats
+  // 統計
   const total=list.length
-  const pending=list.filter(l=>l.status==='待建立').length
-  const active=list.filter(l=>l.status==='使用中'||l.status==='表現佳').length
-  const seo=list.filter(l=>l.isSeoAsset).length
+  const active=list.filter(l=>l.status==='使用中').length
+  const noLink=list.filter(l=>l.status==='無連結'||!l.shortLinkUrl).length
   document.getElementById('lk-stats').innerHTML=`
     <div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:var(--accent)">${total}</div><div class="tm">總條數</div></div>
-    <div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:#f87171">${pending}</div><div class="tm">待建立</div></div>
     <div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:#4ade80">${active}</div><div class="tm">使用中</div></div>
-    <div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:#60a5fa">${seo}</div><div class="tm">SEO原始網址</div></div>`
+    <div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:#f87171">${noLink}</div><div class="tm">待建立/無連結</div></div>`
   document.getElementById('lk-count').textContent=`共 ${total} 筆`
 
   if(!list.length){
@@ -3646,55 +3648,86 @@ function renderLinks(){
     return
   }
 
-  document.getElementById('lk-table').innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.8rem">
-    <thead><tr style="background:#0d0b0a;text-align:left">
-      <th style="padding:8px 10px;color:var(--text3)">帳號</th>
-      <th style="padding:8px 10px;color:var(--text3)">社群（位置）</th>
-      <th style="padding:8px 10px;color:var(--text3)">連結導項目標</th>
-      <th style="padding:8px 10px;color:var(--text3)">原始連結</th>
-      <th style="padding:8px 10px;color:var(--text3)">追蹤短連結</th>
-      <th style="padding:8px 10px;color:var(--text3)">操作</th>
-    </tr></thead>
-    <tbody>${list.map((l,i)=>{
-      const hasShort=l.shortLinkUrl&&l.shortLinkUrl.length>3
-      const hasOrig=l.originalUrl&&l.originalUrl.length>3
-      return`<tr style="border-bottom:1px solid var(--border);${i%2?'background:#0a0908':''}">
-        <td style="padding:7px 10px;white-space:nowrap">
-          <div style="font-weight:700;font-size:.85rem;color:var(--accent)">${l.accountName}</div>
-          <div style="color:var(--text3);font-size:.68rem">${l.category}</div>
-        </td>
-        <td style="padding:7px 10px;white-space:nowrap">
-          <span class="badge b-gray" style="font-size:.72rem">${l.platform}</span>
-          <div style="font-size:.72rem;color:var(--text2);margin-top:3px">${l.placement}</div>
-        </td>
-        <td style="padding:7px 10px;max-width:180px">
-          <div style="font-size:.82rem;color:var(--text)">${l.entryName}</div>
-          ${l.note?`<div style="color:var(--text3);font-size:.68rem">${l.note}</div>`:''}
-        </td>
-        <td style="padding:7px 10px;min-width:130px">
-          ${hasOrig
-            ?`<div style="font-size:.73rem;color:var(--text2);font-family:monospace;word-break:break-all;margin-bottom:3px">${l.originalUrl}</div>
-              <button class="btn btn-xs btn-copy" data-cp="${escAttr(l.originalUrl)}" onclick="cpd(this)">複製原始</button>`
-            :l.status==='無連結'?'<span style="color:#f87171;font-size:.72rem">X 無連結</span>':'<span style="color:var(--text3);font-size:.72rem">—</span>'
-          }
-        </td>
-        <td style="padding:7px 10px;min-width:140px">
-          ${hasShort
-            ?`<div style="font-size:.8rem;color:#4ade80;font-family:monospace;font-weight:600;word-break:break-all;margin-bottom:3px">${l.shortLinkUrl}</div>
-              <button class="btn btn-xs btn-copy" data-cp="${escAttr(l.shortLinkUrl)}" onclick="cpd(this)">複製短連結</button>`
-            :l.status==='無連結'?'<span style="color:#f87171;font-size:.72rem">X 無連結</span>':'<span style="color:#f87171;font-size:.72rem">待建立</span>'
-          }
-        </td>
-        </td>
-        <td style="padding:7px 10px"><span class="badge ${LK_STATUS_BADGE[l.status]||'b-gray'}">${l.status}</span></td>
-        <td style="padding:7px 10px;white-space:nowrap">
-          <button class="btn btn-xs btn-outline" onclick="openEditLink('${l.id}')">編輯</button>
-          <button class="btn btn-xs btn-danger" onclick="delLink('${l.id}')">刪</button>
-        </td>
-      </tr>`
-    }).join('')}
-    </tbody>
-  </table>`
+  // ── 按角色分組 ────────────────────────────────────────────────
+  const CAT_COLOR={'YS主帳':'#f59e0b','推平台人設':'#D4542A','代理人設':'#3b82f6','水軍':'#22c55e'}
+  const PLAT_ICON={'IG':'📸','FB':'📘','Threads':'🧵','YouTube':'▶️'}
+
+  // 保留原始順序的角色分組
+  const accOrder=[], byAcc={}
+  list.forEach(l=>{
+    if(!byAcc[l.accountCode]){
+      accOrder.push(l.accountCode)
+      byAcc[l.accountCode]={name:l.accountName,cat:l.category,placements:{}}
+    }
+    const p=l.placement
+    if(!byAcc[l.accountCode].placements[p]) byAcc[l.accountCode].placements[p]=[]
+    byAcc[l.accountCode].placements[p].push(l)
+  })
+
+  document.getElementById('lk-table').innerHTML = accOrder.map(code=>{
+    const acc=byAcc[code]
+    const cc=CAT_COLOR[acc.cat]||'#8A7D74'
+    const placements=Object.entries(acc.placements)
+
+    const placementHtml=placements.map(([placement, links], pi)=>{
+      const isLast=pi===placements.length-1
+      const platIcon=PLAT_ICON[links[0]?.platform]||'🔗'
+      const rowsHtml=links.map((l,li)=>{
+        const hasShort=l.shortLinkUrl&&l.shortLinkUrl.length>3
+        const hasOrig=l.originalUrl&&l.originalUrl.length>3
+        const isLastRow=li===links.length-1
+        return`<tr style="${isLastRow&&isLast?'':'border-bottom:1px solid var(--border)'}${li%2===1?';background:#09080a':''}">
+          <td style="padding:8px 14px;width:200px">
+            <div style="font-size:.82rem;font-weight:600;color:var(--text)">${l.entryName}</div>
+            ${l.note?`<div style="font-size:.67rem;color:var(--text3)">${l.note}</div>`:''}
+          </td>
+          <td style="padding:8px 14px;min-width:220px">
+            ${hasOrig
+              ?`<div style="font-size:.73rem;color:var(--text3);font-family:monospace;margin-bottom:4px;line-height:1.4">${l.originalUrl}</div>
+                <button class="btn btn-xs btn-outline" data-cp="${escAttr(l.originalUrl)}" onclick="cpd(this)" style="font-size:.68rem">複製原始網址</button>`
+              :`<span style="font-size:.72rem;color:var(--text3)">—</span>`}
+          </td>
+          <td style="padding:8px 14px;min-width:180px">
+            ${hasShort
+              ?`<div style="font-size:.82rem;color:#4ade80;font-family:monospace;font-weight:700;margin-bottom:4px">${l.shortLinkUrl}</div>
+                <button class="btn btn-xs btn-copy" data-cp="${escAttr(l.shortLinkUrl)}" onclick="cpd(this)">🔗 複製追蹤連結</button>`
+              :l.status==='無連結'
+                ?`<span style="font-size:.72rem;color:#f87171;font-weight:600">✕ 無連結</span>`
+                :`<span style="font-size:.72rem;color:#f87171">待建立</span>`}
+          </td>
+          <td style="padding:8px 10px;white-space:nowrap">
+            <button class="btn btn-xs btn-outline" onclick="openEditLink('${l.id}')" style="font-size:.65rem">✏</button>
+            <button class="btn btn-xs btn-danger" onclick="delLink('${l.id}')" style="font-size:.65rem">✕</button>
+          </td>
+        </tr>`
+      }).join('')
+
+      return`<div style="border:1px solid var(--border);border-top:none;${isLast?'border-radius:0 0 10px 10px':''}">
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 14px;background:#0a0908;border-bottom:1px solid var(--border)">
+          <span style="font-size:.75rem;font-weight:700;color:${cc}">${platIcon} ${placement}</span>
+          <span style="font-size:.68rem;color:var(--text3)">${links.length} 條連結</span>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+          <thead><tr style="background:#0d0b0a">
+            <th style="padding:5px 14px;color:var(--text3);font-size:.7rem;font-weight:600;width:200px">連結目標</th>
+            <th style="padding:5px 14px;color:var(--text3);font-size:.7rem;font-weight:600">原始連結</th>
+            <th style="padding:5px 14px;color:var(--text3);font-size:.7rem;font-weight:600">追蹤短連結（複製用）</th>
+            <th style="padding:5px 14px;color:var(--text3);font-size:.7rem;font-weight:600">操作</th>
+          </tr></thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </div>`
+    }).join('')
+
+    return`<div style="margin-bottom:18px">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:${cc}18;border:1px solid ${cc}50;border-radius:10px 10px 0 0">
+        <div style="font-size:.95rem;font-weight:700;color:${cc}">${acc.name}</div>
+        <span style="font-size:.72rem;background:${cc}20;border:1px solid ${cc}40;border-radius:10px;padding:2px 9px;color:${cc}">${acc.cat}</span>
+        <span style="font-size:.7rem;color:var(--text3)">${list.filter(l=>l.accountCode===code).length} 條連結</span>
+      </div>
+      ${placementHtml}
+    </div>`
+  }).join('')
 }
 
 function openAddLink(){
