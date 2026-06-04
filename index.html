@@ -805,12 +805,17 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <input type="hidden" id="ta-id">
     <div class="fr">
       <div class="fg"><label>日期</label><input type="date" id="ta-date"></div>
-      <div class="fg"><label>角色</label><select id="ta-persona"><option value="">選擇角色</option></select></div>
+      <div class="fg"><label>角色</label>
+        <select id="ta-persona" onchange="onTaPersonaChange(this)"><option value="">選擇角色</option></select>
+        <input id="ta-persona-custom" placeholder="自訂帳號名稱" style="display:none;margin-top:5px;font-size:.82rem">
+      </div>
     </div>
     <div class="fr">
       <div class="fg"><label>策略</label>
         <select id="ta-strategy">
-          <option>帶風向</option><option>引流/導到ys89</option><option>炒話題</option><option>品牌曝光</option><option>真人互動</option>
+          <option>帶風向</option><option>引流/導到ys89</option><option>炒話題</option>
+          <option>品牌曝光</option><option>真人互動</option>
+          <option>回覆</option><option>盲推註冊</option>
         </select>
       </div>
       <div class="fg"><label>方向</label>
@@ -855,14 +860,14 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <!-- Threads -->
     <div id="tm-sec-Threads" class="tm-sec" style="display:none">
       <div class="fr"><div class="fg"><label>❤️ 按讚</label><input type="number" id="tm-T-likes" placeholder="0"></div><div class="fg"><label>💬 回覆</label><input type="number" id="tm-T-replies" placeholder="0"></div></div>
-      <div class="fr"><div class="fg"><label>🔁 轉發</label><input type="number" id="tm-T-reposts" placeholder="0"></div><div class="fg"><label>👁 瀏覽</label><input type="number" id="tm-T-views" placeholder="0"></div></div>
-      <div class="fg"><label>➕ 漲粉</label><input type="number" id="tm-T-follows" placeholder="0"></div>
+      <div class="fr"><div class="fg"><label>🔁 轉發</label><input type="number" id="tm-T-reposts" placeholder="0"></div><div class="fg"><label>📤 分享</label><input type="number" id="tm-T-shares" placeholder="0"></div></div>
+      <div class="fr"><div class="fg"><label>👁 瀏覽</label><input type="number" id="tm-T-views" placeholder="0"></div><div class="fg"><label>➕ 漲粉</label><input type="number" id="tm-T-follows" placeholder="0"></div></div>
     </div>
     <!-- IG -->
     <div id="tm-sec-IG" class="tm-sec" style="display:none">
       <div class="fr"><div class="fg"><label>❤️ 按讚</label><input type="number" id="tm-IG-likes" placeholder="0"></div><div class="fg"><label>💬 留言</label><input type="number" id="tm-IG-comments" placeholder="0"></div></div>
-      <div class="fr"><div class="fg"><label>🔖 儲存</label><input type="number" id="tm-IG-saves" placeholder="0"></div><div class="fg"><label>👁 觸及</label><input type="number" id="tm-IG-reach" placeholder="0"></div></div>
-      <div class="fg"><label>📺 瀏覽</label><input type="number" id="tm-IG-views" placeholder="0"></div>
+      <div class="fr"><div class="fg"><label>🔖 儲存</label><input type="number" id="tm-IG-saves" placeholder="0"></div><div class="fg"><label>📤 分享</label><input type="number" id="tm-IG-shares" placeholder="0"></div></div>
+      <div class="fr"><div class="fg"><label>👁 觸及</label><input type="number" id="tm-IG-reach" placeholder="0"></div><div class="fg"><label>📺 瀏覽</label><input type="number" id="tm-IG-views" placeholder="0"></div></div>
     </div>
     <!-- FB -->
     <div id="tm-sec-FB" class="tm-sec" style="display:none">
@@ -3845,7 +3850,8 @@ ${url}
 
 const TT_STRATEGY_COLOR = {
   '帶風向':'#ef4444','引流/導到ys89':'#22c55e','炒話題':'#f59e0b',
-  '品牌曝光':'#3b82f6','真人互動':'#a78bfa'
+  '品牌曝光':'#3b82f6','真人互動':'#a78bfa',
+  '回覆':'#60a5fa','盲推註冊':'#f97316'
 }
 
 function renderThreadTracker(){
@@ -3946,11 +3952,19 @@ function renderThreadTracker(){
 // 平台顏色 / 欄位定義
 const TM_PLATFORM_COLORS = { Threads:'#a78bfa', IG:'#ec4899', FB:'#3b82f6' }
 const TM_PLATFORM_FIELDS = {
-  Threads:[['T-likes','❤️ 按讚'],['T-replies','💬 回覆'],['T-reposts','🔁 轉發'],['T-views','👁 瀏覽'],['T-follows','➕ 漲粉']],
-  IG:     [['IG-likes','❤️ 按讚'],['IG-comments','💬 留言'],['IG-saves','🔖 儲存'],['IG-reach','👁 觸及'],['IG-views','📺 瀏覽']],
-  FB:     [['FB-likes','👍 按讚'],['FB-comments','💬 留言'],['FB-shares','🔁 分享'],['FB-reach','👁 觸及']],
+  Threads:[['T-likes','❤️ 按讚'],['T-replies','💬 回覆'],['T-reposts','🔁 轉發'],['T-shares','📤 分享'],['T-views','👁 瀏覽'],['T-follows','➕ 漲粉']],
+  IG:     [['IG-likes','❤️ 按讚'],['IG-comments','💬 留言'],['IG-saves','🔖 儲存'],['IG-shares','📤 分享'],['IG-reach','👁 觸及'],['IG-views','📺 瀏覽']],
+  FB:     [['FB-likes','👍 按讚'],['FB-comments','💬 留言'],['FB-shares','📤 分享'],['FB-reach','👁 觸及']],
 }
 window._tmActivePlatform = 'Threads'
+
+// 角色選單切換：選到「自訂」時顯示文字輸入
+function onTaPersonaChange(sel){
+  const custom = document.getElementById('ta-persona-custom')
+  if(!custom) return
+  custom.style.display = sel.value === 'custom|' ? '' : 'none'
+  if(sel.value === 'custom|') custom.focus()
+}
 
 function _setTmTab(plat){
   window._tmActivePlatform = plat
@@ -3965,6 +3979,38 @@ function _setTmTab(plat){
   })
 }
 
+// 填充炒話題角色選單（所有 personas + community + 自訂）
+function _fillTaPersonaSel(sel, currentId, currentName){
+  sel.innerHTML = '<option value="">選擇帳號</option>'
+  // 世足角色
+  const personas = DB.get('personas')||[]
+  if(personas.length){
+    sel.innerHTML += '<optgroup label="🎬 世足角色">'
+    personas.forEach(p=>{
+      const sel2 = (p.id===currentId||p.name===currentName)?' selected':''
+      sel.innerHTML += `<option value="${p.id}|${p.name}"${sel2}>${p.name}</option>`
+    })
+    sel.innerHTML += '</optgroup>'
+  }
+  // 社群水軍
+  const community = DB.get('community')||[]
+  if(community.length){
+    const byGroup={'A':[],'B':[],'C':[],'':[]};
+    community.forEach(a=>{(byGroup[a.group||'']||byGroup['']).push(a)})
+    const gLabel={'A':'A組 流量','B':'B組 轉接','C':'C組 推廣','':'未分組'}
+    Object.entries(byGroup).forEach(([g,accs])=>{
+      if(!accs.length)return
+      sel.innerHTML += `<optgroup label="🎯 水軍 ${gLabel[g]}">`
+      accs.forEach(a=>{
+        const sel2 = (a.id===currentId||a.name===currentName)?' selected':''
+        sel.innerHTML += `<option value="${a.id}|${a.name}"${sel2}>${a.name}</option>`
+      })
+      sel.innerHTML += '</optgroup>'
+    })
+  }
+  sel.innerHTML += '<option value="custom|">＋ 自訂帳號名稱</option>'
+}
+
 function openAddThreadActivity(){
   document.getElementById('ta-id').value = ''
   document.getElementById('ta-modal-title').textContent = '新增炒話題記錄'
@@ -3973,9 +4019,9 @@ function openAddThreadActivity(){
   document.getElementById('ta-topic').value = ''
   document.getElementById('ta-content').value = ''
   ;['Threads','IG','FB'].forEach(p=>{ const el=document.getElementById('ta-plat-'+p); if(el) el.checked=(p==='Threads') })
-  const sel = document.getElementById('ta-persona')
-  sel.innerHTML = '<option value="">選擇角色</option>'
-  DB.get('personas').forEach(p=>{ sel.innerHTML += `<option value="${p.id}|${p.name}">${p.name}</option>` })
+  const customEl = document.getElementById('ta-persona-custom')
+  if(customEl){ customEl.value=''; customEl.style.display='none' }
+  _fillTaPersonaSel(document.getElementById('ta-persona'), '', '')
   openModal('modal-thread-activity')
 }
 
@@ -3991,19 +4037,29 @@ function openEditThreadActivity(id){
   document.getElementById('ta-dir').value = a.dir||'世足/運彩'
   const platforms = a.platforms || ['Threads']
   ;['Threads','IG','FB'].forEach(p=>{ const el=document.getElementById('ta-plat-'+p); if(el) el.checked=platforms.includes(p) })
-  const sel = document.getElementById('ta-persona')
-  sel.innerHTML = '<option value="">選擇角色</option>'
-  DB.get('personas').forEach(p=>{
-    const selected = p.id === a.personaId ? ' selected' : ''
-    sel.innerHTML += `<option value="${p.id}|${p.name}"${selected}>${p.name}</option>`
-  })
+  const customEl = document.getElementById('ta-persona-custom')
+  // 若 personaId 存在於 personas/community → 用 id|name 選中；否則顯示自訂欄
+  const allAccounts=[...(DB.get('personas')||[]),...(DB.get('community')||[])]
+  const found = allAccounts.find(p=>p.id===a.personaId)
+  _fillTaPersonaSel(document.getElementById('ta-persona'), a.personaId, a.personaName)
+  if(!found && a.personaName){
+    document.getElementById('ta-persona').value = 'custom|'
+    if(customEl){ customEl.value=a.personaName; customEl.style.display='' }
+  } else {
+    if(customEl){ customEl.value=''; customEl.style.display='none' }
+  }
   openModal('modal-thread-activity')
 }
 
 function saveThreadActivity(){
   const id = document.getElementById('ta-id').value
   const pval = document.getElementById('ta-persona').value
-  const [personaId, personaName] = pval ? pval.split('|') : ['','']
+  let [personaId, personaName] = pval ? pval.split('|') : ['','']
+  // 若選了「自訂」則從文字輸入框取名稱
+  if(pval === 'custom|'){
+    personaId = 'custom'
+    personaName = document.getElementById('ta-persona-custom')?.value?.trim() || '自訂帳號'
+  }
   const platforms = ['Threads','IG','FB'].filter(p=>document.getElementById('ta-plat-'+p)?.checked)
   const obj = {
     date: document.getElementById('ta-date').value,
@@ -4052,8 +4108,8 @@ function openThreadMetrics(id){
   const fill=(fid, val)=>{ const el=document.getElementById('tm-'+fid); if(el) el.value=val||0 }
   ;['Threads','IG','FB'].forEach(plat=>{
     const m=pm[plat]||{}
-    if(plat==='Threads'){fill('T-likes',m.likes);fill('T-replies',m.replies);fill('T-reposts',m.reposts);fill('T-views',m.views);fill('T-follows',m.follows)}
-    if(plat==='IG')    {fill('IG-likes',m.likes);fill('IG-comments',m.comments);fill('IG-saves',m.saves);fill('IG-reach',m.reach);fill('IG-views',m.views)}
+    if(plat==='Threads'){fill('T-likes',m.likes);fill('T-replies',m.replies);fill('T-reposts',m.reposts);fill('T-shares',m.shares);fill('T-views',m.views);fill('T-follows',m.follows)}
+    if(plat==='IG')    {fill('IG-likes',m.likes);fill('IG-comments',m.comments);fill('IG-saves',m.saves);fill('IG-shares',m.shares);fill('IG-reach',m.reach);fill('IG-views',m.views)}
     if(plat==='FB')    {fill('FB-likes',m.likes);fill('FB-comments',m.comments);fill('FB-shares',m.shares);fill('FB-reach',m.reach)}
   })
   // 顯示第一個平台 tab
@@ -4069,8 +4125,8 @@ function saveThreadMetrics(){
   const pm = list[i].platformMetrics || {}
   const num=(id)=>+document.getElementById(id)?.value||0
   platforms.forEach(plat=>{
-    if(plat==='Threads') pm.Threads={likes:num('tm-T-likes'),replies:num('tm-T-replies'),reposts:num('tm-T-reposts'),views:num('tm-T-views'),follows:num('tm-T-follows')}
-    if(plat==='IG')     pm.IG={likes:num('tm-IG-likes'),comments:num('tm-IG-comments'),saves:num('tm-IG-saves'),reach:num('tm-IG-reach'),views:num('tm-IG-views')}
+    if(plat==='Threads') pm.Threads={likes:num('tm-T-likes'),replies:num('tm-T-replies'),reposts:num('tm-T-reposts'),shares:num('tm-T-shares'),views:num('tm-T-views'),follows:num('tm-T-follows')}
+    if(plat==='IG')     pm.IG={likes:num('tm-IG-likes'),comments:num('tm-IG-comments'),saves:num('tm-IG-saves'),shares:num('tm-IG-shares'),reach:num('tm-IG-reach'),views:num('tm-IG-views')}
     if(plat==='FB')     pm.FB={likes:num('tm-FB-likes'),comments:num('tm-FB-comments'),shares:num('tm-FB-shares'),reach:num('tm-FB-reach')}
   })
   list[i].platformMetrics = pm
