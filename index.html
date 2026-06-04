@@ -822,7 +822,22 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       </div>
     </div>
     <div class="fg"><label>主題摘要</label><input id="ta-topic" placeholder="例：世足倒數10天 你支持哪一隊"></div>
-    <div class="fg"><label>Threads 貼文連結（選填，發布後填入）</label><input id="ta-url" type="url" placeholder="https://www.threads.net/@xxx/post/..."></div>
+    <!-- 平台複選 -->
+    <div style="margin-bottom:10px">
+      <div style="font-size:.78rem;color:var(--text3);font-weight:600;margin-bottom:8px">發布平台（可複選）</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.83rem;user-select:none">
+          <input type="checkbox" id="ta-plat-Threads" checked> 🧵 Threads
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.83rem;user-select:none">
+          <input type="checkbox" id="ta-plat-IG"> 📸 IG
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.83rem;user-select:none">
+          <input type="checkbox" id="ta-plat-FB"> 📘 FB
+        </label>
+      </div>
+    </div>
+    <div class="fg"><label>貼文連結（選填，可貼任一平台連結）</label><input id="ta-url" type="url" placeholder="https://www.threads.net/... 或 instagram.com/p/..."></div>
     <div class="fg"><label>發文內容（選填，貼上腳本）</label><textarea id="ta-content" rows="3" placeholder="貼上實際發文內容"></textarea></div>
     <div class="fb" style="margin-top:6px">
       <button class="btn btn-outline" onclick="closeModal('modal-thread-activity')">取消</button>
@@ -831,17 +846,34 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 </div>
 
-<!-- 記錄炒話題成效 -->
+<!-- 記錄炒話題成效（分平台） -->
 <div id="modal-thread-metrics" class="overlay">
-  <div class="modal" style="max-width:420px">
+  <div class="modal" style="max-width:480px">
     <div class="mh"><div class="mt">📊 記錄炒話題成效</div><button class="mc" onclick="closeModal('modal-thread-metrics')">✕</button></div>
     <input type="hidden" id="tm-id">
     <div id="tm-info" style="background:#0a0908;border:1px solid var(--border2);border-radius:6px;padding:8px 10px;margin-bottom:12px;font-size:.8rem;color:var(--text2)"></div>
-    <div class="fr"><div class="fg"><label>❤️ 按讚</label><input type="number" id="tm-likes" placeholder="0"></div><div class="fg"><label>💬 回覆</label><input type="number" id="tm-replies" placeholder="0"></div></div>
-    <div class="fr"><div class="fg"><label>🔁 轉發</label><input type="number" id="tm-reposts" placeholder="0"></div><div class="fg"><label>👁 瀏覽</label><input type="number" id="tm-views" placeholder="0"></div></div>
-    <div class="fr"><div class="fg"><label>➕ 漲粉</label><input type="number" id="tm-follows" placeholder="0"></div><div class="fg"><label>備註</label><input id="tm-notes" placeholder="觀察"></div></div>
-    <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:6px;padding:8px 10px;margin:10px 0;font-size:.73rem;color:var(--text3)">
-      💡 也可以傳截圖給 Mike bot，bot 會自動辨識並記錄
+    <!-- 平台 tabs -->
+    <div id="tm-tab-nav" style="display:flex;gap:0;margin-bottom:14px;border-bottom:1px solid var(--border)"></div>
+    <!-- Threads -->
+    <div id="tm-sec-Threads" class="tm-sec" style="display:none">
+      <div class="fr"><div class="fg"><label>❤️ 按讚</label><input type="number" id="tm-T-likes" placeholder="0"></div><div class="fg"><label>💬 回覆</label><input type="number" id="tm-T-replies" placeholder="0"></div></div>
+      <div class="fr"><div class="fg"><label>🔁 轉發</label><input type="number" id="tm-T-reposts" placeholder="0"></div><div class="fg"><label>👁 瀏覽</label><input type="number" id="tm-T-views" placeholder="0"></div></div>
+      <div class="fg"><label>➕ 漲粉</label><input type="number" id="tm-T-follows" placeholder="0"></div>
+    </div>
+    <!-- IG -->
+    <div id="tm-sec-IG" class="tm-sec" style="display:none">
+      <div class="fr"><div class="fg"><label>❤️ 按讚</label><input type="number" id="tm-IG-likes" placeholder="0"></div><div class="fg"><label>💬 留言</label><input type="number" id="tm-IG-comments" placeholder="0"></div></div>
+      <div class="fr"><div class="fg"><label>🔖 儲存</label><input type="number" id="tm-IG-saves" placeholder="0"></div><div class="fg"><label>👁 觸及</label><input type="number" id="tm-IG-reach" placeholder="0"></div></div>
+      <div class="fg"><label>📺 瀏覽</label><input type="number" id="tm-IG-views" placeholder="0"></div>
+    </div>
+    <!-- FB -->
+    <div id="tm-sec-FB" class="tm-sec" style="display:none">
+      <div class="fr"><div class="fg"><label>👍 按讚</label><input type="number" id="tm-FB-likes" placeholder="0"></div><div class="fg"><label>💬 留言</label><input type="number" id="tm-FB-comments" placeholder="0"></div></div>
+      <div class="fr"><div class="fg"><label>🔁 分享</label><input type="number" id="tm-FB-shares" placeholder="0"></div><div class="fg"><label>👁 觸及</label><input type="number" id="tm-FB-reach" placeholder="0"></div></div>
+    </div>
+    <div class="fg" style="margin-top:6px"><label>備註</label><input id="tm-notes" placeholder="觀察"></div>
+    <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:6px;padding:7px 10px;margin:8px 0;font-size:.72rem;color:var(--text3)">
+      💡 也可傳截圖給 Mike bot，使用 <code>/tact ID Threads 按讚 回覆 轉發 瀏覽 漲粉</code>
     </div>
     <div class="fb" style="margin-top:6px">
       <button class="btn btn-outline" onclick="closeModal('modal-thread-metrics')">取消</button>
@@ -3791,31 +3823,43 @@ function renderThreadTracker(){
 
   const renderRow = a => {
     const sc = TT_STRATEGY_COLOR[a.strategy]||'#8A7D74'
-    const hasMetrics = a.likes||a.replies||a.reposts||a.views
+    const plats = a.platforms || ['Threads']
+    const pm = a.platformMetrics || {}
+    const hasMetrics = Object.values(pm).some(m=>Object.values(m||{}).some(v=>+v>0))
+    // 分平台成效摘要
+    const metricsSummary = hasMetrics
+      ? plats.map(p=>{
+          const m=pm[p]||{}; const col=TM_PLATFORM_COLORS[p]||'#8A7D74'
+          const vals=Object.values(m).filter(v=>+v>0)
+          if(!vals.length)return''
+          const keys={Threads:['❤','💬','🔁','👁','➕'],IG:['❤','💬','🔖','👁','📺'],FB:['👍','💬','🔁','👁']}[p]||[]
+          const summary=Object.entries(m).filter(([,v])=>+v>0).map(([,v],i)=>`${keys[i]||''}${v}`).join(' ')
+          return `<div style="font-size:.68rem;color:${col};white-space:nowrap"><b>${p}</b> ${summary}</div>`
+        }).filter(Boolean).join('')
+      : `<span style="font-size:.73rem;color:#f87171">待記錄</span>`
     return `<tr>
       <td style="white-space:nowrap">${a.date}</td>
       <td><span class="badge b-green">${a.personaName||'—'}</span></td>
+      <td>
+        ${plats.map(p=>`<span style="font-size:.68rem;padding:1px 6px;border-radius:8px;background:${TM_PLATFORM_COLORS[p]}20;color:${TM_PLATFORM_COLORS[p]};margin-right:2px">${p}</span>`).join('')}
+      </td>
       <td><span style="color:${sc};font-size:.78rem;font-weight:600">${a.strategy||'—'}</span></td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.topic||'—'}</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.topic||'—'}</td>
       <td style="white-space:nowrap;text-align:center">
-        ${a.url ? `<a href="${escAttr(a.url)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px">🔗 查看</a>` : ''}
-        <button class="btn btn-xs btn-outline" onclick="openSetThreadUrl('${a.id}')" title="設定連結">${a.url?'✏':'＋連結'}</button>
+        ${a.url ? `<a href="${escAttr(a.url)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px">🔗</a>` : ''}
+        <button class="btn btn-xs btn-outline" onclick="openSetThreadUrl('${a.id}')" style="font-size:.65rem">${a.url?'✏':'＋'}</button>
       </td>
-      <td style="white-space:nowrap;text-align:center">
-        ${hasMetrics
-          ? `<span style="font-size:.77rem;color:var(--text2)">❤${a.likes||0} 💬${a.replies||0} 👁${a.views||0}</span>`
-          : `<span style="font-size:.73rem;color:#f87171">待記錄</span>`}
-      </td>
+      <td style="text-align:left">${metricsSummary}</td>
       <td class="flex" style="gap:4px">
-        <button class="btn btn-xs btn-primary" onclick="openThreadMetrics('${a.id}')">📊 ${hasMetrics?'更新':'記錄成效'}</button>
+        <button class="btn btn-xs btn-primary" onclick="openThreadMetrics('${a.id}')">📊</button>
         <button class="btn btn-xs btn-outline" onclick="openEditThreadActivity('${a.id}')">✏</button>
-        <button class="btn btn-xs btn-danger" onclick="delThreadActivity('${a.id}')">刪</button>
+        <button class="btn btn-xs btn-danger" onclick="delThreadActivity('${a.id}')">✕</button>
       </td>
     </tr>`
   }
 
   const tableHead = `<table><thead><tr>
-    <th>日期</th><th>角色</th><th>策略</th><th>主題</th><th>貼文連結</th><th>成效</th><th>操作</th>
+    <th>日期</th><th>角色</th><th>平台</th><th>策略</th><th>主題</th><th>連結</th><th>分平台成效</th><th>操作</th>
   </tr></thead>`
 
   let html = '<div style="overflow-x:auto">'
@@ -3831,6 +3875,28 @@ function renderThreadTracker(){
   wrap.innerHTML = html
 }
 
+// 平台顏色 / 欄位定義
+const TM_PLATFORM_COLORS = { Threads:'#a78bfa', IG:'#ec4899', FB:'#3b82f6' }
+const TM_PLATFORM_FIELDS = {
+  Threads:[['T-likes','❤️ 按讚'],['T-replies','💬 回覆'],['T-reposts','🔁 轉發'],['T-views','👁 瀏覽'],['T-follows','➕ 漲粉']],
+  IG:     [['IG-likes','❤️ 按讚'],['IG-comments','💬 留言'],['IG-saves','🔖 儲存'],['IG-reach','👁 觸及'],['IG-views','📺 瀏覽']],
+  FB:     [['FB-likes','👍 按讚'],['FB-comments','💬 留言'],['FB-shares','🔁 分享'],['FB-reach','👁 觸及']],
+}
+window._tmActivePlatform = 'Threads'
+
+function _setTmTab(plat){
+  window._tmActivePlatform = plat
+  document.querySelectorAll('.tm-sec').forEach(s=>s.style.display='none')
+  const sec = document.getElementById('tm-sec-'+plat)
+  if(sec) sec.style.display=''
+  // 更新 tab 按鈕視覺
+  document.querySelectorAll('.tm-tab-btn').forEach(b=>{
+    const p=b.dataset.plat
+    b.style.background = p===plat ? TM_PLATFORM_COLORS[p] : 'transparent'
+    b.style.color = p===plat ? '#fff' : TM_PLATFORM_COLORS[p]
+  })
+}
+
 function openAddThreadActivity(){
   document.getElementById('ta-id').value = ''
   document.getElementById('ta-modal-title').textContent = '新增炒話題記錄'
@@ -3838,12 +3904,10 @@ function openAddThreadActivity(){
   document.getElementById('ta-url').value = ''
   document.getElementById('ta-topic').value = ''
   document.getElementById('ta-content').value = ''
-  // 填充角色選單
+  ;['Threads','IG','FB'].forEach(p=>{ const el=document.getElementById('ta-plat-'+p); if(el) el.checked=(p==='Threads') })
   const sel = document.getElementById('ta-persona')
   sel.innerHTML = '<option value="">選擇角色</option>'
-  DB.get('personas').forEach(p=>{
-    sel.innerHTML += `<option value="${p.id}|${p.name}">${p.name}</option>`
-  })
+  DB.get('personas').forEach(p=>{ sel.innerHTML += `<option value="${p.id}|${p.name}">${p.name}</option>` })
   openModal('modal-thread-activity')
 }
 
@@ -3857,6 +3921,8 @@ function openEditThreadActivity(id){
   document.getElementById('ta-content').value = a.content||''
   document.getElementById('ta-strategy').value = a.strategy||'帶風向'
   document.getElementById('ta-dir').value = a.dir||'世足/運彩'
+  const platforms = a.platforms || ['Threads']
+  ;['Threads','IG','FB'].forEach(p=>{ const el=document.getElementById('ta-plat-'+p); if(el) el.checked=platforms.includes(p) })
   const sel = document.getElementById('ta-persona')
   sel.innerHTML = '<option value="">選擇角色</option>'
   DB.get('personas').forEach(p=>{
@@ -3870,22 +3936,24 @@ function saveThreadActivity(){
   const id = document.getElementById('ta-id').value
   const pval = document.getElementById('ta-persona').value
   const [personaId, personaName] = pval ? pval.split('|') : ['','']
+  const platforms = ['Threads','IG','FB'].filter(p=>document.getElementById('ta-plat-'+p)?.checked)
   const obj = {
     date: document.getElementById('ta-date').value,
     personaId, personaName,
+    platforms: platforms.length ? platforms : ['Threads'],
     strategy: document.getElementById('ta-strategy').value,
     dir: document.getElementById('ta-dir').value,
     topic: document.getElementById('ta-topic').value.trim(),
     url: document.getElementById('ta-url').value.trim(),
     content: document.getElementById('ta-content').value.trim(),
     status: '待記錄',
-    likes:0, replies:0, reposts:0, views:0, follows:0, notes:'',
-    updatedAt: new Date().toISOString()
+    platformMetrics: {},
+    notes:'', updatedAt: new Date().toISOString()
   }
   const list = DB.get('thread_activities')||[]
   if(id){
     const i=list.findIndex(x=>x.id===id)
-    if(i>=0) list[i]={...list[i],...obj}
+    if(i>=0) list[i]={...list[i],...obj, platformMetrics: list[i].platformMetrics||{}}
   } else {
     list.push({...obj, id:DB.id(), createdAt:new Date().toISOString()})
   }
@@ -3897,16 +3965,31 @@ function saveThreadActivity(){
 
 function openThreadMetrics(id){
   const a = (DB.get('thread_activities')||[]).find(x=>x.id===id); if(!a)return
+  const platforms = a.platforms || ['Threads']
+  const pm = a.platformMetrics || {}
   document.getElementById('tm-id').value = id
   document.getElementById('tm-info').innerHTML =
     `<b style="color:var(--accent)">${a.personaName}</b> · ${a.strategy} · ${a.date}<br>
-     <span style="color:var(--text3)">${a.topic||''}</span>`
-  document.getElementById('tm-likes').value = a.likes||0
-  document.getElementById('tm-replies').value = a.replies||0
-  document.getElementById('tm-reposts').value = a.reposts||0
-  document.getElementById('tm-views').value = a.views||0
-  document.getElementById('tm-follows').value = a.follows||0
+     <span style="color:var(--text3)">${a.topic||''}</span>　` +
+    platforms.map(p=>`<span style="font-size:.7rem;padding:2px 7px;background:${TM_PLATFORM_COLORS[p]}20;border-radius:8px;color:${TM_PLATFORM_COLORS[p]}">${p}</span>`).join(' ')
   document.getElementById('tm-notes').value = a.notes||''
+  // 渲染 tab nav
+  const nav = document.getElementById('tm-tab-nav')
+  nav.innerHTML = platforms.map(p=>`
+    <button class="tm-tab-btn btn btn-sm" data-plat="${p}" onclick="_setTmTab('${p}')"
+      style="border-radius:0;border:1px solid ${TM_PLATFORM_COLORS[p]};color:${TM_PLATFORM_COLORS[p]};padding:5px 14px;font-size:.8rem">
+      ${p}
+    </button>`).join('')
+  // 預填各平台數值
+  const fill=(fid, val)=>{ const el=document.getElementById('tm-'+fid); if(el) el.value=val||0 }
+  ;['Threads','IG','FB'].forEach(plat=>{
+    const m=pm[plat]||{}
+    if(plat==='Threads'){fill('T-likes',m.likes);fill('T-replies',m.replies);fill('T-reposts',m.reposts);fill('T-views',m.views);fill('T-follows',m.follows)}
+    if(plat==='IG')    {fill('IG-likes',m.likes);fill('IG-comments',m.comments);fill('IG-saves',m.saves);fill('IG-reach',m.reach);fill('IG-views',m.views)}
+    if(plat==='FB')    {fill('FB-likes',m.likes);fill('FB-comments',m.comments);fill('FB-shares',m.shares);fill('FB-reach',m.reach)}
+  })
+  // 顯示第一個平台 tab
+  _setTmTab(platforms[0])
   openModal('modal-thread-metrics')
 }
 
@@ -3914,13 +3997,17 @@ function saveThreadMetrics(){
   const id = document.getElementById('tm-id').value
   const list = DB.get('thread_activities')||[]
   const i = list.findIndex(x=>x.id===id); if(i<0)return
-  list[i].likes    = +document.getElementById('tm-likes').value||0
-  list[i].replies  = +document.getElementById('tm-replies').value||0
-  list[i].reposts  = +document.getElementById('tm-reposts').value||0
-  list[i].views    = +document.getElementById('tm-views').value||0
-  list[i].follows  = +document.getElementById('tm-follows').value||0
-  list[i].notes    = document.getElementById('tm-notes').value.trim()
-  list[i].status   = '已記錄'
+  const platforms = list[i].platforms || ['Threads']
+  const pm = list[i].platformMetrics || {}
+  const num=(id)=>+document.getElementById(id)?.value||0
+  platforms.forEach(plat=>{
+    if(plat==='Threads') pm.Threads={likes:num('tm-T-likes'),replies:num('tm-T-replies'),reposts:num('tm-T-reposts'),views:num('tm-T-views'),follows:num('tm-T-follows')}
+    if(plat==='IG')     pm.IG={likes:num('tm-IG-likes'),comments:num('tm-IG-comments'),saves:num('tm-IG-saves'),reach:num('tm-IG-reach'),views:num('tm-IG-views')}
+    if(plat==='FB')     pm.FB={likes:num('tm-FB-likes'),comments:num('tm-FB-comments'),shares:num('tm-FB-shares'),reach:num('tm-FB-reach')}
+  })
+  list[i].platformMetrics = pm
+  list[i].notes   = document.getElementById('tm-notes').value.trim()
+  list[i].status  = '已記錄'
   list[i].updatedAt = new Date().toISOString()
   DB.set('thread_activities', list)
   closeModal('modal-thread-metrics')
