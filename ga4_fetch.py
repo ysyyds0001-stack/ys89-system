@@ -186,7 +186,7 @@ def fetch_account_performance(client):
         dimensions=[Dimension(name="sessionSource")],
         metrics=[Metric(name="keyEvents")],
         date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        where=cta_filter,
+        dimension_filter=cta_filter,
     )
     cta_response = client.run_report(cta_request)
 
@@ -219,8 +219,6 @@ def fetch_top_pages(client):
         dimensions=[Dimension(name="pageTitle")],
         metrics=[Metric(name="screenPageViews")],
         date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        order_bys=[{"metric": {"name": "screenPageViews"}, "desc": True}],
-        limit=7,
     )
 
     response = client.run_report(request)
@@ -231,6 +229,8 @@ def fetch_top_pages(client):
         views = int(row.metric_values[0].value or 0)
         pages.append({"t": title, "v": views})
 
+    # 按瀏覽次數排序，取前 7 名
+    pages = sorted(pages, key=lambda x: x["v"], reverse=True)[:7]
     return pages
 
 def fetch_kpis(client):
@@ -270,10 +270,10 @@ def fetch_kpis(client):
         property=PROPERTY_FULL,
         metrics=[Metric(name="keyEvents")],
         date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        where=cta_filter,
+        dimension_filter=cta_filter,
     )
     cta_response = client.run_report(cta_request)
-    cta = int(cta_response.rows[0].metric_values[0].value or 0)
+    cta = int(cta_response.rows[0].metric_values[0].value or 0) if cta_response.rows else 0
 
     conversion_rate = (cta / sessions * 100) if sessions > 0 else 0
 
