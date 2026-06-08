@@ -160,6 +160,10 @@ tr:last-child td{border-bottom:none}
       <h2>流量來源分析</h2>
       <div class="desc">依工作階段來源／媒介（過去 28 天）</div>
       <div class="bars" id="srcBars"></div>
+      <div style="text-align:center;margin-top:12px">
+        <button id="moreBtn" style="padding:8px 16px;background:#2563eb;color:white;border:none;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600">查看全部 43 個來源</button>
+        <div id="srcMore" style="display:none;margin-top:12px;border-top:1px solid var(--line);padding-top:12px"></div>
+      </div>
     </div>
     <div class="panel">
       <h2>流量結構</h2>
@@ -244,12 +248,33 @@ function renderDashboard(d) {
   const sources = d.sources;
   const colorByCls = {army:'#7c3aed', paid:'#d97706', offline:'#16a34a', direct:'#94a3b8', line:'#2563eb'};
   const maxS = Math.max(...sources.map(s=>s.sessions));
-  document.getElementById('srcBars').innerHTML = sources.map(s=>`
+  const srcTop10 = sources.slice(0, 10);
+  const srcRest = sources.slice(10);
+  document.getElementById('srcBars').innerHTML = srcTop10.map(s=>`
     <div class="bar-row">
       <span class="name">${s.name}<span class="tag ${s.tcls}">${s.tag}</span></span>
       <span class="track"><span class="fill" style="width:${(s.sessions/maxS*100).toFixed(1)}%;background:${colorByCls[s.cls]}"></span></span>
       <span class="num">${s.sessions.toLocaleString()}</span>
     </div>`).join('');
+  if (srcRest.length > 0) {
+    const moreBtn = document.getElementById('moreBtn');
+    moreBtn.style.display = 'block';
+    moreBtn.onclick = () => {
+      const moreDiv = document.getElementById('srcMore');
+      moreDiv.style.display = moreDiv.style.display === 'none' ? 'block' : 'none';
+      moreBtn.textContent = moreDiv.style.display === 'none' ? `查看全部 ${sources.length} 個來源` : '隱藏';
+      if (moreDiv.innerHTML === '') {
+        moreDiv.innerHTML = srcRest.map(s=>`
+          <div class="bar-row">
+            <span class="name">${s.name}<span class="tag ${s.tcls}">${s.tag}</span></span>
+            <span class="track"><span class="fill" style="width:${(s.sessions/maxS*100).toFixed(1)}%;background:${colorByCls[s.cls]}"></span></span>
+            <span class="num">${s.sessions.toLocaleString()}</span>
+          </div>`).join('');
+      }
+    };
+  } else {
+    document.getElementById('moreBtn').style.display = 'none';
+  }
 
   const cats = {};
   sources.forEach(s=>{
