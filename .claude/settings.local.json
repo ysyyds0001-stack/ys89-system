@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/haoli/Downloads/**)",
+      "Bash(start \"最新版YS使用明細總表.xlsx\")",
+      "PowerShell(Get-CimInstance Win32_Processor)",
+      "Bash(nvidia-smi --query-gpu=compute_cap --format=csv,noheader)",
+      "PowerShell(Stop-Process -Name excel -Force -ErrorAction SilentlyContinue)",
+      "Read(//c/Users/haoli/**)",
+      "Bash(python)",
+      "Bash(cp \"expense.xlsx\" \"C:\\\\Users\\\\haoli\\\\Downloads\\\\測試中-YS使用明細總表.xlsx\" && echo \"File updated successfully\")",
+      "PowerShell(Get-Process | Where-Object {$_.Name -match \"excel|office\"} | Stop-Process -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 1; Write-Host \"Processes cleared\")",
+      "Bash(python3)",
+      "PowerShell(Get-Service | Where-Object {$_.StartType -eq 'Automatic'} | Select-Object Name, DisplayName | Sort-Object Name | Select-Object -First 50)",
+      "PowerShell(Get-Content \"$env:APPDATA\\\\xdg.config\\\\.wrangler\\\\config\\\\default.toml\" -ErrorAction SilentlyContinue; ls \"$env:APPDATA\\\\xdg.config\\\\.wrangler\\\\\" -ErrorAction SilentlyContinue)",
+      "WebFetch(domain:api.cloudflare.com)",
+      "mcp__3efe55d5-1146-41d6-9668-b974481d29ca__accounts_list",
+      "mcp__3efe55d5-1146-41d6-9668-b974481d29ca__workers_list",
+      "PowerShell($token = \"cfoat_5QhIw6QET0Ri3xxRfTpGPlC9MdgsyPEHxyZx0I7yHxE.1aBrCd3xvuxKKOAIZzaenyXX4tHXon2tBqpfR9DoMEA\"; $resp = Invoke-WebRequest -Uri \"https://api.cloudflare.com/client/v4/user\" -Headers @{Authorization=\"Bearer $token\"} -UseBasicParsing; \\($resp.Content | ConvertFrom-Json\\).result | Select-Object id, email)",
+      "Bash(cp \"C:\\\\Users\\\\haoli\\\\OneDrive\\\\桌面\\\\ys社群\\\\YS89發文管理系統.html\" \"C:\\\\Users\\\\haoli\\\\AppData\\\\Local\\\\Temp\\\\ys89-system\\\\index.html\" && echo \"COPY OK\")",
+      "Bash(python -)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}
