@@ -1,0 +1,35 @@
+{
+  "sources": [
+    {"name": "akki", "medium": "th_post", "sessions": 1089, "cls": "army", "tag": "社群水軍", "tcls": "t-army"},
+    {"name": "(direct)", "medium": "none", "sessions": 408, "cls": "direct", "tag": "直接/未知", "tcls": "t-direct"},
+    {"name": "l.threads.com", "medium": "referral", "sessions": 223, "cls": "army", "tag": "水軍未標記", "tcls": "t-army"},
+    {"name": "ditui", "medium": "offline", "sessions": 56, "cls": "offline", "tag": "地推", "tcls": "t-offline"},
+    {"name": "facebook", "medium": "cpc", "sessions": 53, "cls": "paid", "tag": "廣告", "tcls": "t-paid"},
+    {"name": "god", "medium": "th_bio", "sessions": 48, "cls": "army", "tag": "社群水軍", "tcls": "t-army"},
+    {"name": "line", "medium": "referral", "sessions": 36, "cls": "line", "tag": "LINE", "tcls": "t-line"}
+  ],
+  "accounts": [
+    {"name": "akki", "s": 1071, "cta": 0, "warn": true},
+    {"name": "(direct)", "s": 283, "cta": 2, "warn": false},
+    {"name": "l.threads.com", "s": 218, "cta": 0, "warn": true},
+    {"name": "god", "s": 46, "cta": 0, "warn": true},
+    {"name": "facebook", "s": 22, "cta": 2, "warn": false}
+  ],
+  "pages": [
+    {"t": "2026世界盃直播｜104場完整賽程", "v": 1323},
+    {"t": "2026世界盃賽程・分組", "v": 167},
+    {"t": "2026世界盃觀賽入口", "v": 167},
+    {"t": "2026世界盃分組分析", "v": 162},
+    {"t": "2026世足賠率即時", "v": 149},
+    {"t": "2026世界盃免費直播", "v": 144},
+    {"t": "【世足直播時間表】", "v": 106}
+  ],
+  "kpis": {
+    "activeUsers": 1475,
+    "sessions": 1764,
+    "eventCount": 11000,
+    "cta": 8,
+    "conversionRate": 0.45
+  },
+  "lastUpdated": "2026-06-08T18:15:00Z"
+}
