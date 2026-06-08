@@ -4460,6 +4460,10 @@ function renderCast(){
   }
   const supplementHtml=todayPersonas.map(buildSupplementCard).join('')
 
+  // 分離 YS主帳 和 WC 角色
+  const ysMainPersonas=todayPersonas.filter(p=>p==='YS主帳')
+  const wcPersonas=todayPersonas.filter(p=>p!=='YS主帳')
+
   // ── 今日 Threads 真人任務（每人只顯示一篇，可切換）──
   // 全域儲存供 switchCastTask() 存取
   window._todayTasks = {}
@@ -4562,10 +4566,6 @@ function renderCast(){
       ${rows}
     </div>`
   }).join('')
-
-  // 分離 YS主帳 和 WC 角色
-  const ysMainPersonas=todayPersonas.filter(p=>p==='YS主帳')
-  const wcPersonas=todayPersonas.filter(p=>p!=='YS主帳')
 
   document.getElementById('cast-page').innerHTML=`
     <!-- 世足時間線 Banner -->
