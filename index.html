@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>YS89 World Cup 2026 · GA4 成效報表</title>
+<title>YS89 World Cup 2026 繚 GA4 ???梯”</title>
 <style>
 :root{
   --bg:#f4f6fb; --card:#ffffff; --ink:#1a2233; --muted:#6b7689; --line:#e6ebf2;
@@ -118,39 +118,39 @@ tr:last-child td{border-bottom:none}
   <!-- HEADER -->
   <div class="hd">
     <div>
-      <h1>GA4 成效報表 <span class="badge">YS89 World Cup 2026</span></h1>
-      <div class="sub">世足前鋒站群 · 社群水軍 / 地推 / 廣告 流量與轉換分析</div>
+      <h1>GA4 ???梯” <span class="badge">YS89 World Cup 2026</span></h1>
+      <div class="sub">銝雲??蝡黎 繚 蝷曄黎瘞渲? / ?唳 / 撱?? 瘚???????/div>
     </div>
     <div class="meta">
-      資料區間：<b id="dateRange">載入中...</b><br>
-      測量 ID：G-THDJFGXCZ7 · 5 站共用<br>
-      <span style="font-size:.72rem" id="updateTime">最後更新：載入中...</span>
+      鞈????<b id="dateRange">頛銝?..</b><br>
+      皜祇? ID嚗-THDJFGXCZ7 繚 5 蝡??br>
+      <span style="font-size:.72rem" id="updateTime">?敺?堆?頛銝?..</span>
     </div>
   </div>
 
   <!-- KPI -->
   <div class="kpis" id="kpisContainer">
-    <div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted)">📊 載入數據中...</div>
+    <div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted)">?? 頛?豢?銝?..</div>
   </div>
 
   <!-- INSIGHTS -->
   <div class="insights">
-    <h2>📌 關鍵發現</h2>
+    <h2>?? ??潛</h2>
     <div class="ins-list" id="insightsContainer">
-      <div style="grid-column:1/-1;text-align:center;padding:20px;color:#94a3b8">載入中...</div>
+      <div style="grid-column:1/-1;text-align:center;padding:20px;color:#94a3b8">頛銝?..</div>
     </div>
   </div>
 
   <!-- ROW 1: source bars + donut -->
   <div class="grid">
     <div class="panel">
-      <h2>流量來源分析</h2>
-      <div class="desc">依工作階段來源／媒介（過去 28 天）</div>
+      <h2>瘚?靘???</h2>
+      <div class="desc">靘極雿?畾萎?皞?慦?嚗???28 憭抬?</div>
       <div class="bars" id="srcBars"></div>
     </div>
     <div class="panel">
-      <h2>流量結構</h2>
-      <div class="desc">依管道分類佔比</div>
+      <h2>瘚?蝯?</h2>
+      <div class="desc">靘恣??憿?瘥?/div>
       <div class="donut-wrap">
         <svg class="donut" width="150" height="150" viewBox="0 0 42 42" id="donut"></svg>
         <div class="legend" id="donutLegend"></div>
@@ -161,20 +161,19 @@ tr:last-child td{border-bottom:none}
   <!-- ROW 2: funnel + account table -->
   <div class="grid">
     <div class="panel">
-      <h2>社群水軍漏斗</h2>
-      <div class="desc">進站 → 瀏覽 → 點 CTA 去註冊（站內最後可追蹤步驟；註冊在站外 ys89.bet）</div>
+      <h2>蝷曄黎瘞渲?瞍?</h2>
+      <div class="desc">?脩? ???汗 ??暺?CTA ?餉酉??蝡?敺餈質馱甇仿?嚗酉?蝡? ys89.bet嚗?/div>
       <div class="funnel" id="funnelContainer">
-        <div style="padding:20px;text-align:center;color:var(--muted)">載入中...</div>
+        <div style="padding:20px;text-align:center;color:var(--muted)">頛銝?..</div>
       </div>
       <div style="margin-top:14px;font-size:.78rem;color:var(--muted);background:#f8fafc;border-radius:8px;padding:10px 12px">
-        💡 完整「來源 → 註冊」需再對 ys89.bet 後台 proxy 對帳（跨網域，GA4 只追到 CTA 點擊為止）
-      </div>
+        ? 摰??皞???閮餃????? ys89.bet 敺 proxy 撠董嚗楊蝬脣?嚗A4 ?芾蕭??CTA 暺??箸迫嚗?      </div>
     </div>
     <div class="panel">
-      <h2>各帳號成效</h2>
-      <div class="desc">進站 vs CTA 轉換（紅底 = 量大但零轉換）</div>
+      <h2>?董????/h2>
+      <div class="desc">?脩? vs CTA 頧?嚗?摨?= ?之雿頧?嚗?/div>
       <table>
-        <thead><tr><th>來源</th><th class="r">進站</th><th class="r">CTA</th><th class="r">轉換率</th></tr></thead>
+        <thead><tr><th>靘?</th><th class="r">?脩?</th><th class="r">CTA</th><th class="r">頧???/th></tr></thead>
         <tbody id="acctTable"></tbody>
       </table>
     </div>
@@ -182,35 +181,32 @@ tr:last-child td{border-bottom:none}
 
   <!-- ROW 3: top pages -->
   <div class="panel">
-    <h2>熱門頁面</h2>
-    <div class="desc">瀏覽次數前 7 名</div>
+    <h2>?梢??</h2>
+    <div class="desc">?汗甈⊥??7 ??/div>
     <div id="pages"></div>
   </div>
 
-  <!-- META ADS (最下面) -->
+  <!-- META ADS (?銝) -->
   <div class="panel ad-panel" style="margin-top:18px">
     <div class="ad-head">
-      <h2>📣 Meta 廣告成效</h2>
-      <span class="badge demo-badge" id="adStatus">⚠ 示範數據 · 待填 Ads Manager 真實值</span>
+      <h2>? Meta 撱????</h2>
+      <span class="badge demo-badge" id="adStatus">??蝷箇??豢? 繚 敺‵ Ads Manager ?祕??/span>
     </div>
-    <div class="desc">Facebook / Instagram 廣告投放成效（資料源：Meta Ads Manager）</div>
+    <div class="desc">Facebook / Instagram 撱?????嚗???嚗eta Ads Manager嚗?/div>
     <div class="ad-kpis" id="adKpis"></div>
-    <div class="ad-note">🔗 對應 GA4：<b>facebook / cpc</b> 帶進 <b id="fbSessions">--</b> 工作階段、<b id="fbCta">--</b> 次 CTA 去註冊。<br>
-    ⚠️ <b>ROAS</b> 需「轉換金額」追蹤；目前註冊在站外 ys89.bet 未回傳金額 → ROAS 暫無法計算，建議改看 <b>每次 CTA 成本（花費 ÷ GA4 CTA數）</b>。</div>
+    <div class="ad-note">?? 撠? GA4嚗?b>facebook / cpc</b> 撣園?<b id="fbSessions">--</b> 撌乩??挾??b id="fbCta">--</b> 甈?CTA ?餉酉??br>
+    ?? <b>ROAS</b> ?????憿蕭頩歹??桀?閮餃??函?憭?ys89.bet ?芸??喲?憿???ROAS ?怎瘜?蝞?撱箄降?寧? <b>瘥活 CTA ?嚗鞎?繩 GA4 CTA?賂?</b>??/div>
   </div>
 
   <div class="foot">
-    YS89 World Cup 2026 · GA4 成效報表 · <span id="footDate">資料區間 2026/05/11–06/07</span><br>
-    本報表為動態版本，自動從 Google Analytics 4 更新。最後更新：<span id="footUpdate">--</span>
+    YS89 World Cup 2026 繚 GA4 ???梯” 繚 <span id="footDate">鞈????2026/05/11??6/07</span><br>
+    ?砍銵函???嚗?? Google Analytics 4 ?湔??敺?堆?<span id="footUpdate">--</span>
   </div>
 
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════
-// 從 ga4-data.json 載入數據，動態渲染
-// ═══════════════════════════════════════════════════════════════
-
+// ????????????????????????????????????????????????????????????????// 敺?ga4-data.json 頛?豢?嚗??葡??// ????????????????????????????????????????????????????????????????
 async function loadGA4Data() {
   try {
     const response = await fetch('./ga4-data.json');
@@ -218,33 +214,33 @@ async function loadGA4Data() {
     const data = await response.json();
     renderDashboard(data);
   } catch (error) {
-    console.error('❌ 載入 GA4 數據失敗:', error);
+    console.error('??頛 GA4 ?豢?憭望?:', error);
     document.getElementById('kpisContainer').innerHTML =
-      `<div style="grid-column:1/-1;padding:20px;color:#dc2626">❌ 無法載入數據：${error.message}</div>`;
+      `<div style="grid-column:1/-1;padding:20px;color:#dc2626">???⊥?頛?豢?嚗?{error.message}</div>`;
   }
 }
 
 function renderDashboard(d) {
-  // 更新日期
+  // ?湔?交?
   const lastUpdated = new Date(d.lastUpdated);
   const formatDate = (date) => date.toLocaleDateString('zh-TW', {year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'/');
-  document.getElementById('dateRange').textContent = `2026/05/11 – ${formatDate(lastUpdated)}`;
-  document.getElementById('updateTime').textContent = `✓ 最後更新：${lastUpdated.toLocaleString('zh-TW')}`;
-  document.getElementById('footDate').textContent = `資料區間 2026/05/11 – ${formatDate(lastUpdated)}`;
+  document.getElementById('dateRange').textContent = `2026/05/11 ??${formatDate(lastUpdated)}`;
+  document.getElementById('updateTime').textContent = `???敺?堆?${lastUpdated.toLocaleString('zh-TW')}`;
+  document.getElementById('footDate').textContent = `鞈????2026/05/11 ??${formatDate(lastUpdated)}`;
   document.getElementById('footUpdate').textContent = lastUpdated.toLocaleString('zh-TW');
 
-  // ─ KPI ─
+  // ? KPI ?
   const kpis = d.kpis;
   const kpiHtml = `
-    <div class="kpi"><div class="lab"><span class="dot" style="background:var(--blue)"></span>活躍使用者</div><div class="val">${kpis.activeUsers.toLocaleString()}</div></div>
-    <div class="kpi"><div class="lab"><span class="dot" style="background:var(--cyan)"></span>工作階段</div><div class="val">${kpis.sessions.toLocaleString()}</div></div>
-    <div class="kpi"><div class="lab"><span class="dot" style="background:var(--violet)"></span>事件計數</div><div class="val">${kpis.eventCount.toLocaleString()}</div></div>
-    <div class="kpi"><div class="lab"><span class="dot" style="background:var(--green)"></span>CTA 去註冊</div><div class="val">${kpis.cta}</div></div>
-    <div class="kpi"><div class="lab"><span class="dot" style="background:var(--red)"></span>進站→CTA 轉換率</div><div class="val">${kpis.conversionRate}%</div></div>
+    <div class="kpi"><div class="lab"><span class="dot" style="background:var(--blue)"></span>瘣餉?雿輻??/div><div class="val">${kpis.activeUsers.toLocaleString()}</div></div>
+    <div class="kpi"><div class="lab"><span class="dot" style="background:var(--cyan)"></span>撌乩??挾</div><div class="val">${kpis.sessions.toLocaleString()}</div></div>
+    <div class="kpi"><div class="lab"><span class="dot" style="background:var(--violet)"></span>鈭辣閮</div><div class="val">${kpis.eventCount.toLocaleString()}</div></div>
+    <div class="kpi"><div class="lab"><span class="dot" style="background:var(--green)"></span>CTA ?餉酉??/div><div class="val">${kpis.cta}</div></div>
+    <div class="kpi"><div class="lab"><span class="dot" style="background:var(--red)"></span>?脩??TA 頧???/div><div class="val">${kpis.conversionRate}%</div></div>
   `;
   document.getElementById('kpisContainer').innerHTML = kpiHtml;
 
-  // ─ 流量來源 Bar ─
+  // ? 瘚?靘? Bar ?
   const sources = d.sources;
   const colorByCls = {army:'#7c3aed', paid:'#d97706', offline:'#16a34a', direct:'#94a3b8', line:'#2563eb'};
   const maxS = Math.max(...sources.map(s=>s.sessions));
@@ -255,13 +251,13 @@ function renderDashboard(d) {
       <span class="num">${s.sessions.toLocaleString()}</span>
     </div>`).join('');
 
-  // ─ Donut ─
+  // ? Donut ?
   const cats = {};
   sources.forEach(s=>{
-    const k = s.cls==='army'?'社群水軍':s.cls==='paid'?'廣告':s.cls==='offline'?'地推':s.cls==='line'?'LINE':'直接/未知';
+    const k = s.cls==='army'?'蝷曄黎瘞渲?':s.cls==='paid'?'撱??':s.cls==='offline'?'?唳':s.cls==='line'?'LINE':'?湔/?芰';
     cats[k]=(cats[k]||0)+s.sessions;
   });
-  const catColor = {'社群水軍':'#7c3aed','直接/未知':'#94a3b8','地推':'#16a34a','廣告':'#d97706','LINE':'#2563eb'};
+  const catColor = {'蝷曄黎瘞渲?':'#7c3aed','?湔/?芰':'#94a3b8','?唳':'#16a34a','撱??':'#d97706','LINE':'#2563eb'};
   const total = Object.values(cats).reduce((a,b)=>a+b,0);
   let off=0; let circles='';
   Object.entries(cats).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{
@@ -269,11 +265,11 @@ function renderDashboard(d) {
     circles+=`<circle cx="21" cy="21" r="15.915" fill="none" stroke="${catColor[k]}" stroke-width="6" stroke-dasharray="${pct.toFixed(2)} ${(100-pct).toFixed(2)}" stroke-dashoffset="${(25-off).toFixed(2)}"></circle>`;
     off+=pct;
   });
-  document.getElementById('donut').innerHTML = circles + `<text x="21" y="20" text-anchor="middle" font-size="6" font-weight="800" fill="#1a2233">${total.toLocaleString()}</text><text x="21" y="26" text-anchor="middle" font-size="2.6" fill="#6b7689">工作階段</text>`;
+  document.getElementById('donut').innerHTML = circles + `<text x="21" y="20" text-anchor="middle" font-size="6" font-weight="800" fill="#1a2233">${total.toLocaleString()}</text><text x="21" y="26" text-anchor="middle" font-size="2.6" fill="#6b7689">撌乩??挾</text>`;
   document.getElementById('donutLegend').innerHTML = Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
     <div class="li"><span class="sw" style="background:${catColor[k]}"></span>${k}<b>${(v/total*100).toFixed(0)}%</b></div>`).join('');
 
-  // ─ 帳號表 ─
+  // ? 撣唾?銵??
   const accts = d.accounts;
   document.getElementById('acctTable').innerHTML = accts.map(a=>{
     const conv = a.s ? (a.cta/a.s*100):0;
@@ -286,22 +282,21 @@ function renderDashboard(d) {
     </tr>`;
   }).join('');
 
-  // ─ 漏斗 ─
-  // 漏斗數據從 accounts 中推導（進站 vs CTA）
-  const totalSessions = d.kpis.sessions;
+  // ? 瞍? ?
+  // 瞍??豢?敺?accounts 銝剜撠??脩? vs CTA嚗?  const totalSessions = d.kpis.sessions;
   const totalCta = d.kpis.cta;
-  const loss1to2 = 0; // 進站 → 瀏覽都會發生
+  const loss1to2 = 0; // ?脩? ???汗?賣??潛?
   const loss2to3 = ((totalSessions - totalCta) / totalSessions * 100).toFixed(1);
 
   document.getElementById('funnelContainer').innerHTML = `
-    <div class="fstep"><div class="fbar" style="width:100%"></div><div class="frow"><span class="fname">① 進站</span><span><span class="fval">${totalSessions.toLocaleString()}</span><span class="fpct">100%</span></span></div></div>
-    <div class="farrow">▼ 流失 ${loss1to2}%</div>
-    <div class="fstep"><div class="fbar" style="width:100%"></div><div class="frow"><span class="fname">② 瀏覽頁面</span><span><span class="fval">${totalSessions.toLocaleString()}</span><span class="fpct">100%</span></span></div></div>
-    <div class="farrow">▼ 流失 ${loss2to3}%</div>
-    <div class="fstep"><div class="fbar" style="width:${(totalCta/totalSessions*100).toFixed(2)}%"></div><div class="frow"><span class="fname">③ 點 CTA 去註冊</span><span><span class="fval">${totalCta}</span><span class="fpct">${(totalCta/totalSessions*100).toFixed(2)}%</span></span></div></div>
+    <div class="fstep"><div class="fbar" style="width:100%"></div><div class="frow"><span class="fname">???脩?</span><span><span class="fval">${totalSessions.toLocaleString()}</span><span class="fpct">100%</span></span></div></div>
+    <div class="farrow">??瘚仃 ${loss1to2}%</div>
+    <div class="fstep"><div class="fbar" style="width:100%"></div><div class="frow"><span class="fname">???汗?</span><span><span class="fval">${totalSessions.toLocaleString()}</span><span class="fpct">100%</span></span></div></div>
+    <div class="farrow">??瘚仃 ${loss2to3}%</div>
+    <div class="fstep"><div class="fbar" style="width:${(totalCta/totalSessions*100).toFixed(2)}%"></div><div class="frow"><span class="fname">??暺?CTA ?餉酉??/span><span><span class="fval">${totalCta}</span><span class="fpct">${(totalCta/totalSessions*100).toFixed(2)}%</span></span></div></div>
   `;
 
-  // ─ 熱門頁面 ─
+  // ? ?梢?? ?
   const pages = d.pages;
   const maxP = Math.max(...pages.map(p=>p.v));
   document.getElementById('pages').innerHTML = pages.map(p=>`
@@ -311,7 +306,7 @@ function renderDashboard(d) {
       <span class="pv">${p.v.toLocaleString()}</span>
     </div>`).join('');
 
-  // ─ Meta 廣告（示範，待手動填） ─
+  // ? Meta 撱??嚗內蝭?敺??‵嚗??
   const fbData = accts.find(a => a.name === 'facebook');
   if (fbData) {
     document.getElementById('fbSessions').textContent = fbData.s;
@@ -328,43 +323,44 @@ function renderDashboard(d) {
   };
   const ga4_cta = fbData ? fbData.cta : 2;
   const adKpiDefs = [
-    {l:'花費', v:'NT$ '+adData.spend.toLocaleString()},
-    {l:'曝光', v:adData.impressions.toLocaleString()},
-    {l:'觸及人數', v:adData.reach.toLocaleString()},
-    {l:'連結點擊', v:adData.clicks.toLocaleString()},
+    {l:'?梯祥', v:'NT$ '+adData.spend.toLocaleString()},
+    {l:'??', v:adData.impressions.toLocaleString()},
+    {l:'閫詨?鈭箸', v:adData.reach.toLocaleString()},
+    {l:'???暺?', v:adData.clicks.toLocaleString()},
     {l:'CTR', v:adData.ctr+'%'},
-    {l:'每次 CTA 成本', v:'NT$ '+Math.round(adData.spend/ga4_cta).toLocaleString()},
+    {l:'瘥活 CTA ?', v:'NT$ '+Math.round(adData.spend/ga4_cta).toLocaleString()},
   ];
   document.getElementById('adKpis').innerHTML = adKpiDefs.map(k=>`
     <div class="ad-kpi"><div class="l">${k.l}</div><div class="v">${k.v}</div></div>`).join('');
 
-  // ─ 關鍵發現 ─
+  // ? ??潛 ?
   const armyTotal = sources.filter(s => s.cls === 'army').reduce((sum, s) => sum + s.sessions, 0);
   const topArmy = sources.find(s => s.cls === 'army');
   const topPaid = sources.find(s => s.cls === 'paid');
 
   document.getElementById('insightsContainer').innerHTML = `
     <div class="ins">
-      <div class="it">🔥 水軍量大、轉換歸零</div>
-      <div class="id"><span class="em">${topArmy?.name}</span> 帳號帶進 <span class="em">${topArmy?.sessions.toLocaleString()}</span> 工作階段（最大來源），但 CTA 去註冊 <span class="em">= ${accts.find(a=>a.name===topArmy?.name)?.cta || 0}</span>。量大 ≠ 有效。</div>
+      <div class="it">? 瘞渲??之???飛??/div>
+      <div class="id"><span class="em">${topArmy?.name}</span> 撣唾?撣園?<span class="em">${topArmy?.sessions.toLocaleString()}</span> 撌乩??挾嚗?憭找?皞?嚗? CTA ?餉酉??<span class="em">= ${accts.find(a=>a.name===topArmy?.name)?.cta || 0}</span>??憭???????/div>
     </div>
     <div class="ins">
-      <div class="it">🎯 廣告小量但轉換最高</div>
-      <div class="id">${topPaid?.name} / ${topPaid?.medium} 僅 ${topPaid?.sessions} 進站，卻有 ${accts.find(a=>a.name===topPaid?.name)?.cta || 0} 次 CTA = <span class="em">${topPaid?.sessions ? ((accts.find(a=>a.name===topPaid?.name)?.cta || 0) / topPaid.sessions * 100).toFixed(1) : 0}%</span> 轉換率，遠勝水軍的 0%。</div>
+      <div class="it">? 撱??撠?雿???擃?/div>
+      <div class="id">${topPaid?.name} / ${topPaid?.medium} ??${topPaid?.sessions} ?脩?嚗??${accts.find(a=>a.name===topPaid?.name)?.cta || 0} 甈?CTA = <span class="em">${topPaid?.sessions ? ((accts.find(a=>a.name===topPaid?.name)?.cta || 0) / topPaid.sessions * 100).toFixed(1) : 0}%</span> 頧?????瘞渲???0%??/div>
     </div>
     <div class="ins">
-      <div class="it">📊 社群水軍佔總流量</div>
-      <div class="id">水軍共約 <span class="em">${armyTotal.toLocaleString()}</span> 工作階段，佔總流量 <span class="em">${(armyTotal/total*100).toFixed(0)}%</span>，是流量主力；廣告/地推佔比極低。</div>
+      <div class="it">?? 蝷曄黎瘞渲?雿蜇瘚?</div>
+      <div class="id">瘞渲??梁? <span class="em">${armyTotal.toLocaleString()}</span> 撌乩??挾嚗?蝮賣???<span class="em">${(armyTotal/total*100).toFixed(0)}%</span>嚗瘚?銝餃?嚗誨???唳雿?璆萎???/div>
     </div>
     <div class="ins">
-      <div class="it">💡 數據說明</div>
-      <div class="id">本報表自動從 Google Analytics 4 更新。<b>Meta 廣告區</b>的花費/曝光等數據需手動從 Ads Manager 填入（GA4 無此數據）。</div>
+      <div class="it">? ?豢?隤芣?</div>
+      <div class="id">?砍銵刻?? Google Analytics 4 ?湔??b>Meta 撱???</b>?鞎???蝑????敺?Ads Manager 憛怠嚗A4 ?⊥迨?豢?嚗?/div>
     </div>
   `;
 }
 
-// 頁面載入時自動抓數據
+// ?頛????豢?
 document.addEventListener('DOMContentLoaded', loadGA4Data);
 </script>
 </body>
 </html>
+
