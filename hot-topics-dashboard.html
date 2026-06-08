@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>熱話題追蹤 - YS89</title>
+<style>
+:root{--bg:#f4f6fb;--card:#ffffff;--ink:#1a2233;--muted:#6b7689;--line:#e6ebf2;--blue:#2563eb;--red:#dc2626;--green:#16a34a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Noto Sans TC","Segoe UI",sans-serif;font-size:15px}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px}
+.hd{margin-bottom:28px}
+.hd h1{font-size:1.8rem;font-weight:800;margin-bottom:6px}
+.hd .sub{color:var(--muted);font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+@media(max-width:880px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(20,30,50,.06)}
+.kpi .lab{font-size:.75rem;color:var(--muted);font-weight:700;text-transform:uppercase}
+.kpi .val{font-size:2rem;font-weight:800;margin-top:6px;color:var(--blue)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px rgba(20,30,50,.06)}
+.panel h2{font-size:1.1rem;font-weight:700;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th{text-align:left;font-size:.75rem;color:var(--muted);font-weight:700;padding:10px;border-bottom:2px solid var(--line);text-transform:uppercase}
+td{padding:12px 10px;border-bottom:1px solid var(--line)}
+tr:hover{background:rgba(37,99,235,.02)}
+.rank{display:inline-block;width:28px;height:28px;background:var(--blue);color:white;border-radius:50%;text-align:center;line-height:28px;font-weight:700}
+.rank.silver{background:#c0c0c0}
+.rank.bronze{background:#cd7f32}
+.bar{display:flex;align-items:center;gap:12px;padding:8px 0}
+.bar .name{flex:1;font-weight:600}
+.bar .chart{height:24px;background:var(--line);border-radius:4px;overflow:hidden;flex:2}
+.bar .fill{height:100%;background:var(--blue);border-radius:4px}
+.bar .num{width:50px;text-align:right;font-weight:700;color:var(--ink)}
+.foot{text-align:center;color:var(--muted);font-size:.75rem;margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hd">
+    <h1>🔥 熱話題追蹤儀表板</h1>
+    <div class="sub">每日社群發布監控 · 話題熱度分析</div>
+  </div>
+
+  <div class="grid" id="kpiGrid"></div>
+
+  <div class="panel">
+    <h2>📅 日期排名</h2>
+    <div id="dateChart"></div>
+  </div>
+
+  <div class="panel">
+    <h2>👥 帳號排名</h2>
+    <table>
+      <thead><tr><th>#</th><th>帳號</th><th>帖子數</th><th>互動量</th><th>平均互動</th></tr></thead>
+      <tbody id="accountTable"></tbody>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h2>📱 平台分布</h2>
+    <div id="platformChart"></div>
+  </div>
+
+  <div class="panel">
+    <h2>🏆 熱門話題 TOP 7</h2>
+    <table>
+      <thead><tr><th>日期</th><th>帳號</th><th>話題</th><th>帖子</th><th>互動</th><th>標籤</th></tr></thead>
+      <tbody id="topicsTable"></tbody>
+    </table>
+  </div>
+
+  <div class="foot">
+    🔥 熱話題追蹤系統 · 自動每日更新 · 最後更新：<span id="updateTime">--</span>
+  </div>
+</div>
+
+<script>
+const TOPICS_DATA = {
+  "records": [
+    {"日期":"2026-06-08","帳號":"akki","平台":"IG","話題":"世足直播","帖子數":5,"互動量":245,"標籤":"#世足2026 #直播"},
+    {"日期":"2026-06-08","帳號":"akki","平台":"FB","話題":"世足分析","帖子數":3,"互動量":156,"標籤":"#世足 #分析"},
+    {"日期":"2026-06-08","帳號":"god","平台":"Threads","話題":"世足賠率","帖子數":4,"互動量":89,"標籤":"#賠率 #投注"},
+    {"日期":"2026-06-08","帳號":"uncle","平台":"IG","話題":"世足戰績","帖子數":6,"互動量":312,"標籤":"#戰績 #分組"},
+    {"日期":"2026-06-08","帳號":"crab","平台":"FB","話題":"世足觀測","帖子數":2,"互動量":67,"標籤":"#觀測 #動態"},
+    {"日期":"2026-06-07","帳號":"akki","平台":"IG","話題":"世足直播","帖子數":4,"互動量":198,"標籤":"#世足2026"},
+    {"日期":"2026-06-07","帳號":"god","平台":"Threads","話題":"世足賠率","帖子數":3,"互動量":72,"標籤":"#賠率"},
+    {"日期":"2026-06-07","帳號":"uncle","平台":"IG","話題":"世足戰績","帖子數":5,"互動量":287,"標籤":"#戰績"}
+  ]
+};
+
+function renderDashboard() {
+  const data = TOPICS_DATA.records;
+  
+  // KPI 統計
+  const totalPosts = data.reduce((sum, r) => sum + r.帖子數, 0);
+  const totalEngagement = data.reduce((sum, r) => sum + r.互動量, 0);
+  const uniqueDates = [...new Set(data.map(r => r.日期))].length;
+  const uniqueAccounts = [...new Set(data.map(r => r.帳號))].length;
+  
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi"><div class="lab">總帖子數</div><div class="val">${totalPosts}</div></div>
+    <div class="kpi"><div class="lab">互動量</div><div class="val">${totalEngagement.toLocaleString()}</div></div>
+    <div class="kpi"><div class="lab">追蹤天數</div><div class="val">${uniqueDates}</div></div>
+    <div class="kpi"><div class="lab">活躍帳號</div><div class="val">${uniqueAccounts}</div></div>
+  `;
+  
+  // 日期統計
+  const byDate = {};
+  data.forEach(r => byDate[r.日期] = (byDate[r.日期] || 0) + r.帖子數);
+  const maxDate = Math.max(...Object.values(byDate));
+  document.getElementById('dateChart').innerHTML = Object.entries(byDate)
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([date, count]) => `
+      <div class="bar">
+        <div class="name">${date}</div>
+        <div class="chart"><div class="fill" style="width:${(count/maxDate*100).toFixed(0)}%"></div></div>
+        <div class="num">${count}</div>
+      </div>
+    `).join('');
+  
+  // 帳號排名
+  const byAccount = {};
+  data.forEach(r => {
+    if (!byAccount[r.帳號]) byAccount[r.帳號] = {posts: 0, engagement: 0};
+    byAccount[r.帳號].posts += r.帖子數;
+    byAccount[r.帳號].engagement += r.互動量;
+  });
+  
+  const sorted = Object.entries(byAccount).sort((a, b) => b[1].posts - a[1].posts);
+  const ranks = ['🥇', '🥈', '🥉'];
+  document.getElementById('accountTable').innerHTML = sorted.map(([acc, stats], i) => `
+    <tr>
+      <td>${ranks[i] || (i+1)}</td>
+      <td><strong>${acc}</strong></td>
+      <td>${stats.posts}</td>
+      <td>${stats.engagement}</td>
+      <td>${(stats.engagement / stats.posts).toFixed(1)}</td>
+    </tr>
+  `).join('');
+  
+  // 平台分布
+  const byPlatform = {};
+  data.forEach(r => byPlatform[r.平台] = (byPlatform[r.平台] || 0) + r.帖子數);
+  const maxPlatform = Math.max(...Object.values(byPlatform));
+  document.getElementById('platformChart').innerHTML = Object.entries(byPlatform)
+    .sort((a, b) => b[1] - a[1])
+    .map(([platform, count]) => `
+      <div class="bar">
+        <div class="name">${platform}</div>
+        <div class="chart"><div class="fill" style="width:${(count/maxPlatform*100).toFixed(0)}%"></div></div>
+        <div class="num">${count}</div>
+      </div>
+    `).join('');
+  
+  // 熱門話題
+  const sorted_topics = [...data].sort((a, b) => b.互動量 - a.互動量).slice(0, 7);
+  document.getElementById('topicsTable').innerHTML = sorted_topics.map(r => `
+    <tr>
+      <td>${r.日期}</td>
+      <td><strong>${r.帳號}</strong></td>
+      <td>${r.話題}</td>
+      <td>${r.帖子數}</td>
+      <td>${r.互動量}</td>
+      <td style="font-size:.8rem">${r.標籤}</td>
+    </tr>
+  `).join('');
+  
+  document.getElementById('updateTime').textContent = new Date().toLocaleString('zh-TW');
+}
+
+renderDashboard();
+</script>
+</body>
+</html>
