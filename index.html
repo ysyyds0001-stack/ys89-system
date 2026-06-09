@@ -430,6 +430,9 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 </div>
 
 <script>
+// ===== CONFIG =====
+const K='ys89_'
+
 // ===== DB =====
 const DB={
   get(k){try{return JSON.parse(localStorage.getItem(K+k)||'[]')}catch{return[]}},
@@ -1107,7 +1110,6 @@ function renderGA4(){
 
 // ===== DATA RECOVERY & EXPORT =====
 const BACKUP_FILE='localstorage_backup.json'
-const K='ys89_'
 const DATA_KEYS=['articles','community','daily_todos','entrances','links','personas','posts','routing','thread_activities','threads_posts','threads_replies','weekly_kpis']
 
 async function recoverLocalStorageData(){
