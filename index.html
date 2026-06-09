@@ -184,6 +184,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 <nav>
   <div class="nav-brand">YS89<span>發文管理系統</span></div>
   <div id="sync-status" style="font-size:.72rem;color:var(--accent);margin-left:8px;opacity:.8"></div>
+  <div class="nav-tab" onclick="nav(this,'ga4')">📊 GA4 成效</div>
   <div class="nav-tab active" onclick="nav(this,'personas')">發文角色</div>
   <div class="nav-tab" onclick="nav(this,'tracker')">發文追蹤</div>
   <div class="nav-tab" onclick="nav(this,'articles')">文章庫</div>
@@ -198,6 +199,73 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
 <div id="toast"></div>
 <div class="sparkle">✦</div>
+
+<!-- ===== PAGE: GA4 成效 ===== -->
+<div id="pg-ga4" class="page" style="padding:24px 20px;background:#f4f6fb">
+  <div style="max-width:1180px;margin:0 auto">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px">
+      <div>
+        <h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-.01em;color:#1a2233">GA4 成效報表 <span style="display:inline-block;font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:99px;background:#eef2ff;color:#2563eb;margin-left:12px">YS89 World Cup 2026</span></h1>
+        <div style="color:#6b7689;font-size:.9rem;margin-top:3px">世足前鋒站群 · 社群水軍 / 地推 / 廣告 流量與轉換分析</div>
+      </div>
+      <div style="text-align:right;font-size:.82rem;color:#6b7689">
+        資料區間：<b style="color:#1a2233">2026/05/11 – 06/07</b>（過去 28 天）<br>
+        測量 ID：G-THDJFGXCZ7 · 5 站共用<br>
+        <span style="font-size:.72rem">資料源：Google Analytics 4</span>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px">
+      <div style="background:white;border:1px solid #e6ebf2;border-radius:14px;padding:16px 18px;box-shadow:0 1px 3px rgba(20,30,50,.06),0 6px 24px rgba(20,30,50,.06)">
+        <div style="font-size:.78rem;color:#6b7689;font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:#2563eb"></span>活躍使用者</div>
+        <div style="font-size:1.85rem;font-weight:800;margin-top:4px;letter-spacing:-.02em;color:#1a2233">1,475</div>
+      </div>
+      <div style="background:white;border:1px solid #e6ebf2;border-radius:14px;padding:16px 18px;box-shadow:0 1px 3px rgba(20,30,50,.06),0 6px 24px rgba(20,30,50,.06)">
+        <div style="font-size:.78rem;color:#6b7689;font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:#0891b2"></span>工作階段</div>
+        <div style="font-size:1.85rem;font-weight:800;margin-top:4px;letter-spacing:-.02em;color:#1a2233">1,764</div>
+      </div>
+      <div style="background:white;border:1px solid #e6ebf2;border-radius:14px;padding:16px 18px;box-shadow:0 1px 3px rgba(20,30,50,.06),0 6px 24px rgba(20,30,50,.06)">
+        <div style="font-size:.78rem;color:#6b7689;font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:#7c3aed"></span>事件計數</div>
+        <div style="font-size:1.85rem;font-weight:800;margin-top:4px;letter-spacing:-.02em;color:#1a2233">11,000</div>
+      </div>
+      <div style="background:white;border:1px solid #e6ebf2;border-radius:14px;padding:16px 18px;box-shadow:0 1px 3px rgba(20,30,50,.06),0 6px 24px rgba(20,30,50,.06)">
+        <div style="font-size:.78rem;color:#6b7689;font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:#16a34a"></span>CTA 去註冊</div>
+        <div style="font-size:1.85rem;font-weight:800;margin-top:4px;letter-spacing:-.02em;color:#1a2233">8</div>
+      </div>
+      <div style="background:white;border:1px solid #e6ebf2;border-radius:14px;padding:16px 18px;box-shadow:0 1px 3px rgba(20,30,50,.06),0 6px 24px rgba(20,30,50,.06)">
+        <div style="font-size:.78rem;color:#6b7689;font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:#dc2626"></span>進站→CTA 轉換率</div>
+        <div style="font-size:1.85rem;font-weight:800;margin-top:4px;letter-spacing:-.02em;color:#1a2233">0.46%</div>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#1e293b,#0f172a);color:#e2e8f0;border-radius:16px;padding:22px;margin-bottom:18px">
+      <h2 style="font-size:1.05rem;font-weight:700;margin-bottom:14px;color:#fff;display:flex;align-items:center;gap:8px">📌 關鍵發現</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:13px 15px">
+          <div style="font-weight:700;font-size:.9rem;margin-bottom:3px;display:flex;align-items:center;gap:7px">🔥 水軍量大、轉換歸零</div>
+          <div style="font-size:.82rem;color:#94a3b8;line-height:1.5"><span style="color:#fbbf24;font-weight:700">akki</span> 帳號帶進 <span style="color:#fbbf24;font-weight:700">1,089</span> 工作階段（最大來源），但 CTA 去註冊 <span style="color:#fbbf24;font-weight:700">= 0</span>。量大 ≠ 有效。</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:13px 15px">
+          <div style="font-weight:700;font-size:.9rem;margin-bottom:3px;display:flex;align-items:center;gap:7px">🎯 廣告小量但轉換最高</div>
+          <div style="font-size:.82rem;color:#94a3b8;line-height:1.5">facebook / cpc 僅 22 進站，卻有 2 次 CTA = <span style="color:#fbbf24;font-weight:700">9.1%</span> 轉換率，遠勝水軍的 0%。</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:13px 15px">
+          <div style="font-weight:700;font-size:.9rem;margin-bottom:3px;display:flex;align-items:center;gap:7px">🏷️ 223 筆水軍流量沒標記</div>
+          <div style="font-size:.82rem;color:#94a3b8;line-height:1.5"><span style="color:#fbbf24;font-weight:700">l.threads.com</span>（223）是 Threads 貼文未帶 UTM，掉進 referral 分不出帳號 → 該補 utm_source。</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:13px 15px">
+          <div style="font-weight:700;font-size:.9rem;margin-bottom:3px;display:flex;align-items:center;gap:7px">📊 社群水軍佔總流量 77%</div>
+          <div style="font-size:.82rem;color:#94a3b8;line-height:1.5">水軍（akki+god+l.threads）約 <span style="color:#fbbf24;font-weight:700">1,360</span> 工作階段，是流量主力；廣告/地推佔比極低。</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:20px;background:white;border-radius:12px;color:#6b7689">
+      <p>📊 完整 GA4 成效報表已整合 | 更多詳細數據請查看獨立報表文件</p>
+      <p style="font-size:.8rem;margin-top:8px">資料更新時間：2026-06-09</p>
+    </div>
+  </div>
+</div>
 
 <!-- ===== PAGE: 發文角色 ===== -->
 <div id="pg-personas" class="page active">
