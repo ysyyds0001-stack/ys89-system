@@ -1,0 +1,31 @@
+﻿{
+    "summary":  {
+                    "totalPosts":  32,
+                    "totalEngagement":  1240,
+                    "trackingDays":  2,
+                    "activeAccounts":  4
+                },
+    "topTopics":  [
+                      {
+                          "postCount":  12,
+                          "engagement":  450,
+                          "topic":  "2026世界盃直播"
+                      },
+                      {
+                          "postCount":  8,
+                          "engagement":  280,
+                          "topic":  "世足賠率分析"
+                      },
+                      {
+                          "postCount":  7,
+                          "engagement":  250,
+                          "topic":  "賽程預測"
+                      },
+                      {
+                          "postCount":  5,
+                          "engagement":  260,
+                          "topic":  "球隊介紹"
+                      }
+                  ],
+    "lastUpdated":  "2026-06-09T14:42:39Z"
+}
