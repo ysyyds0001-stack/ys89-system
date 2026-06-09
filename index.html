@@ -1,158 +1,1111 @@
-﻿<!-- Last deployed: 2026-06-09 15:54:33 -->
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>YS89 社群系統</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YS89 發文管理系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f4f6fb;--card:#ffffff;--ink:#1a2233;--muted:#6b7689;--line:#e6ebf2;--blue:#2563eb;--green:#16a34a;--red:#dc2626}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Noto Sans TC","Segoe UI",sans-serif;font-size:15px}
-.header{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);color:white;padding:32px 20px;text-align:center}
-.header h1{font-size:2rem;margin-bottom:8px}
-.nav{display:flex;gap:4px;padding:20px;border-bottom:2px solid var(--line);overflow-x:auto;background:var(--card)}
-.nav-tab{padding:12px 20px;border:none;background:transparent;cursor:pointer;font-weight:600;border-radius:8px 8px 0 0;transition:all .2s;white-space:nowrap}
-.nav-tab:hover{background:var(--line)}
-.nav-tab.active{background:var(--blue);color:white}
-.content{padding:20px;min-height:60vh}
-.page{display:none}
+body{
+  font-family:'Inter',sans-serif;
+  background:#0B0908;
+  color:#F5F1EB;
+  min-height:100vh;
+  position:relative
+}
+body::before{
+  content:'';
+  position:fixed;
+  top:-80px;right:-80px;
+  width:700px;height:700px;
+  background:
+    radial-gradient(circle at 60% 30%,
+      rgba(160,45,12,.65) 0%,
+      rgba(110,28,8,.35) 28%,
+      rgba(60,14,4,.12) 55%,
+      transparent 72%);
+  filter:blur(28px);
+  pointer-events:none;
+  z-index:0
+}
+:root{
+  --g1:#0f0d0b;--g2:#150e0b;--g3:#1c1208;--g4:#221408;
+  --amber:#8B3214;--amber2:#A83A22;--amber3:#C44A2A;--amber4:#E07050;
+  --accent:#D4542A;--accent2:#E87848;
+  --border:#1e1410;--border2:#2e1e14;
+  --text:#F5F1EB;--text2:#C9C2BA;--text3:#8A7D74
+}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#0B0B0D}
+::-webkit-scrollbar-thumb{background:#1e1410;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#2e1e14}
+
+/* NAV */
+nav{background:#0d0b0a;border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:0;position:sticky;top:0;z-index:100;box-shadow:0 1px 20px #000a}
+.nav-brand{color:var(--accent);font-weight:600;font-size:1.1rem;padding:15px 20px 15px 0;border-right:1px solid var(--border);margin-right:4px;letter-spacing:2px;font-family:'Cormorant Garamond',serif}
+.nav-brand span{color:var(--text3);font-weight:400;font-size:.78rem;margin-left:6px;letter-spacing:.5px;font-family:'Inter',sans-serif}
+.nav-tab{padding:13px 16px;cursor:pointer;color:var(--text3);font-size:.87rem;border-bottom:2px solid transparent;transition:.2s;white-space:nowrap}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* PAGE */
+.page{display:none;padding:20px 24px;max-width:1440px;margin:0 auto}
 .page.active{display:block}
-.wrap{max-width:1180px;margin:0 auto;padding:24px 20px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(20,30,50,.06)}
-.kpi .lab{font-size:.75rem;color:var(--muted);font-weight:700;text-transform:uppercase}
-.kpi .val{font-size:2rem;font-weight:800;margin-top:6px;color:var(--blue)}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px rgba(20,30,50,.06)}
-.panel h2{font-size:1.1rem;font-weight:700;margin-bottom:16px}
-table{width:100%;border-collapse:collapse;font-size:.9rem}
-th{text-align:left;font-size:.75rem;color:var(--muted);font-weight:700;padding:10px;border-bottom:2px solid var(--line);text-transform:uppercase}
-td{padding:12px 10px;border-bottom:1px solid var(--line)}
-tr:hover{background:rgba(37,99,235,.02)}
-button{padding:6px 12px;background:var(--blue);color:white;border:none;border-radius:4px;cursor:pointer;font-size:.85rem;font-weight:600}
-button:hover{opacity:.9}
-.link{color:var(--blue);text-decoration:none;cursor:pointer;font-weight:600}
-.link:hover{text-decoration:underline}
-.foot{text-align:center;color:var(--muted);font-size:.75rem;margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
-@media(max-width:880px){.grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.grid{grid-template-columns:1fr}.nav-tab{padding:10px 14px;font-size:.85rem}}
+
+/* CARD */
+.card{background:var(--g1);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px}
+.card-sm{background:var(--g1);border:1px solid var(--border);border-radius:8px;padding:14px}
+.card-title{font-size:.92rem;font-weight:600;color:var(--accent);margin-bottom:12px}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:1000px){.g3,.g4,.g5{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.g2,.g3,.g4,.g5{grid-template-columns:1fr}}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:7px;border:none;cursor:pointer;font-size:.83rem;font-weight:500;transition:.15s;text-decoration:none}
+.btn-primary{background:var(--amber);color:#F5F1EB}.btn-primary:hover{background:var(--amber2)}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text3)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-ghost{background:transparent;border:none;color:var(--text3);cursor:pointer}.btn-ghost:hover{color:var(--accent)}
+.btn-sm{padding:4px 10px;font-size:.77rem;border-radius:5px}
+.btn-xs{padding:3px 8px;font-size:.72rem;border-radius:4px}
+.btn-copy{background:#1a0e08;color:var(--accent);border:1px solid var(--border2)}.btn-copy:hover{background:#221408}
+.btn-danger{background:transparent;border:1px solid #3a1515;color:#f87171}.btn-danger:hover{background:#3a1515}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;font-size:.72rem;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.b-green{background:#1a0e08;color:var(--accent)}
+.b-green2{background:#221408;color:var(--amber4)}
+.b-gray{background:#161412;color:var(--text3)}
+.b-red{background:#2a1515;color:#f87171}
+.b-yellow{background:#2a2210;color:#fbbf24}
+.b-blue{background:#10182a;color:#60a5fa}
+.b-warn{background:#2a1a0a;color:#fb923c}
+
+/* FORMS */
+input,select,textarea{background:#0d0b0a;border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:var(--text);font-size:.86rem;width:100%;outline:none;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#0f0d0b}
+textarea{resize:vertical;min-height:70px;line-height:1.6}
+label{font-size:.78rem;color:var(--text3);display:block;margin-bottom:4px}
+.fg{margin-bottom:12px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+select option{background:#0f0d0b}
+
+/* PROMPT BOX */
+.pbox{background:#0B0B0D;border:1px solid var(--border);border-radius:7px;padding:12px 40px 12px 12px;font-size:.8rem;line-height:1.7;color:#C9C2BA;position:relative;max-height:160px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;font-family:monospace}
+.pcopy{position:absolute;top:6px;right:6px;padding:3px 9px;font-size:.72rem;background:#1a0e08;color:var(--accent);border:1px solid var(--border2);border-radius:4px;cursor:pointer}
+.pcopy:hover{background:#221408}
+
+/* STAT */
+.stat{background:var(--g1);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+.stat-num{font-size:1.8rem;font-weight:700;color:var(--accent);line-height:1.1}
+.stat-label{font-size:.75rem;color:var(--text3);margin-top:5px}
+.stat-sub{font-size:.75rem;color:var(--text3);margin-top:2px}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th{background:#0d0b0a;color:var(--text3);font-weight:500;padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid #0f0d0b;color:var(--text2);vertical-align:middle}
+tr:hover td{background:#0f0d0b}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:#000c;z-index:200;align-items:center;justify-content:center;padding:16px}
+.overlay.show{display:flex}
+.modal{background:#0d0b0a;border:1px solid var(--border2);border-radius:12px;padding:22px;width:100%;max-width:600px;max-height:92vh;overflow-y:auto}
+.modal-lg{max-width:760px}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.mt{font-size:.95rem;font-weight:600;color:var(--accent)}
+.mc{background:none;border:none;color:var(--text3);font-size:1.2rem;cursor:pointer;line-height:1}.mc:hover{color:var(--text)}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;right:20px;background:#1a0e08;border:1px solid var(--amber2);color:var(--accent);padding:10px 18px;border-radius:8px;font-size:.85rem;display:none;z-index:999;animation:fi .2s}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* COVERAGE BAR */
+.cov-bar{height:6px;background:#161412;border-radius:3px;margin-top:5px;overflow:hidden}
+.cov-fill{height:100%;border-radius:3px;transition:.4s;background:var(--accent)}
+.cov-fill.warn{background:#fb923c}
+.cov-fill.danger{background:#f87171}
+
+/* PERSONA CARD */
+.pcard{background:var(--g1);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;transition:.15s}
+.pcard:hover{border-color:var(--border2)}
+.pname{font-size:1rem;font-weight:700;color:var(--accent)}
+.pdir{font-size:.78rem;color:var(--text3);margin-top:2px}
+.sec{font-size:.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin:11px 0 5px}
+
+/* COMMUNITY CARD */
+.ccard{background:var(--g1);border:1px solid var(--border);border-radius:10px;padding:16px}
+
+/* COVERAGE GRID */
+.cov-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.cov-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:.73rem;border:1px solid;white-space:nowrap}
+.cov-chip.done{background:#1a0e08;border-color:var(--border2);color:var(--accent)}
+.cov-chip.todo{background:#1a0e0e;border-color:#3a2020;color:#f87171}
+
+/* SPARKLE */
+.sparkle{
+  position:fixed;
+  top:68px;right:52px;
+  font-size:52px;
+  color:#F5F1EB;
+  opacity:.92;
+  pointer-events:none;
+  z-index:50;
+  line-height:1;
+  text-shadow:
+    0 0 18px rgba(255,255,255,.55),
+    0 0 45px rgba(220,120,60,.35),
+    0 0 90px rgba(180,60,20,.22)
+}
+
+/* MISC */
+hr{border:none;border-top:1px solid var(--border);margin:14px 0}
+.flex{display:flex;align-items:center;gap:8px}
+.fb{display:flex;align-items:center;justify-content:space-between}
+.tm{color:var(--text3);font-size:.82rem}
+.tg{color:var(--accent)}
+.tr{color:#f87171}
+.ty{color:#fbbf24}
 </style>
 </head>
 <body>
-<div class="header">
-  <h1>🚀 YS89 社群系統</h1>
-  <div style="font-size:.95rem;opacity:.9">整合 GA4 · 熱話題追蹤 · 劇本管理 · 發文排程</div>
+
+<nav>
+  <div class="nav-brand">YS89<span>發文管理系統</span></div>
+  <div class="nav-tab active" onclick="nav(this,'ga4')">📊 GA4成效</div>
+  <div class="nav-tab" onclick="nav(this,'personas')">發文角色</div>
+  <div class="nav-tab" onclick="nav(this,'tracker')">發文追蹤</div>
+  <div class="nav-tab" onclick="nav(this,'articles')">文章庫</div>
+  <div class="nav-tab" onclick="nav(this,'community')">社群號</div>
+</nav>
+
+<div id="toast"></div>
+<div class="sparkle">✦</div>
+
+<!-- ===== PAGE: GA4成效 ===== -->
+<div id="pg-ga4" class="page active">
+  <div class="fb" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">GA4成效面板</h2>
+      <p class="tm" style="margin-top:3px">實時追蹤論壇與社群流量成效、用戶來源分析</p>
+    </div>
+    <div class="flex" style="gap:12px">
+      <button class="btn btn-primary" onclick="loadGA4Data()">🔄 更新數據</button>
+    </div>
+  </div>
+
+  <!-- KPI 卡片 -->
+  <div class="g4" style="margin-bottom:18px" id="ga4-kpis"></div>
+
+  <!-- 流量來源排行 & 帳號成效 & 熱門頁面 -->
+  <div class="g2" style="margin-bottom:18px">
+    <div class="card">
+      <div class="card-title">流量來源排行（前15）</div>
+      <div id="ga4-sources" style="font-size:.83rem"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">帳號成效（前12）</div>
+      <div id="ga4-accounts" style="font-size:.83rem"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">熱門頁面（前7）</div>
+    <div id="ga4-pages" style="font-size:.83rem"></div>
+  </div>
+
+  <div class="tm" style="text-align:right;margin-top:12px" id="ga4-updated"></div>
 </div>
 
-<div class="nav">
-  <button class="nav-tab active" onclick="showPage('ga4')">📊 GA4 成效</button>
-  <button class="nav-tab" onclick="showPage('topics')">🔥 熱話題</button>
-  <button class="nav-tab" onclick="showPage('script')">🎬 劇本</button>
-  <button class="nav-tab" onclick="showPage('posting')">📝 發文</button>
-  <button class="nav-tab" onclick="showPage('settings')">⚙️ 設定</button>
+<!-- ===== PAGE: 發文角色 ===== -->
+<div id="pg-personas" class="page">
+  <div class="fb" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">發文角色</h2>
+      <p class="tm" style="margin-top:3px">管理每個發文帳號的人設、提示詞、發文記錄</p>
+    </div>
+    <div class="flex">
+      <select id="filter-dir" onchange="renderPersonas()" style="width:160px">
+        <option value="">全部方向</option>
+        <option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option>
+        <option>百家樂</option><option>老虎機</option><option>捕魚機</option><option>通用</option>
+      </select>
+      <button class="btn btn-primary" onclick="openModal('modal-add-persona')">+ 新增角色</button>
+    </div>
+  </div>
+  <div id="personas-grid" class="g2"></div>
 </div>
 
-<div class="content">
-  <!-- GA4 -->
-  <div id="ga4" class="page active">
-    <div class="wrap">
-      <h2 style="margin-bottom:20px">📊 GA4 成效報表</h2>
-      <p style="color:var(--muted);margin-bottom:20px">GA4 數據正在載入中...</p>
-      <p><a href="ga4-dashboard.html" class="link">→ 查看完整 GA4 儀表板</a></p>
+<!-- ===== PAGE: 發文追蹤 ===== -->
+<div id="pg-tracker" class="page">
+  <div class="fb" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">發文追蹤</h2>
+      <p class="tm" style="margin-top:3px">記錄每次發文的來源文章、流量數據</p>
     </div>
+    <button class="btn btn-primary" onclick="openAddPostModal()">+ 新增發文記錄</button>
   </div>
-
-  <!-- 熱話題 -->
-  <div id="topics" class="page">
-    <div class="wrap">
-      <h2 style="margin-bottom:20px">🔥 熱話題追蹤</h2>
-      <p style="color:var(--muted);margin-bottom:20px">熱話題數據正在載入中...</p>
-      <p><a href="hot-topics-dashboard.html" class="link">→ 查看完整熱話題儀表板</a></p>
-    </div>
-  </div>
-
-  <!-- 劇本 -->
-  <div id="script" class="page">
-    <div class="wrap">
-      <div class="panel">
-        <h2>🎬 今日劇本</h2>
-        <table>
-          <thead><tr><th>帳號</th><th>平台</th><th>劇本</th><th>狀態</th></tr></thead>
-          <tbody>
-            <tr><td><strong>akki</strong></td><td>IG</td><td>世足直播帶看</td><td>✅ 進行中</td></tr>
-            <tr><td><strong>god</strong></td><td>Threads</td><td>賠率分析</td><td>⏳ 待發</td></tr>
-            <tr><td><strong>uncle</strong></td><td>IG</td><td>戰績總結</td><td>✅ 完成</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="panel">
-        <h2>📅 本週排程</h2>
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px">
-          <div style="text-align:center;padding:12px;background:var(--line);border-radius:8px;"><div style="font-size:.8rem;color:var(--muted)">一</div><div style="font-weight:700;margin-top:4px">3篇</div></div>
-          <div style="text-align:center;padding:12px;background:var(--blue);border-radius:8px;color:white;"><div style="font-size:.8rem">二</div><div style="font-weight:700;margin-top:4px">5篇</div></div>
-          <div style="text-align:center;padding:12px;background:var(--line);border-radius:8px;"><div style="font-size:.8rem;color:var(--muted)">三</div><div style="font-weight:700;margin-top:4px">4篇</div></div>
-          <div style="text-align:center;padding:12px;background:var(--line);border-radius:8px;"><div style="font-size:.8rem;color:var(--muted)">四</div><div style="font-weight:700;margin-top:4px">6篇</div></div>
-          <div style="text-align:center;padding:12px;background:var(--line);border-radius:8px;"><div style="font-size:.8rem;color:var(--muted)">五</div><div style="font-weight:700;margin-top:4px">？</div></div>
-          <div style="text-align:center;padding:12px;background:var(--line);border-radius:8px;"><div style="font-size:.8rem;color:var(--muted)">六</div><div style="font-weight:700;margin-top:4px">？</div></div>
-          <div style="text-align:center;padding:12px;background:var(--line);border-radius:8px;"><div style="font-size:.8rem;color:var(--muted)">日</div><div style="font-weight:700;margin-top:4px">？</div></div>
-        </div>
+  <div class="g4" style="margin-bottom:18px" id="t-stats"></div>
+  <div class="card">
+    <div class="fb" style="margin-bottom:12px">
+      <div class="card-title" style="margin-bottom:0">發文記錄</div>
+      <div class="flex">
+        <select id="tf-persona" style="width:120px" onchange="renderPosts()"><option value="">全部角色</option></select>
+        <select id="tf-platform" style="width:100px" onchange="renderPosts()"><option value="">全部平台</option><option>IG</option><option>FB</option><option>IG+FB</option></select>
       </div>
     </div>
+    <div id="posts-table"></div>
   </div>
+</div>
 
-  <!-- 發文 -->
-  <div id="posting" class="page">
-    <div class="wrap">
-      <div class="panel">
-        <h2>📝 今日待發文</h2>
-        <table>
-          <thead><tr><th>帳號</th><th>平台</th><th>內容</th><th>排程時間</th><th>狀態</th></tr></thead>
-          <tbody>
-            <tr><td><strong>akki</strong></td><td>IG</td><td>世足直播帶看</td><td>14:00</td><td style="color:var(--blue)">準備中</td></tr>
-            <tr><td><strong>god</strong></td><td>Threads</td><td>賠率分析</td><td>16:30</td><td style="color:var(--green)">已排程</td></tr>
-            <tr><td><strong>uncle</strong></td><td>IG</td><td>戰績總結</td><td>20:00</td><td style="color:var(--green)">已排程</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="panel">
-        <h2>📊 本月統計</h2>
-        <div class="grid">
-          <div class="kpi"><div class="lab">已發文</div><div class="val">48</div></div>
-          <div class="kpi"><div class="lab">互動量</div><div class="val">3.2K</div></div>
-          <div class="kpi"><div class="lab">平均互動</div><div class="val">67</div></div>
-          <div class="kpi"><div class="lab">成長率</div><div class="val">+24%</div></div>
-        </div>
-      </div>
+<!-- ===== PAGE: 文章庫 ===== -->
+<div id="pg-articles" class="page">
+  <div class="fb" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">文章庫</h2>
+      <p class="tm" style="margin-top:3px">追蹤每篇文章各方向帳號的發布覆蓋率，確保同方向帳號都發過</p>
+    </div>
+    <button class="btn btn-primary" onclick="openAddArticleModal()">+ 新增文章</button>
+  </div>
+  <div class="g4" id="art-stats" style="margin-bottom:18px"></div>
+  <div id="art-list"></div>
+</div>
+
+<!-- ===== PAGE: 社群號 ===== -->
+<div id="pg-community" class="page">
+  <div class="fb" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">社群號</h2>
+      <p class="tm" style="margin-top:3px">回覆帳號管理 · 人設語氣設定（部分尚未建立）</p>
+    </div>
+    <button class="btn btn-primary" onclick="openAddCommunityModal()">+ 新增帳號</button>
+  </div>
+  <div id="cm-grid" class="g3"></div>
+</div>
+
+<!-- ============ MODALS ============ -->
+
+<!-- 角色詳情 -->
+<div id="modal-persona-detail" class="overlay">
+  <div class="modal modal-lg">
+    <div class="mh"><div class="mt" id="pd-title"></div><button class="mc" onclick="closeModal('modal-persona-detail')">✕</button></div>
+    <div id="pd-body"></div>
+  </div>
+</div>
+
+<!-- 新增/編輯角色 -->
+<div id="modal-add-persona" class="overlay">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="ap-title">新增發文角色</div><button class="mc" onclick="closeModal('modal-add-persona')">✕</button></div>
+    <input type="hidden" id="ap-id">
+    <div class="fr"><div class="fg"><label>角色名稱</label><input id="ap-name" placeholder="例：Mark"></div>
+    <div class="fg"><label>粉絲數</label><input type="number" id="ap-followers" placeholder="0"></div></div>
+    <div class="fr"><div class="fg"><label>發布方向</label>
+      <select id="ap-dir"><option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option><option>百家樂</option><option>老虎機</option><option>捕魚機</option><option>通用</option></select>
+    </div>
+    <div class="fg"><label>發布主題</label><input id="ap-direction" placeholder="例：出金/USDT/流水"></div></div>
+    <div class="fg"><label>核心氣質</label><input id="ap-essence" placeholder="例：書呆子感、專注、安靜"></div>
+    <div class="fg"><label>語氣風格</label><textarea id="ap-tone" rows="2" placeholder="描述語氣與寫作風格"></textarea></div>
+    <div class="fg"><label>適合主題</label><textarea id="ap-topics" rows="2"></textarea></div>
+    <div class="fg"><label>禁忌用詞</label><textarea id="ap-forbidden" rows="2" placeholder="不能出現的詞彙"></textarea></div>
+    <div class="fg"><label>角色定位提示詞</label><textarea id="ap-role" rows="4" placeholder="完整角色定位提示詞"></textarea></div>
+    <div class="fg"><label>圖文生圖提示詞</label><textarea id="ap-img" rows="5" placeholder="生圖用完整英文提示詞"></textarea></div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-persona')">取消</button>
+      <button class="btn btn-primary" id="ap-save-btn" onclick="savePersona()">儲存角色</button>
     </div>
   </div>
+</div>
 
-  <!-- 設定 -->
-  <div id="settings" class="page">
-    <div class="wrap">
-      <div class="panel">
-        <h2>⚙️ 系統設定</h2>
-        <table>
-          <thead><tr><th>設定項目</th><th>當前值</th></tr></thead>
-          <tbody>
-            <tr><td>GA4 自動更新</td><td>✅ 每日 09:00</td></tr>
-            <tr><td>熱話題自動計數</td><td>✅ 每日 16:00</td></tr>
-            <tr><td>發文提醒通知</td><td>✅ 啟用</td></tr>
-            <tr><td>系統版本</td><td>v1.0.0</td></tr>
-          </tbody>
-        </table>
+<!-- 記錄文案 -->
+<div id="modal-log-prompt" class="overlay">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="lp-title">記錄發文文案</div><button class="mc" onclick="closeModal('modal-log-prompt')">✕</button></div>
+    <input type="hidden" id="lp-pid">
+    <div class="fg"><label>本次使用的文案提示詞</label><textarea id="lp-prompt" rows="6" placeholder="記錄此次改寫使用的提示詞、指令內容"></textarea></div>
+    <div class="fg"><label>備註（可選）</label><input id="lp-note" placeholder="例：引用ART-003，重點提煉世足賠率分析"></div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-log-prompt')">取消</button>
+      <button class="btn btn-primary" onclick="savePromptLog()">儲存記錄</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增發文記錄 -->
+<div id="modal-add-post" class="overlay">
+  <div class="modal">
+    <div class="mh"><div class="mt">新增發文記錄</div><button class="mc" onclick="closeModal('modal-add-post')">✕</button></div>
+    <div class="fr">
+      <div class="fg"><label>發文日期</label><input type="date" id="po-date"></div>
+      <div class="fg"><label>發文角色</label><select id="po-persona"><option value="">選擇角色</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>平台</label><select id="po-platform"><option>IG</option><option>FB</option><option>IG+FB</option></select></div>
+      <div class="fg"><label>引用文章</label><select id="po-article"><option value="">選擇文章</option></select></div>
+    </div>
+    <div class="fg"><label>主題摘要</label><input id="po-topic" placeholder="例：USDT走勢分析"></div>
+    <hr>
+    <div class="tm" style="margin-bottom:10px">流量數據（發文後填入）</div>
+    <div class="fr">
+      <div class="fg"><label>按讚</label><input type="number" id="po-likes" placeholder="0"></div>
+      <div class="fg"><label>留言</label><input type="number" id="po-comments" placeholder="0"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>分享</label><input type="number" id="po-shares" placeholder="0"></div>
+      <div class="fg"><label>觸及</label><input type="number" id="po-reach" placeholder="0"></div>
+    </div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-post')">取消</button>
+      <button class="btn btn-primary" onclick="savePost()">儲存記錄</button>
+    </div>
+  </div>
+</div>
+
+<!-- 更新流量 -->
+<div id="modal-metrics" class="overlay">
+  <div class="modal" style="max-width:400px">
+    <div class="mh"><div class="mt">更新流量數據</div><button class="mc" onclick="closeModal('modal-metrics')">✕</button></div>
+    <input type="hidden" id="um-id">
+    <div class="fr"><div class="fg"><label>按讚</label><input type="number" id="um-likes"></div><div class="fg"><label>留言</label><input type="number" id="um-comments"></div></div>
+    <div class="fr"><div class="fg"><label>分享</label><input type="number" id="um-shares"></div><div class="fg"><label>觸及</label><input type="number" id="um-reach"></div></div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-metrics')">取消</button>
+      <button class="btn btn-primary" onclick="updateMetrics()">更新</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增文章 -->
+<div id="modal-add-article" class="overlay">
+  <div class="modal">
+    <div class="mh"><div class="mt">新增文章</div><button class="mc" onclick="closeModal('modal-add-article')">✕</button></div>
+    <div class="fg"><label>文章標題</label><input id="at-title" placeholder="文章標題"></div>
+    <div class="fr">
+      <div class="fg"><label>來源</label><input id="at-source" placeholder="ys89.fun論壇"></div>
+      <div class="fg"><label>日期</label><input type="date" id="at-date"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>文章方向（決定哪些帳號需發布）</label>
+        <select id="at-dir"><option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option><option>百家樂</option><option>老虎機</option><option>捕魚機</option><option>通用</option></select>
       </div>
+      <div class="fg"><label>文章連結（可選）</label><input id="at-url" placeholder="https://ys89.fun/..."></div>
+    </div>
+    <div class="fg"><label>重點摘要</label><textarea id="at-summary" rows="3" placeholder="文章核心重點"></textarea></div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-article')">取消</button>
+      <button class="btn btn-primary" onclick="saveArticle()">儲存文章</button>
+    </div>
+  </div>
+</div>
+
+<!-- 社群號編輯 -->
+<div id="modal-community" class="overlay">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="cm-modal-title">新增社群號</div><button class="mc" onclick="closeModal('modal-community')">✕</button></div>
+    <input type="hidden" id="cm-id">
+    <div class="fr"><div class="fg"><label>帳號名稱</label><input id="cm-name" placeholder="例：Miya"></div>
+    <div class="fg"><label>粉絲數</label><input type="number" id="cm-followers" placeholder="0"></div></div>
+    <div class="fg"><label>回覆方向</label><input id="cm-direction" placeholder="例：投資新手回覆、話題炒作"></div>
+    <div class="fg"><label>人設描述</label><textarea id="cm-persona" rows="2" placeholder="帳號的人設與語氣（尚未確立可留空）"></textarea></div>
+    <div class="fg"><label>語氣提示詞</label><textarea id="cm-prompt" rows="3" placeholder="回覆時的語氣風格提示詞"></textarea></div>
+    <div class="fg"><label>狀態</label>
+      <select id="cm-status"><option>活躍</option><option>人設建立中</option><option>暫停</option></select>
+    </div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-community')">取消</button>
+      <button class="btn btn-primary" id="cm-save-btn" onclick="saveCommunity()">儲存帳號</button>
     </div>
   </div>
 </div>
 
 <script>
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-  event.target.classList.add('active');
+// ===== DB =====
+const K='ys89_'
+const DB={
+  get(k){try{return JSON.parse(localStorage.getItem(K+k)||'[]')}catch{return[]}},
+  set(k,v){localStorage.setItem(K+k,JSON.stringify(v))},
+  id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
 }
+
+// ===== DEFAULT DATA =====
+const DEFAULT_PERSONAS=[
+  {id:'p1',name:'Mark',followers:576,dir:'金流/USDT',direction:'出金/USDT/流水',
+    essence:'書呆子感、專注、安靜、可靠、懂支付科技',
+    tone:'專業、冷靜、研究導向，像資深工程師講解技術，不誇張、不推銷',
+    topics:'數位支付、USDT教學、電子錢包、交易紀錄分析、線上支付安全、金融科技研究、網路詐騙防範',
+    forbidden:'不要：賭場、博弈、老虎機、籌碼、灑錢、名錶、超跑、投資大師姿勢、保證獲利',
+    role:'角色名稱：mark\n年輕型數位金融/支付科技研究者，偏工程師、筆記型創作者感。不是投資老師，不是炫富型金融人，而是安靜、專注、理性、懂技術的內容作者。\n\n核心氣質：書呆子感、專注、安靜、可靠、懂支付科技、有一點宅感但不邋遢。',
+    img:'Create a square social media avatar of a young Taiwanese digital finance writer named "mark".\n\nTaiwanese male, mid 20s to early 30s, square-ish face, black messy curly hair, simple black glasses, slim build, dark hoodie with orange-black jacket, calm nerdy expression.\n\nScene: cozy evening workspace, laptop, desk lamp, notebook, coffee, sticky notes, subtle digital wallet UI on phone screen.\n\nStyle: warm hand-drawn anime editorial, soft painterly lighting, natural proportions.\nColors: warm amber, deep navy, muted orange, dark charcoal.\n\nNo casino, no gambling, no money rain, no luxury watch.',
+    postPrompts:[],createdAt:new Date().toISOString()},
+
+  {id:'p2',name:'扁扁',followers:74,dir:'安全/法律',direction:'詐騙黑名單法律',
+    essence:'正義感強、警覺性高、執著、追細節、可信任、實用型',
+    tone:'實用、接地氣、「你先不要急著信」角度，一步步拆解詐騙話術，不誇張嚇人',
+    topics:'反詐騙案例、網路安全提醒、詐騙話術拆解、假帳號、假投資、假交友、假客服',
+    forbidden:'不要：警察感、律師感、政府感、誇張嚇人、賭場、博弈、錢堆、名錶',
+    role:'角色名稱：扁扁\n反詐騙案例紀錄者、網路安全提醒型寫手。人設：扁扁不是最討喜的人，但他總是第一個發現哪裡不對勁。\n\n個性：正義感強、警覺性高、很愛追細節。不是警察、不是律師、不是政府單位，而是一個長期追蹤網路詐騙案例的民間內容寫手。',
+    img:'Realistic editorial profile avatar of a plain-looking Taiwanese male anti-scam writer named "扁扁", late 30s, black-rimmed glasses, dark navy jacket, cluttered investigation desk, pushing up glasses with a skeptical stubborn expression.\n\nBackground: blurred investigation board, pinned papers, red strings, sticky notes, no readable text.\nColors: dark gray, navy, white, muted red warning accents.\n\nNo police badge, no government logo, no casino, no gambling.',
+    postPrompts:[],createdAt:new Date().toISOString()},
+
+  {id:'p3',name:'面具男',followers:39,dir:'百家樂',direction:'百家樂/真人遊戲/機率分析',
+    essence:'神秘感、理性分析、機率思維、低調專業',
+    tone:'理性、冷靜、數據導向，像研究機率的分析師，有一點神秘感',
+    topics:'百家樂機率分析、真人遊戲攻略、荷官解析、牌局統計、運氣vs機率',
+    forbidden:'不要：保證贏牌、穩賺系統、預測下注、誇大收益',
+    role:'角色名稱：面具男\n以面具為象徵，代表理性分析百家樂機率的神秘分析師。\n定位：不是賭客，是研究機率的觀察者。',
+    img:'Mysterious Taiwanese male analyst wearing a stylized mask, studying baccarat probability data. Dark, sophisticated, intellectual vibe. Navy and dark green tones. Cards and probability charts in background as subtle elements.\n\nNo guaranteed wins, no money pile, no casino flashy elements.',
+    postPrompts:[],createdAt:new Date().toISOString()},
+
+  {id:'p4',name:'凱凱',followers:40,dir:'老虎機',direction:'老虎機/戰神賽特/電子遊戲',
+    essence:'活潑、親切、熱情，像電玩實況主',
+    tone:'熱情、親切、像遊戲實況，分享攻略但不保證獲利',
+    topics:'老虎機攻略、戰神賽特、電子遊戲評測、RTP分析、免費旋轉技巧',
+    forbidden:'不要：保證爆獎、穩贏系統、誇大倍數、賭場廣告感',
+    role:'角色名稱：凱凱\n電玩型老虎機攻略創作者，像遊戲實況主分享電子遊戲內容。\n定位：老虎機研究員，不是賭客，是內容創作者。',
+    img:'Young Taiwanese male gaming streamer avatar named "凱凱". Energetic, friendly expression. Gaming setup background with subtle slot machine UI elements. Colorful but not flashy. Headset optional.\n\nNo guaranteed jackpots, no money rain, no casino vibe.',
+    postPrompts:[],createdAt:new Date().toISOString()},
+
+  {id:'p5',name:'阿奇',followers:86,dir:'世足/運彩',direction:'世足/運彩/體育投注',
+    essence:'熱血、有觀點、愛分析，像球迷圈裡的意見領袖',
+    tone:'熱血、有觀點、條理清晰，像球迷朋友中最懂數據的那位',
+    topics:'世足賽事分析、運彩走勢、球隊數據、賠率解讀',
+    forbidden:'不要：保證預測、穩賺推薦、誇大勝率',
+    role:'角色名稱：阿奇\n熱血體育投注分析師，以數據和觀察分享世足看法。定位：球迷圈裡的數據達人，不是包牌老師。',
+    img:'Passionate Taiwanese male sports analyst avatar. Enthusiastic expression, sports jersey or casual wear, football/soccer themed background with data charts. Deep blue and green tones.\n\nNo guaranteed wins, no betting guarantee.',
+    postPrompts:[],createdAt:new Date().toISOString()},
+
+  {id:'p6',name:'世足大財神',followers:221,dir:'世足/運彩',direction:'世足/運彩/體育投注',
+    essence:'熱門風向捕捉者、大局觀、財神感、沉著專業',
+    tone:'大局觀、沉著分析，提供熱門方向參考，不激進',
+    topics:'世足冠軍熱門、賽事大局觀、運彩走勢',
+    forbidden:'不要：保證獲利、誇大收益、賭場感、灑錢感',
+    role:'角色名稱：世足大財神\n世足賽事熱門方向捕捉者，提供大局觀分析。定位：像觀察風向的財神爺，提供方向而非保證。',
+    img:'Professional soccer analyst with a "God of Wealth" concept. Calm, composed, financial analyst energy with soccer theme. Gold and dark green tones. No flashy gambling imagery.\n\nNo guaranteed wins, no casino, no money rain.',
+    postPrompts:[],createdAt:new Date().toISOString()},
+
+  {id:'p7',name:'強棒大叔',followers:413,dir:'世足/運彩',direction:'世足/運彩/體育投注',
+    essence:'經驗豐富、穩健、大叔感、可靠、實務導向',
+    tone:'沉著、有經驗感，像看球三十年的大叔分享看法，不激進',
+    topics:'世足經驗分享、運彩策略、賽事觀察',
+    forbidden:'不要：激進推薦、過度自信、保證、誇大',
+    role:'角色名稱：強棒大叔\n資深運彩玩家，經驗豐富的大叔形象，提供穩健實務建議。',
+    img:'Experienced middle-aged uncle sports fan. Mature, reliable, trustworthy look. Baseball/sports themed casual wear. Warm dark tones. Calm, experienced energy.\n\nNo casino, no money, no guaranteed wins.',
+    postPrompts:[],createdAt:new Date().toISOString()},
+
+  {id:'p8',name:'世足排雷週記',followers:30,dir:'世足/運彩',direction:'世足/運彩/體育投注',
+    essence:'謹慎、細心、理性，專注風險提示',
+    tone:'謹慎提示、風險意識、友善建議，不聳動',
+    topics:'世足風險提示、常見盲點、判斷陷阱',
+    forbidden:'不要：聳動警告、過度悲觀、賭場感、誇大',
+    role:'角色名稱：世足排雷週記\n每週一次的理性提醒，幫球迷避開最常見的判斷盲點。',
+    img:'Careful risk analyst avatar with weekly review concept. Yellow caution accents on dark background. Thoughtful, analytical expression. Soccer themed.\n\nNo casino, no money, no guaranteed predictions.',
+    postPrompts:[],createdAt:new Date().toISOString()},
+
+  {id:'p9',name:'蟹蟹世足觀測站',followers:386,dir:'世足/運彩',direction:'世足/運彩/體育投注',
+    essence:'細心觀察、準確、友善，像朋友通知',
+    tone:'平靜觀察、準確提示，像朋友傳訊通知賽事',
+    topics:'世足賽程資訊、細節觀察、賽事提醒',
+    forbidden:'不要：保證、賭場感、誇大',
+    role:'角色名稱：蟹蟹世足觀測站\n細心的世足賽事觀察者，像朋友傳訊通知你比賽細節。',
+    img:'Friendly soccer observation station with crab mascot concept. Blue and red accents. Cute but informative. Stadium background.\n\nNo casino, no guaranteed predictions.',
+    postPrompts:[],createdAt:new Date().toISOString()},
+
+  {id:'p10',name:'kk',followers:124,dir:'世足/運彩',direction:'世足/運彩/體育投注',
+    essence:'調皮、口語、有諧音梗、臭男生感',
+    tone:'口語、調皮、自然、有諧音梗，像朋友聊天看球順便碎嘴',
+    topics:'足球/世足/賽事觀察/焦點戰/懶人包',
+    forbidden:'不要：太官方、太嚴肅、像新聞台、喊穩贏、保證預測',
+    role:'角色名稱：KK\n很調皮、很會碎嘴、講話有諧音梗的臭男生型球迷。\nIG Bio：看球順便碎嘴，賽程、焦點戰、世足懶人包，有料就講，沒料就先不要鬧。',
+    img:'Young Taiwanese male football fan named "KK". Short black hair, mischievous smirk, sports jacket or hoodie. Semi-cartoon social media avatar style. The friend who always has jokes.\n\nColors: deep blue, green, white, bright yellow/orange accents.\nNo gambling, no betting symbols.',
+    postPrompts:[],createdAt:new Date().toISOString()},
+
+  {id:'p11',name:'捕魚老司機阿網',followers:95,dir:'捕魚機',direction:'捕魚機/IG/FB圖文',
+    essence:'老司機感、經驗豐富、輕鬆幽默',
+    tone:'輕鬆幽默、像老司機分享捕魚心得，有梗但不誇大',
+    topics:'捕魚機攻略、機種評測、技巧分享',
+    forbidden:'不要：保證爆分、誇大獎勵、賭場廣告感',
+    role:'角色名稱：捕魚老司機阿網\n捕魚機遊戲老司機，分享各機種攻略與心得。\n定位：有經驗的捕魚玩家，像朋友分享遊戲技巧。',
+    img:'Experienced fishing game player avatar. Relaxed, experienced captain vibes. Fishing game themed background with subtle ocean and fish elements. Warm casual tones.\n\nNo casino flashy elements, no guaranteed wins.',
+    postPrompts:[],createdAt:new Date().toISOString()},
+
+  {id:'p12',name:'魚池阿智',followers:95,dir:'通用',direction:'論壇貼文轉社群',
+    essence:'知識型、整理控、條理清晰',
+    tone:'整理型、條理清晰，把論壇文章轉換為社群易讀格式',
+    topics:'論壇精選整理、社群導流、內容轉化',
+    forbidden:'不要：過度改寫原文、加入文章沒有的資訊',
+    role:'角色名稱：魚池阿智\n論壇內容轉社群的整理者，專職把 ys89 論壇文章轉換為社群易讀格式，提升導流效果。',
+    img:'Knowledge organizer avatar. Clean, organized workspace with multiple screens showing content organization. Tidy, professional but approachable.\n\nNo casino elements.',
+    postPrompts:[],createdAt:new Date().toISOString()}
+]
+
+const DEFAULT_COMMUNITY=[
+  {id:'c1',name:'Miya',followers:59,direction:'投資分享/話題炒作',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c2',name:'倪',followers:57,direction:'真人回覆/互動',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c3',name:'Ian Lin',followers:68,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c4',name:'阿章',followers:58,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c5',name:'zahra',followers:71,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c6',name:'BS',followers:183,direction:'YS主編/話題炒作',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c7',name:'YS主IG',followers:12,direction:'官方帳號',persona:'官方帳號語氣、專業、親切',prompt:'',status:'活躍'},
+  {id:'c8',name:'Bam先',followers:122,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c9',name:'Luna',followers:106,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c10',name:'Steven.C',followers:33,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c11',name:'柔盈絲',followers:14,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c12',name:'Anne',followers:58,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c13',name:'米恩',followers:35,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c14',name:'Jack',followers:76,direction:'投資分享/話題炒作',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c15',name:'Jason Chen',followers:52,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
+  {id:'c16',name:'林家益',followers:44,direction:'真人回覆',persona:'人設待確立',prompt:'',status:'人設建立中'},
+]
+
+function initData(){
+  if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
+  if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
+}
+
+// ===== HELPERS =====
+function nav(el,page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
+  document.getElementById('pg-'+page).classList.add('active')
+  el.classList.add('active')
+  const renders={ga4:renderGA4,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity}
+  renders[page]&&renders[page]()
+}
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show')}))
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast')
+  t.textContent=msg
+  t.style.borderColor=type==='warn'?'#fb923c':type==='err'?'#f87171':'var(--green2)'
+  t.style.color=type==='warn'?'#fb923c':type==='err'?'#f87171':'var(--accent)'
+  t.style.display='block'
+  clearTimeout(t._timer)
+  t._timer=setTimeout(()=>t.style.display='none',2200)
+}
+function cp(text,btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    if(btn){const o=btn.textContent;btn.textContent='已複製!';setTimeout(()=>btn.textContent=o,1500)}
+    else toast('已複製到剪貼簿')
+  })
+}
+
+// ===== PERSONAS =====
+function renderPersonas(){
+  const all=DB.get('personas')
+  const dirF=document.getElementById('filter-dir').value
+  const list=dirF?all.filter(p=>p.dir===dirF):all
+  const grid=document.getElementById('personas-grid')
+  if(!list.length){grid.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">尚無角色</div>';return}
+  grid.innerHTML=list.map(p=>{
+    const pc=p.postPrompts?.length||0
+    return`<div class="pcard">
+      <div class="fb">
+        <div><div class="pname">${p.name}</div><div class="pdir">${p.direction}</div></div>
+        <div class="flex">
+          <span class="badge b-gray">${p.dir||''}</span>
+          <button class="btn btn-sm btn-outline" onclick="openEditPersona('${p.id}')">編輯</button>
+          <button class="btn btn-sm btn-primary" onclick="openPersonaDetail('${p.id}')">查看</button>
+        </div>
+      </div>
+      <div class="sec">核心氣質</div>
+      <div style="font-size:.82rem;color:var(--text2)">${p.essence||'—'}</div>
+      <div class="sec">禁忌用詞</div>
+      <div style="font-size:.8rem;color:#f87171;line-height:1.5">${(p.forbidden||'').slice(0,70)}${(p.forbidden?.length||0)>70?'…':''}</div>
+      <hr>
+      <div class="fb">
+        <span class="tm">已記錄文案 <span class="tg">${pc}</span> 筆</span>
+        <button class="btn btn-xs btn-copy" onclick="openLogPrompt('${p.id}','${p.name}')">+ 記錄文案</button>
+      </div>
+      ${pc>0?`<div style="margin-top:8px">${(p.postPrompts||[]).slice(-1).map(pp=>`
+        <div style="background:#080e09;border:1px solid var(--border);border-radius:5px;padding:7px 10px;font-size:.78rem">
+          <div style="color:var(--text2);line-height:1.5">${pp.prompt.slice(0,90)}${pp.prompt.length>90?'…':''}</div>
+          <div class="fb" style="margin-top:4px">
+            <span class="tm">${new Date(pp.createdAt).toLocaleDateString('zh-TW')}</span>
+            <button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.72rem" onclick="cp(${JSON.stringify(pp.prompt)})">複製</button>
+          </div>
+        </div>`).join('')}</div>`:''}
+    </div>`
+  }).join('')
+}
+
+function openPersonaDetail(id){
+  const p=DB.get('personas').find(x=>x.id===id); if(!p)return
+  document.getElementById('pd-title').textContent=`${p.name} — 完整人設`
+  document.getElementById('pd-body').innerHTML=`
+    <div class="g2" style="margin-bottom:14px">
+      <div class="card-sm"><div class="sec" style="margin-top:0">核心氣質</div><div style="font-size:.85rem;color:var(--text2)">${p.essence||'—'}</div></div>
+      <div class="card-sm"><div class="sec" style="margin-top:0">語氣風格</div><div style="font-size:.85rem;color:var(--text2)">${p.tone||'—'}</div></div>
+      <div class="card-sm"><div class="sec" style="margin-top:0">適合主題</div><div style="font-size:.83rem;color:var(--text2)">${p.topics||'—'}</div></div>
+      <div class="card-sm"><div class="sec" style="margin-top:0">禁忌用詞</div><div style="font-size:.83rem;color:#f87171">${p.forbidden||'—'}</div></div>
+    </div>
+    ${p.role?`<div style="margin-bottom:14px">
+      <div class="sec" style="margin-top:0">角色定位提示詞</div>
+      <div style="position:relative"><div class="pbox">${p.role}</div><button class="pcopy" onclick="cp(${JSON.stringify(p.role)},this)">複製</button></div>
+    </div>`:''}
+    ${p.img?`<div style="margin-bottom:14px">
+      <div class="sec">圖文生圖提示詞</div>
+      <div style="position:relative"><div class="pbox">${p.img}</div><button class="pcopy" onclick="cp(${JSON.stringify(p.img)},this)">複製</button></div>
+    </div>`:''}
+    <div>
+      <div class="fb" style="margin-bottom:8px">
+        <div class="sec" style="margin-top:0">發文文案記錄（${(p.postPrompts||[]).length} 筆）</div>
+        <button class="btn btn-xs btn-copy" onclick="closeModal('modal-persona-detail');openLogPrompt('${p.id}','${p.name}')">+ 新增記錄</button>
+      </div>
+      ${(p.postPrompts||[]).length===0?'<div class="tm">尚無記錄</div>':
+        (p.postPrompts||[]).slice().reverse().map(pp=>`
+        <div style="background:#080e09;border:1px solid var(--border);border-radius:7px;padding:10px;margin-bottom:8px">
+          <div class="fb" style="margin-bottom:5px">
+            <span class="tm">${new Date(pp.createdAt).toLocaleString('zh-TW')}</span>
+            <button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.77rem" onclick="cp(${JSON.stringify(pp.prompt)})">複製</button>
+          </div>
+          <div style="font-size:.82rem;color:var(--text2);white-space:pre-wrap;line-height:1.6">${pp.prompt}</div>
+          ${pp.note?`<div class="tm" style="margin-top:4px">備註：${pp.note}</div>`:''}
+        </div>`).join('')}
+    </div>`
+  openModal('modal-persona-detail')
+}
+
+function openAddPersona(){
+  document.getElementById('ap-id').value=''
+  document.getElementById('ap-title').textContent='新增發文角色'
+  document.getElementById('ap-save-btn').textContent='儲存角色'
+  ;['ap-name','ap-direction','ap-essence','ap-tone','ap-topics','ap-forbidden','ap-role','ap-img'].forEach(i=>document.getElementById(i).value='')
+  document.getElementById('ap-followers').value='0'
+  openModal('modal-add-persona')
+}
+
+function openEditPersona(id){
+  const p=DB.get('personas').find(x=>x.id===id); if(!p)return
+  document.getElementById('ap-id').value=id
+  document.getElementById('ap-title').textContent='編輯角色'
+  document.getElementById('ap-save-btn').textContent='更新角色'
+  document.getElementById('ap-name').value=p.name||''
+  document.getElementById('ap-followers').value=p.followers||0
+  document.getElementById('ap-dir').value=p.dir||'世足/運彩'
+  document.getElementById('ap-direction').value=p.direction||''
+  document.getElementById('ap-essence').value=p.essence||''
+  document.getElementById('ap-tone').value=p.tone||''
+  document.getElementById('ap-topics').value=p.topics||''
+  document.getElementById('ap-forbidden').value=p.forbidden||''
+  document.getElementById('ap-role').value=p.role||''
+  document.getElementById('ap-img').value=p.img||''
+  openModal('modal-add-persona')
+}
+
+function savePersona(){
+  const id=document.getElementById('ap-id').value
+  const name=document.getElementById('ap-name').value.trim()
+  if(!name){toast('請填入角色名稱','err');return}
+  const personas=DB.get('personas')
+  const obj={
+    name,followers:+document.getElementById('ap-followers').value||0,
+    dir:document.getElementById('ap-dir').value,
+    direction:document.getElementById('ap-direction').value,
+    essence:document.getElementById('ap-essence').value,
+    tone:document.getElementById('ap-tone').value,
+    topics:document.getElementById('ap-topics').value,
+    forbidden:document.getElementById('ap-forbidden').value,
+    role:document.getElementById('ap-role').value,
+    img:document.getElementById('ap-img').value,
+  }
+  if(id){const i=personas.findIndex(x=>x.id===id);if(i>=0)personas[i]={...personas[i],...obj}}
+  else personas.push({...obj,id:DB.id(),postPrompts:[],createdAt:new Date().toISOString()})
+  DB.set('personas',personas)
+  closeModal('modal-add-persona')
+  renderPersonas()
+  toast(id?'角色已更新':'角色已新增')
+}
+
+function openLogPrompt(pid,pname){
+  document.getElementById('lp-pid').value=pid
+  document.getElementById('lp-title').textContent=`記錄 ${pname} 的發文文案`
+  document.getElementById('lp-prompt').value=''
+  document.getElementById('lp-note').value=''
+  openModal('modal-log-prompt')
+}
+
+function savePromptLog(){
+  const pid=document.getElementById('lp-pid').value
+  const prompt=document.getElementById('lp-prompt').value.trim()
+  if(!prompt){toast('請填入文案提示詞','err');return}
+  const personas=DB.get('personas')
+  const i=personas.findIndex(x=>x.id===pid); if(i<0)return
+  if(!personas[i].postPrompts)personas[i].postPrompts=[]
+  personas[i].postPrompts.push({id:DB.id(),prompt,note:document.getElementById('lp-note').value,createdAt:new Date().toISOString()})
+  DB.set('personas',personas)
+  closeModal('modal-log-prompt')
+  renderPersonas()
+  toast('文案記錄已儲存')
+}
+
+// ===== TRACKER =====
+function renderTracker(){
+  const posts=DB.get('posts'),personas=DB.get('personas')
+  const sel=document.getElementById('tf-persona')
+  sel.innerHTML='<option value="">全部角色</option>'+personas.map(p=>`<option>${p.name}</option>`).join('')
+  const tl=posts.reduce((a,p)=>a+(+p.likes||0),0)
+  const tc=posts.reduce((a,p)=>a+(+p.comments||0),0)
+  const ts=posts.reduce((a,p)=>a+(+p.shares||0),0)
+  const tr=posts.reduce((a,p)=>a+(+p.reach||0),0)
+  document.getElementById('t-stats').innerHTML=[
+    ['總發文',posts.length,''],
+    ['總按讚',tl.toLocaleString(),''],
+    ['總留言',tc.toLocaleString(),''],
+    ['總觸及',tr.toLocaleString(),'']
+  ].map(([l,v])=>`<div class="stat"><div class="stat-num">${v}</div><div class="stat-label">${l}</div></div>`).join('')
+  // populate selects
+  const pSel=document.getElementById('po-persona')
+  pSel.innerHTML='<option value="">選擇角色</option>'+personas.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')
+  const arts=DB.get('articles')
+  const aSel=document.getElementById('po-article')
+  aSel.innerHTML='<option value="">選擇文章</option>'+arts.map(a=>`<option value="${a.id}">${a.title}</option>`).join('')
+  renderPosts()
+}
+
+function renderPosts(){
+  let posts=DB.get('posts').slice().reverse()
+  const pf=document.getElementById('tf-persona')?.value
+  const plf=document.getElementById('tf-platform')?.value
+  if(pf)posts=posts.filter(p=>p.personaName===pf)
+  if(plf)posts=posts.filter(p=>p.platform===plf)
+  const wrap=document.getElementById('posts-table')
+  if(!posts.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無發文記錄</div>';return}
+  wrap.innerHTML=`<div style="overflow-x:auto"><table>
+    <thead><tr><th>日期</th><th>角色</th><th>平台</th><th>主題</th><th>引用文章</th><th>讚</th><th>留</th><th>分享</th><th>觸及</th><th>操作</th></tr></thead>
+    <tbody>${posts.map(p=>`<tr>
+      <td style="white-space:nowrap">${p.date||'—'}</td>
+      <td><span class="badge b-green">${p.personaName||'—'}</span></td>
+      <td><span class="badge b-blue">${p.platform||'—'}</span></td>
+      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.topic||''}">${p.topic||'—'}</td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.77rem" class="tm" title="${p.articleTitle||''}">${p.articleTitle||'—'}</td>
+      <td>${p.likes||0}</td><td>${p.comments||0}</td><td>${p.shares||0}</td><td>${p.reach||0}</td>
+      <td><button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新</button></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`
+}
+
+function openAddPostModal(){
+  renderTracker()
+  document.getElementById('po-date').value=new Date().toISOString().split('T')[0]
+  openModal('modal-add-post')
+}
+
+function savePost(){
+  const pid=document.getElementById('po-persona').value
+  const aid=document.getElementById('po-article').value
+  const personas=DB.get('personas')
+  const p=personas.find(x=>x.id===pid)
+  const articles=DB.get('articles')
+  const a=articles.find(x=>x.id===aid)
+  if(a){
+    const ai=articles.findIndex(x=>x.id===aid)
+    if(!articles[ai].postedBy)articles[ai].postedBy=[]
+    if(p&&!articles[ai].postedBy.find(x=>x.pid===pid)){
+      articles[ai].postedBy.push({pid,name:p.name,date:document.getElementById('po-date').value})
+    }
+    articles[ai].lastUsed=new Date().toISOString()
+    DB.set('articles',articles)
+  }
+  const posts=DB.get('posts')
+  posts.push({
+    id:DB.id(),date:document.getElementById('po-date').value,
+    personaId:pid,personaName:p?.name||'',
+    platform:document.getElementById('po-platform').value,
+    articleId:aid,articleTitle:a?.title||'',
+    topic:document.getElementById('po-topic').value,
+    likes:+document.getElementById('po-likes').value||0,
+    comments:+document.getElementById('po-comments').value||0,
+    shares:+document.getElementById('po-shares').value||0,
+    reach:+document.getElementById('po-reach').value||0,
+    createdAt:new Date().toISOString()
+  })
+  DB.set('posts',posts)
+  closeModal('modal-add-post')
+  renderTracker()
+  toast('發文記錄已儲存')
+}
+
+function openMetrics(id){
+  const p=DB.get('posts').find(x=>x.id===id); if(!p)return
+  document.getElementById('um-id').value=id
+  ;['likes','comments','shares','reach'].forEach(k=>document.getElementById('um-'+k).value=p[k]||0)
+  openModal('modal-metrics')
+}
+
+function updateMetrics(){
+  const id=document.getElementById('um-id').value
+  const posts=DB.get('posts')
+  const i=posts.findIndex(x=>x.id===id); if(i<0)return
+  ;['likes','comments','shares','reach'].forEach(k=>posts[i][k]=+document.getElementById('um-'+k).value||0)
+  DB.set('posts',posts)
+  closeModal('modal-metrics')
+  renderPosts()
+  toast('數據已更新')
+}
+
+// ===== ARTICLES =====
+function renderArticles(){
+  const articles=DB.get('articles')
+  const personas=DB.get('personas')
+  const total=articles.length
+  const fullCov=articles.filter(a=>{
+    const dir=a.dir; if(!dir)return false
+    const needed=personas.filter(p=>p.dir===dir)
+    if(!needed.length)return false
+    const done=(a.postedBy||[]).map(x=>x.pid)
+    return needed.every(p=>done.includes(p.id))
+  }).length
+  document.getElementById('art-stats').innerHTML=[
+    ['文章總數',total,''],
+    ['完整覆蓋',fullCov,'tg'],
+    ['待補發',total-fullCov,'ty'],
+    ['無帳號方向',articles.filter(a=>!personas.some(p=>p.dir===a.dir)).length,'tm']
+  ].map(([l,v,c])=>`<div class="stat"><div class="stat-num ${c||''}">${v}</div><div class="stat-label">${l}</div></div>`).join('')
+
+  const wrap=document.getElementById('art-list')
+  if(!articles.length){wrap.innerHTML='<div class="card" style="text-align:center;padding:40px;color:var(--text3)">尚無文章，點擊右上角新增</div>';return}
+  wrap.innerHTML=articles.slice().reverse().map(a=>{
+    const needed=personas.filter(p=>p.dir===a.dir)
+    const done=(a.postedBy||[]).map(x=>x.pid)
+    const doneNames=(a.postedBy||[]).map(x=>x.name)
+    const todoList=needed.filter(p=>!done.includes(p.id))
+    const doneList=needed.filter(p=>done.includes(p.id))
+    const covPct=needed.length?Math.round(doneList.length/needed.length*100):0
+    const covColor=covPct===100?'':covPct>=50?'warn':'danger'
+    return`<div class="card" style="margin-bottom:12px">
+      <div class="fb" style="margin-bottom:10px">
+        <div>
+          <div style="font-weight:600;color:var(--text);font-size:.93rem">${a.title}</div>
+          <div class="flex" style="margin-top:4px;flex-wrap:wrap;gap:5px">
+            <span class="badge b-gray">${a.dir||'未分類'}</span>
+            <span class="badge b-blue">${a.source||'ys89論壇'}</span>
+            ${a.date?`<span class="tm">${a.date}</span>`:''}
+            ${a.url?`<a href="${a.url}" target="_blank" class="badge b-green2" style="text-decoration:none">查看原文</a>`:''}
+          </div>
+        </div>
+        <div class="flex">
+          <div style="text-align:right">
+            <div style="font-size:1.1rem;font-weight:700;color:${covPct===100?'var(--accent)':covPct>=50?'#fbbf24':'#f87171'}">${covPct}%</div>
+            <div class="tm">覆蓋率</div>
+          </div>
+          <button class="btn btn-xs btn-danger" onclick="delArticle('${a.id}')">刪除</button>
+        </div>
+      </div>
+      ${needed.length?`
+      <div class="cov-bar"><div class="cov-fill ${covColor}" style="width:${covPct}%"></div></div>
+      <div class="fb" style="margin-top:8px;flex-wrap:wrap;gap:8px">
+        <div>
+          ${doneList.length?`<div class="tm" style="margin-bottom:4px">已發布 (${doneList.length}/${needed.length})</div>
+          <div class="cov-grid">${doneList.map(p=>`<span class="cov-chip done">✓ ${p.name}</span>`).join('')}</div>`:''}
+          ${todoList.length?`<div class="tm" style="margin:6px 0 4px">待發布 (${todoList.length})</div>
+          <div class="cov-grid">${todoList.map(p=>`<span class="cov-chip todo">✗ ${p.name}</span>`).join('')}</div>`:''}
+        </div>
+      </div>`:`<div class="tm">方向「${a.dir||'未分類'}」尚無發文帳號</div>`}
+      ${a.summary?`<div class="tm" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);line-height:1.6">${a.summary}</div>`:''}
+    </div>`
+  }).join('')
+}
+
+function openAddArticleModal(){
+  ;['at-title','at-source','at-summary','at-url'].forEach(i=>document.getElementById(i).value='')
+  document.getElementById('at-date').value=new Date().toISOString().split('T')[0]
+  openModal('modal-add-article')
+}
+
+function saveArticle(){
+  const title=document.getElementById('at-title').value.trim()
+  if(!title){toast('請填入文章標題','err');return}
+  const arts=DB.get('articles')
+  arts.push({
+    id:DB.id(),title,
+    source:document.getElementById('at-source').value||'ys89.fun論壇',
+    date:document.getElementById('at-date').value,
+    dir:document.getElementById('at-dir').value,
+    summary:document.getElementById('at-summary').value,
+    url:document.getElementById('at-url').value,
+    postedBy:[],lastUsed:null,createdAt:new Date().toISOString()
+  })
+  DB.set('articles',arts)
+  closeModal('modal-add-article')
+  renderArticles()
+  toast('文章已新增')
+}
+
+function delArticle(id){
+  if(!confirm('確定刪除此文章？'))return
+  DB.set('articles',DB.get('articles').filter(a=>a.id!==id))
+  renderArticles()
+  toast('文章已刪除')
+}
+
+// ===== COMMUNITY =====
+function renderCommunity(){
+  const list=DB.get('community')
+  const grid=document.getElementById('cm-grid')
+  if(!list.length){grid.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">尚無帳號</div>';return}
+  grid.innerHTML=list.map(a=>{
+    const sc={'活躍':'b-green','人設建立中':'b-yellow','暫停':'b-red'}[a.status]||'b-gray'
+    return`<div class="ccard">
+      <div class="fb" style="margin-bottom:8px">
+        <div><div class="pname" style="font-size:.95rem">${a.name}</div><div class="pdir">${a.direction||''}</div></div>
+        <div class="flex">
+          <span class="badge ${sc}">${a.status}</span>
+          <button class="btn btn-xs btn-outline" onclick="openEditCommunity('${a.id}')">編輯</button>
+        </div>
+      </div>
+      <div class="flex" style="margin-bottom:8px">
+        <span class="tm">粉絲</span><span style="color:var(--accent);font-weight:600">${a.followers||0}</span>
+      </div>
+      <div class="sec" style="margin-top:0">人設描述</div>
+      <div style="font-size:.82rem;color:var(--text2)">${a.persona||'尚未建立'}</div>
+      ${a.prompt?`<div class="sec">語氣提示詞</div>
+        <div style="position:relative"><div class="pbox" style="max-height:80px">${a.prompt}</div>
+        <button class="pcopy" onclick="cp(${JSON.stringify(a.prompt)},this)">複製</button></div>
+      `:`<div style="margin-top:8px"><span class="badge b-warn">語氣提示詞待建立</span></div>`}
+    </div>`
+  }).join('')
+}
+
+function openAddCommunityModal(){
+  document.getElementById('cm-id').value=''
+  document.getElementById('cm-modal-title').textContent='新增社群號'
+  document.getElementById('cm-save-btn').textContent='儲存帳號'
+  ;['cm-name','cm-direction','cm-persona','cm-prompt'].forEach(i=>document.getElementById(i).value='')
+  document.getElementById('cm-followers').value='0'
+  document.getElementById('cm-status').value='人設建立中'
+  openModal('modal-community')
+}
+
+function openEditCommunity(id){
+  const a=DB.get('community').find(x=>x.id===id); if(!a)return
+  document.getElementById('cm-id').value=id
+  document.getElementById('cm-modal-title').textContent='編輯社群號'
+  document.getElementById('cm-save-btn').textContent='更新帳號'
+  document.getElementById('cm-name').value=a.name||''
+  document.getElementById('cm-followers').value=a.followers||0
+  document.getElementById('cm-direction').value=a.direction||''
+  document.getElementById('cm-persona').value=a.persona||''
+  document.getElementById('cm-prompt').value=a.prompt||''
+  document.getElementById('cm-status').value=a.status||'人設建立中'
+  openModal('modal-community')
+}
+
+function saveCommunity(){
+  const id=document.getElementById('cm-id').value
+  const name=document.getElementById('cm-name').value.trim()
+  if(!name){toast('請填入帳號名稱','err');return}
+  const list=DB.get('community')
+  const obj={name,followers:+document.getElementById('cm-followers').value||0,direction:document.getElementById('cm-direction').value,persona:document.getElementById('cm-persona').value,prompt:document.getElementById('cm-prompt').value,status:document.getElementById('cm-status').value}
+  if(id){const i=list.findIndex(x=>x.id===id);if(i>=0)list[i]={...list[i],...obj}}
+  else list.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
+  DB.set('community',list)
+  closeModal('modal-community')
+  renderCommunity()
+  toast(id?'帳號已更新':'帳號已新增')
+}
+
+// ===== GA4 =====
+let ga4Data=null
+
+function loadGA4Data(){
+  fetch('ga4-data.json')
+    .then(r=>r.json())
+    .then(d=>{
+      ga4Data=d
+      renderGA4()
+      toast('GA4數據已更新')
+    })
+    .catch(e=>{
+      console.error('Failed to load GA4 data:',e)
+      toast('無法載入GA4數據','err')
+    })
+}
+
+function renderGA4(){
+  if(!ga4Data){loadGA4Data();return}
+  const kpis=ga4Data.kpis||{}
+
+  // Render KPIs
+  const kpiHtml=[
+    ['活躍用戶',kpis.activeUsers?.toLocaleString()||'—'],
+    ['工作階段',kpis.sessions?.toLocaleString()||'—'],
+    ['事件數',kpis.eventCount?.toLocaleString()||'—'],
+    ['轉換率',kpis.conversionRate?((kpis.conversionRate*100).toFixed(2)+'%'):'—']
+  ].map(([label,value])=>`
+    <div class="stat">
+      <div class="stat-num">${value}</div>
+      <div class="stat-label">${label}</div>
+    </div>
+  `).join('')
+  document.getElementById('ga4-kpis').innerHTML=kpiHtml
+
+  // Render Sources (top 15)
+  const sourcesHtml=(ga4Data.sources||[]).slice(0,15).map((s,i)=>`
+    <div class="fb" style="padding:8px 0;border-bottom:1px solid var(--border);align-items:center">
+      <div style="display:flex;align-items:center;gap:8px;flex:1">
+        <span style="color:var(--text3);width:20px;text-align:right">${i+1}.</span>
+        <div style="flex:1">
+          <div style="color:var(--text);font-weight:500">${s.name}</div>
+          <div class="tm">${s.tag||s.medium}</div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="color:var(--accent);font-weight:600">${s.sessions?.toLocaleString()||0}</div>
+        <div class="tm">工作階段</div>
+      </div>
+    </div>
+  `).join('')
+  document.getElementById('ga4-sources').innerHTML=sourcesHtml||'<div class="tm">無數據</div>'
+
+  // Render Accounts (top 12)
+  const accountsHtml=(ga4Data.accounts||[]).slice(0,12).map((a,i)=>`
+    <div class="fb" style="padding:8px 0;border-bottom:1px solid var(--border);align-items:center">
+      <div style="display:flex;align-items:center;gap:8px;flex:1">
+        <span style="color:var(--text3);width:20px;text-align:right">${i+1}.</span>
+        <div style="flex:1">
+          <div style="color:var(--text);font-weight:500">${a.name}</div>
+          ${a.warn?'<span class="badge b-red" style="font-size:.7rem">⚠️ 需檢查</span>':''}
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="color:var(--accent);font-weight:600">${a.s?.toLocaleString()||0}</div>
+        <div class="tm">工作階段</div>
+      </div>
+    </div>
+  `).join('')
+  document.getElementById('ga4-accounts').innerHTML=accountsHtml||'<div class="tm">無數據</div>'
+
+  // Render Pages (top 7)
+  const pagesHtml=(ga4Data.pages||[]).slice(0,7).map((p,i)=>`
+    <div style="padding:10px;margin-bottom:8px;background:var(--g3);border:1px solid var(--border);border-radius:8px">
+      <div class="fb" style="margin-bottom:4px">
+        <span style="color:var(--text3);font-size:.75rem">第 ${i+1} 名</span>
+        <span style="color:var(--accent);font-weight:600">${p.v?.toLocaleString()||0} 次</span>
+      </div>
+      <div style="color:var(--text2);font-size:.82rem;line-height:1.4">${p.t||'—'}</div>
+    </div>
+  `).join('')
+  document.getElementById('ga4-pages').innerHTML=pagesHtml||'<div class="tm">無數據</div>'
+
+  // Update timestamp
+  if(ga4Data.lastUpdated){
+    const ts=new Date(ga4Data.lastUpdated)
+    document.getElementById('ga4-updated').textContent='最後更新: '+ts.toLocaleString('zh-TW')
+  }
+}
+
+// ===== INIT =====
+initData()
+loadGA4Data()
+renderPersonas()
 </script>
 </body>
 </html>
-
