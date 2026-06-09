@@ -431,7 +431,6 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
 <script>
 // ===== DB =====
-const K='ys89_'
 const DB={
   get(k){try{return JSON.parse(localStorage.getItem(K+k)||'[]')}catch{return[]}},
   set(k,v){localStorage.setItem(K+k,JSON.stringify(v))},
