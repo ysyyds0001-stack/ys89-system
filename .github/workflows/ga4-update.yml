@@ -1,0 +1,47 @@
+name: 📊 GA4 自動更新
+
+on:
+  schedule:
+    # 每天早上 1:00 (UTC) 執行 = 台灣時間 09:00
+    - cron: '0 1 * * *'
+  workflow_dispatch:  # 手動執行
+
+jobs:
+  update-ga4:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: 📦 安裝套件
+        run: |
+          pip install --upgrade pip
+          pip install google-analytics-data google-auth-oauthlib
+
+      - name: 🔑 還原 Service Account
+        env:
+          GA4_SA_KEY: ${{ secrets.GA4_SA_KEY }}
+        run: |
+          echo "$GA4_SA_KEY" > gsc-credentials.json
+
+      - name: 📊 拉取 GA4 數據
+        env:
+          GA4_SA_KEY_PATH: ./gsc-credentials.json
+        run: |
+          python ga4_fetch.py
+
+      - name: 📝 提交變更
+        run: |
+          git config user.name "GA4 Bot"
+          git config user.email "noreply@github.com"
+          git add ga4-data.json
+          git commit -m "🔄 自動更新 GA4 數據 - $(date '+%Y-%m-%d %H:%M:%S UTC')" || echo "沒有變更"
+
+      - name: 🚀 推送回 repo
+        run: |
+          git push origin main || git push origin master || echo "推送失敗，可能是同一分支"

@@ -1,0 +1,34 @@
+name: 🔥 熱話題每日更新
+
+on:
+  schedule:
+    # 每天 08:00 UTC = 台灣時間 16:00
+    - cron: '0 8 * * *'
+  workflow_dispatch:  # 手動執行
+
+jobs:
+  update-topics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: 📊 執行帖子計數
+        run: |
+          python topic_counter.py
+
+      - name: 📝 提交更新
+        run: |
+          git config user.name "熱話題追蹤機器人"
+          git config user.email "noreply@github.com"
+          git add hot-topics-tracker.csv topic-report.json
+          git commit -m "🔄 自動更新熱話題數據 - $(date '+%Y-%m-%d %H:%M:%S UTC')" || echo "沒有新數據"
+
+      - name: 🚀 推送回 repo
+        run: |
+          git push origin main || echo "推送失敗"
