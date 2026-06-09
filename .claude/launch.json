@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "http-server",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8888", "--directory", "C:\\Users\\haoli\\OneDrive\\桌面\\ys社群"],
+      "port": 8888
+    }
+  ]
+}

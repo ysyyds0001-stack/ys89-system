@@ -1,0 +1,500 @@
+  document.getElementById('ap-title').textContent='編輯角色'
+  document.getElementById('ap-save-btn').textContent='更新角色'
+  document.getElementById('ap-name').value=p.name||''
+  document.getElementById('ap-followers').value=p.followers||0
+  document.getElementById('ap-dir').value=p.dir||'世足/運彩'
+  document.getElementById('ap-direction').value=p.direction||''
+  document.getElementById('ap-essence').value=p.essence||''
+  document.getElementById('ap-tone').value=p.tone||''
+  document.getElementById('ap-topics').value=p.topics||''
+  document.getElementById('ap-forbidden').value=p.forbidden||''
+  document.getElementById('ap-role').value=p.role||''
+  document.getElementById('ap-img').value=p.img||''
+  openModal('modal-add-persona')
+}
+
+function savePersona(){
+  const id=document.getElementById('ap-id').value
+  const name=document.getElementById('ap-name').value.trim()
+  if(!name){toast('請填入角色名稱','err');return}
+  const personas=DB.get('personas')
+  const obj={
+    name,followers:+document.getElementById('ap-followers').value||0,
+    dir:document.getElementById('ap-dir').value,
+    direction:document.getElementById('ap-direction').value,
+    essence:document.getElementById('ap-essence').value,
+    tone:document.getElementById('ap-tone').value,
+    topics:document.getElementById('ap-topics').value,
+    forbidden:document.getElementById('ap-forbidden').value,
+    role:document.getElementById('ap-role').value,
+    img:document.getElementById('ap-img').value,
+  }
+  if(id){const i=personas.findIndex(x=>x.id===id);if(i>=0)personas[i]={...personas[i],...obj}}
+  else personas.push({...obj,id:DB.id(),postPrompts:[],createdAt:new Date().toISOString()})
+  DB.set('personas',personas)
+  closeModal('modal-add-persona')
+  renderPersonas()
+  toast(id?'角色已更新':'角色已新增')
+}
+
+function openLogPrompt(pid,pname){
+  document.getElementById('lp-pid').value=pid
+  document.getElementById('lp-title').textContent=`記錄 ${pname} 的發文文案`
+  document.getElementById('lp-prompt').value=''
+  document.getElementById('lp-note').value=''
+  openModal('modal-log-prompt')
+}
+
+function savePromptLog(){
+  const pid=document.getElementById('lp-pid').value
+  const prompt=document.getElementById('lp-prompt').value.trim()
+  if(!prompt){toast('請填入文案提示詞','err');return}
+  const personas=DB.get('personas')
+  const i=personas.findIndex(x=>x.id===pid); if(i<0)return
+  if(!personas[i].postPrompts)personas[i].postPrompts=[]
+  personas[i].postPrompts.push({id:DB.id(),prompt,note:document.getElementById('lp-note').value,createdAt:new Date().toISOString()})
+  DB.set('personas',personas)
+  closeModal('modal-log-prompt')
+  renderPersonas()
+  toast('文案記錄已儲存')
+}
+
+// ===== TRACKER =====
+function renderTracker(){
+  const posts=DB.get('posts'),personas=DB.get('personas')
+  const sel=document.getElementById('tf-persona')
+  sel.innerHTML='<option value="">全部角色</option>'+personas.map(p=>`<option>${p.name}</option>`).join('')
+  const tl=posts.reduce((a,p)=>a+(+p.likes||0),0)
+  const tc=posts.reduce((a,p)=>a+(+p.comments||0),0)
+  const ts=posts.reduce((a,p)=>a+(+p.shares||0),0)
+  const tr=posts.reduce((a,p)=>a+(+p.reach||0),0)
+  document.getElementById('t-stats').innerHTML=[
+    ['總發文',posts.length,''],
+    ['總按讚',tl.toLocaleString(),''],
+    ['總留言',tc.toLocaleString(),''],
+    ['總觸及',tr.toLocaleString(),'']
+  ].map(([l,v])=>`<div class="stat"><div class="stat-num">${v}</div><div class="stat-label">${l}</div></div>`).join('')
+  // populate selects
+  const pSel=document.getElementById('po-persona')
+  pSel.innerHTML='<option value="">選擇角色</option>'+personas.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')
+  const arts=DB.get('articles')
+  const aSel=document.getElementById('po-article')
+  aSel.innerHTML='<option value="">選擇文章</option>'+arts.map(a=>`<option value="${a.id}">${a.title}</option>`).join('')
+  renderPosts()
+}
+
+function renderPosts(){
+  let posts=DB.get('posts').slice().reverse()
+  const pf=document.getElementById('tf-persona')?.value
+  const plf=document.getElementById('tf-platform')?.value
+  if(pf)posts=posts.filter(p=>p.personaName===pf)
+  if(plf)posts=posts.filter(p=>p.platform===plf)
+  const wrap=document.getElementById('posts-table')
+  if(!posts.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無發文記錄</div>';return}
+  wrap.innerHTML=`<div style="overflow-x:auto"><table>
+    <thead><tr><th>日期</th><th>角色</th><th>平台</th><th>主題</th><th>引用文章</th><th>讚</th><th>留</th><th>分享</th><th>觸及</th><th>操作</th></tr></thead>
+    <tbody>${posts.map(p=>`<tr>
+      <td style="white-space:nowrap">${p.date||'—'}</td>
+      <td><span class="badge b-green">${p.personaName||'—'}</span></td>
+      <td><span class="badge b-blue">${p.platform||'—'}</span></td>
+      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.topic||''}">${p.topic||'—'}</td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.77rem" class="tm" title="${p.articleTitle||''}">${p.articleTitle||'—'}</td>
+      <td>${p.likes||0}</td><td>${p.comments||0}</td><td>${p.shares||0}</td><td>${p.reach||0}</td>
+      <td><button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新</button></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`
+}
+
+function openAddPostModal(){
+  renderTracker()
+  document.getElementById('po-date').value=new Date().toISOString().split('T')[0]
+  openModal('modal-add-post')
+}
+
+function savePost(){
+  const pid=document.getElementById('po-persona').value
+  const aid=document.getElementById('po-article').value
+  const personas=DB.get('personas')
+  const p=personas.find(x=>x.id===pid)
+  const articles=DB.get('articles')
+  const a=articles.find(x=>x.id===aid)
+  if(a){
+    const ai=articles.findIndex(x=>x.id===aid)
+    if(!articles[ai].postedBy)articles[ai].postedBy=[]
+    if(p&&!articles[ai].postedBy.find(x=>x.pid===pid)){
+      articles[ai].postedBy.push({pid,name:p.name,date:document.getElementById('po-date').value})
+    }
+    articles[ai].lastUsed=new Date().toISOString()
+    DB.set('articles',articles)
+  }
+  const posts=DB.get('posts')
+  posts.push({
+    id:DB.id(),date:document.getElementById('po-date').value,
+    personaId:pid,personaName:p?.name||'',
+    platform:document.getElementById('po-platform').value,
+    articleId:aid,articleTitle:a?.title||'',
+    topic:document.getElementById('po-topic').value,
+    likes:+document.getElementById('po-likes').value||0,
+    comments:+document.getElementById('po-comments').value||0,
+    shares:+document.getElementById('po-shares').value||0,
+    reach:+document.getElementById('po-reach').value||0,
+    createdAt:new Date().toISOString()
+  })
+  DB.set('posts',posts)
+  closeModal('modal-add-post')
+  renderTracker()
+  toast('發文記錄已儲存')
+}
+
+function openMetrics(id){
+  const p=DB.get('posts').find(x=>x.id===id); if(!p)return
+  document.getElementById('um-id').value=id
+  ;['likes','comments','shares','reach'].forEach(k=>document.getElementById('um-'+k).value=p[k]||0)
+  openModal('modal-metrics')
+}
+
+function updateMetrics(){
+  const id=document.getElementById('um-id').value
+  const posts=DB.get('posts')
+  const i=posts.findIndex(x=>x.id===id); if(i<0)return
+  ;['likes','comments','shares','reach'].forEach(k=>posts[i][k]=+document.getElementById('um-'+k).value||0)
+  DB.set('posts',posts)
+  closeModal('modal-metrics')
+  renderPosts()
+  toast('數據已更新')
+}
+
+// ===== ARTICLES =====
+function renderArticles(){
+  const articles=DB.get('articles')
+  const personas=DB.get('personas')
+  const total=articles.length
+  const fullCov=articles.filter(a=>{
+    const dir=a.dir; if(!dir)return false
+    const needed=personas.filter(p=>p.dir===dir)
+    if(!needed.length)return false
+    const done=(a.postedBy||[]).map(x=>x.pid)
+    return needed.every(p=>done.includes(p.id))
+  }).length
+  document.getElementById('art-stats').innerHTML=[
+    ['文章總數',total,''],
+    ['完整覆蓋',fullCov,'tg'],
+    ['待補發',total-fullCov,'ty'],
+    ['無帳號方向',articles.filter(a=>!personas.some(p=>p.dir===a.dir)).length,'tm']
+  ].map(([l,v,c])=>`<div class="stat"><div class="stat-num ${c||''}">${v}</div><div class="stat-label">${l}</div></div>`).join('')
+
+  const wrap=document.getElementById('art-list')
+  if(!articles.length){wrap.innerHTML='<div class="card" style="text-align:center;padding:40px;color:var(--text3)">尚無文章，點擊右上角新增</div>';return}
+  wrap.innerHTML=articles.slice().reverse().map(a=>{
+    const needed=personas.filter(p=>p.dir===a.dir)
+    const done=(a.postedBy||[]).map(x=>x.pid)
+    const doneNames=(a.postedBy||[]).map(x=>x.name)
+    const todoList=needed.filter(p=>!done.includes(p.id))
+    const doneList=needed.filter(p=>done.includes(p.id))
+    const covPct=needed.length?Math.round(doneList.length/needed.length*100):0
+    const covColor=covPct===100?'':covPct>=50?'warn':'danger'
+    return`<div class="card" style="margin-bottom:12px">
+      <div class="fb" style="margin-bottom:10px">
+        <div>
+          <div style="font-weight:600;color:var(--text);font-size:.93rem">${a.title}</div>
+          <div class="flex" style="margin-top:4px;flex-wrap:wrap;gap:5px">
+            <span class="badge b-gray">${a.dir||'未分類'}</span>
+            <span class="badge b-blue">${a.source||'ys89論壇'}</span>
+            ${a.date?`<span class="tm">${a.date}</span>`:''}
+            ${a.url?`<a href="${a.url}" target="_blank" class="badge b-green2" style="text-decoration:none">查看原文</a>`:''}
+          </div>
+        </div>
+        <div class="flex">
+          <div style="text-align:right">
+            <div style="font-size:1.1rem;font-weight:700;color:${covPct===100?'var(--accent)':covPct>=50?'#fbbf24':'#f87171'}">${covPct}%</div>
+            <div class="tm">覆蓋率</div>
+          </div>
+          <button class="btn btn-xs btn-danger" onclick="delArticle('${a.id}')">刪除</button>
+        </div>
+      </div>
+      ${needed.length?`
+      <div class="cov-bar"><div class="cov-fill ${covColor}" style="width:${covPct}%"></div></div>
+      <div class="fb" style="margin-top:8px;flex-wrap:wrap;gap:8px">
+        <div>
+          ${doneList.length?`<div class="tm" style="margin-bottom:4px">已發布 (${doneList.length}/${needed.length})</div>
+          <div class="cov-grid">${doneList.map(p=>`<span class="cov-chip done">✓ ${p.name}</span>`).join('')}</div>`:''}
+          ${todoList.length?`<div class="tm" style="margin:6px 0 4px">待發布 (${todoList.length})</div>
+          <div class="cov-grid">${todoList.map(p=>`<span class="cov-chip todo">✗ ${p.name}</span>`).join('')}</div>`:''}
+        </div>
+      </div>`:`<div class="tm">方向「${a.dir||'未分類'}」尚無發文帳號</div>`}
+      ${a.summary?`<div class="tm" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);line-height:1.6">${a.summary}</div>`:''}
+    </div>`
+  }).join('')
+}
+
+function openAddArticleModal(){
+  ;['at-title','at-source','at-summary','at-url'].forEach(i=>document.getElementById(i).value='')
+  document.getElementById('at-date').value=new Date().toISOString().split('T')[0]
+  openModal('modal-add-article')
+}
+
+function saveArticle(){
+  const title=document.getElementById('at-title').value.trim()
+  if(!title){toast('請填入文章標題','err');return}
+  const arts=DB.get('articles')
+  arts.push({
+    id:DB.id(),title,
+    source:document.getElementById('at-source').value||'ys89.fun論壇',
+    date:document.getElementById('at-date').value,
+    dir:document.getElementById('at-dir').value,
+    summary:document.getElementById('at-summary').value,
+    url:document.getElementById('at-url').value,
+    postedBy:[],lastUsed:null,createdAt:new Date().toISOString()
+  })
+  DB.set('articles',arts)
+  closeModal('modal-add-article')
+  renderArticles()
+  toast('文章已新增')
+}
+
+function delArticle(id){
+  if(!confirm('確定刪除此文章？'))return
+  DB.set('articles',DB.get('articles').filter(a=>a.id!==id))
+  renderArticles()
+  toast('文章已刪除')
+}
+
+// ===== COMMUNITY =====
+function renderCommunity(){
+  const list=DB.get('community')
+  const grid=document.getElementById('cm-grid')
+  if(!list.length){grid.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">尚無帳號</div>';return}
+  grid.innerHTML=list.map(a=>{
+    const sc={'活躍':'b-green','人設建立中':'b-yellow','暫停':'b-red'}[a.status]||'b-gray'
+    return`<div class="ccard">
+      <div class="fb" style="margin-bottom:8px">
+        <div><div class="pname" style="font-size:.95rem">${a.name}</div><div class="pdir">${a.direction||''}</div></div>
+        <div class="flex">
+          <span class="badge ${sc}">${a.status}</span>
+          <button class="btn btn-xs btn-outline" onclick="openEditCommunity('${a.id}')">編輯</button>
+        </div>
+      </div>
+      <div class="flex" style="margin-bottom:8px">
+        <span class="tm">粉絲</span><span style="color:var(--accent);font-weight:600">${a.followers||0}</span>
+      </div>
+      <div class="sec" style="margin-top:0">人設描述</div>
+      <div style="font-size:.82rem;color:var(--text2)">${a.persona||'尚未建立'}</div>
+      ${a.prompt?`<div class="sec">語氣提示詞</div>
+        <div style="position:relative"><div class="pbox" style="max-height:80px">${a.prompt}</div>
+        <button class="pcopy" onclick="cp(${JSON.stringify(a.prompt)},this)">複製</button></div>
+      `:`<div style="margin-top:8px"><span class="badge b-warn">語氣提示詞待建立</span></div>`}
+    </div>`
+  }).join('')
+}
+
+function openAddCommunityModal(){
+  document.getElementById('cm-id').value=''
+  document.getElementById('cm-modal-title').textContent='新增社群號'
+  document.getElementById('cm-save-btn').textContent='儲存帳號'
+  ;['cm-name','cm-direction','cm-persona','cm-prompt'].forEach(i=>document.getElementById(i).value='')
+  document.getElementById('cm-followers').value='0'
+  document.getElementById('cm-status').value='人設建立中'
+  openModal('modal-community')
+}
+
+function openEditCommunity(id){
+  const a=DB.get('community').find(x=>x.id===id); if(!a)return
+  document.getElementById('cm-id').value=id
+  document.getElementById('cm-modal-title').textContent='編輯社群號'
+  document.getElementById('cm-save-btn').textContent='更新帳號'
+  document.getElementById('cm-name').value=a.name||''
+  document.getElementById('cm-followers').value=a.followers||0
+  document.getElementById('cm-direction').value=a.direction||''
+  document.getElementById('cm-persona').value=a.persona||''
+  document.getElementById('cm-prompt').value=a.prompt||''
+  document.getElementById('cm-status').value=a.status||'人設建立中'
+  openModal('modal-community')
+}
+
+function saveCommunity(){
+  const id=document.getElementById('cm-id').value
+  const name=document.getElementById('cm-name').value.trim()
+  if(!name){toast('請填入帳號名稱','err');return}
+  const list=DB.get('community')
+  const obj={name,followers:+document.getElementById('cm-followers').value||0,direction:document.getElementById('cm-direction').value,persona:document.getElementById('cm-persona').value,prompt:document.getElementById('cm-prompt').value,status:document.getElementById('cm-status').value}
+  if(id){const i=list.findIndex(x=>x.id===id);if(i>=0)list[i]={...list[i],...obj}}
+  else list.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
+  DB.set('community',list)
+  closeModal('modal-community')
+  renderCommunity()
+  toast(id?'帳號已更新':'帳號已新增')
+}
+
+// ===== GA4 =====
+let ga4Data=null
+
+function loadGA4Data(){
+  fetch('ga4-data.json')
+    .then(r=>r.json())
+    .then(d=>{
+      ga4Data=d
+      renderGA4()
+      toast('GA4數據已更新')
+    })
+    .catch(e=>{
+      console.error('Failed to load GA4 data:',e)
+      toast('無法載入GA4數據','err')
+    })
+}
+
+function renderGA4(){
+  if(!ga4Data){loadGA4Data();return}
+  const kpis=ga4Data.kpis||{}
+
+  // Render KPIs
+  const kpiHtml=[
+    ['活躍用戶',kpis.activeUsers?.toLocaleString()||'—'],
+    ['工作階段',kpis.sessions?.toLocaleString()||'—'],
+    ['事件數',kpis.eventCount?.toLocaleString()||'—'],
+    ['轉換率',kpis.conversionRate?((kpis.conversionRate*100).toFixed(2)+'%'):'—']
+  ].map(([label,value])=>`
+    <div class="stat">
+      <div class="stat-num">${value}</div>
+      <div class="stat-label">${label}</div>
+    </div>
+  `).join('')
+  document.getElementById('ga4-kpis').innerHTML=kpiHtml
+
+  // Render Sources (top 15)
+  const sourcesHtml=(ga4Data.sources||[]).slice(0,15).map((s,i)=>`
+    <div class="fb" style="padding:8px 0;border-bottom:1px solid var(--border);align-items:center">
+      <div style="display:flex;align-items:center;gap:8px;flex:1">
+        <span style="color:var(--text3);width:20px;text-align:right">${i+1}.</span>
+        <div style="flex:1">
+          <div style="color:var(--text);font-weight:500">${s.name}</div>
+          <div class="tm">${s.tag||s.medium}</div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="color:var(--accent);font-weight:600">${s.sessions?.toLocaleString()||0}</div>
+        <div class="tm">工作階段</div>
+      </div>
+    </div>
+  `).join('')
+  document.getElementById('ga4-sources').innerHTML=sourcesHtml||'<div class="tm">無數據</div>'
+
+  // Render Accounts (top 12)
+  const accountsHtml=(ga4Data.accounts||[]).slice(0,12).map((a,i)=>`
+    <div class="fb" style="padding:8px 0;border-bottom:1px solid var(--border);align-items:center">
+      <div style="display:flex;align-items:center;gap:8px;flex:1">
+        <span style="color:var(--text3);width:20px;text-align:right">${i+1}.</span>
+        <div style="flex:1">
+          <div style="color:var(--text);font-weight:500">${a.name}</div>
+          ${a.warn?'<span class="badge b-red" style="font-size:.7rem">⚠️ 需檢查</span>':''}
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="color:var(--accent);font-weight:600">${a.s?.toLocaleString()||0}</div>
+        <div class="tm">工作階段</div>
+      </div>
+    </div>
+  `).join('')
+  document.getElementById('ga4-accounts').innerHTML=accountsHtml||'<div class="tm">無數據</div>'
+
+  // Render Pages (top 7)
+  const pagesHtml=(ga4Data.pages||[]).slice(0,7).map((p,i)=>`
+    <div style="padding:10px;margin-bottom:8px;background:var(--g3);border:1px solid var(--border);border-radius:8px">
+      <div class="fb" style="margin-bottom:4px">
+        <span style="color:var(--text3);font-size:.75rem">第 ${i+1} 名</span>
+        <span style="color:var(--accent);font-weight:600">${p.v?.toLocaleString()||0} 次</span>
+      </div>
+      <div style="color:var(--text2);font-size:.82rem;line-height:1.4">${p.t||'—'}</div>
+    </div>
+  `).join('')
+  document.getElementById('ga4-pages').innerHTML=pagesHtml||'<div class="tm">無數據</div>'
+
+  // Update timestamp
+  if(ga4Data.lastUpdated){
+    const ts=new Date(ga4Data.lastUpdated)
+    document.getElementById('ga4-updated').textContent='最後更新: '+ts.toLocaleString('zh-TW')
+  }
+}
+
+// ===== DATA RECOVERY & EXPORT =====
+const BACKUP_FILE='localstorage_backup.json'
+const K='ys89_'
+const DATA_KEYS=['articles','community','daily_todos','entrances','links','personas','posts','routing','thread_activities','threads_posts','threads_replies','weekly_kpis']
+
+async function recoverLocalStorageData(){
+  try{
+    const response=await fetch(BACKUP_FILE)
+    if(!response.ok)throw new Error('Failed to fetch backup file')
+    const backupData=await response.json()
+    let recovered=0
+    for(const key of DATA_KEYS){
+      if(backupData[key]){
+        const stored=localStorage.getItem(K+key)
+        if(!stored||JSON.parse(stored).length===0){
+          localStorage.setItem(K+key,JSON.stringify(backupData[key]))
+          recovered++
+          console.log(`Recovered ${key}: ${Array.isArray(backupData[key])?backupData[key].length:Object.keys(backupData[key]).length} items`)
+        }
+      }
+    }
+    console.log(`Data recovery completed: ${recovered}/${DATA_KEYS.length} collections restored`)
+    return true
+  }catch(e){
+    console.error('Data recovery failed:',e)
+    return false
+  }
+}
+
+function exportLocalStorageData(){
+  const data={}
+  for(const key of DATA_KEYS){
+    const stored=localStorage.getItem(K+key)
+    if(stored){
+      try{data[key]=JSON.parse(stored)}
+      catch(e){console.error(`Failed to parse ${key}:`,e)}
+    }
+  }
+  const json=JSON.stringify(data,null,2)
+  const blob=new Blob([json],{type:'application/json'})
+  const url=URL.createObjectURL(blob)
+  const a=document.createElement('a')
+  a.href=url
+  a.download=`ys89_backup_${new Date().toISOString().split('T')[0]}.json`
+  a.click()
+  URL.revokeObjectURL(url)
+  toast('數據已匯出')
+}
+
+function clearAllData(){
+  if(!confirm('警告：將清除所有 LocalStorage 數據。此操作無法撤銷。確定要繼續嗎？'))return
+  for(const key of DATA_KEYS){
+    localStorage.removeItem(K+key)
+  }
+  toast('所有數據已清除')
+  setTimeout(()=>location.reload(),500)
+}
+
+function getDataStats(){
+  const stats={}
+  for(const key of DATA_KEYS){
+    const stored=localStorage.getItem(K+key)
+    if(stored){
+      try{
+        const data=JSON.parse(stored)
+        stats[key]=Array.isArray(data)?data.length:Object.keys(data).length
+      }catch(e){stats[key]='error'}
+    }else{stats[key]=0}
+  }
+  console.table(stats)
+  return stats
+}
+
+// ===== INIT =====
+(async()=>{
+  await recoverLocalStorageData()
+  initData()
+  loadGA4Data()
+  renderPersonas()
+})()
+</script>
+</body>
+</html>

@@ -145,77 +145,12 @@ button:hover{opacity:.9}
 </div>
 
 <script>
-// ===== CONFIG =====
-const K='ys89_'
-const BACKUP_FILE='localstorage_backup.json'
-const DATA_KEYS=['articles','community','daily_todos','entrances','links','personas','posts','routing','thread_activities','threads_posts','threads_replies','weekly_kpis']
-
-// ===== DATABASE =====
-const DB={
-  get(k){try{return JSON.parse(localStorage.getItem(K+k)||'[]')}catch{return[]}},
-  set(k,v){localStorage.setItem(K+k,JSON.stringify(v))},
-  id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
-}
-
-// ===== PAGE NAVIGATION =====
 function showPage(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(pageId).classList.add('active');
   event.target.classList.add('active');
 }
-
-// ===== DATA RECOVERY & EXPORT =====
-async function recoverLocalStorageData(){
-  try{
-    const response=await fetch(BACKUP_FILE)
-    if(!response.ok)throw new Error('Failed to fetch backup file')
-    const backupData=await response.json()
-    let recovered=0
-    for(const key of DATA_KEYS){
-      if(backupData[key]){
-        const stored=localStorage.getItem(K+key)
-        if(!stored||JSON.parse(stored).length===0){
-          localStorage.setItem(K+key,JSON.stringify(backupData[key]))
-          recovered++
-          console.log(`✅ Recovered ${key}: ${Array.isArray(backupData[key])?backupData[key].length:Object.keys(backupData[key]).length} items`)
-        }
-      }
-    }
-    console.log(`✅ Data recovery completed: ${recovered}/${DATA_KEYS.length} collections restored`)
-    return true
-  }catch(e){
-    console.error('Data recovery failed:',e)
-    return false
-  }
-}
-
-function exportLocalStorageData(){
-  const data={}
-  for(const key of DATA_KEYS){
-    const stored=localStorage.getItem(K+key)
-    if(stored){
-      try{data[key]=JSON.parse(stored)}
-      catch(e){console.error(`Failed to parse ${key}:`,e)}
-    }
-  }
-  const json=JSON.stringify(data,null,2)
-  const blob=new Blob([json],{type:'application/json'})
-  const url=URL.createObjectURL(blob)
-  const a=document.createElement('a')
-  a.href=url
-  a.download=`ys89_backup_${new Date().toISOString().split('T')[0]}.json`
-  a.click()
-  URL.revokeObjectURL(url)
-  alert('📥 數據已匯出到本地')
-}
-
-// ===== INIT =====
-(async()=>{
-  console.log('🚀 系統初始化中...')
-  await recoverLocalStorageData()
-  console.log('✅ 系統啟動完成 - 所有數據已恢復')
-})()
 </script>
 </body>
 </html>
