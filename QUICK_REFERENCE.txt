@@ -1,0 +1,332 @@
+YS89 發文管理系統 - 快速參考卡
+==============================
+
+文件清單
+========
+
+index.html (65KB)
+- 主程序文件
+- 包含數據恢復函數
+- 包含導出/統計功能
+- 所有系統功能保留
+
+localstorage_backup.json (32KB)
+- 完整備份數據
+- 12 個 LocalStorage 集合
+- 176+ 個數據項
+
+文檔文件
+- DATA_RECOVERY_GUIDE.txt - 完整恢復指南
+- USAGE_INSTRUCTIONS.txt - 詳細使用說明
+- RECOVERY_SUMMARY.txt - 項目總結報告
+- QUICK_REFERENCE.txt - 本快速參考卡
+
+快速操作
+========
+
+首次訪問：
+→ 打開 index.html
+→ 自動恢復所有數據
+→ 系統立即可用
+
+導出備份：
+→ 點擊導航欄「💾 匯出數據」
+→ 文件自動下載
+→ 文件名格式：ys89_backup_YYYY-MM-DD.json
+
+查看統計：
+→ 點擊導航欄「📈 數據統計」
+→ 控制台 (F12) 顯示統計表
+
+手動恢復（控制台）：
+→ 打開 F12 進入控制台
+→ 執行：recoverLocalStorageData()
+→ 等待恢復完成
+
+查看所有數據（控制台）：
+→ 打開 F12 進入控制台
+→ 執行：getDataStats()
+→ 查看表格統計
+
+恢復的數據
+==========
+
+文章庫：28 篇
+角色：11 個（Mark、扁扁、面具男等）
+社群帳號：17 個
+發文紀錄：26 個
+Threads 鏈接：54 個
+每日待辦：28 個
+周 KPI：2 個
+其他：路由、入口、活動記錄等
+
+核心函數
+========
+
+recoverLocalStorageData()
+- 作用：自動恢復備份數據
+- 返回：true/false
+- 調用：自動（頁面加載時）
+
+exportLocalStorageData()
+- 作用：導出當前 LocalStorage
+- 返回：無（自動下載）
+- 調用：按鈕或 exportLocalStorageData()
+
+getDataStats()
+- 作用：顯示數據統計
+- 返回：統計對象
+- 調用：按鈕或 getDataStats()
+
+clearAllData()
+- 作用：清除所有數據
+- 返回：無（需確認）
+- 調用：clearAllData()
+
+localStorage API 使用
+====================
+
+查看文章：
+JSON.parse(localStorage.getItem('ys89_articles'))
+
+查看角色：
+JSON.parse(localStorage.getItem('ys89_personas'))
+
+查看帳號：
+JSON.parse(localStorage.getItem('ys89_community'))
+
+查看發文：
+JSON.parse(localStorage.getItem('ys89_posts'))
+
+查看所有鍵：
+Object.keys(localStorage).filter(k=>k.startsWith('ys89_'))
+
+故障排除 - 快速檢查清單
+=======================
+
+數據未出現？
+☐ 檢查 localstorage_backup.json 存在否
+☐ 打開 F12 控制台檢查錯誤
+☐ 執行 getDataStats() 檢查有無數據
+☐ 執行 recoverLocalStorageData() 手動恢復
+
+頁面加載慢？
+☐ 檢查備份文件大小（應為 32KB）
+☐ 執行 getDataStats() 檢查數據量
+☐ 清除瀏覽器緩存
+☐ 嘗試不同瀏覽器
+
+功能缺失？
+☐ 驗證頁面完全加載
+☐ 檢查 JavaScript 是否啟用
+☐ 刷新頁面
+☐ 檢查瀏覽器擴展程序
+
+下載失敗？
+☐ 檢查下載文件夾權限
+☐ 檢查磁盤空間
+☐ 禁用下載攔截程序
+☐ 嘗試隱私瀏覽模式
+
+數據結構概覽
+============
+
+ys89_articles - Array
+- id: 文章 ID
+- title: 文章標題
+- dir: 發布方向
+- postedBy: [{ pid, name, date }]
+
+ys89_personas - Array
+- id: 角色 ID
+- name: 角色名稱
+- followers: 粉絲數
+- tone: 語氣風格
+- postPrompts: 文案記錄
+
+ys89_posts - Array
+- id: 發文 ID
+- date: 發文日期
+- personaName: 發文人角色
+- platform: IG/FB/IG+FB
+- likes, comments, shares, reach
+
+ys89_community - Array
+- id: 帳號 ID
+- name: 帳號名稱
+- direction: 回覆方向
+- status: 活躍/人設建立中/暫停
+
+ys89_routing - Object
+- currentPage: 當前頁面
+- lastVisited: 最後訪問時間
+
+常見參數值
+==========
+
+發布方向 (dir):
+- 世足/運彩
+- 金流/USDT
+- 安全/法律
+- 百家樂
+- 老虎機
+- 捕魚機
+- 通用
+
+平台 (platform):
+- IG
+- FB
+- IG+FB
+
+帳號狀態 (status):
+- 活躍
+- 人設建立中
+- 暫停
+
+Threads 活動 (activity):
+- like
+- comment
+- share
+
+文件大小參考
+============
+
+index.html：65KB
+- HTML 文件 + 1300+ 行代碼
+- 包含 CSS 樣式
+- 包含所有 JavaScript 函數
+
+localstorage_backup.json：32KB
+- JSON 格式備份
+- 可被任何文本編輯器打開
+- 可被 JSON 驗證器驗證
+
+整個項目：約 150KB
+- 所有文件總計
+- 包含文檔
+
+瀏覽器兼容性
+============
+
+✓ Chrome 90+
+✓ Firefox 88+
+✓ Safari 14+
+✓ Edge 90+
+✓ Opera 76+
+
+需要啟用：
+✓ JavaScript
+✓ LocalStorage (通常默認啟用)
+✓ Fetch API
+
+建議設置
+========
+
+瀏覽器：
+- 啟用 JavaScript
+- 不要禁用 LocalStorage
+- 允許自動下載文件
+
+定期維護：
+- 每週導出一次備份
+- 每月驗證數據
+- 定期清除過期記錄
+
+備份策略：
+- 保留 4 週的備份
+- 異地備份重要數據
+- 版本控制備份文件
+
+快速鏈接
+========
+
+進入系統：
+→ 雙擊 index.html
+
+查看指南：
+→ 打開 DATA_RECOVERY_GUIDE.txt
+→ 打開 USAGE_INSTRUCTIONS.txt
+
+查看數據：
+→ 打開 localstorage_backup.json（用文本編輯器）
+
+鍵盤快捷鍵
+==========
+
+F12 - 打開開發者工具
+Ctrl+Shift+I - 打開開發者工具
+Ctrl+J - 打開下載管理
+Ctrl+S - 保存網頁（不適用於 LocalStorage）
+
+完整性檢查清單
+==============
+
+✓ 主程序文件完整
+✓ 備份文件有效
+✓ 恢復函數可用
+✓ 導出功能正常
+✓ 統計功能正常
+✓ UI 按鈕就位
+✓ 文檔完善
+✓ 原功能保留
+✓ GA4 成效面板運行
+✓ 所有 12 角色恢復
+✓ 所有 28 篇文章恢復
+✓ 所有 26 發文記錄恢復
+
+使用頻率建議
+============
+
+日常使用：
+- 點擊系統中的功能按鈕
+- 正常添加、編輯數據
+
+每週操作：
+- 點擊「💾 匯出數據」備份
+
+每月操作：
+- 點擊「📈 數據統計」驗證
+- 檢查 LocalStorage 使用量
+
+按需操作：
+- 恢復時執行 recoverLocalStorageData()
+- 清理時執行 clearAllData()
+
+重要提示
+========
+
+⚠️  重要：
+- 不要刪除 localstorage_backup.json 文件
+- 定期備份您的數據
+- 清除前先確認
+
+✓ 提示：
+- 導出文件保存到下載文件夾
+- 備份文件可通過郵件發送
+- 支持跨設備恢復
+
+技術支持
+========
+
+如需幫助：
+
+1. 查看完整文檔
+   - DATA_RECOVERY_GUIDE.txt (5.2KB)
+   - USAGE_INSTRUCTIONS.txt (6.8KB)
+
+2. 使用瀏覽器工具
+   - F12 打開控制台
+   - 查看日誌和錯誤信息
+
+3. 執行診斷命令
+   - getDataStats() - 查看統計
+   - recoverLocalStorageData() - 手動恢復
+
+4. 檢查文件完整性
+   - 備份文件大小應為 32KB
+   - 所有必需文件應存在
+
+---
+更新日期：2026-06-09
+版本：1.0
+共 4 頁快速參考卡

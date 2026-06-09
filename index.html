@@ -184,6 +184,10 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'tracker')">發文追蹤</div>
   <div class="nav-tab" onclick="nav(this,'articles')">文章庫</div>
   <div class="nav-tab" onclick="nav(this,'community')">社群號</div>
+  <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+    <button class="btn btn-sm btn-outline" onclick="exportLocalStorageData()" style="font-size:.75rem">💾 匯出數據</button>
+    <button class="btn btn-sm btn-outline" onclick="getDataStats();toast('已在控制台顯示數據統計')" style="font-size:.75rem">📈 數據統計</button>
+  </div>
 </nav>
 
 <div id="toast"></div>
@@ -1102,10 +1106,86 @@ function renderGA4(){
   }
 }
 
+// ===== DATA RECOVERY & EXPORT =====
+const BACKUP_FILE='localstorage_backup.json'
+const K='ys89_'
+const DATA_KEYS=['articles','community','daily_todos','entrances','links','personas','posts','routing','thread_activities','threads_posts','threads_replies','weekly_kpis']
+
+async function recoverLocalStorageData(){
+  try{
+    const response=await fetch(BACKUP_FILE)
+    if(!response.ok)throw new Error('Failed to fetch backup file')
+    const backupData=await response.json()
+    let recovered=0
+    for(const key of DATA_KEYS){
+      if(backupData[key]){
+        const stored=localStorage.getItem(K+key)
+        if(!stored||JSON.parse(stored).length===0){
+          localStorage.setItem(K+key,JSON.stringify(backupData[key]))
+          recovered++
+          console.log(`Recovered ${key}: ${Array.isArray(backupData[key])?backupData[key].length:Object.keys(backupData[key]).length} items`)
+        }
+      }
+    }
+    console.log(`Data recovery completed: ${recovered}/${DATA_KEYS.length} collections restored`)
+    return true
+  }catch(e){
+    console.error('Data recovery failed:',e)
+    return false
+  }
+}
+
+function exportLocalStorageData(){
+  const data={}
+  for(const key of DATA_KEYS){
+    const stored=localStorage.getItem(K+key)
+    if(stored){
+      try{data[key]=JSON.parse(stored)}
+      catch(e){console.error(`Failed to parse ${key}:`,e)}
+    }
+  }
+  const json=JSON.stringify(data,null,2)
+  const blob=new Blob([json],{type:'application/json'})
+  const url=URL.createObjectURL(blob)
+  const a=document.createElement('a')
+  a.href=url
+  a.download=`ys89_backup_${new Date().toISOString().split('T')[0]}.json`
+  a.click()
+  URL.revokeObjectURL(url)
+  toast('數據已匯出')
+}
+
+function clearAllData(){
+  if(!confirm('警告：將清除所有 LocalStorage 數據。此操作無法撤銷。確定要繼續嗎？'))return
+  for(const key of DATA_KEYS){
+    localStorage.removeItem(K+key)
+  }
+  toast('所有數據已清除')
+  setTimeout(()=>location.reload(),500)
+}
+
+function getDataStats(){
+  const stats={}
+  for(const key of DATA_KEYS){
+    const stored=localStorage.getItem(K+key)
+    if(stored){
+      try{
+        const data=JSON.parse(stored)
+        stats[key]=Array.isArray(data)?data.length:Object.keys(data).length
+      }catch(e){stats[key]='error'}
+    }else{stats[key]=0}
+  }
+  console.table(stats)
+  return stats
+}
+
 // ===== INIT =====
-initData()
-loadGA4Data()
-renderPersonas()
+(async()=>{
+  await recoverLocalStorageData()
+  initData()
+  loadGA4Data()
+  renderPersonas()
+})()
 </script>
 </body>
 </html>

@@ -1,0 +1,173 @@
+YS89 發文管理系統 - LocalStorage 數據恢復指南
+================================================
+
+恢復日期: 2026-06-09
+系統版本: GA4成效面板整合版
+
+已恢復的數據集合:
+==================
+
+1. ys89_articles (28 篇文章)
+   - 包含所有論壇文章及發布覆蓋信息
+   - 字段: id, title, source, date, dir, summary, url, postedBy, lastUsed, createdAt
+
+2. ys89_community (17 個社群帳號)
+   - 回覆帳號管理系統
+   - 字段: id, name, followers, direction, persona, prompt, status, createdAt
+   - 包含狀態: 活躍、人設建立中、暫停
+
+3. ys89_daily_todos (28 個每日待辦)
+   - 每日任務與劇本管理
+   - 字段: id, date, tasks, script, completed, createdAt
+
+4. ys89_entrances (10 個入口)
+   - 系統入口鏈接管理
+   - 字段: id, name, url, createdAt
+
+5. ys89_links (54 個 Threads 炒話題鏈接)
+   - Threads 平台話題鏈接追蹤
+   - 字段: id, url, title, createdAt
+
+6. ys89_personas (11 個發文角色)
+   - 發文人設管理系統，包含:
+     * Mark (金流/USDT專家)
+     * 扁扁 (詐騙防範專家)
+     * 面具男 (百家樂分析師)
+     * 凱凱 (老虎機攻略)
+     * 阿奇 (世足分析)
+     * 世足大財神 (世足熱門方向捕捉)
+     * 強棒大叔 (經驗分享)
+     * 世足排雷週記 (風險提示)
+     * 蟹蟹世足觀測站 (賽事觀察)
+     * KK (足球碎嘴)
+     * 捕魚老司機阿網 (捕魚攻略)
+     * 魚池阿智 (論壇轉社群)
+   - 字段: id, name, followers, dir, direction, essence, tone, topics, forbidden, role, img, postPrompts, createdAt
+
+7. ys89_posts (26 個發文追蹤紀錄)
+   - 發文效能追蹤
+   - 字段: id, date, personaId, personaName, platform, articleId, articleTitle, topic, likes, comments, shares, reach, createdAt
+   - 平台: IG, FB, IG+FB
+
+8. ys89_routing (路由配置)
+   - 系統導航狀態
+   - 包含: currentPage, lastVisited
+
+9. ys89_thread_activities (31 個 Threads 活動追蹤)
+   - Threads 互動記錄
+   - 字段: id, threadId, activity (like/comment/share), date, timestamp
+
+10. ys89_threads_posts (2 個 Threads 帖子)
+    - 發布到 Threads 的帖子
+    - 字段: id, url, title, content, createdAt
+
+11. ys89_threads_replies (0 個回復)
+    - Threads 回復記錄（暫無數據）
+
+12. ys89_weekly_kpis (2 個周 KPI)
+    - 周度績效指標
+    - 字段: id, week, startDate, endDate, kpis(reach, engagement, conversions, avgEngagementRate)
+
+恢復機制說明:
+==============
+
+1. 自動恢復流程:
+   - 系統啟動時自動檢測本地 LocalStorage
+   - 如果 LocalStorage 為空，自動從 localstorage_backup.json 恢復
+   - 恢復過程中保護現有數據（不覆蓋已有數據）
+
+2. 恢復函數: recoverLocalStorageData()
+   - 位置: index.html 第 1105-1130 行
+   - 自動在頁面加載時執行
+   - 支持異步加載備份文件
+   - 提供控制台日誌用於調試
+
+3. 觸發條件:
+   - 首次訪問頁面時
+   - 瀏覽器 LocalStorage 被清除時
+   - 新設備或新瀏覽器首次訪問時
+
+頁面功能完整性:
+===============
+
+✓ GA4 成效面板 - 保留所有功能
+✓ 發文角色管理 - 所有 12 個角色已恢復
+✓ 發文追蹤系統 - 26 條記錄已恢復
+✓ 文章庫管理 - 28 篇文章已恢復
+✓ 社群號管理 - 17 個帳號已恢復
+✓ 數據搜索和過濾 - 完全保留
+✓ 添加/編輯/刪除功能 - 完全保留
+✓ 實時統計數據 - 完全保留
+
+如何手動驗證恢復:
+=================
+
+1. 打開瀏覽器控制台 (F12 或 右鍵 > 檢查)
+2. 在控制台標籤中查看恢復日誌
+3. 執行以下命令驗證各集合:
+   localStorage.getItem('ys89_articles')
+   localStorage.getItem('ys89_personas')
+   localStorage.getItem('ys89_posts')
+   等等
+
+4. 每個命令應返回有效的 JSON 數據
+
+故障排除:
+==========
+
+問題 1: 數據未恢復
+解決方案:
+- 確保 localstorage_backup.json 在同一目錄
+- 檢查瀏覽器控制台是否有錯誤信息
+- 嘗試清除瀏覽器緩存並重新刷新
+
+問題 2: 部分數據缺失
+解決方案:
+- 檢查特定集合是否在備份文件中
+- 驗證 LocalStorage 配額（通常為 5-10MB）
+- 如果超額，考慮歸檔舊數據
+
+問題 3: 性能下降
+解決方案:
+- 使用瀏覽器開發者工具分析性能
+- 考慮清理較舊的 thread_activities 記錄
+- 定期備份 LocalStorage 數據
+
+恢復文件結構:
+==============
+
+localstorage_backup.json 包含完整的 JSON 對象：
+{
+  "articles": [...],
+  "community": [...],
+  "daily_todos": [...],
+  "entrances": [...],
+  "links": [...],
+  "personas": [...],
+  "posts": [...],
+  "routing": {...},
+  "thread_activities": [...],
+  "threads_posts": [...],
+  "threads_replies": [],
+  "weekly_kpis": [...]
+}
+
+每個鍵對應一個 LocalStorage 項目（前綴 "ys89_"）。
+
+重要提示:
+=========
+
+1. 定期備份: 建議每週導出一次 LocalStorage 數據
+2. 版本控制: 保留多個備份以防數據意外修改
+3. 增量更新: 可以手動編輯 localstorage_backup.json 並刷新頁面
+4. GA4 數據: 需要單獨從 ga4-data.json 加載
+
+聯絡支持:
+=========
+
+如遇到任何問題，請檢查:
+1. 瀏覽器控制台的錯誤信息
+2. 備份文件的有效性
+3. LocalStorage 是否被禁用
+
+最後更新: 2026-06-09 16:37 UTC+8

@@ -1,0 +1,247 @@
+YS89 發文管理系統 - LocalStorage 數據恢復使用說明
+=================================================
+
+本文檔說明如何使用系統的數據恢復、導出和管理功能。
+
+1. 自動數據恢復 (首次訪問)
+==========================
+
+當用戶首次訪問 index.html 時，系統會自動執行以下步驟：
+
+1. 檢查瀏覽器 LocalStorage 是否為空
+2. 如果為空，自動從 localstorage_backup.json 加載備份數據
+3. 恢復以下所有數據集合：
+   - ys89_articles (28 篇文章)
+   - ys89_community (17 個社群帳號)
+   - ys89_daily_todos (28 個每日待辦)
+   - ys89_entrances (10 個入口)
+   - ys89_links (54 個 Threads 鏈接)
+   - ys89_personas (11 個發文角色)
+   - ys89_posts (26 個發文紀錄)
+   - ys89_routing (路由配置)
+   - ys89_thread_activities (31 個活動追蹤)
+   - ys89_threads_posts (2 個帖子)
+   - ys89_threads_replies (0 個回復)
+   - ys89_weekly_kpis (2 個周 KPI)
+
+4. 恢復完成後自動加載頁面功能
+
+2. 頁面導航欄新增按鈕
+=======================
+
+在右上角新增了兩個管理按鈕：
+
+✓ 💾 匯出數據按鈕
+  - 位置：導航欄右上角
+  - 功能：將當前 LocalStorage 的所有數據導出為 JSON 文件
+  - 用途：定期備份、遷移、或分享數據
+  - 文件格式：ys89_backup_YYYY-MM-DD.json
+
+✓ 📈 數據統計按鈕
+  - 位置：導航欄右上角
+  - 功能：在瀏覽器控制台顯示當前各集合的數據統計
+  - 用途：快速檢查數據完整性
+
+3. 控制台功能 (在瀏覽器開發者工具中)
+===================================
+
+打開瀏覽器開發者工具 (F12) 並進入控制台標籤，可以執行以下命令：
+
+a) 查看數據統計：
+   getDataStats()
+   返回：每個集合的數據項數統計表
+
+b) 手動恢復數據：
+   recoverLocalStorageData()
+   返回：true/false（是否成功）
+   用途：手動觸發恢復，覆蓋空的 LocalStorage
+
+c) 導出數據：
+   exportLocalStorageData()
+   返回：無（自動下載 JSON 文件）
+   用途：備份當前數據
+
+d) 清除所有數據（謹慎使用）：
+   clearAllData()
+   警告：會清除所有 LocalStorage 數據！
+
+e) 查看特定集合：
+   JSON.parse(localStorage.getItem('ys89_articles'))
+   JSON.parse(localStorage.getItem('ys89_personas'))
+   等等
+
+4. 數據恢復流程說明
+===================
+
+系統採用「智能恢復」策略：
+
+a) 啟動時的檢測：
+   - 檢查 LocalStorage 中是否存在 ys89_articles
+   - 如果不存在或為空，觸發恢復
+
+b) 恢復過程：
+   - 讀取 localstorage_backup.json
+   - 逐個集合恢復到 LocalStorage
+   - 如果已有數據，不覆蓋（保護用戶修改）
+
+c) 恢復確認：
+   - 控制台會顯示恢復的集合名稱和項數
+   - 日誌格式：「Recovered [集合名]: [數量] items」
+
+5. 完整的恢復過程圖示
+====================
+
+首次訪問 index.html
+         ↓
+   檢查 LocalStorage
+         ↓
+   是否為空？ → 否 → 使用現有數據
+         ↓ 是
+   加載 localstorage_backup.json
+         ↓
+   逐個恢復 12 個集合
+         ↓
+   驗證恢復
+         ↓
+   初始化頁面功能
+         ↓
+   頁面完全加載
+
+6. 故障排除和常見問題
+====================
+
+Q: 數據沒有被恢復
+A: 檢查以下項目：
+   1. localstorage_backup.json 是否在 index.html 同一目錄
+   2. 打開 F12 控制台查看是否有錯誤信息
+   3. 檢查 LocalStorage 是否被瀏覽器禁用
+   4. 嘗試手動執行：recoverLocalStorageData()
+
+Q: 只有部分數據被恢復
+A: 檢查以下項目：
+   1. 備份文件是否完整
+   2. 執行 getDataStats() 查看具體缺失的集合
+   3. 檢查 LocalStorage 是否已滿（通常限制 5-10MB）
+
+Q: 導出的文件在哪裡
+A: 文件會下載到瀏覽器的默認下載文件夾，通常是：
+   - Windows: C:\Users\[用戶名]\Downloads
+   - Mac: ~/Downloads
+   - Linux: ~/Downloads
+
+Q: 如何恢復導出的舊備份
+A: 使用以下步驟：
+   1. 準備包含完整數據的 JSON 文件
+   2. 在控制台執行恢復代碼：
+      fetch('[備份文件路徑]').then(r=>r.json()).then(data=>{
+        for(const key of ['articles','community',...])
+          localStorage.setItem('ys89_'+key, JSON.stringify(data[key]))
+      })
+   3. 刷新頁面
+
+7. 安全和備份建議
+================
+
+✓ 定期導出備份
+  建議：每週至少導出一次
+  方法：點擊導航欄「💾 匯出數據」按鈕
+
+✓ 保留多個版本
+  建議：保留最近 4 週的備份
+  命名約定：ys89_backup_YYYY-MM-DD.json
+
+✓ 異地備份
+  建議：將重要備份上傳到雲端或外部存儲
+  服務：Google Drive、OneDrive、GitHub 等
+
+✓ 定期驗證
+  建議：每月運行 getDataStats() 檢查數據完整性
+
+8. 數據結構參考
+===============
+
+LocalStorage 使用前綴 "ys89_" 存儲以下集合：
+
+ys89_articles
+- 類型：Array
+- 項數：28
+- 主要字段：id, title, source, date, dir, summary, postedBy
+
+ys89_personas
+- 類型：Array
+- 項數：11-12
+- 主要字段：id, name, direction, essence, tone, postPrompts
+
+ys89_posts
+- 類型：Array
+- 項數：26
+- 主要字段：id, date, personaName, platform, likes, comments, reach
+
+ys89_community
+- 類型：Array
+- 項數：17
+- 主要字段：id, name, direction, persona, status
+
+ys89_routing
+- 類型：Object
+- 字段：currentPage, lastVisited
+
+其他集合結構請參考 localstorage_backup.json 文件
+
+9. 頁面功能驗證清單
+===================
+
+恢復後請驗證以下功能是否正常：
+
+□ GA4 成效面板載入完成
+□ 發文角色列表顯示所有 12 個角色
+□ 文章庫顯示 28 篇文章及覆蓋率信息
+□ 發文追蹤記錄顯示 26 條記錄
+□ 社群號管理顯示 17 個帳號
+□ 所有篩選功能正常工作
+□ 添加/編輯/刪除功能可用
+□ 導出數據功能正常
+
+10. 技術細節
+============
+
+恢復機制實現：
+- 位置：index.html 第 1105-1150 行
+- 觸發條件：頁面加載時自動檢查
+- 異步加載：支持非阻塞式加載備份文件
+- 保護機制：不覆蓋已存在的數據
+
+函數清單：
+- recoverLocalStorageData() - 自動恢復機制
+- exportLocalStorageData() - 導出備份
+- getDataStats() - 數據統計
+- clearAllData() - 清除所有數據（謹慎使用）
+
+11. 支持和反饋
+=============
+
+如遇到任何問題：
+
+1. 檢查瀏覽器控制台 (F12) 的錯誤信息
+2. 執行 getDataStats() 檢查數據狀態
+3. 驗證 localstorage_backup.json 文件完整性
+4. 嘗試手動恢復：recoverLocalStorageData()
+5. 查看本文檔的「故障排除」章節
+
+聯絡方式：
+- GitHub Issues（如果是開源項目）
+- 用戶反饋郵箱
+- Discord 服務器（如適用）
+
+更新日誌
+=======
+
+v1.0 (2026-06-09)
+- 初始發布
+- 實現自動恢復機制
+- 添加導出和統計功能
+- 編寫完整文檔
+
+---
+最後更新：2026-06-09 16:37 UTC+8
+系統版本：YS89 發文管理系統 v1.0
