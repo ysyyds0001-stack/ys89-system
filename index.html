@@ -549,17 +549,63 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
 
 <!-- ===== PAGE: UTM 產生器（嵌入 ys89-utm.pages.dev，共用 D1）===== -->
 <div id="pg-utm" class="page">
-  <div class="fb" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px">
+  <div class="fb" style="margin-bottom:14px">
     <div>
       <h2 style="font-size:1.2rem;font-weight:700">🏷️ 社群 UTM 連結產生器</h2>
-      <p class="tm" style="margin-top:3px">替每個水軍帳號產生帶 utm_source 的追蹤連結 · 與 GA4 成效分頁對帳</p>
+      <p class="tm" style="margin-top:3px">讀「社群水軍號」人設 → 產生帶追蹤的連結 → 一鍵存進短連結，GA4 成效用水軍中文名對帳</p>
     </div>
-    <a href="https://ys89-utm.pages.dev/" target="_blank" rel="noopener" class="btn btn-outline btn-sm">↗ 新分頁開啟</a>
   </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <iframe src="https://ys89-utm.pages.dev/" title="UTM 產生器"
-      style="width:100%;height:calc(100vh - 170px);min-height:520px;border:0;display:block;background:#0B0B0D"
-      loading="lazy"></iframe>
+  <div class="g2" style="align-items:start">
+    <div class="card">
+      <div class="fg"><label>① 選水軍是誰 <span style="color:var(--text3);font-size:.72rem">utm_source（來自社群水軍號）</span></label>
+        <select id="u-persona" onchange="utmGen()"></select></div>
+      <div class="fr">
+        <div class="fg"><label>② 貼在哪 <span style="color:var(--text3);font-size:.72rem">utm_medium</span></label>
+          <select id="u-medium" onchange="utmGen()">
+            <option value="th_post">Threads 貼文</option><option value="th_bio">Threads 簡介</option><option value="th_comment">Threads 留言</option>
+            <option value="ig_post">IG 貼文</option><option value="ig_bio">IG 簡介</option><option value="ig_comment">IG 留言</option>
+            <option value="fb_post">FB 貼文</option><option value="comment">留言（其他）</option><option value="yt">YouTube</option><option value="social">其他社群</option>
+          </select></div>
+        <div class="fg"><label>③ 活動 <span style="color:var(--text3);font-size:.72rem">utm_campaign</span></label>
+          <select id="u-campaign" onchange="utmCampChange()">
+            <option value="wc2026">wc2026（世界盃·通用）</option><option value="wc2026_live">wc2026_live（直播主打）</option>
+            <option value="wc2026_odds">wc2026_odds（賠率投注）</option><option value="wc2026_schedule">wc2026_schedule（賽程）</option>
+            <option value="wc2026_group">wc2026_group（分組/賽前）</option><option value="wc2026_final">wc2026_final（決賽衝刺）</option>
+            <option value="__custom__">✏️ 自訂…</option>
+          </select>
+          <input type="text" id="u-campaign-custom" placeholder="自訂活動名（英數底線）" style="margin-top:8px;display:none" oninput="utmGen()"></div>
+      </div>
+      <div class="fg"><label>④ 導去哪個頁面 <span style="color:var(--text3);font-size:.72rem">落地頁</span></label>
+        <select id="u-landing" onchange="utmLandChange()">
+          <option value="https://ys89.games/live-104">ys89.games / 直播104（主力頁）</option>
+          <option value="https://ys89.me/live-104">ys89.me / 直播104</option>
+          <option value="https://ys89.info/live-104">ys89.info / 直播104</option>
+          <option value="https://ys89.biz/">ys89.biz / 賠率投注</option>
+          <option value="https://worldgoals.live/">worldgoals.live / 直播頁</option>
+          <option value="__custom__">✏️ 自訂網址…</option>
+        </select>
+        <input type="text" id="u-landing-custom" placeholder="https://..." style="margin-top:8px;display:none" oninput="utmGen()"></div>
+
+      <div style="background:var(--g3);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-top:4px">
+        <div style="font-size:.74rem;color:var(--accent);font-weight:700;margin-bottom:7px">🔗 貼文用這條（已帶 UTM 追蹤）</div>
+        <div id="u-out" style="font-family:monospace;font-size:.82rem;word-break:break-all;background:#0B0908;border:1px solid var(--border);border-radius:8px;padding:10px;line-height:1.5"></div>
+        <div style="display:flex;gap:8px;margin-top:9px">
+          <button class="btn btn-copy" style="flex:1;justify-content:center" data-cp="" id="u-copy-btn" onclick="cpd(this)">📋 複製連結</button>
+          <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="utmSaveToLinks()">💾 存進短連結</button>
+        </div>
+      </div>
+      <div id="u-agent-box" style="background:var(--g2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:10px;display:none">
+        <div style="font-size:.72rem;color:var(--accent);font-weight:700;margin-bottom:5px">📇 這個水軍的代理註冊連結（放 LINE/簡介引導註冊）</div>
+        <div id="u-agent" style="font-family:monospace;font-size:.8rem;word-break:break-all;color:var(--text2);margin-bottom:6px"></div>
+        <button class="btn btn-xs btn-outline" data-cp="" id="u-agent-btn" onclick="cpd(this)">複製代理連結</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">💡 怎麼運作</div>
+      <p class="tm" style="font-size:.78rem;line-height:1.7">選人 → 選平台 → 選落地頁，按 <b style="color:var(--accent)">存進短連結</b> 會把這條連結自動歸到該水軍在「短連結」分頁的 <b>UTM追蹤</b> 區塊。<br>水軍名單來自 <b style="color:var(--accent)">社群水軍號</b>，那邊新增/改 utm 碼，這裡立即同步。<br>GA4 成效分頁看到這個 utm_source，會自動用水軍中文名顯示。</p>
+      <div class="card-title" style="margin-top:16px">📌 此水軍已存的 UTM</div>
+      <div id="u-recent" style="display:flex;flex-direction:column;gap:7px"></div>
+    </div>
   </div>
 </div>
 
@@ -2335,6 +2381,7 @@ function nav(el,page){
   const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,threads:renderThreads,entrances:renderEntrances,links:renderLinks,cast:renderCast}
   if(page==='todo'){initTodayTodos(false);renderTodo()}
   else if(page==='ga4'){ if(_ga4Data) renderGA4(_ga4Data); }
+  else if(page==='utm'){ utmInit() }
   else renders[page]&&renders[page]()
 }
 function openModal(id){document.getElementById(id).classList.add('show')}
@@ -4105,6 +4152,68 @@ function renderLinks(){
       <div class="lk-acc-body" style="display:none">${placementHtml}</div>
     </div>`
   }).join('')
+}
+
+// ── 原生 UTM 產生器（讀社群水軍號 → 存進短連結）──
+function utmPersonas(){ return (DB.get('community')||[]).filter(a=>a.name); }
+function utmInit(){
+  const sel=document.getElementById('u-persona'); if(!sel) return;
+  const cur=sel.value;
+  const gname={A:'A 流量吸引組',B:'B 論壇轉接組',C:'C 平台推廣組','':'其他'};
+  const byG={A:[],B:[],C:[],'':[]};
+  utmPersonas().forEach(a=>{(byG[a.group||'']||byG['']).push(a)});
+  let html='';
+  ['A','B','C',''].forEach(g=>{ if(!byG[g].length) return;
+    html+=`<optgroup label="${gname[g]}">`+byG[g].map(a=>`<option value="${a.id}">${a.name}（${commCode(a)}）</option>`).join('')+`</optgroup>`; });
+  sel.innerHTML=html||'<option value="">（請先到社群水軍號新增帳號）</option>';
+  if(cur) sel.value=cur;
+  utmGen();
+}
+function utmCampChange(){ document.getElementById('u-campaign-custom').style.display=document.getElementById('u-campaign').value==='__custom__'?'block':'none'; utmGen(); }
+function utmLandChange(){ document.getElementById('u-landing-custom').style.display=document.getElementById('u-landing').value==='__custom__'?'block':'none'; utmGen(); }
+function utmCurrentPersona(){ const id=document.getElementById('u-persona').value; return utmPersonas().find(a=>a.id===id); }
+function utmCampVal(){ let c=document.getElementById('u-campaign').value; if(c==='__custom__') c=document.getElementById('u-campaign-custom').value.trim()||'wc2026'; return c; }
+function utmBuildUrl(p){
+  let base=document.getElementById('u-landing').value;
+  if(base==='__custom__') base=document.getElementById('u-landing-custom').value.trim()||'https://';
+  const med=document.getElementById('u-medium').value;
+  const sep=base.includes('?')?'&':'?';
+  return `${base}${sep}utm_source=${commCode(p)}&utm_medium=${med}&utm_campaign=${encodeURIComponent(utmCampVal())}`;
+}
+function utmGen(){
+  const p=utmCurrentPersona(); const out=document.getElementById('u-out'); if(!out) return;
+  if(!p){ out.textContent='（請先在社群水軍號新增帳號）'; return; }
+  const url=utmBuildUrl(p);
+  out.innerHTML=url.replace(/utm_source=([^&]*)/,'utm_source=<b style="color:var(--accent2)">$1</b>').replace(/utm_medium=([^&]*)/,'utm_medium=<b style="color:var(--accent2)">$1</b>');
+  document.getElementById('u-copy-btn').setAttribute('data-cp',url);
+  const box=document.getElementById('u-agent-box');
+  if(p.proxy){ box.style.display='block'; const a=`https://ys89.bet/?proxy=${p.proxy}`; document.getElementById('u-agent').textContent=a; document.getElementById('u-agent-btn').setAttribute('data-cp',a); }
+  else box.style.display='none';
+  utmRenderRecent(p);
+}
+function utmSaveToLinks(){
+  const p=utmCurrentPersona(); if(!p){ toast('請先選水軍','err'); return; }
+  const url=utmBuildUrl(p), med=document.getElementById('u-medium').value, code=commCode(p);
+  const platMap={th_post:'Threads',th_bio:'Threads',th_comment:'Threads',ig_post:'IG',ig_bio:'IG',ig_comment:'IG',fb_post:'FB',yt:'YouTube'};
+  const all=DB.get('links').length?DB.get('links'):[...DEFAULT_LINKS];
+  if(all.some(l=>l.originalUrl===url && l.accountCode===code)){ toast('這條已存過了'); return; }
+  all.push({ id:'lk'+Date.now(), category:'水軍', accountCode:code, accountName:p.name,
+    platform:platMap[med]||'Threads', placement:'UTM追蹤', entryName:`${utmCampVal()} · ${med}`,
+    purpose:'社群 UTM 追蹤', originalUrl:url, shortLinkUrl:'', useShortLink:false,
+    status:'使用中', note:'UTM 產生器', isSeoAsset:false });
+  DB.set('links',all); DB.push('links').catch(()=>{});
+  toast(`已存進短連結 → ${p.name} 的 UTM追蹤`);
+  utmRenderRecent(p);
+}
+function utmRenderRecent(p){
+  const box=document.getElementById('u-recent'); if(!box||!p) return;
+  const code=commCode(p);
+  const mine=(DB.get('links')||[]).filter(l=>l.accountCode===code && l.placement==='UTM追蹤');
+  box.innerHTML = mine.length ? mine.slice(-8).reverse().map(l=>`
+    <div style="background:#0d0b0a;border:1px solid var(--border);border-radius:7px;padding:8px 10px">
+      <div style="font-size:.7rem;color:var(--accent);font-weight:600">${l.entryName||''}</div>
+      <div style="font-size:.72rem;color:var(--text3);font-family:monospace;word-break:break-all;margin-top:2px">${l.originalUrl}</div>
+    </div>`).join('') : '<div style="font-size:.76rem;color:var(--text3)">尚無，按「存進短連結」會出現在這裡</div>';
 }
 
 function lkToggle(el){
