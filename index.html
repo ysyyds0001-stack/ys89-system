@@ -131,6 +131,37 @@ tr:hover td{background:#0f0d0b}
 #toast{position:fixed;bottom:20px;right:20px;background:#1a0e08;border:1px solid var(--amber2);color:var(--accent);padding:10px 18px;border-radius:8px;font-size:.85rem;display:none;z-index:999;animation:fi .2s}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
+/* ── 表格手機左右滑動（鐵則：任何 table 必包 .t-scroll）── */
+.t-scroll{width:100%;min-width:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.t-scroll table{min-width:420px}
+/* 讓 grid/flex 子項可縮小於內容寬度，避免被撐爆 */
+.g2>*,.g3>*,.g4>*,.g5>*{min-width:0}
+
+/* ── GA4 來源長條（class 化才能 RWD）── */
+.src-row{display:grid;grid-template-columns:130px 1fr 50px;align-items:center;gap:10px}
+.src-row .src-name{font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.src-row .src-num{font-size:.85rem;font-weight:700;color:var(--accent);text-align:right}
+
+/* ── GA4 圓餅 + 圖例：手機可換行 ── */
+.donut-wrap{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap}
+
+/* ── RWD 響應式斷點 ── */
+@media(max-width:768px){
+  nav{padding:0 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  .nav-brand{padding:12px 12px 12px 0;font-size:1rem;letter-spacing:1px}
+  .nav-brand span{display:none}
+  .nav-tab{padding:12px 11px;font-size:.82rem}
+  .page{padding:16px 14px}
+  .ga4-kpis{grid-template-columns:repeat(2,1fr)!important;gap:10px}
+  .stat-num{font-size:1.45rem}
+}
+@media(max-width:440px){
+  .src-row{grid-template-columns:92px 1fr 44px;gap:7px}
+  .src-row .src-name{font-size:.78rem}
+  .donut-wrap{gap:12px}
+}
+
 /* COVERAGE BAR */
 .cov-bar{height:6px;background:#161412;border-radius:3px;margin-top:5px;overflow:hidden}
 .cov-fill{height:100%;border-radius:3px;transition:.4s;background:var(--accent)}
@@ -192,6 +223,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'threadtracker')">🔥 炒話題追蹤</div>
   <div class="nav-tab" onclick="nav(this,'threads')">📱 Threads</div>
   <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
+  <div class="nav-tab" onclick="nav(this,'utm')">🏷️ UTM 產生器</div>
   <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口</div>
   <div class="nav-tab" onclick="nav(this,'todo')">📋 今日待辦</div>
   <div class="nav-tab" onclick="nav(this,'cast')">🎬 劇本</div>
@@ -211,7 +243,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 
   <!-- KPI 統計 -->
-  <div class="g5" style="margin-bottom:18px">
+  <div class="g5 ga4-kpis" style="margin-bottom:18px">
     <div class="stat">
       <div class="stat-label">活躍使用者</div>
       <div class="stat-num" id="kpiUsers">—</div>
@@ -250,7 +282,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="card">
       <div class="card-title">流量結構</div>
       <p class="tm" style="font-size:.75rem;margin-bottom:12px">依管道分類佔比</p>
-      <div style="display:flex;align-items:center;justify-content:center;gap:20px">
+      <div class="donut-wrap">
         <svg id="donut" width="120" height="120" viewBox="0 0 42 42"></svg>
         <div id="donutLegend" style="display:flex;flex-direction:column;gap:8px;font-size:.8rem"></div>
       </div>
@@ -267,10 +299,12 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="card">
       <div class="card-title">各帳號成效</div>
       <p class="tm" style="font-size:.75rem;margin-bottom:12px">進站 vs CTA 轉換</p>
+      <div class="t-scroll">
       <table>
         <thead><tr><th>來源</th><th style="text-align:right">進站</th><th style="text-align:right">CTA</th><th style="text-align:right">轉換率</th></tr></thead>
         <tbody id="acctTable"></tbody>
       </table>
+      </div>
     </div>
   </div>
 
@@ -332,12 +366,12 @@ function renderGA4(d){
   const topSrc = sources.slice(0, 12);
   const maxS = Math.max(1, ...topSrc.map(s=>s.sessions));
   document.getElementById('srcBars').innerHTML = topSrc.map(s=>`
-    <div style="display:grid;grid-template-columns:130px 1fr 50px;align-items:center;gap:10px">
-      <span style="font-size:.82rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${s.name}">${s.name}</span>
+    <div class="src-row">
+      <span class="src-name" title="${s.name}">${s.name}</span>
       <div style="height:8px;background:var(--g3);border-radius:4px;overflow:hidden">
         <div style="height:100%;width:${(s.sessions/maxS*100).toFixed(1)}%;background:${colorByCls[s.cls]||'#8A7D74'};border-radius:4px"></div>
       </div>
-      <span style="font-size:.85rem;font-weight:700;color:var(--accent);text-align:right">${fmt(s.sessions)}</span>
+      <span class="src-num">${fmt(s.sessions)}</span>
     </div>`).join('');
 
   // 圓餅圖 by 類別
@@ -453,6 +487,22 @@ fetch('./ga4-data.json?_=' + Date.now())
     const u=document.getElementById('ga4Updated'); if(u) u.textContent='⚠ ga4-data.json 載入失敗：'+e.message;
   });
 </script>
+
+<!-- ===== PAGE: UTM 產生器（嵌入 ys89-utm.pages.dev，共用 D1）===== -->
+<div id="pg-utm" class="page">
+  <div class="fb" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">🏷️ 社群 UTM 連結產生器</h2>
+      <p class="tm" style="margin-top:3px">替每個水軍帳號產生帶 utm_source 的追蹤連結 · 與 GA4 成效分頁對帳</p>
+    </div>
+    <a href="https://ys89-utm.pages.dev/" target="_blank" rel="noopener" class="btn btn-outline btn-sm">↗ 新分頁開啟</a>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <iframe src="https://ys89-utm.pages.dev/" title="UTM 產生器"
+      style="width:100%;height:calc(100vh - 170px);min-height:520px;border:0;display:block;background:#0B0B0D"
+      loading="lazy"></iframe>
+  </div>
+</div>
 
 <!-- ===== PAGE: 發文角色 ===== -->
 <div id="pg-personas" class="page active">
