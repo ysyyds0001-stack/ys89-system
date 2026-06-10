@@ -183,7 +183,8 @@ tr:hover td{background:#0f0d0b}
   [style*="grid-template-columns:300px"],
   [style*="grid-template-columns:280px"],
   [style*="grid-template-columns:320px"],
-  [style*="grid-template-columns:250px 1fr"]{
+  [style*="grid-template-columns:250px 1fr"],
+  [style*="grid-template-columns:1fr 1fr"]{
     grid-template-columns:1fr!important;
   }
 }
@@ -4600,12 +4601,12 @@ function renderThreadTracker(){
   const todayItems = list.filter(a=>a.date===today)
   const pastItems  = list.filter(a=>a.date!==today)
 
-  const renderRow = a => {
+  // 共用：算策略色 / 平台 / 分平台成效摘要
+  const ttMeta = a => {
     const sc = TT_STRATEGY_COLOR[a.strategy]||'#8A7D74'
     const plats = a.platforms || ['Threads']
     const pm = a.platformMetrics || {}
     const hasMetrics = Object.values(pm).some(m=>Object.values(m||{}).some(v=>+v>0))
-    // 分平台成效摘要
     const metricsSummary = hasMetrics
       ? plats.map(p=>{
           const m=pm[p]||{}; const col=TM_PLATFORM_COLORS[p]||'#8A7D74'
@@ -4616,6 +4617,11 @@ function renderThreadTracker(){
           return `<div style="font-size:.68rem;color:${col};white-space:nowrap"><b>${p}</b> ${summary}</div>`
         }).filter(Boolean).join('')
       : `<span style="font-size:.73rem;color:#f87171">待記錄</span>`
+    return {sc, plats, metricsSummary}
+  }
+
+  const renderRow = a => {
+    const {sc, plats, metricsSummary} = ttMeta(a)
     return `<tr>
       <td style="white-space:nowrap">${a.date}</td>
       <td><span class="badge b-green">${a.personaName||'—'}</span></td>
@@ -4637,21 +4643,51 @@ function renderThreadTracker(){
     </tr>`
   }
 
+  // 手機：下拉展開卡
+  const renderCard = a => {
+    const {sc, plats, metricsSummary} = ttMeta(a)
+    return `<div class="po-card">
+      <div class="po-head" onclick="poToggle(this)">
+        <span class="po-chev">▸</span>
+        <span style="font-size:.72rem;color:var(--text3);white-space:nowrap;flex-shrink:0">${(a.date||'').slice(5)}</span>
+        <span class="badge b-green" style="flex-shrink:0">${a.personaName||'—'}</span>
+        <span style="color:${sc};font-size:.7rem;font-weight:700;flex-shrink:0">${a.strategy||''}</span>
+        <span class="po-topic">${a.topic||'—'}</span>
+      </div>
+      <div class="po-body">
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">
+          ${plats.map(p=>`<span style="font-size:.68rem;padding:2px 8px;border-radius:8px;background:${TM_PLATFORM_COLORS[p]}20;color:${TM_PLATFORM_COLORS[p]}">${p}</span>`).join('')}
+        </div>
+        <div style="margin-bottom:10px">${metricsSummary}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${a.url ? `<a href="${escAttr(a.url)}" target="_blank" class="btn btn-xs btn-copy">🔗 查看原帖</a>` : ''}
+          <button class="btn btn-xs btn-outline" onclick="openSetThreadUrl('${a.id}')">${a.url?'✏ 連結':'＋連結'}</button>
+          <button class="btn btn-xs btn-primary" onclick="openThreadMetrics('${a.id}')">📊 記錄成效</button>
+          <button class="btn btn-xs btn-outline" onclick="openEditThreadActivity('${a.id}')">✏ 編輯</button>
+          <button class="btn btn-xs btn-danger" onclick="delThreadActivity('${a.id}')">✕ 刪除</button>
+        </div>
+      </div>
+    </div>`
+  }
+
   const tableHead = `<table><thead><tr>
     <th>日期</th><th>角色</th><th>平台</th><th>策略</th><th>主題</th><th>連結</th><th>分平台成效</th><th>操作</th>
   </tr></thead>`
+  const sectTitle = (txt,col)=>`<div style="font-size:.82rem;font-weight:700;color:${col};margin:16px 0 8px">${txt}</div>`
 
-  let html = '<div style="overflow-x:auto">'
-  if(todayItems.length){
-    html += `<div style="font-size:.82rem;font-weight:700;color:var(--accent);margin-bottom:8px">📅 今日（${today}）— ${todayItems.length} 筆</div>`
-    html += tableHead + `<tbody>${todayItems.map(renderRow).join('')}</tbody></table>`
-  }
-  if(pastItems.length){
-    html += `<div style="font-size:.82rem;font-weight:700;color:var(--text3);margin:16px 0 8px">📋 近期記錄</div>`
-    html += tableHead + `<tbody>${pastItems.slice(0,20).map(renderRow).join('')}</tbody></table>`
-  }
-  html += '</div>'
-  wrap.innerHTML = html
+  // 桌機：表格
+  let desk = '<div class="posts-desk" style="overflow-x:auto">'
+  if(todayItems.length) desk += sectTitle(`📅 今日（${today}）— ${todayItems.length} 筆`,'var(--accent)').replace('margin:16px 0 8px','margin-bottom:8px') + tableHead + `<tbody>${todayItems.map(renderRow).join('')}</tbody></table>`
+  if(pastItems.length) desk += sectTitle('📋 近期記錄','var(--text3)') + tableHead + `<tbody>${pastItems.slice(0,20).map(renderRow).join('')}</tbody></table>`
+  desk += '</div>'
+
+  // 手機：展開卡
+  let mob = '<div class="posts-mob">'
+  if(todayItems.length) mob += sectTitle(`📅 今日（${today}）— ${todayItems.length} 筆`,'var(--accent)').replace('margin:16px 0 8px','margin-bottom:8px') + todayItems.map(renderCard).join('')
+  if(pastItems.length) mob += sectTitle('📋 近期記錄','var(--text3)') + pastItems.slice(0,20).map(renderCard).join('')
+  mob += '</div>'
+
+  wrap.innerHTML = desk + mob
 }
 
 // 平台顏色 / 欄位定義
