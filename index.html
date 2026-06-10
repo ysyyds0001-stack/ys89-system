@@ -188,6 +188,21 @@ tr:hover td{background:#0f0d0b}
   }
 }
 
+/* ── 短連結：水軍帳號手風琴（點擊展開，免左右滑）── */
+.lk-acc{border-radius:10px}
+.lk-acc-head{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;border-radius:10px;user-select:none}
+.lk-acc.open .lk-acc-head{border-radius:10px 10px 0 0}
+.lk-chev{font-size:.78rem;transition:transform .15s;flex-shrink:0}
+.lk-acc.open .lk-chev{transform:rotate(90deg)}
+.lk-acc-body{border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px}
+.lk-card{background:#0d0b0a;border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.lk-card-h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.lk-tgt{font-size:.84rem;font-weight:600;color:var(--text)}
+.lk-note{font-size:.67rem;color:var(--text3);margin-top:2px}
+.lk-field{display:flex;align-items:center;gap:7px;margin-top:6px;flex-wrap:wrap}
+.lk-lab{font-size:.66rem;color:var(--text3);flex-shrink:0;width:42px}
+.lk-url{font-size:.74rem;color:var(--text3);font-family:monospace;word-break:break-all;flex:1;min-width:110px}
+
 /* COVERAGE BAR */
 .cov-bar{height:6px;background:#161412;border-radius:3px;margin-top:5px;overflow:hidden}
 .cov-fill{height:100%;border-radius:3px;transition:.4s;background:var(--accent)}
@@ -4007,67 +4022,50 @@ function renderLinks(){
     const cc=CAT_COLOR[acc.cat]||'#8A7D74'
     const placements=Object.entries(acc.placements)
 
-    const placementHtml=placements.map(([placement, links], pi)=>{
-      const isLast=pi===placements.length-1
+    const placementHtml=placements.map(([placement, links])=>{
       const platIcon=PLAT_ICON[links[0]?.platform]||'🔗'
-      const rowsHtml=links.map((l,li)=>{
+      const cardsHtml=links.map(l=>{
         const hasShort=l.shortLinkUrl&&l.shortLinkUrl.length>3
         const hasOrig=l.originalUrl&&l.originalUrl.length>3
-        const isLastRow=li===links.length-1
-        return`<tr style="${isLastRow&&isLast?'':'border-bottom:1px solid var(--border)'}${li%2===1?';background:#09080a':''}">
-          <td style="padding:8px 14px;width:200px">
-            <div style="font-size:.82rem;font-weight:600;color:var(--text)">${l.entryName}</div>
-            ${l.note?`<div style="font-size:.67rem;color:var(--text3)">${l.note}</div>`:''}
-          </td>
-          <td style="padding:8px 14px;min-width:220px">
-            ${hasOrig
-              ?`<div style="font-size:.73rem;color:var(--text3);font-family:monospace;margin-bottom:4px;line-height:1.4">${l.originalUrl}</div>
-                <button class="btn btn-xs btn-outline" data-cp="${escAttr(l.originalUrl)}" onclick="cpd(this)" style="font-size:.68rem">複製原始網址</button>`
-              :`<span style="font-size:.72rem;color:var(--text3)">—</span>`}
-          </td>
-          <td style="padding:8px 14px;min-width:180px">
-            ${hasShort
-              ?`<div style="font-size:.82rem;color:#4ade80;font-family:monospace;font-weight:700;margin-bottom:4px">${l.shortLinkUrl}</div>
-                <button class="btn btn-xs btn-copy" data-cp="${escAttr(l.shortLinkUrl)}" onclick="cpd(this)">🔗 複製追蹤連結</button>`
-              :l.status==='無連結'
-                ?`<span style="font-size:.72rem;color:#f87171;font-weight:600">✕ 無連結</span>`
-                :`<span style="font-size:.72rem;color:#f87171">待建立</span>`}
-          </td>
-          <td style="padding:8px 10px;white-space:nowrap">
-            <button class="btn btn-xs btn-outline" onclick="openEditLink('${l.id}')" style="font-size:.65rem">✏</button>
-            <button class="btn btn-xs btn-danger" onclick="delLink('${l.id}')" style="font-size:.65rem">✕</button>
-          </td>
-        </tr>`
+        return`<div class="lk-card">
+          <div class="lk-card-h">
+            <div><div class="lk-tgt">${l.entryName}</div>${l.note?`<div class="lk-note">${l.note}</div>`:''}</div>
+            <div style="display:flex;gap:4px;flex-shrink:0">
+              <button class="btn btn-xs btn-outline" onclick="openEditLink('${l.id}')" style="font-size:.65rem">✏</button>
+              <button class="btn btn-xs btn-danger" onclick="delLink('${l.id}')" style="font-size:.65rem">✕</button>
+            </div>
+          </div>
+          ${hasOrig?`<div class="lk-field"><span class="lk-lab">原始</span><code class="lk-url">${l.originalUrl}</code><button class="btn btn-xs btn-outline" data-cp="${escAttr(l.originalUrl)}" onclick="cpd(this)" style="font-size:.66rem;flex-shrink:0">複製</button></div>`:''}
+          ${hasShort
+            ?`<div class="lk-field"><span class="lk-lab">短連結</span><code class="lk-url" style="color:#4ade80;font-weight:700">${l.shortLinkUrl}</code><button class="btn btn-xs btn-copy" data-cp="${escAttr(l.shortLinkUrl)}" onclick="cpd(this)" style="font-size:.66rem;flex-shrink:0">🔗複製</button></div>`
+            :`<div class="lk-field"><span class="lk-lab">短連結</span><span style="font-size:.72rem;color:#f87171;font-weight:600">${l.status==='無連結'?'✕ 無連結':'待建立'}</span></div>`}
+        </div>`
       }).join('')
-
-      return`<div style="border:1px solid var(--border);border-top:none;${isLast?'border-radius:0 0 10px 10px':''}">
-        <div style="display:flex;align-items:center;gap:8px;padding:5px 14px;background:#0a0908;border-bottom:1px solid var(--border)">
-          <span style="font-size:.75rem;font-weight:700;color:${cc}">${platIcon} ${placement}</span>
-          <span style="font-size:.68rem;color:var(--text3)">${links.length} 條連結</span>
-        </div>
-        <div class="t-scroll"><table style="width:100%;border-collapse:collapse;font-size:.82rem">
-          <thead><tr style="background:#0d0b0a">
-            <th style="padding:5px 14px;color:var(--text3);font-size:.7rem;font-weight:600;width:200px">連結目標</th>
-            <th style="padding:5px 14px;color:var(--text3);font-size:.7rem;font-weight:600">原始連結</th>
-            <th style="padding:5px 14px;color:var(--text3);font-size:.7rem;font-weight:600">追蹤短連結（複製用）</th>
-            <th style="padding:5px 14px;color:var(--text3);font-size:.7rem;font-weight:600">操作</th>
-          </tr></thead>
-          <tbody>${rowsHtml}</tbody>
-        </table></div>
+      return`<div style="padding:10px 12px;border-top:1px solid var(--border)">
+        <div style="font-size:.72rem;font-weight:700;color:${cc};margin-bottom:8px">${platIcon} ${placement} <span style="color:var(--text3);font-weight:400">· ${links.length} 條</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px">${cardsHtml}</div>
       </div>`
     }).join('')
 
-    return`<div style="margin-bottom:18px">
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:${cc}18;border:1px solid ${cc}50;border-radius:10px 10px 0 0">
+    const linkCount=list.filter(l=>l.accountCode===code).length
+    return`<div class="lk-acc" style="margin-bottom:12px">
+      <div class="lk-acc-head" onclick="lkToggle(this)" style="border:1px solid ${cc}50;background:${cc}18">
+        <span class="lk-chev" style="color:${cc}">▸</span>
         <div style="font-size:.95rem;font-weight:700;color:${cc}">${acc.name}</div>
         <span style="font-size:.72rem;background:${cc}20;border:1px solid ${cc}40;border-radius:10px;padding:2px 9px;color:${cc}">${acc.cat}</span>
-        <span style="font-size:.7rem;color:var(--text3)">${list.filter(l=>l.accountCode===code).length} 條連結</span>
+        <span style="font-size:.7rem;color:var(--text3);margin-left:auto">${linkCount} 條連結</span>
       </div>
-      ${placementHtml}
+      <div class="lk-acc-body" style="display:none">${placementHtml}</div>
     </div>`
   }).join('')
 }
 
+function lkToggle(el){
+  const a=el.closest('.lk-acc'); if(!a) return;
+  a.classList.toggle('open');
+  const b=a.querySelector('.lk-acc-body');
+  if(b) b.style.display=a.classList.contains('open')?'block':'none';
+}
 function openAddLink(){
   document.getElementById('lk-id').value=''
   document.getElementById('lk-modal-title').textContent='新增短連結'
