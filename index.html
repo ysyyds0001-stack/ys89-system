@@ -203,6 +203,32 @@ tr:hover td{background:#0f0d0b}
 .lk-lab{font-size:.66rem;color:var(--text3);flex-shrink:0;width:42px}
 .lk-url{font-size:.74rem;color:var(--text3);font-family:monospace;word-break:break-all;flex:1;min-width:110px}
 
+/* ── 真實註冊對帳表單 ── */
+.rr-form{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:600px){.rr-form{grid-template-columns:repeat(2,1fr)!important}}
+
+/* ── 發文追蹤：手機統計橫式並列 + 記錄卡下拉展開 ── */
+.posts-mob{display:none}
+@media(max-width:600px){
+  #t-stats{grid-template-columns:repeat(4,1fr)!important;gap:8px}
+  #t-stats .stat{padding:10px 4px;text-align:center}
+  #t-stats .stat-num{font-size:1.1rem}
+  #t-stats .stat-label{font-size:.62rem}
+  .posts-desk{display:none}
+  .posts-mob{display:flex;flex-direction:column;gap:8px}
+}
+.po-card{background:#0d0b0a;border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.po-head{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;user-select:none}
+.po-head .po-chev{font-size:.74rem;color:var(--accent);transition:transform .15s;flex-shrink:0}
+.po-card.open .po-chev{transform:rotate(90deg)}
+.po-head .po-topic{flex:1;min-width:0;font-size:.84rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.po-body{display:none;border-top:1px solid var(--border);padding:10px 12px}
+.po-card.open .po-body{display:block}
+.po-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.po-metrics>div{background:var(--g2);border:1px solid var(--border);border-radius:7px;padding:7px 4px;text-align:center}
+.po-metrics .mv{font-size:.95rem;font-weight:700;color:var(--accent)}
+.po-metrics .ml{font-size:.62rem;color:var(--text3)}
+
 /* COVERAGE BAR */
 .cov-bar{height:6px;background:#161412;border-radius:3px;margin-top:5px;overflow:hidden}
 .cov-fill{height:100%;border-radius:3px;transition:.4s;background:var(--accent)}
@@ -363,6 +389,26 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     </div>
   </div>
 
+  <!-- 真實註冊對帳（手填 ys89.bet 後台）-->
+  <div class="card" style="border-left:3px solid var(--amber);margin-bottom:18px">
+    <div class="card-title" style="color:var(--amber)">🧾 真實註冊對帳</div>
+    <p class="tm" style="font-size:.75rem;margin-bottom:12px">GA4 只追到「點 CTA」，真實註冊/儲值在 ys89.bet 後台 → 這裡手填區間數字補完漏斗最後一段（會存進資料庫同步）</p>
+    <div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div class="rr-form">
+        <div class="fg"><label>區間起</label><input type="date" id="rr-from"></div>
+        <div class="fg"><label>區間迄</label><input type="date" id="rr-to"></div>
+        <div class="fg"><label>註冊人數</label><input type="number" id="rr-reg" placeholder="0" min="0"></div>
+        <div class="fg"><label>儲值人數</label><input type="number" id="rr-dep" placeholder="0" min="0"></div>
+        <div class="fg"><label>儲值金額</label><input type="number" id="rr-amt" placeholder="0" min="0"></div>
+        <div class="fg"><label>輸贏分（+平台贏 −平台輸）</label><input type="number" id="rr-pnl" placeholder="0"></div>
+      </div>
+      <div class="fg" style="margin-top:8px"><label>備註（選填，例：阿奇地推週、FB廣告檔期）</label><input type="text" id="rr-note" placeholder=""></div>
+      <button class="btn btn-primary" style="margin-top:10px" onclick="realRegSave()">💾 儲存這筆區間記錄</button>
+    </div>
+    <div id="rr-summary" style="margin-bottom:10px"></div>
+    <div class="t-scroll" id="rr-list"></div>
+  </div>
+
   <!-- 熱門頁面 -->
   <div class="card" style="margin-bottom:18px">
     <div class="card-title">熱門頁面</div>
@@ -509,6 +555,66 @@ function renderGA4(d){
       </div>
       <span style="font-size:.83rem;font-weight:700;color:var(--accent);width:45px;text-align:right">${fmt(p.v)}</span>
     </div>`).join('');
+
+  // 真實註冊對帳
+  const rrF=document.getElementById('rr-from');
+  if(rrF && !rrF.value){
+    const today=new Date(), wk=new Date(Date.now()-6*864e5);
+    rrF.value=wk.toISOString().slice(0,10);
+    document.getElementById('rr-to').value=today.toISOString().slice(0,10);
+  }
+  renderRealReg();
+}
+
+// ── 真實註冊對帳：手填 ys89.bet 後台數字，存 DB('real_reg') 同步 ──
+function realRegSave(){
+  const g=id=>document.getElementById(id);
+  const from=g('rr-from').value, to=g('rr-to').value;
+  if(!from||!to){ toast('請填區間起迄','err'); return; }
+  const rec={ id:DB.id(), from, to,
+    reg:+g('rr-reg').value||0, dep:+g('rr-dep').value||0,
+    amt:+g('rr-amt').value||0, pnl:+g('rr-pnl').value||0,
+    note:g('rr-note').value.trim(), createdAt:new Date().toISOString() };
+  const all=DB.get('real_reg'); all.push(rec); DB.set('real_reg',all);
+  ['rr-reg','rr-dep','rr-amt','rr-pnl','rr-note'].forEach(i=>g(i).value='');
+  toast('已儲存並同步');
+  renderRealReg();
+}
+function realRegDel(id){
+  if(!confirm('刪除這筆對帳記錄？')) return;
+  DB.set('real_reg', DB.get('real_reg').filter(r=>r.id!==id));
+  renderRealReg();
+}
+function renderRealReg(){
+  const list=DB.get('real_reg').slice().sort((a,b)=>(b.from||'').localeCompare(a.from||''));
+  const sumEl=document.getElementById('rr-summary'), listEl=document.getElementById('rr-list');
+  if(!sumEl||!listEl) return;
+  if(!list.length){ sumEl.innerHTML=''; listEl.innerHTML='<div style="font-size:.78rem;color:var(--text3);padding:6px 2px">尚無對帳記錄，填上面表單儲存第一筆。</div>'; return; }
+  const tReg=list.reduce((a,r)=>a+r.reg,0), tDep=list.reduce((a,r)=>a+r.dep,0);
+  const tAmt=list.reduce((a,r)=>a+r.amt,0), tPnl=list.reduce((a,r)=>a+r.pnl,0);
+  const depRate=tReg?(tDep/tReg*100):0;
+  sumEl.innerHTML=`<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;background:#0d0b0a;border:1px solid var(--border);border-radius:8px;padding:10px 14px">
+    <span>總註冊 <b style="color:var(--accent)">${tReg.toLocaleString()}</b></span>
+    <span>總儲值 <b style="color:var(--accent)">${tDep.toLocaleString()}</b> 人</span>
+    <span>註冊→儲值率 <b style="color:${depRate>=30?'#4ade80':'var(--accent)'}">${depRate.toFixed(1)}%</b></span>
+    <span>儲值金額 <b style="color:var(--accent)">${tAmt.toLocaleString()}</b></span>
+    <span>輸贏分 <b style="color:${tPnl>=0?'#4ade80':'#f87171'}">${tPnl>=0?'+':''}${tPnl.toLocaleString()}</b></span>
+  </div>`;
+  listEl.innerHTML=`<table>
+    <thead><tr><th>區間</th><th style="text-align:right">註冊</th><th style="text-align:right">儲值</th><th style="text-align:right">儲值率</th><th style="text-align:right">儲值金額</th><th style="text-align:right">輸贏分</th><th>備註</th><th></th></tr></thead>
+    <tbody>${list.map(r=>{
+      const rate=r.reg?(r.dep/r.reg*100):0;
+      return `<tr>
+        <td style="white-space:nowrap;font-size:.78rem">${r.from}<br>～${r.to}</td>
+        <td style="text-align:right;font-weight:700;color:var(--accent)">${r.reg.toLocaleString()}</td>
+        <td style="text-align:right">${r.dep.toLocaleString()}</td>
+        <td style="text-align:right;font-weight:700;color:${rate>=30?'#4ade80':'var(--text2)'}">${rate.toFixed(1)}%</td>
+        <td style="text-align:right">${r.amt.toLocaleString()}</td>
+        <td style="text-align:right;font-weight:700;color:${r.pnl>=0?'#4ade80':'#f87171'}">${r.pnl>=0?'+':''}${r.pnl.toLocaleString()}</td>
+        <td style="font-size:.74rem;color:var(--text3);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.note||''}">${r.note||'—'}</td>
+        <td><button class="btn btn-xs btn-danger" onclick="realRegDel('${r.id}')">✕</button></td>
+      </tr>`;}).join('')}</tbody>
+  </table>`;
 }
 
 // ── 關鍵發現：依 live 數據自動產生 4 張卡 ──
@@ -2400,7 +2506,7 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(sync) sync.textContent='已同步'
@@ -2653,7 +2759,7 @@ function renderPosts(){
   if(plf)posts=posts.filter(p=>p.platform===plf)
   const wrap=document.getElementById('posts-table')
   if(!posts.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無發文記錄</div>';return}
-  wrap.innerHTML=`<div style="overflow-x:auto"><table>
+  const deskHtml=`<div class="posts-desk" style="overflow-x:auto"><table>
     <thead><tr><th>日期</th><th>角色</th><th>平台</th><th>主題</th><th>引用文章</th><th>貼文連結</th><th>👀瀏覽</th><th>👁觸及</th><th>👍讚</th><th>💬留言</th><th>🔖儲存</th><th>🔄分享</th><th>操作</th></tr></thead>
     <tbody>${posts.map(p=>`<tr>
       <td style="white-space:nowrap">${p.date||'—'}</td>
@@ -2667,7 +2773,37 @@ function renderPosts(){
       <td class="flex" style="gap:5px"><button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新</button><button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button></td>
     </tr>`).join('')}</tbody>
   </table></div>`
+  const mobHtml=`<div class="posts-mob">${posts.map(p=>{
+    const plats=(p.platforms&&p.platforms.length?p.platforms:[p.platform]).filter(Boolean)
+    return `<div class="po-card">
+      <div class="po-head" onclick="poToggle(this)">
+        <span class="po-chev">▸</span>
+        <span style="font-size:.72rem;color:var(--text3);white-space:nowrap;flex-shrink:0">${(p.date||'').slice(5)}</span>
+        <span class="badge b-green" style="flex-shrink:0">${p.personaName||'—'}</span>
+        <span class="po-topic">${p.topic||p.articleTitle||'—'}</span>
+      </div>
+      <div class="po-body">
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">${plats.map(pl=>`<span class="badge b-blue">${pl}</span>`).join('')||'—'}</div>
+        ${p.articleTitle?`<div style="font-size:.74rem;color:var(--text3);margin-bottom:6px">📄 ${p.articleTitle}</div>`:''}
+        <div class="po-metrics">
+          <div><div class="mv">${p.views||0}</div><div class="ml">瀏覽</div></div>
+          <div><div class="mv">${p.reach||0}</div><div class="ml">觸及</div></div>
+          <div><div class="mv">${p.likes||0}</div><div class="ml">按讚</div></div>
+          <div><div class="mv">${p.comments||0}</div><div class="ml">留言</div></div>
+          <div><div class="mv">${p.saves||0}</div><div class="ml">儲存</div></div>
+          <div><div class="mv">${p.shares||0}</div><div class="ml">分享</div></div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${p.postUrl?`<a href="${escAttr(p.postUrl)}" target="_blank" class="btn btn-xs btn-copy">🔗 查看貼文</a>`:''}
+          <button class="btn btn-xs btn-outline" onclick="openSetPostUrl('${p.id}')">${p.postUrl?'✏ 編輯連結':'＋連結'}</button>
+          <button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新數據</button>
+          <button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button>
+        </div>
+      </div>
+    </div>`}).join('')}</div>`
+  wrap.innerHTML=deskHtml+mobHtml
 }
+function poToggle(el){ el.closest('.po-card')?.classList.toggle('open') }
 
 function openAddPostModal(){
   renderTracker()
