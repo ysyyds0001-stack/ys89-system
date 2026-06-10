@@ -1343,8 +1343,12 @@ fetch('https://ys89-utm.pages.dev/api/personas',{cache:'no-store'})
           <option value="C">C 組 — 平台直球推廣組</option>
         </select>
       </div>
-      <div class="fg"><label>帳號名稱</label><input id="cm-name" placeholder="例：Miya"></div>
+      <div class="fg"><label>帳號名稱</label><input id="cm-name" placeholder="例：Miya" oninput="cmAutoCode()"></div>
       <div class="fg"><label>粉絲數</label><input type="number" id="cm-followers" placeholder="0"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>UTM 代號 <span style="color:var(--text3);font-size:.7rem">utm_source · 打名稱自動帶</span></label><input id="cm-code" placeholder="自動產生，可改" oninput="cmCodeManual=true"><div id="cm-code-note" style="font-size:.68rem;color:var(--text3);margin-top:3px"></div></div>
+      <div class="fg"><label>代理碼 proxy <span style="color:var(--text3);font-size:.7rem">選填，代理註冊連結用</span></label><input id="cm-proxy" placeholder="如：cysc9m"></div>
     </div>
     <div class="fg"><label>角色定位</label><input id="cm-role" placeholder="例：話題發起 / 提問型主發"></div>
     <div class="fg"><label>回覆方向</label><input id="cm-direction" placeholder="例：世足話題、品牌曝光"></div>
@@ -2810,15 +2814,36 @@ function openAddCommunityModal(){
   document.getElementById('cm-id').value=''
   document.getElementById('cm-modal-title').textContent='新增水軍號'
   document.getElementById('cm-save-btn').textContent='儲存帳號'
-  ;['cm-name','cm-role','cm-direction','cm-persona','cm-prompt','cm-week-tasks'].forEach(i=>document.getElementById(i).value='')
+  ;['cm-name','cm-role','cm-direction','cm-persona','cm-prompt','cm-week-tasks','cm-code','cm-proxy'].forEach(i=>document.getElementById(i).value='')
+  cmCodeManual=false; const cn=document.getElementById('cm-code-note'); if(cn) cn.textContent=''
   document.getElementById('cm-followers').value='0'
   document.getElementById('cm-group').value='A'
   document.getElementById('cm-status').value='人設建立中'
   openModal('modal-community')
 }
 
+// ── 水軍人設 UTM 代號：中文名自動拼音 → utm_source ──
+const _PY={"阿":"a","奇":"qi","財":"cai","神":"shen","大":"da","叔":"shu","蟹":"xie","凱":"kai","世":"shi","足":"zu","觀":"guan","測":"ce","站":"zhan","象":"xiang","倪":"ni","愛":"ai","麗":"li","絲":"si","米":"mi","恩":"en","林":"lin","家":"jia","益":"yi","體":"ti","育":"yu","代":"dai","理":"li","王":"wang","李":"li","張":"zhang","陳":"chen","黃":"huang","劉":"liu","吳":"wu","楊":"yang","許":"xu","鄭":"zheng","謝":"xie","小":"xiao","老":"lao","哥":"ge","姐":"jie","妹":"mei","球":"qiu","美":"mei","天":"tian","金":"jin","星":"xing","風":"feng","雲":"yun","山":"shan","海":"hai","紅":"hong","黑":"hei","白":"bai","發":"fa","福":"fu","旺":"wang","興":"xing","達":"da","利":"li","祥":"xiang","運":"yun","賽":"sai","直":"zhi","播":"bo","賠":"pei","彩":"cai","票":"piao","樂":"le"};
+function utmCode(name){
+  let out='';
+  for(const ch of (name||'')){ out += (_PY[ch] || (/[a-zA-Z0-9]/.test(ch)?ch:'')); }
+  return out.toLowerCase().replace(/[^a-z0-9_]/g,'');
+}
+function commCode(a){ return (a&&a.code&&a.code.trim()) ? a.code.trim().toLowerCase() : utmCode(a&&a.name); }
+let cmCodeManual=false;
+function cmAutoCode(){
+  if(cmCodeManual) return;
+  const c=utmCode(document.getElementById('cm-name').value.trim());
+  document.getElementById('cm-code').value=c;
+  const n=document.getElementById('cm-code-note'); if(n) n.textContent=c?('自動：'+c+'（可改）'):'';
+}
+
 function openEditCommunity(id){
   const a=DB.get('community').find(x=>x.id===id); if(!a)return
+  cmCodeManual=true;
+  document.getElementById('cm-code').value=commCode(a)
+  document.getElementById('cm-proxy').value=a.proxy||''
+  const cn=document.getElementById('cm-code-note'); if(cn) cn.textContent=a.code?'':'（自動產生，可改）'
   document.getElementById('cm-id').value=id
   document.getElementById('cm-modal-title').textContent='編輯水軍號'
   document.getElementById('cm-save-btn').textContent='更新帳號'
@@ -2841,6 +2866,8 @@ function saveCommunity(){
   const list=DB.get('community')
   const obj={
     name, group:document.getElementById('cm-group').value,
+    code:document.getElementById('cm-code').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'')||utmCode(name),
+    proxy:document.getElementById('cm-proxy').value.trim(),
     role:document.getElementById('cm-role').value,
     followers:+document.getElementById('cm-followers').value||0,
     direction:document.getElementById('cm-direction').value,
@@ -3178,7 +3205,7 @@ function renderCommunity(){
           return`<div class="ccard" style="border-color:${sc}25">
             <div class="fb" style="margin-bottom:6px">
               <div>
-                <div style="font-size:.9rem;font-weight:700;color:var(--text)">${a.name}</div>
+                <div style="font-size:.9rem;font-weight:700;color:var(--text)">${a.name} <span style="font-size:.66rem;font-weight:600;color:#4ade80;background:#0a1208;border:1px solid #1a3a1a;border-radius:5px;padding:1px 6px;font-family:monospace" title="utm_source">${commCode(a)}</span></div>
                 <div style="font-size:.7rem;color:${sc};margin-top:2px;font-weight:600">${a.role||''}</div>
                 <div style="font-size:.68rem;color:var(--text3)">${a.direction||''}</div>
               </div>
