@@ -417,15 +417,25 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div id="pages"></div>
   </div>
 
-  <!-- Meta 廣告區 -->
-  <div class="card" style="border-left:3px solid var(--accent);margin-bottom:18px">
+  <!-- Meta 廣告區（手填 Ads Manager 真實值，存 DB 同步）-->
+  <div class="card" style="border-left:3px solid var(--amber);margin-bottom:18px">
     <div class="card-title" style="color:var(--amber)">📣 Meta 廣告成效</div>
-    <p class="tm" style="font-size:.75rem;margin-bottom:12px">Facebook / Instagram 廣告投放成效（示範數據 · 待填 Ads Manager 真實值）</p>
-    <div class="g3" id="adKpis"></div>
-    <div class="pbox" style="margin-top:12px;font-size:.75rem">
-      🔗 對應 GA4：facebook / cpc 帶進 53 工作階段、2 次 CTA（轉換率 9.1%）。<br>
-      ⚠️ ROAS 需「轉換金額」追蹤；目前註冊在站外 ys89.bet 未回傳金額。
+    <p class="tm" style="font-size:.75rem;margin-bottom:12px">Facebook / Instagram 廣告數據 GA4 抓不到 → 從 Ads Manager 抄真實值手填（會存進資料庫同步），每次 CTA 成本用 GA4 真實 CTA 數自動算</p>
+    <div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div class="rr-form">
+        <div class="fg"><label>區間起</label><input type="date" id="ad-from"></div>
+        <div class="fg"><label>區間迄</label><input type="date" id="ad-to"></div>
+        <div class="fg"><label>花費 NT$</label><input type="number" id="ad-spend" placeholder="0" min="0"></div>
+        <div class="fg"><label>曝光</label><input type="number" id="ad-impr" placeholder="0" min="0"></div>
+        <div class="fg"><label>觸及人數</label><input type="number" id="ad-reach" placeholder="0" min="0"></div>
+        <div class="fg"><label>連結點擊</label><input type="number" id="ad-clicks" placeholder="0" min="0"></div>
+      </div>
+      <div class="fg" style="margin-top:8px"><label>備註（選填，例：世足開賽檔期、IG限動廣告）</label><input type="text" id="ad-note" placeholder=""></div>
+      <button class="btn btn-primary" style="margin-top:10px" onclick="adSave()">💾 儲存這筆廣告數據</button>
     </div>
+    <div class="g3" id="adKpis"></div>
+    <div class="pbox" id="adGaLink" style="margin-top:12px;font-size:.75rem"></div>
+    <div id="ad-list" class="t-scroll" style="margin-top:12px"></div>
   </div>
 
   <div style="text-align:center;color:var(--text3);font-size:.75rem;padding:12px;border-top:1px solid var(--border)">
@@ -565,6 +575,15 @@ function renderGA4(d){
     document.getElementById('rr-to').value=today.toISOString().slice(0,10);
   }
   renderRealReg();
+
+  // Meta 廣告（手填）
+  const adF=document.getElementById('ad-from');
+  if(adF && !adF.value){
+    const today2=new Date(), wk2=new Date(Date.now()-6*864e5);
+    adF.value=wk2.toISOString().slice(0,10);
+    document.getElementById('ad-to').value=today2.toISOString().slice(0,10);
+  }
+  renderMetaAds();
 }
 
 // ── 真實註冊對帳：手填 ys89.bet 後台數字，存 DB('real_reg') 同步 ──
@@ -665,13 +684,66 @@ function renderInsights(sources, accts, k){
   el.innerHTML=cards.join('');
 }
 
-// Meta 廣告 KPI（GA4 抓不到，仍為手填示範值；之後可改接 Ads Manager）
-const adKpis = [{l:'花費', v:'NT$ 8,500'},{l:'曝光', v:'142,000'},{l:'觸及人數', v:'38,500'},{l:'連結點擊', v:'1,240'},{l:'CTR', v:'0.87%'},{l:'每次 CTA 成本', v:'NT$ 4,250'}];
-document.getElementById('adKpis').innerHTML = adKpis.map(k=>`
-  <div style="background:var(--g2);border:1px solid var(--border);border-radius:8px;padding:12px">
-    <div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-bottom:4px">${k.l}</div>
-    <div style="font-size:1.3rem;font-weight:800;color:var(--accent)">${k.v}</div>
-  </div>`).join('');
+// ── Meta 廣告：手填 Ads Manager 真實值，存 DB('meta_ads')；每次 CTA 成本用 GA4 真實 facebook CTA 自動算 ──
+function adSave(){
+  const g=id=>document.getElementById(id);
+  const from=g('ad-from').value, to=g('ad-to').value;
+  if(!from||!to){ toast('請填區間起迄','err'); return; }
+  const rec={ id:DB.id(), from, to,
+    spend:+g('ad-spend').value||0, impr:+g('ad-impr').value||0,
+    reach:+g('ad-reach').value||0, clicks:+g('ad-clicks').value||0,
+    note:g('ad-note').value.trim(), createdAt:new Date().toISOString() };
+  const all=DB.get('meta_ads'); all.push(rec); DB.set('meta_ads',all);
+  ['ad-spend','ad-impr','ad-reach','ad-clicks','ad-note'].forEach(i=>g(i).value='');
+  toast('已儲存並同步'); renderMetaAds();
+}
+function adDel(id){ if(!confirm('刪除這筆廣告數據？'))return; DB.set('meta_ads',DB.get('meta_ads').filter(r=>r.id!==id)); renderMetaAds(); }
+function renderMetaAds(){
+  const list=DB.get('meta_ads');
+  const kpiEl=document.getElementById('adKpis'), linkEl=document.getElementById('adGaLink'), listEl=document.getElementById('ad-list');
+  if(!kpiEl) return;
+  // GA4 facebook / cpc 真實成效
+  const fb=(_ga4Data?.accounts||[]).find(a=>/facebook/i.test(a.name)) || {s:0,cta:0};
+  const fbSrc=(_ga4Data?.sources||[]).filter(s=>/facebook/i.test(s.name)&&/cpc|paid/i.test(s.medium||'')).reduce((a,s)=>a+s.sessions,0);
+  const fbSess=fbSrc||fb.s||0, fbCta=fb.cta||0;
+  const fbRate=fbSess?(fbCta/fbSess*100):0;
+  if(!list.length){
+    kpiEl.innerHTML='<div style="grid-column:1/-1;padding:18px;text-align:center;color:var(--text3);font-size:.82rem">尚無廣告數據 — 從 Ads Manager 抄真實值填上面表單儲存</div>';
+    if(linkEl) linkEl.innerHTML=`🔗 GA4 對應：facebook / cpc 帶進 <b>${fbSess}</b> 工作階段、<b>${fbCta}</b> 次 CTA（轉換率 ${fbRate.toFixed(1)}%）。`;
+    if(listEl) listEl.innerHTML='';
+    return;
+  }
+  // 加總（全部區間）
+  const t={spend:0,impr:0,reach:0,clicks:0};
+  list.forEach(r=>{t.spend+=r.spend;t.impr+=r.impr;t.reach+=r.reach;t.clicks+=r.clicks;});
+  const ctr=t.impr?(t.clicks/t.impr*100):0;
+  const costPerCta=fbCta?Math.round(t.spend/fbCta):0;
+  const fm=n=>n.toLocaleString();
+  const kpis=[
+    {l:'花費', v:'NT$ '+fm(t.spend)},{l:'曝光', v:fm(t.impr)},{l:'觸及人數', v:fm(t.reach)},
+    {l:'連結點擊', v:fm(t.clicks)},{l:'CTR', v:ctr.toFixed(2)+'%'},
+    {l:'每次 CTA 成本', v:fbCta?('NT$ '+fm(costPerCta)):'—'},
+  ];
+  kpiEl.innerHTML=kpis.map(k=>`
+    <div style="background:var(--g2);border:1px solid var(--border);border-radius:8px;padding:12px">
+      <div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-bottom:4px">${k.l}</div>
+      <div style="font-size:1.3rem;font-weight:800;color:var(--accent)">${k.v}</div>
+    </div>`).join('');
+  if(linkEl) linkEl.innerHTML=`🔗 GA4 對應：facebook / cpc 帶進 <b>${fbSess}</b> 工作階段、<b>${fbCta}</b> 次 CTA（轉換率 ${fbRate.toFixed(1)}%）。<br>💰 每次 CTA 成本 = 花費 ${fm(t.spend)} ÷ GA4 CTA ${fbCta} = <b>NT$ ${fbCta?fm(costPerCta):'—'}</b>（ROAS 需站外註冊金額，見「真實註冊對帳」）。`;
+  if(listEl) listEl.innerHTML=`<table>
+    <thead><tr><th>區間</th><th style="text-align:right">花費</th><th style="text-align:right">曝光</th><th style="text-align:right">點擊</th><th style="text-align:right">CTR</th><th>備註</th><th></th></tr></thead>
+    <tbody>${list.slice().sort((a,b)=>(b.from||'').localeCompare(a.from||'')).map(r=>{
+      const rc=r.impr?(r.clicks/r.impr*100):0;
+      return `<tr>
+        <td style="white-space:nowrap;font-size:.78rem">${r.from}<br>～${r.to}</td>
+        <td style="text-align:right;font-weight:700;color:var(--accent)">${fm(r.spend)}</td>
+        <td style="text-align:right">${fm(r.impr)}</td>
+        <td style="text-align:right">${fm(r.clicks)}</td>
+        <td style="text-align:right">${rc.toFixed(2)}%</td>
+        <td style="font-size:.74rem;color:var(--text3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.note||''}">${r.note||'—'}</td>
+        <td><button class="btn btn-xs btn-danger" onclick="adDel('${r.id}')">✕</button></td>
+      </tr>`;}).join('')}</tbody></table>`;
+}
 
 // 先讀 UTM 產生器的人設清單（CORS 已開）→ 讓 GA4 用中文名代稱 utm 碼；再載入成效數據
 let _ga4Data=null;
@@ -2507,7 +2579,7 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(sync) sync.textContent='已同步'
