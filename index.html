@@ -206,7 +206,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div>
       <h2 style="font-size:1.2rem;font-weight:700">📊 GA4 成效報表</h2>
       <p class="tm" style="margin-top:3px">世足前鋒站群 · 社群水軍 / 地推 / 廣告 流量與轉換分析</p>
-      <p class="tm" style="font-size:.75rem;margin-top:6px">資料區間：2026/05/11 – 06/07（過去 28 天） · 測量 ID：G-THDJFGXCZ7</p>
+      <p class="tm" style="font-size:.75rem;margin-top:6px" id="ga4Range">資料區間：過去 28 天 · 測量 ID：G-THDJFGXCZ7</p>
     </div>
   </div>
 
@@ -214,47 +214,30 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="g5" style="margin-bottom:18px">
     <div class="stat">
       <div class="stat-label">活躍使用者</div>
-      <div class="stat-num">1,475</div>
+      <div class="stat-num" id="kpiUsers">—</div>
     </div>
     <div class="stat">
       <div class="stat-label">工作階段</div>
-      <div class="stat-num">1,764</div>
+      <div class="stat-num" id="kpiSessions">—</div>
     </div>
     <div class="stat">
       <div class="stat-label">事件計數</div>
-      <div class="stat-num">11,000</div>
+      <div class="stat-num" id="kpiEvents">—</div>
     </div>
     <div class="stat">
       <div class="stat-label">CTA 去註冊</div>
-      <div class="stat-num">8</div>
+      <div class="stat-num" id="kpiCta">—</div>
     </div>
     <div class="stat">
       <div class="stat-label">轉換率</div>
-      <div class="stat-num" style="font-size:1.4rem">0.46%</div>
+      <div class="stat-num" id="kpiConv" style="font-size:1.4rem">—</div>
     </div>
   </div>
 
   <!-- 關鍵發現 -->
   <div class="card" style="background:linear-gradient(135deg, #150e0b, #0f0d0b);border:1px solid var(--amber);margin-bottom:18px">
     <div class="card-title" style="color:var(--accent2);margin-bottom:14px">🔍 關鍵發現</div>
-    <div class="g2">
-      <div style="padding:12px;background:var(--g2);border:1px solid var(--border);border-radius:8px">
-        <div style="font-weight:600;font-size:.9rem;margin-bottom:6px;color:var(--accent)">🔥 水軍量大、轉換歸零</div>
-        <div style="font-size:.8rem;color:var(--text2);line-height:1.5">akki 帳號帶進 <b style="color:var(--accent)">1,089</b> 工作階段，但 CTA 去註冊 <b>= 0</b>。量大 ≠ 有效。</div>
-      </div>
-      <div style="padding:12px;background:var(--g2);border:1px solid var(--border);border-radius:8px">
-        <div style="font-weight:600;font-size:.9rem;margin-bottom:6px;color:var(--accent)">🎯 廣告小量但轉換最高</div>
-        <div style="font-size:.8rem;color:var(--text2);line-height:1.5">facebook / cpc 僅 22 進站，卻有 2 次 CTA = <b style="color:var(--accent)">9.1%</b> 轉換率，遠勝水軍的 0%。</div>
-      </div>
-      <div style="padding:12px;background:var(--g2);border:1px solid var(--border);border-radius:8px">
-        <div style="font-weight:600;font-size:.9rem;margin-bottom:6px;color:var(--accent)">🏷️ 223 筆水軍流量沒標記</div>
-        <div style="font-size:.8rem;color:var(--text2);line-height:1.5">l.threads.com（223）是 Threads 貼文未帶 UTM，掉進 referral 分不出帳號。</div>
-      </div>
-      <div style="padding:12px;background:var(--g2);border:1px solid var(--border);border-radius:8px">
-        <div style="font-weight:600;font-size:.9rem;margin-bottom:6px;color:var(--accent)">📊 社群水軍佔總流量 77%</div>
-        <div style="font-size:.8rem;color:var(--text2);line-height:1.5">水軍（akki+god+l.threads）約 <b style="color:var(--accent)">1,360</b> 工作階段，是流量主力。</div>
-      </div>
-    </div>
+    <div class="g2" id="ga4Insights"></div>
   </div>
 
   <!-- 流量來源分析 -->
@@ -310,90 +293,165 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 
   <div style="text-align:center;color:var(--text3);font-size:.75rem;padding:12px;border-top:1px solid var(--border)">
-    📊 GA4 成效報表 · 資料區間 2026/05/11–06/07 · 資料源：Google Analytics 4<br>
-    <span style="margin-top:6px;display:block">⚙️ 自動更新設定中...</span>
+    📊 GA4 成效報表 · 資料源：Google Analytics 4（每日自動更新）<br>
+    <span style="margin-top:6px;display:block" id="ga4Updated">⚙️ 載入中...</span>
   </div>
 </div>
 
 <script id="ga4-script">
-// ── 流量來源數據 ──
-const sources = [
-  {name:'akki',        medium:'th_post',  sessions:1089, cls:'army', tag:'社群水軍'},
-  {name:'(direct)',    medium:'none',     sessions:408,  cls:'direct',tag:'直接/未知'},
-  {name:'l.threads.com',medium:'referral',sessions:223,  cls:'army', tag:'水軍未標記'},
-  {name:'ditui',       medium:'offline',  sessions:56,   cls:'offline',tag:'地推'},
-  {name:'facebook',    medium:'cpc',      sessions:53,   cls:'paid', tag:'廣告'},
-  {name:'god',         medium:'th_bio',   sessions:48,   cls:'army', tag:'社群水軍'},
-  {name:'line',        medium:'referral', sessions:36,   cls:'line', tag:'LINE'},
-];
-const colorByCls = {army:'#C44A2A', paid:'#C44A2A', offline:'#8B3214', direct:'#8A7D74', line:'#D4542A'};
-const maxS = Math.max(...sources.map(s=>s.sessions));
+// ── GA4 成效：讀取 ga4-data.json（由 GitHub Actions 每日自動更新）──
+// 數據不再寫死，改吃同 repo 的 ga4-data.json，與線上自動排程同步。
+const colorByCls = {army:'#C44A2A', paid:'#C44A2A', offline:'#8B3214', direct:'#8A7D74', line:'#D4542A', organic:'#8A7D74', other:'#8A7D74'};
+const fmt = n => (n==null?0:n).toLocaleString();
 
-// 流量來源長條
-document.getElementById('srcBars').innerHTML = sources.map(s=>`
-  <div style="display:grid;grid-template-columns:120px 1fr 50px;align-items:center;gap:10px">
-    <span style="font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap">${s.name}</span>
-    <div style="height:8px;background:var(--g3);border-radius:4px;overflow:hidden">
-      <div style="height:100%;width:${(s.sessions/maxS*100).toFixed(1)}%;background:${colorByCls[s.cls]};border-radius:4px"></div>
-    </div>
-    <span style="font-size:.85rem;font-weight:700;color:var(--accent);text-align:right">${s.sessions}</span>
-  </div>`).join('');
+function renderGA4(d){
+  const sources = d.sources || [];
+  const accts   = d.accounts || [];
+  const pages   = d.pages || [];
+  const k       = d.kpis || {};
 
-// 圓餅圖 by 類別
-const cats = {};
-sources.forEach(s=>{ const k = s.cls==='army'?'社群水軍':s.cls==='paid'?'廣告':s.cls==='offline'?'地推':s.cls==='line'?'LINE':'直接/未知';
-  cats[k]=(cats[k]||0)+s.sessions; });
-const catColor = {'社群水軍':'#C44A2A','直接/未知':'#8A7D74','地推':'#8B3214','廣告':'#D4542A','LINE':'#D4542A'};
-const total = Object.values(cats).reduce((a,b)=>a+b,0);
-let off=0; let circles='';
-Object.entries(cats).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{
-  const pct=v/total*100;
-  circles+=`<circle cx="21" cy="21" r="15.915" fill="none" stroke="${catColor[k]}" stroke-width="6" stroke-dasharray="${pct.toFixed(2)} ${(100-pct).toFixed(2)}" stroke-dashoffset="${(25-off).toFixed(2)}"></circle>`;
-  off+=pct;
-});
-document.getElementById('donut').innerHTML = circles + `<text x="21" y="20" text-anchor="middle" font-size="5" font-weight="800" fill="#D4542A">${total}</text><text x="21" y="26" text-anchor="middle" font-size="2" fill="#8A7D74">工作</text>`;
-document.getElementById('donutLegend').innerHTML = Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
-  <div style="display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:3px;background:${catColor[k]};flex-shrink:0"></span><span>${k}</span><b style="margin-left:auto;color:var(--accent)">${(v/total*100).toFixed(0)}%</b></div>`).join('');
+  // KPI
+  document.getElementById('kpiUsers').textContent    = fmt(k.activeUsers);
+  document.getElementById('kpiSessions').textContent = fmt(k.sessions);
+  document.getElementById('kpiEvents').textContent   = fmt(k.eventCount);
+  document.getElementById('kpiCta').textContent      = fmt(k.cta);
+  document.getElementById('kpiConv').textContent     = (k.conversionRate!=null?k.conversionRate:0) + '%';
 
-// 漏斗
-document.getElementById('funnel').innerHTML = [
-  {name:'① 進站',val:1747,pct:100},{name:'② 瀏覽頁面',val:1747,pct:100},{name:'③ 點 CTA 去註冊',val:8,pct:0.46}
-].map(f=>`
-  <div style="position:relative;background:var(--g3);border-radius:8px;padding:10px 14px;overflow:hidden">
-    <div style="position:absolute;left:0;top:0;bottom:0;width:${f.pct}%;background:var(--accent);opacity:.1"></div>
-    <div style="position:relative;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-weight:700;font-size:.9rem;color:var(--text)">${f.name}</span>
-      <span style="font-weight:800;color:var(--accent)">${f.val.toLocaleString()}</span>
-    </div>
-  </div>`).join('<div style="text-align:center;font-size:.7rem;color:var(--text3);padding:2px">▼</div>');
+  // 最後更新時間
+  if(d.lastUpdated){
+    const t = new Date(d.lastUpdated);
+    document.getElementById('ga4Updated').textContent = '✓ 最後更新：' + t.toLocaleString('zh-TW');
+    document.getElementById('ga4Range').textContent =
+      '資料區間：過去 28 天（至 ' + t.toLocaleDateString('zh-TW') + '） · 測量 ID：G-THDJFGXCZ7';
+  }
 
-// 帳號表
-const accts = [{name:'akki', s:1071, cta:0},{name:'(direct)', s:283, cta:2},{name:'l.threads.com', s:218, cta:0},{name:'god', s:46, cta:0},{name:'facebook', s:22, cta:2}];
-document.getElementById('acctTable').innerHTML = accts.map(a=>{
-  const conv = a.s? (a.cta/a.s*100):0;
-  const cc = a.cta>0?'b-green':'b-red';
-  return `<tr><td><b>${a.name}</b></td><td style="text-align:right">${a.s}</td><td style="text-align:right">${a.cta}</td><td style="text-align:right"><span class="${cc}">${conv.toFixed(1)}%</span></td></tr>`;
-}).join('');
+  // 關鍵發現（由 live 數據動態產生，不再寫死）
+  renderInsights(sources, accts, k);
 
-// 熱門頁面
-const pages = [{t:'2026世界盃直播｜104場完整賽程', v:1323},{t:'2026世界盃賽程・分組', v:167},{t:'2026世界盃觀賽入口', v:167},{t:'2026世界盃分組分析', v:162},{t:'2026世足賠率即時', v:149},{t:'2026世界盃免費直播', v:144},{t:'【世足直播時間表】', v:106}];
-const maxP = Math.max(...pages.map(p=>p.v));
-document.getElementById('pages').innerHTML = pages.map(p=>`
-  <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
-    <div style="flex:1;font-size:.83rem;color:var(--text2)">${p.t}</div>
-    <div style="width:80px;height:6px;background:var(--g3);border-radius:3px;overflow:hidden;flex-shrink:0">
-      <div style="height:100%;width:${(p.v/maxP*100).toFixed(0)}%;background:var(--accent);border-radius:3px"></div>
-    </div>
-    <span style="font-size:.83rem;font-weight:700;color:var(--accent);width:45px;text-align:right">${p.v}</span>
-  </div>`).join('');
+  // 流量來源長條（前 12 名避免過長）
+  const topSrc = sources.slice(0, 12);
+  const maxS = Math.max(1, ...topSrc.map(s=>s.sessions));
+  document.getElementById('srcBars').innerHTML = topSrc.map(s=>`
+    <div style="display:grid;grid-template-columns:130px 1fr 50px;align-items:center;gap:10px">
+      <span style="font-size:.82rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${s.name}">${s.name}</span>
+      <div style="height:8px;background:var(--g3);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${(s.sessions/maxS*100).toFixed(1)}%;background:${colorByCls[s.cls]||'#8A7D74'};border-radius:4px"></div>
+      </div>
+      <span style="font-size:.85rem;font-weight:700;color:var(--accent);text-align:right">${fmt(s.sessions)}</span>
+    </div>`).join('');
 
-// Meta 廣告 KPI
+  // 圓餅圖 by 類別
+  const cats = {};
+  sources.forEach(s=>{ const key = s.cls==='army'?'社群水軍':s.cls==='paid'?'廣告':s.cls==='offline'?'地推':s.cls==='line'?'LINE':s.cls==='organic'?'自然搜尋':'直接/未知';
+    cats[key]=(cats[key]||0)+s.sessions; });
+  const catColor = {'社群水軍':'#C44A2A','直接/未知':'#8A7D74','地推':'#8B3214','廣告':'#D4542A','LINE':'#D4542A','自然搜尋':'#6B5D54'};
+  const total = Object.values(cats).reduce((a,b)=>a+b,0) || 1;
+  let off=0; let circles='';
+  Object.entries(cats).sort((a,b)=>b[1]-a[1]).forEach(([key,v])=>{
+    const pct=v/total*100;
+    circles+=`<circle cx="21" cy="21" r="15.915" fill="none" stroke="${catColor[key]||'#8A7D74'}" stroke-width="6" stroke-dasharray="${pct.toFixed(2)} ${(100-pct).toFixed(2)}" stroke-dashoffset="${(25-off).toFixed(2)}"></circle>`;
+    off+=pct;
+  });
+  document.getElementById('donut').innerHTML = circles + `<text x="21" y="20" text-anchor="middle" font-size="5" font-weight="800" fill="#D4542A">${fmt(total)}</text><text x="21" y="26" text-anchor="middle" font-size="2" fill="#8A7D74">工作</text>`;
+  document.getElementById('donutLegend').innerHTML = Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([key,v])=>`
+    <div style="display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:3px;background:${catColor[key]||'#8A7D74'};flex-shrink:0"></span><span>${key}</span><b style="margin-left:auto;color:var(--accent)">${(v/total*100).toFixed(0)}%</b></div>`).join('');
+
+  // 漏斗（進站＝工作階段、CTA＝關鍵事件）
+  const sess = k.sessions || 0, cta = k.cta || 0;
+  const ctaPct = sess ? (cta/sess*100) : 0;
+  document.getElementById('funnel').innerHTML = [
+    {name:'① 進站',val:sess,pct:100},{name:'② 瀏覽頁面',val:sess,pct:100},{name:'③ 點 CTA 去註冊',val:cta,pct:Math.max(ctaPct,0.3)}
+  ].map(f=>`
+    <div style="position:relative;background:var(--g3);border-radius:8px;padding:10px 14px;overflow:hidden">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:${f.pct}%;background:var(--accent);opacity:.1"></div>
+      <div style="position:relative;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:700;font-size:.9rem;color:var(--text)">${f.name}</span>
+        <span style="font-weight:800;color:var(--accent)">${fmt(f.val)}</span>
+      </div>
+    </div>`).join('<div style="text-align:center;font-size:.7rem;color:var(--text3);padding:2px">▼</div>');
+
+  // 帳號表（前 8 名）
+  document.getElementById('acctTable').innerHTML = accts.slice(0,8).map(a=>{
+    const conv = a.s? (a.cta/a.s*100):0;
+    const cc = a.cta>0?'b-green':'b-red';
+    return `<tr><td><b>${a.name}</b></td><td style="text-align:right">${fmt(a.s)}</td><td style="text-align:right">${a.cta}</td><td style="text-align:right"><span class="${cc}">${conv.toFixed(1)}%</span></td></tr>`;
+  }).join('');
+
+  // 熱門頁面
+  const maxP = Math.max(1, ...pages.map(p=>p.v));
+  document.getElementById('pages').innerHTML = pages.map(p=>`
+    <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <div style="flex:1;font-size:.83rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.t}</div>
+      <div style="width:80px;height:6px;background:var(--g3);border-radius:3px;overflow:hidden;flex-shrink:0">
+        <div style="height:100%;width:${(p.v/maxP*100).toFixed(0)}%;background:var(--accent);border-radius:3px"></div>
+      </div>
+      <span style="font-size:.83rem;font-weight:700;color:var(--accent);width:45px;text-align:right">${fmt(p.v)}</span>
+    </div>`).join('');
+}
+
+// ── 關鍵發現：依 live 數據自動產生 4 張卡 ──
+function insightCard(title, html){
+  return `<div style="padding:12px;background:var(--g2);border:1px solid var(--border);border-radius:8px">
+    <div style="font-weight:600;font-size:.9rem;margin-bottom:6px;color:var(--accent)">${title}</div>
+    <div style="font-size:.8rem;color:var(--text2);line-height:1.5">${html}</div></div>`;
+}
+function renderInsights(sources, accts, k){
+  const el=document.getElementById('ga4Insights'); if(!el) return;
+  const f=n=>(n==null?0:n).toLocaleString();
+  const totalSess=k.sessions||sources.reduce((a,s)=>a+s.sessions,0)||1;
+  const cards=[];
+
+  // ① 最大來源
+  const top=sources[0];
+  if(top){
+    const a=accts.find(x=>x.name===top.name);
+    const ctaTxt=a?`，CTA 去註冊 <b>= ${a.cta}</b>${a.cta?'':'。量大 ≠ 有效'}`:'';
+    cards.push(insightCard('🔥 最大流量來源',
+      `<b style="color:var(--accent)">${top.name}</b> 帶進 <b style="color:var(--accent)">${f(top.sessions)}</b> 工作階段（最大來源）${ctaTxt}。`));
+  }
+
+  // ② 轉換：找最佳轉換來源；若全 0 則點出 CTA 追蹤缺口
+  const conv=accts.filter(a=>a.s>0).map(a=>({...a,r:a.cta/a.s*100})).sort((x,y)=>y.r-x.r);
+  if(conv.length && conv[0].cta>0){
+    const b=conv[0];
+    cards.push(insightCard('🎯 轉換最高來源',
+      `<b style="color:var(--accent)">${b.name}</b> ${f(b.s)} 進站、${b.cta} 次 CTA = <b style="color:var(--accent)">${b.r.toFixed(1)}%</b>，量小但有效。`));
+  }else{
+    cards.push(insightCard('⚠️ CTA 全站為 0',
+      `目前所有來源 CTA 去註冊 <b>= 0</b>。多半是 GA4 尚未把註冊/LINE 點擊事件標記為「關鍵事件」（keyEvents 不計），需到 GA4 後台確認。`));
+  }
+
+  // ③ referral 未標記水軍
+  const ref=sources.find(s=>s.cls==='army' && /threads|referral/i.test(s.medium||'') ) || sources.find(s=>s.name.includes('threads'));
+  if(ref){
+    cards.push(insightCard('🏷️ 水軍流量未標記 UTM',
+      `<b style="color:var(--accent)">${ref.name}</b>（${f(ref.sessions)}）未帶 utm_source，掉進 referral 分不出帳號，建議補標記。`));
+  }
+
+  // ④ 社群水軍佔比
+  const army=sources.filter(s=>s.cls==='army').reduce((a,s)=>a+s.sessions,0);
+  cards.push(insightCard('📊 社群水軍佔總流量',
+    `社群水軍約 <b style="color:var(--accent)">${f(army)}</b> 工作階段，佔總流量 <b style="color:var(--accent)">${(army/totalSess*100).toFixed(0)}%</b>，是流量主力。`));
+
+  el.innerHTML=cards.join('');
+}
+
+// Meta 廣告 KPI（GA4 抓不到，仍為手填示範值；之後可改接 Ads Manager）
 const adKpis = [{l:'花費', v:'NT$ 8,500'},{l:'曝光', v:'142,000'},{l:'觸及人數', v:'38,500'},{l:'連結點擊', v:'1,240'},{l:'CTR', v:'0.87%'},{l:'每次 CTA 成本', v:'NT$ 4,250'}];
 document.getElementById('adKpis').innerHTML = adKpis.map(k=>`
   <div style="background:var(--g2);border:1px solid var(--border);border-radius:8px;padding:12px">
     <div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-bottom:4px">${k.l}</div>
     <div style="font-size:1.3rem;font-weight:800;color:var(--accent)">${k.v}</div>
   </div>`).join('');
+
+// 載入 ga4-data.json（同 repo，GitHub Pages 同網域）
+fetch('./ga4-data.json?_=' + Date.now())
+  .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+  .then(renderGA4)
+  .catch(e=>{
+    console.error('[GA4] 載入 ga4-data.json 失敗:', e);
+    const u=document.getElementById('ga4Updated'); if(u) u.textContent='⚠ ga4-data.json 載入失敗：'+e.message;
+  });
 </script>
 
 <!-- ===== PAGE: 發文角色 ===== -->
