@@ -162,6 +162,32 @@ tr:hover td{background:#0f0d0b}
   .donut-wrap{gap:12px}
 }
 
+/* ── 全站安全網：inline 固定欄數 grid 手機收合（避免中文被擠成一字一行）── */
+@media(max-width:600px){
+  [style*="grid-template-columns:repeat(3"],
+  [style*="grid-template-columns:repeat(4"],
+  [style*="grid-template-columns:repeat(5"],
+  [style*="grid-template-columns:repeat(6"]{
+    grid-template-columns:repeat(2,1fr)!important;
+  }
+  /* 7 欄排班週曆 → 手機橫向滑動，每格固定寬 */
+  [style*="grid-template-columns:repeat(7"]{
+    display:flex!important;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    gap:8px!important;padding-bottom:6px;
+  }
+  [style*="grid-template-columns:repeat(7"]>*{flex:0 0 150px}
+  /* 流程列（STEP 閉環）→ 手機橫向滑動 */
+  .flow-h{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+  .flow-h>div{flex:0 0 auto!important;min-width:150px}
+  /* 固定寬第一欄的雙欄版面（如 300px 1fr）→ 手機改單欄堆疊 */
+  [style*="grid-template-columns:300px"],
+  [style*="grid-template-columns:280px"],
+  [style*="grid-template-columns:320px"],
+  [style*="grid-template-columns:250px 1fr"]{
+    grid-template-columns:1fr!important;
+  }
+}
+
 /* COVERAGE BAR */
 .cov-bar{height:6px;background:#161412;border-radius:3px;margin-top:5px;overflow:hidden}
 .cov-fill{height:100%;border-radius:3px;transition:.4s;background:var(--accent)}
@@ -3073,7 +3099,7 @@ function renderCommunity(){
         <div style="font-size:.8rem;font-weight:700;color:var(--accent)">🔄 三組閉環操盤流程示意</div>
         <span style="font-size:.68rem;color:var(--text3)">每輪話題操盤的標準流程</span>
       </div>
-      <div style="display:flex;gap:0;align-items:stretch">
+      <div class="flow-h" style="display:flex;gap:0;align-items:stretch">
         ${steps.map((s,i)=>`
           <div style="flex:1;border:1px solid ${s.color}40;border-radius:8px;padding:10px;margin:0 ${i<steps.length-1?'4px':'0px'} 0 ${i>0?'4px':'0px'}">
             <div style="font-size:.65rem;color:${s.color};font-weight:700;margin-bottom:3px">${s.step}</div>
@@ -4019,7 +4045,7 @@ function renderLinks(){
           <span style="font-size:.75rem;font-weight:700;color:${cc}">${platIcon} ${placement}</span>
           <span style="font-size:.68rem;color:var(--text3)">${links.length} 條連結</span>
         </div>
-        <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+        <div class="t-scroll"><table style="width:100%;border-collapse:collapse;font-size:.82rem">
           <thead><tr style="background:#0d0b0a">
             <th style="padding:5px 14px;color:var(--text3);font-size:.7rem;font-weight:600;width:200px">連結目標</th>
             <th style="padding:5px 14px;color:var(--text3);font-size:.7rem;font-weight:600">原始連結</th>
@@ -4027,7 +4053,7 @@ function renderLinks(){
             <th style="padding:5px 14px;color:var(--text3);font-size:.7rem;font-weight:600">操作</th>
           </tr></thead>
           <tbody>${rowsHtml}</tbody>
-        </table>
+        </table></div>
       </div>`
     }).join('')
 
