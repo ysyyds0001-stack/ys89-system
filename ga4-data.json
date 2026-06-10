@@ -3,7 +3,7 @@
     {
       "name": "akki",
       "medium": "th_post",
-      "sessions": 1195,
+      "sessions": 1205,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -27,7 +27,7 @@
     {
       "name": "facebook",
       "medium": "paid_social",
-      "sessions": 64,
+      "sessions": 65,
       "cls": "paid",
       "tag": "廣告",
       "tcls": "t-paid"
@@ -59,7 +59,7 @@
     {
       "name": "(not set)",
       "medium": "(not set)",
-      "sessions": 47,
+      "sessions": 52,
       "cls": "other",
       "tag": "其他",
       "tcls": "t-direct"
@@ -83,7 +83,7 @@
     {
       "name": "ys89.me",
       "medium": "cta",
-      "sessions": 32,
+      "sessions": 33,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
@@ -121,6 +121,14 @@
       "tcls": "t-army"
     },
     {
+      "name": "google",
+      "medium": "organic",
+      "sessions": 9,
+      "cls": "organic",
+      "tag": "自然搜尋",
+      "tcls": "t-direct"
+    },
+    {
       "name": "line",
       "medium": "menu",
       "sessions": 8,
@@ -143,14 +151,6 @@
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
-    },
-    {
-      "name": "google",
-      "medium": "organic",
-      "sessions": 7,
-      "cls": "organic",
-      "tag": "自然搜尋",
-      "tcls": "t-direct"
     },
     {
       "name": "ys89-seo-docs.pages.dev",
@@ -372,7 +372,7 @@
   "accounts": [
     {
       "name": "akki",
-      "s": 1204,
+      "s": 1213,
       "cta": 0,
       "warn": true
     },
@@ -390,7 +390,7 @@
     },
     {
       "name": "facebook",
-      "s": 118,
+      "s": 119,
       "cta": 0,
       "warn": false
     },
@@ -408,7 +408,7 @@
     },
     {
       "name": "(not set)",
-      "s": 47,
+      "s": 52,
       "cta": 0,
       "warn": false
     },
@@ -426,7 +426,7 @@
     },
     {
       "name": "ys89.me",
-      "s": 32,
+      "s": 33,
       "cta": 0,
       "warn": false
     },
@@ -462,7 +462,7 @@
     },
     {
       "name": "google",
-      "s": 7,
+      "s": 9,
       "cta": 0,
       "warn": false
     },
@@ -572,11 +572,11 @@
   "pages": [
     {
       "t": "2026世界盃直播｜104場看直播完整入口・台灣時間賽程 - YS89球迷站",
-      "v": 1738
+      "v": 1748
     },
     {
       "t": "2026 世界盃觀賽入口｜104場完整賽程・台灣時間・開賽提醒",
-      "v": 257
+      "v": 258
     },
     {
       "t": "2026世足賠率即時｜104場直播投注盤口・滾球同步看｜ys89.biz",
@@ -599,12 +599,84 @@
       "v": 144
     }
   ],
+  "contents": [
+    {
+      "content": "banner_a",
+      "sessions": 50,
+      "cta": 0
+    },
+    {
+      "content": "watch_104",
+      "sessions": 36,
+      "cta": 0
+    },
+    {
+      "content": "me_step3_watch",
+      "sessions": 33,
+      "cta": 0
+    },
+    {
+      "content": "prediction",
+      "sessions": 29,
+      "cta": 0
+    },
+    {
+      "content": "fifa_site",
+      "sessions": 28,
+      "cta": 0
+    },
+    {
+      "content": "footer_network",
+      "sessions": 17,
+      "cta": 0
+    },
+    {
+      "content": "forum_games",
+      "sessions": 12,
+      "cta": 0
+    },
+    {
+      "content": "link_in_bio",
+      "sessions": 9,
+      "cta": 0
+    },
+    {
+      "content": "schedule",
+      "sessions": 7,
+      "cta": 0
+    },
+    {
+      "content": "games",
+      "sessions": 5,
+      "cta": 0
+    },
+    {
+      "content": "test_a",
+      "sessions": 3,
+      "cta": 0
+    },
+    {
+      "content": "odds",
+      "sessions": 2,
+      "cta": 0
+    },
+    {
+      "content": "biz",
+      "sessions": 1,
+      "cta": 0
+    },
+    {
+      "content": "me",
+      "sessions": 1,
+      "cta": 0
+    }
+  ],
   "kpis": {
-    "activeUsers": 2059,
-    "sessions": 2438,
-    "eventCount": 13540,
+    "activeUsers": 2074,
+    "sessions": 2454,
+    "eventCount": 13591,
     "cta": 0,
     "conversionRate": 0.0
   },
-  "lastUpdated": "2026-06-10T11:43:03.511209"
+  "lastUpdated": "2026-06-10T15:05:30.757052"
 }
