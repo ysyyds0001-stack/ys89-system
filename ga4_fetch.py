@@ -25,10 +25,14 @@ PROPERTY_FULL = f"properties/{PROPERTY_ID}"
 # Service Account JSON 路徑（GitHub Actions 會注入為環境變數）
 SA_JSON_PATH = os.environ.get("GA4_SA_KEY_PATH", "./gsc-credentials.json")
 
-# CTA 事件名稱列表
+# CTA 事件名稱列表（這些事件實際有觸發）
+# 註：GA4 後台未把任何事件勾為「關鍵事件」→ keyEvents 一律 0（這是先前 CTA=0 的主因）。
+# CTA 改用「有 CTA 事件的工作階段數(sessions)」當分子，轉換率=CTA階段/進站，必 ≤100%，
+# 不用 eventCount（總點擊次數會讓單帳號轉換率破百，看起來像壞掉）。
 CTA_EVENTS = [
     "platform_register_click",
     "line_click",
+    "line_oa_click",
     "cta_click",
     "purchase",
 ]
@@ -184,7 +188,7 @@ def fetch_account_performance(client):
     cta_request = RunReportRequest(
         property=PROPERTY_FULL,
         dimensions=[Dimension(name="sessionSource")],
-        metrics=[Metric(name="keyEvents")],
+        metrics=[Metric(name="sessions")],
         date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
         dimension_filter=cta_filter,
     )
@@ -233,6 +237,56 @@ def fetch_top_pages(client):
     pages = sorted(pages, key=lambda x: x["v"], reverse=True)[:7]
     return pages
 
+def fetch_content_performance(client):
+    """
+    依 utm_content（貼文 ID）拆出單篇貼文成效
+    返回: [{content, sessions, cta}, ...]  ← 給「成效報表」對到每一則貼文
+    """
+    start_date, end_date = get_date_range()
+
+    # 各 utm_content 的工作階段
+    sess_req = RunReportRequest(
+        property=PROPERTY_FULL,
+        dimensions=[Dimension(name="sessionManualAdContent")],
+        metrics=[Metric(name="sessions")],
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+    )
+    sess_resp = client.run_report(sess_req)
+    by_content = {}
+    for row in sess_resp.rows:
+        c = row.dimension_values[0].value
+        s = int(row.metric_values[0].value or 0)
+        if not c or c == "(not set)" or s == 0:
+            continue
+        by_content[c] = {"content": c, "sessions": s, "cta": 0}
+
+    # 各 utm_content 的 CTA（關鍵事件）
+    cta_filter = FilterExpression(
+        or_group={
+            "expressions": [
+                FilterExpression(
+                    filter=Filter(field_name="eventName", string_filter={"value": event})
+                )
+                for event in CTA_EVENTS
+            ]
+        }
+    )
+    cta_req = RunReportRequest(
+        property=PROPERTY_FULL,
+        dimensions=[Dimension(name="sessionManualAdContent")],
+        metrics=[Metric(name="sessions")],
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        dimension_filter=cta_filter,
+    )
+    cta_resp = client.run_report(cta_req)
+    for row in cta_resp.rows:
+        c = row.dimension_values[0].value
+        cta = int(row.metric_values[0].value or 0)
+        if c in by_content:
+            by_content[c]["cta"] = cta
+
+    return sorted(by_content.values(), key=lambda x: x["sessions"], reverse=True)
+
 def fetch_kpis(client):
     """拉取關鍵指標 (KPI)"""
     start_date, end_date = get_date_range()
@@ -268,7 +322,7 @@ def fetch_kpis(client):
 
     cta_request = RunReportRequest(
         property=PROPERTY_FULL,
-        metrics=[Metric(name="keyEvents")],
+        metrics=[Metric(name="sessions")],
         date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
         dimension_filter=cta_filter,
     )
@@ -303,6 +357,13 @@ def main():
     print("📄 拉取熱門頁面...")
     pages = fetch_top_pages(client)
 
+    print("📝 拉取單篇貼文成效（utm_content）...")
+    try:
+        contents = fetch_content_performance(client)
+    except Exception as e:
+        print(f"   ⚠ utm_content 維度拉取失敗（先給空）：{e}")
+        contents = []
+
     print("📈 拉取 KPI...")
     kpis = fetch_kpis(client)
 
@@ -311,6 +372,7 @@ def main():
         "sources": sources,
         "accounts": accounts,
         "pages": pages,
+        "contents": contents,
         "kpis": kpis,
         "lastUpdated": datetime.now().isoformat(),
     }
