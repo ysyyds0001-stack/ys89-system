@@ -385,8 +385,14 @@ const pName  = name => PERSONA_MAP[(name||'').toLowerCase()] || name;           
 const pLabel = name => PERSONA_MAP[(name||'').toLowerCase()]                      // 顯示用：阿奇 (akki)
   ? `${PERSONA_MAP[(name||'').toLowerCase()]}<span style="color:var(--text3);font-weight:400;font-size:.78em"> ${name}</span>`
   : name;
+// 主檔＝社群水軍號（code→中文名），合併 akki/god fallback（舊流量）。在 render 時呼叫（此時 DB 已就緒）
+function buildPersonaMap(){
+  PERSONA_MAP = {...PERSONA_FALLBACK};
+  try{ (DB.get('community')||[]).forEach(a=>{ const c=commCode(a); if(c) PERSONA_MAP[c]=a.name; }); }catch(e){}
+}
 
 function renderGA4(d){
+  buildPersonaMap();
   const sources = d.sources || [];
   const accts   = d.accounts || [];
   const pages   = d.pages || [];
@@ -528,20 +534,17 @@ document.getElementById('adKpis').innerHTML = adKpis.map(k=>`
   </div>`).join('');
 
 // 先讀 UTM 產生器的人設清單（CORS 已開）→ 讓 GA4 用中文名代稱 utm 碼；再載入成效數據
+let _ga4Data=null;
 function loadGA4Data(){
   fetch('./ga4-data.json?_=' + Date.now())
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-    .then(renderGA4)
+    .then(d=>{ _ga4Data=d; renderGA4(d); })
     .catch(e=>{
       console.error('[GA4] 載入 ga4-data.json 失敗:', e);
       const u=document.getElementById('ga4Updated'); if(u) u.textContent='⚠ ga4-data.json 載入失敗：'+e.message;
     });
 }
-fetch('https://ys89-utm.pages.dev/api/personas',{cache:'no-store'})
-  .then(r=>r.ok?r.json():null)
-  .then(d=>{ if(d&&d.personas){ PERSONA_MAP={...PERSONA_FALLBACK}; d.personas.forEach(p=>{ if(p.code) PERSONA_MAP[p.code.toLowerCase()]=p.name; }); } })
-  .catch(()=>{})
-  .finally(loadGA4Data);
+loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從社群水軍號即時建立
 </script>
 
 <!-- ===== PAGE: UTM 產生器（嵌入 ys89-utm.pages.dev，共用 D1）===== -->
@@ -2331,6 +2334,7 @@ function nav(el,page){
   el.classList.add('active')
   const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,threads:renderThreads,entrances:renderEntrances,links:renderLinks,cast:renderCast}
   if(page==='todo'){initTodayTodos(false);renderTodo()}
+  else if(page==='ga4'){ if(_ga4Data) renderGA4(_ga4Data); }
   else renders[page]&&renders[page]()
 }
 function openModal(id){document.getElementById(id).classList.add('show')}
