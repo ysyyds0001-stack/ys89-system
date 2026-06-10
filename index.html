@@ -378,6 +378,14 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 const colorByCls = {army:'#C44A2A', paid:'#C44A2A', offline:'#8B3214', direct:'#8A7D74', line:'#D4542A', organic:'#8A7D74', other:'#8A7D74'};
 const fmt = n => (n==null?0:n).toLocaleString();
 
+// ── 水軍人設對照：utm 碼 → 中文名（開頁時從 UTM 產生器動態讀，讀不到用 fallback）──
+const PERSONA_FALLBACK = {akki:'阿奇', god:'財神', uncle:'大叔', crab:'蟹蟹', kk:'凱凱', chen:'陳玉樺'};
+let PERSONA_MAP = {...PERSONA_FALLBACK};
+const pName  = name => PERSONA_MAP[(name||'').toLowerCase()] || name;            // 純文字：阿奇
+const pLabel = name => PERSONA_MAP[(name||'').toLowerCase()]                      // 顯示用：阿奇 (akki)
+  ? `${PERSONA_MAP[(name||'').toLowerCase()]}<span style="color:var(--text3);font-weight:400;font-size:.78em"> ${name}</span>`
+  : name;
+
 function renderGA4(d){
   const sources = d.sources || [];
   const accts   = d.accounts || [];
@@ -394,9 +402,10 @@ function renderGA4(d){
   // 最後更新時間
   if(d.lastUpdated){
     const t = new Date(d.lastUpdated);
-    document.getElementById('ga4Updated').textContent = '✓ 最後更新：' + t.toLocaleString('zh-TW');
-    document.getElementById('ga4Range').textContent =
-      '資料區間：過去 28 天（至 ' + t.toLocaleDateString('zh-TW') + '） · 測量 ID：G-THDJFGXCZ7';
+    document.getElementById('ga4Updated').textContent = '🕘 每天 09:00（台灣）自動抓取一次 · 最後更新：' + t.toLocaleString('zh-TW');
+    document.getElementById('ga4Range').innerHTML =
+      '資料區間：過去 28 天（至 ' + t.toLocaleDateString('zh-TW') + '） · 測量 ID：G-THDJFGXCZ7'
+      + '<br><span style="color:var(--accent)">🕘 每天 09:00（台灣）GitHub Actions 自動抓取一次 · 最後更新 ' + t.toLocaleString('zh-TW') + '</span>';
   }
 
   // 關鍵發現（由 live 數據動態產生，不再寫死）
@@ -407,7 +416,7 @@ function renderGA4(d){
   const maxS = Math.max(1, ...topSrc.map(s=>s.sessions));
   document.getElementById('srcBars').innerHTML = topSrc.map(s=>`
     <div class="src-row">
-      <span class="src-name" title="${s.name}">${s.name}</span>
+      <span class="src-name" title="${s.name}">${pLabel(s.name)}</span>
       <div style="height:8px;background:var(--g3);border-radius:4px;overflow:hidden">
         <div style="height:100%;width:${(s.sessions/maxS*100).toFixed(1)}%;background:${colorByCls[s.cls]||'#8A7D74'};border-radius:4px"></div>
       </div>
@@ -448,7 +457,7 @@ function renderGA4(d){
   document.getElementById('acctTable').innerHTML = accts.slice(0,8).map(a=>{
     const conv = a.s? (a.cta/a.s*100):0;
     const cc = a.cta>0?'b-green':'b-red';
-    return `<tr><td><b>${a.name}</b></td><td style="text-align:right">${fmt(a.s)}</td><td style="text-align:right">${a.cta}</td><td style="text-align:right"><span class="${cc}">${conv.toFixed(1)}%</span></td></tr>`;
+    return `<tr><td><b>${pLabel(a.name)}</b></td><td style="text-align:right">${fmt(a.s)}</td><td style="text-align:right">${a.cta}</td><td style="text-align:right"><span class="${cc}">${conv.toFixed(1)}%</span></td></tr>`;
   }).join('');
 
   // 熱門頁面
@@ -481,7 +490,7 @@ function renderInsights(sources, accts, k){
     const a=accts.find(x=>x.name===top.name);
     const ctaTxt=a?`，CTA 去註冊 <b>= ${a.cta}</b>${a.cta?'':'。量大 ≠ 有效'}`:'';
     cards.push(insightCard('🔥 最大流量來源',
-      `<b style="color:var(--accent)">${top.name}</b> 帶進 <b style="color:var(--accent)">${f(top.sessions)}</b> 工作階段（最大來源）${ctaTxt}。`));
+      `<b style="color:var(--accent)">${pName(top.name)}</b> 帶進 <b style="color:var(--accent)">${f(top.sessions)}</b> 工作階段（最大來源）${ctaTxt}。`));
   }
 
   // ② 轉換：找最佳轉換來源；若全 0 則點出 CTA 追蹤缺口
@@ -489,7 +498,7 @@ function renderInsights(sources, accts, k){
   if(conv.length && conv[0].cta>0){
     const b=conv[0];
     cards.push(insightCard('🎯 轉換最高來源',
-      `<b style="color:var(--accent)">${b.name}</b> ${f(b.s)} 進站、${b.cta} 次 CTA = <b style="color:var(--accent)">${b.r.toFixed(1)}%</b>，量小但有效。`));
+      `<b style="color:var(--accent)">${pName(b.name)}</b> ${f(b.s)} 進站、${b.cta} 次 CTA = <b style="color:var(--accent)">${b.r.toFixed(1)}%</b>，量小但有效。`));
   }else{
     cards.push(insightCard('⚠️ CTA 全站為 0',
       `目前所有來源 CTA 去註冊 <b>= 0</b>。多半是 GA4 尚未把註冊/LINE 點擊事件標記為「關鍵事件」（keyEvents 不計），需到 GA4 後台確認。`));
@@ -499,7 +508,7 @@ function renderInsights(sources, accts, k){
   const ref=sources.find(s=>s.cls==='army' && /threads|referral/i.test(s.medium||'') ) || sources.find(s=>s.name.includes('threads'));
   if(ref){
     cards.push(insightCard('🏷️ 水軍流量未標記 UTM',
-      `<b style="color:var(--accent)">${ref.name}</b>（${f(ref.sessions)}）未帶 utm_source，掉進 referral 分不出帳號，建議補標記。`));
+      `<b style="color:var(--accent)">${pName(ref.name)}</b>（${f(ref.sessions)}）未帶 utm_source，掉進 referral 分不出帳號，建議補標記。`));
   }
 
   // ④ 社群水軍佔比
@@ -518,14 +527,21 @@ document.getElementById('adKpis').innerHTML = adKpis.map(k=>`
     <div style="font-size:1.3rem;font-weight:800;color:var(--accent)">${k.v}</div>
   </div>`).join('');
 
-// 載入 ga4-data.json（同 repo，GitHub Pages 同網域）
-fetch('./ga4-data.json?_=' + Date.now())
-  .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-  .then(renderGA4)
-  .catch(e=>{
-    console.error('[GA4] 載入 ga4-data.json 失敗:', e);
-    const u=document.getElementById('ga4Updated'); if(u) u.textContent='⚠ ga4-data.json 載入失敗：'+e.message;
-  });
+// 先讀 UTM 產生器的人設清單（CORS 已開）→ 讓 GA4 用中文名代稱 utm 碼；再載入成效數據
+function loadGA4Data(){
+  fetch('./ga4-data.json?_=' + Date.now())
+    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(renderGA4)
+    .catch(e=>{
+      console.error('[GA4] 載入 ga4-data.json 失敗:', e);
+      const u=document.getElementById('ga4Updated'); if(u) u.textContent='⚠ ga4-data.json 載入失敗：'+e.message;
+    });
+}
+fetch('https://ys89-utm.pages.dev/api/personas',{cache:'no-store'})
+  .then(r=>r.ok?r.json():null)
+  .then(d=>{ if(d&&d.personas){ PERSONA_MAP={...PERSONA_FALLBACK}; d.personas.forEach(p=>{ if(p.code) PERSONA_MAP[p.code.toLowerCase()]=p.name; }); } })
+  .catch(()=>{})
+  .finally(loadGA4Data);
 </script>
 
 <!-- ===== PAGE: UTM 產生器（嵌入 ys89-utm.pages.dev，共用 D1）===== -->
