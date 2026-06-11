@@ -3277,7 +3277,7 @@ function openAddCommunityModal(){
 // ── 水軍人設 UTM 代號：中文名自動拼音 → utm_source ──
 const _PY={"阿":"a","奇":"qi","財":"cai","神":"shen","大":"da","叔":"shu","蟹":"xie","凱":"kai","世":"shi","足":"zu","觀":"guan","測":"ce","站":"zhan","象":"xiang","倪":"ni","愛":"ai","麗":"li","絲":"si","米":"mi","恩":"en","林":"lin","家":"jia","益":"yi","體":"ti","育":"yu","代":"dai","理":"li","王":"wang","李":"li","張":"zhang","陳":"chen","黃":"huang","劉":"liu","吳":"wu","楊":"yang","許":"xu","鄭":"zheng","謝":"xie","小":"xiao","老":"lao","哥":"ge","姐":"jie","妹":"mei","球":"qiu","美":"mei","天":"tian","金":"jin","星":"xing","風":"feng","雲":"yun","山":"shan","海":"hai","紅":"hong","黑":"hei","白":"bai","發":"fa","福":"fu","旺":"wang","興":"xing","達":"da","利":"li","祥":"xiang","運":"yun","賽":"sai","直":"zhi","播":"bo","賠":"pei","彩":"cai","票":"piao","樂":"le"};
 // 補充常用但 _PY 缺的字（避免代碼變空）
-const _PY_EXT={"扁":"bian","跛":"bo","象":"xiang","虎":"hu","龍":"long","貓":"mao","狗":"gou","熊":"xiong","兔":"tu","豬":"zhu","雞":"ji","鴨":"ya","魚":"yu","鳥":"niao","花":"hua","草":"cao","樹":"shu","山":"shan","水":"shui","火":"huo","土":"tu","木":"mu"};
+const _PY_EXT={"扁":"bian","跛":"bo","象":"xiang","虎":"hu","龍":"long","貓":"mao","狗":"gou","熊":"xiong","兔":"tu","豬":"zhu","雞":"ji","鴨":"ya","魚":"yu","鳥":"niao","花":"hua","草":"cao","樹":"shu","山":"shan","水":"shui","火":"huo","土":"tu","木":"mu","面":"mian","具":"ju","男":"nan","捕":"bu","司":"si","機":"ji","網":"wang","池":"chi","智":"zhi","網紅":"wanghong","週":"zhou","記":"ji","排":"pai","雷":"lei"};
 function utmCode(name){
   let out='';
   for(const ch of (name||'')){ out += (_PY[ch] || _PY_EXT[ch] || (/[a-zA-Z0-9]/.test(ch)?ch:'')); }
