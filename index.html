@@ -3276,10 +3276,18 @@ function openAddCommunityModal(){
 
 // ── 水軍人設 UTM 代號：中文名自動拼音 → utm_source ──
 const _PY={"阿":"a","奇":"qi","財":"cai","神":"shen","大":"da","叔":"shu","蟹":"xie","凱":"kai","世":"shi","足":"zu","觀":"guan","測":"ce","站":"zhan","象":"xiang","倪":"ni","愛":"ai","麗":"li","絲":"si","米":"mi","恩":"en","林":"lin","家":"jia","益":"yi","體":"ti","育":"yu","代":"dai","理":"li","王":"wang","李":"li","張":"zhang","陳":"chen","黃":"huang","劉":"liu","吳":"wu","楊":"yang","許":"xu","鄭":"zheng","謝":"xie","小":"xiao","老":"lao","哥":"ge","姐":"jie","妹":"mei","球":"qiu","美":"mei","天":"tian","金":"jin","星":"xing","風":"feng","雲":"yun","山":"shan","海":"hai","紅":"hong","黑":"hei","白":"bai","發":"fa","福":"fu","旺":"wang","興":"xing","達":"da","利":"li","祥":"xiang","運":"yun","賽":"sai","直":"zhi","播":"bo","賠":"pei","彩":"cai","票":"piao","樂":"le"};
+// 補充常用但 _PY 缺的字（避免代碼變空）
+const _PY_EXT={"扁":"bian","跛":"bo","象":"xiang","虎":"hu","龍":"long","貓":"mao","狗":"gou","熊":"xiong","兔":"tu","豬":"zhu","雞":"ji","鴨":"ya","魚":"yu","鳥":"niao","花":"hua","草":"cao","樹":"shu","山":"shan","水":"shui","火":"huo","土":"tu","木":"mu"};
 function utmCode(name){
   let out='';
-  for(const ch of (name||'')){ out += (_PY[ch] || (/[a-zA-Z0-9]/.test(ch)?ch:'')); }
-  return out.toLowerCase().replace(/[^a-z0-9_]/g,'');
+  for(const ch of (name||'')){ out += (_PY[ch] || _PY_EXT[ch] || (/[a-zA-Z0-9]/.test(ch)?ch:'')); }
+  out = out.toLowerCase().replace(/[^a-z0-9_]/g,'');
+  if(!out && name){
+    // 名稱完全沒有拼音對照時的後備：用字元碼產生穩定、非空代碼，避免空前綴（-mmdd-n）
+    let h=7; for(const c of name) h=(h*31 + c.charCodeAt(0))>>>0;
+    out='u'+h.toString(36).slice(0,5);
+  }
+  return out;
 }
 function commCode(a){ return (a&&a.code&&a.code.trim()) ? a.code.trim().toLowerCase() : utmCode(a&&a.name); }
 
@@ -4642,6 +4650,7 @@ function utmSaveToLinks(){
   const all=DB.get('links').length?DB.get('links'):[...DEFAULT_LINKS];
   if(all.some(l=>l.originalUrl===url && l.accountCode===code)){ toast('這條已存過了'); return; }
   const ct=utmContentVal();
+  if(!ct || ct.startsWith('-') || !commCode(p)){ toast('⚠️ 此角色沒有有效的 UTM 代碼，請到社群水軍號設定 code 再存','err'); return; }
   const title=(document.getElementById('u-title')?.value||'').trim();
   const shortUrl=(document.getElementById('u-shortlink')?.value||'').trim();
   const usage=document.getElementById('u-usage')?.value||'其他';
