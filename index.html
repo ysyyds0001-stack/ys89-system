@@ -3293,7 +3293,7 @@ function commCode(a){ return (a&&a.code&&a.code.trim()) ? a.code.trim().toLowerC
 
 // ── 人設總線：發文角色 + 社群水軍號 → 統一來源，下游(UTM/GA4/短連結)都從這讀 ──
 // 歷史 utm 碼對照：這些人設沿用既有碼（GA4 歷史數據都掛在這些碼上，不能改成拼音）
-const LEGACY_CODE={'阿奇':'akki','財神':'god','大叔':'uncle','蟹蟹':'crab','凱凱':'kk','kk':'kk','陳玉樺':'chen'};
+const LEGACY_CODE={'阿奇':'akki','財神':'god','大叔':'uncle','蟹蟹':'crab','凱凱':'kaikai','kk':'kk','陳玉樺':'chen'};
 function actorCode(a){
   if(a&&a.code&&a.code.trim()) return a.code.trim().toLowerCase();
   const n=(a&&a.name)||'';
