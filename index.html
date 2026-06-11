@@ -804,10 +804,16 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
         </div>
         <div style="font-size:.68rem;color:var(--text3);margin-top:4px">每發一篇換一個編號（存進短連結後會自動跳號）。GA4 成效就能拆出「哪一則貼文」帶了多少進站/CTA。</div>
       </div>
+      <div class="fg"><label>⑥ 文章/貼文標題 <span style="color:var(--text3);font-size:.72rem">記錄這條 UTM 是給哪篇用的</span></label>
+        <input type="text" id="u-title" placeholder="例：2026世界盃觀賽懶人包 / 世足倒數10天話題"></div>
+      <div class="fg"><label>⑦ 用途 <span style="color:var(--text3);font-size:.72rem">文章發布 or 炒話題</span></label>
+        <select id="u-usage"><option value="文章發布">📄 文章發布</option><option value="炒話題">🔥 炒話題</option><option value="其他">其他</option></select></div>
 
       <div style="background:var(--g3);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-top:4px">
         <div style="font-size:.74rem;color:var(--accent);font-weight:700;margin-bottom:7px">🔗 貼文用這條（已帶 UTM 追蹤）</div>
         <div id="u-out" style="font-family:monospace;font-size:.82rem;word-break:break-all;background:#0B0908;border:1px solid var(--border);border-radius:8px;padding:10px;line-height:1.5"></div>
+        <div class="fg" style="margin-top:9px;margin-bottom:0"><label style="font-size:.72rem">🔗 短連結（把上面連結縮短後貼回，選填）</label>
+          <input type="text" id="u-shortlink" placeholder="https://wc.ys89.com/... 或 lihi2.me/..."></div>
         <div style="display:flex;gap:8px;margin-top:9px">
           <button class="btn btn-copy" style="flex:1;justify-content:center" data-cp="" id="u-copy-btn" onclick="cpd(this)">📋 複製連結</button>
           <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="utmSaveToLinks()">💾 存進短連結</button>
@@ -1290,6 +1296,10 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     </div>
     <div class="fg"><label>主題摘要</label><input id="po-topic" placeholder="例：USDT走勢分析"></div>
     <div class="fg">
+      <label>📎 帶入已建的 UTM/短連結 <span style="color:var(--text3);font-size:.7rem">（UTM 產生器存的，選角色後出現）</span></label>
+      <select id="po-utm-pick" onchange="poPickUtm()"><option value="">— 自動產生新碼，或從這帶入已建的 —</option></select>
+    </div>
+    <div class="fg">
       <label>UTM 追蹤碼（自動產生，可改）</label>
       <div style="display:flex;gap:6px;align-items:center">
         <input id="po-utm" placeholder="選角色後自動產生，例：akki-0610-1" style="flex:1;font-family:monospace;color:#4ade80" oninput="_syncCopy('po-utm','po-utm-copy')">
@@ -1485,6 +1495,10 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
           <input type="checkbox" id="ta-plat-FB"> 📘 FB
         </label>
       </div>
+    </div>
+    <div class="fg">
+      <label>📎 帶入已建的 UTM/短連結 <span style="color:var(--text3);font-size:.7rem">（UTM 產生器存的，選角色後出現）</span></label>
+      <select id="ta-utm-pick" onchange="taPickUtm()"><option value="">— 自動產生新碼，或從這帶入已建的 —</option></select>
     </div>
     <!-- UTM 追蹤碼（選角色自動產生） -->
     <div class="fg">
@@ -2955,11 +2969,39 @@ async function _fetchTitleGeneric(url, urlElId, el, setTitle){
   }catch(e){}
 }
 
+// ── 共用：從短連結庫帶入已建的 UTM/短連結 ──
+function _personaUtmLinks(code){
+  if(!code) return []
+  return (DB.get('links')||[]).filter(l=>l.accountCode===code && (l.utmContent||'').trim())
+}
+function _fillUtmPicker(selectId, code){
+  const sel=document.getElementById(selectId); if(!sel) return
+  const links=_personaUtmLinks(code)
+  const cur=sel.value
+  sel.innerHTML='<option value="">— 自動產生新碼，或從這帶入已建的 —</option>'+
+    links.slice().reverse().map(l=>{
+      const lbl=`${l.utmContent}${l.title?' · '+l.title:''}${l.shortLinkUrl?' 🔗短':''}`
+      return `<option value="${l.id}">${lbl}</option>`
+    }).join('')
+  if(cur && links.some(l=>l.id===cur)) sel.value=cur
+}
+function _applyUtmPick(pickId, utmElId, shortElId, titleElId, copyBtnId, setTitle){
+  const id=document.getElementById(pickId)?.value; if(!id) return
+  const l=(DB.get('links')||[]).find(x=>x.id===id); if(!l) return
+  if(l.utmContent){ document.getElementById(utmElId).value=l.utmContent; _syncCopy(utmElId,copyBtnId) }
+  if(l.shortLinkUrl) document.getElementById(shortElId).value=l.shortLinkUrl
+  if(l.title){ const t='📄 '+l.title; document.getElementById(titleElId).textContent=t; if(setTitle) setTitle(l.title) }
+  toast('已帶入：'+l.utmContent)
+}
+function taPickUtm(){ _applyUtmPick('ta-utm-pick','ta-utm','ta-shortlink','ta-url-title','ta-utm-copy',t=>{_taUrlTitle=t}) }
+function poPickUtm(){ _applyUtmPick('po-utm-pick','po-utm','po-shortlink','po-posturl-title','po-utm-copy',t=>{_poUrlTitle=t}) }
+
 // ── 發文追蹤：UTM 追蹤碼 + 標題預覽 ──
 let _poUrlTitle=''
 function poGenUtm(force){
   const el=document.getElementById('po-utm'); if(!el) return
   const code=_personaCodeById(document.getElementById('po-persona').value)
+  _fillUtmPicker('po-utm-pick', code)
   if(!code){ if(force) el.value=''; _syncCopy('po-utm','po-utm-copy'); return }
   el.value=code+'-'+_mmdd(document.getElementById('po-date').value)+'-'+_nextUtmSeq(code+'-'+_mmdd(document.getElementById('po-date').value)+'-')
   _syncCopy('po-utm','po-utm-copy')
@@ -2980,6 +3022,7 @@ function openAddPostModal(){
   document.getElementById('po-shortlink').value=''
   document.getElementById('po-posturl-title').textContent=''
   _poUrlTitle=''
+  const _pop=document.getElementById('po-utm-pick'); if(_pop){ _pop.innerHTML='<option value="">— 自動產生新碼，或從這帶入已建的 —</option>'; _pop.value='' }
   _syncCopy('po-utm','po-utm-copy')
   openModal('modal-add-post')
 }
@@ -4499,7 +4542,11 @@ function renderLinks(){
         const hasOrig=l.originalUrl&&l.originalUrl.length>3
         return`<div class="lk-card">
           <div class="lk-card-h">
-            <div><div class="lk-tgt">${l.entryName}</div>${l.note?`<div class="lk-note">${l.note}</div>`:''}</div>
+            <div>
+              <div class="lk-tgt">${l.title?'📄 '+l.title+' — ':''}${l.entryName}</div>
+              ${l.note?`<div class="lk-note">${l.note}</div>`:''}
+              ${l.createdAt?`<div style="font-size:.66rem;color:var(--text3);margin-top:2px">🕒 ${(l.createdAt||'').slice(0,10)}${l.usage?' · '+l.usage:''}${l.utmContent?' · 🏷 '+l.utmContent:''}</div>`:''}
+            </div>
             <div style="display:flex;gap:4px;flex-shrink:0">
               <button class="btn btn-xs btn-outline" onclick="openEditLink('${l.id}')" style="font-size:.65rem">✏</button>
               <button class="btn btn-xs btn-danger" onclick="delLink('${l.id}')" style="font-size:.65rem">✕</button>
@@ -4589,13 +4636,20 @@ function utmSaveToLinks(){
   const all=DB.get('links').length?DB.get('links'):[...DEFAULT_LINKS];
   if(all.some(l=>l.originalUrl===url && l.accountCode===code)){ toast('這條已存過了'); return; }
   const ct=utmContentVal();
+  const title=(document.getElementById('u-title')?.value||'').trim();
+  const shortUrl=(document.getElementById('u-shortlink')?.value||'').trim();
+  const usage=document.getElementById('u-usage')?.value||'其他';
   all.push({ id:'lk'+Date.now(), category:'水軍', accountCode:code, accountName:p.name,
-    platform:platMap[med]||'Threads', placement:'UTM追蹤', entryName:`${ct||utmCampVal()} · ${med}`,
-    purpose:'社群 UTM 追蹤', originalUrl:url, shortLinkUrl:'', useShortLink:false,
-    status:'使用中', note:'UTM 產生器', isSeoAsset:false, utmContent:ct });
+    platform:platMap[med]||'Threads', placement:'UTM追蹤',
+    entryName:`${title?title+' · ':''}${ct||utmCampVal()} · ${med}`,
+    purpose:'社群 UTM 追蹤', originalUrl:url, shortLinkUrl:shortUrl, useShortLink:!!shortUrl,
+    status:'使用中', note:`UTM 產生器 · ${usage}`, isSeoAsset:false,
+    utmContent:ct, title, usage, createdAt:new Date().toISOString() });
   DB.set('links',all); DB.push('links').catch(()=>{});
-  toast(`已存進短連結 → ${p.name} 的 UTM追蹤`);
+  toast(`已存進短連結 → ${p.name}${title?'（'+title+'）':''}`);
   document.getElementById('u-content').value=utmSuggestContent(p);
+  if(document.getElementById('u-title')) document.getElementById('u-title').value='';
+  if(document.getElementById('u-shortlink')) document.getElementById('u-shortlink').value='';
   utmGen();
 }
 function utmRenderRecent(p){
@@ -4887,6 +4941,7 @@ function onTaPersonaChange(sel){
     if(sel.value === 'custom|') custom.focus()
   }
   taGenUtm()
+  _fillUtmPicker('ta-utm-pick', taPersonaCode())
 }
 
 function _setTmTab(plat){
@@ -5003,6 +5058,7 @@ function openAddThreadActivity(){
   document.getElementById('ta-shortlink').value = ''
   document.getElementById('ta-url-title').textContent = ''
   _taUrlTitle=''
+  const _tap=document.getElementById('ta-utm-pick'); if(_tap){ _tap.innerHTML='<option value="">— 自動產生新碼，或從這帶入已建的 —</option>'; _tap.value='' }
   ;['Threads','IG','FB'].forEach(p=>{ const el=document.getElementById('ta-plat-'+p); if(el) el.checked=(p==='Threads') })
   const customEl = document.getElementById('ta-persona-custom')
   if(customEl){ customEl.value=''; customEl.style.display='none' }
@@ -5043,6 +5099,7 @@ function openEditThreadActivity(id){
   else if(a.url) titleEl.textContent = '🔗 '+taUrlLabel(a.url)
   else titleEl.textContent = ''
   taSyncUtmCopy()
+  _fillUtmPicker('ta-utm-pick', taPersonaCode())
   openModal('modal-thread-activity')
 }
 
