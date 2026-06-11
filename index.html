@@ -288,6 +288,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'tracker')">發文追蹤</div>
   <div class="nav-tab" onclick="nav(this,'articles')">文章庫</div>
   <div class="nav-tab" onclick="nav(this,'community')">社群水軍號</div>
+  <div class="nav-tab" onclick="nav(this,'roles')">🎭 角色主檔</div>
   <div class="nav-tab" onclick="nav(this,'threadtracker')">🔥 炒話題追蹤</div>
   <div class="nav-tab" onclick="nav(this,'threads')">📱 Threads</div>
   <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
@@ -837,6 +838,22 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <div class="card-title" style="margin-top:16px">📌 此水軍已存的 UTM</div>
       <div id="u-recent" style="display:flex;flex-direction:column;gap:7px"></div>
     </div>
+  </div>
+</div>
+
+<!-- ===== PAGE: 角色主檔 ===== -->
+<div id="pg-roles" class="page">
+  <div class="fb" style="margin-bottom:14px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">🎭 角色主檔</h2>
+      <p class="tm" style="margin-top:3px">一個人一筆（用 UTM 碼去重）· 標記他能跑哪些管道 · 三個管道日誌都從這份清單選人</p>
+    </div>
+  </div>
+  <div class="g3" id="roles-stats" style="margin-bottom:16px"></div>
+  <div class="card">
+    <div class="card-title">角色 × 管道能力（勾選＝該角色可在此管道出現）</div>
+    <p class="tm" style="font-size:.74rem;margin-bottom:10px">📰 導論壇＝發導向論壇的文章（發文追蹤）｜🔥 炒群＝IG/Threads 炒話題｜📣 鋪文＝Medium/Dcard/PTT 等第三方</p>
+    <div id="roles-table" style="overflow-x:auto"></div>
   </div>
 </div>
 
@@ -2631,7 +2648,7 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads','role_channels'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(sync) sync.textContent='已同步'
@@ -2649,7 +2666,7 @@ function nav(el,page){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
-  const renders={personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,threads:renderThreads,entrances:renderEntrances,links:renderLinks,cast:renderCast}
+  const renders={roles:renderRoles,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,threads:renderThreads,entrances:renderEntrances,links:renderLinks,cast:renderCast}
   if(page==='todo'){initTodayTodos(false);renderTodo()}
   else if(page==='ga4'){ if(_ga4Data) renderGA4(_ga4Data); }
   else if(page==='utm'){ utmInit() }
@@ -4494,6 +4511,64 @@ function setLinkTab(tab, el){
   })
   if(el){el.style.color='var(--accent)';el.style.borderBottomColor='var(--accent)'}
   renderLinks()
+}
+
+// ===== 角色主檔（角色 × 管道能力）=====
+const PRO_CODES=['shizu','god','akki','crab','kk']
+const ROLE_CHANNELS=[{k:'forum',label:'📰 導論壇'},{k:'buzz',label:'🔥 炒群'},{k:'seeding',label:'📣 鋪文'}]
+function masterRoles(){
+  const map=new Map()
+  allActors().forEach(a=>{
+    const code=actorCode(a); if(!code) return
+    if(!map.has(code)) map.set(code,{code,names:new Set(),srcs:new Set()})
+    const m=map.get(code); m.names.add(a.name); m.srcs.add(a.src)
+  })
+  return [...map.values()].sort((x,y)=>x.code.localeCompare(y.code))
+}
+function roleChannels(code){
+  const rec=(DB.get('role_channels')||[]).find(r=>r.code===code)
+  if(rec&&rec.channels) return rec.channels
+  if(PRO_CODES.includes(code)) return ['forum','buzz','seeding']
+  const inPersonas=(DB.get('personas')||[]).some(p=>actorCode(p)===code)
+  return inPersonas?['forum','buzz']:['buzz']
+}
+function toggleRoleChannel(code,ch){
+  const list=DB.get('role_channels')||[]
+  let rec=list.find(r=>r.code===code)
+  if(!rec){ rec={code,channels:roleChannels(code)}; list.push(rec) }
+  const s=new Set(rec.channels||[])
+  s.has(ch)?s.delete(ch):s.add(ch)
+  rec.channels=[...s]
+  DB.set('role_channels',list)
+  renderRoles()
+}
+// 給其他管道日誌用：列出能跑某管道的角色
+function rolesForChannel(ch){ return masterRoles().filter(r=>roleChannels(r.code).includes(ch)) }
+function renderRoles(){
+  const roles=masterRoles()
+  const cnt={forum:0,buzz:0,seeding:0}
+  roles.forEach(r=>roleChannels(r.code).forEach(c=>{if(cnt[c]!=null)cnt[c]++}))
+  document.getElementById('roles-stats').innerHTML=[
+    ['角色總數（去重）',roles.length,'var(--accent)'],
+    ['📰 導論壇可用',cnt.forum,'#60a5fa'],
+    ['🔥 炒群可用',cnt.buzz,'#f59e0b']
+  ].map(([l,v,c])=>`<div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:${c}">${v}</div><div class="tm">${l}</div></div>`).join('')
+  const srcLabel=s=>{const h=x=>s.has(x);return h('personas')&&h('community')?'兩者':h('personas')?'發文角色':'水軍'}
+  const rows=roles.map(r=>{
+    const chs=roleChannels(r.code), names=[...r.names]
+    const display=names[0]+(names.length>1?` <span class="tm" style="font-size:.66rem">(+${names.length-1})</span>`:'')
+    const pro=PRO_CODES.includes(r.code)
+    const cells=ROLE_CHANNELS.map(c=>`<td style="text-align:center"><input type="checkbox" ${chs.includes(c.k)?'checked':''} onchange="toggleRoleChannel('${r.code}','${c.k}')" style="cursor:pointer;width:16px;height:16px"></td>`).join('')
+    return `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:7px"><b>${display}</b>${pro?' <span class="badge b-green" style="font-size:.6rem">專業</span>':''}</td>
+      <td style="padding:7px"><code style="color:#4ade80">${r.code}</code></td>
+      <td class="tm" style="padding:7px;font-size:.74rem">${srcLabel(r.srcs)}</td>
+      ${cells}
+    </tr>`
+  }).join('')
+  document.getElementById('roles-table').innerHTML=`<table style="width:100%;font-size:.86rem;border-collapse:collapse">
+    <thead><tr style="border-bottom:2px solid var(--border)"><th style="text-align:left;padding:7px">角色</th><th style="text-align:left;padding:7px">UTM碼</th><th style="text-align:left;padding:7px">來源</th>${ROLE_CHANNELS.map(c=>`<th style="padding:7px;white-space:nowrap">${c.label}</th>`).join('')}</tr></thead>
+    <tbody>${rows}</tbody></table>`
 }
 
 function renderLinks(){
