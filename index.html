@@ -4750,13 +4750,13 @@ function renderThreadTracker(){
   // 桌機：表格
   let desk = '<div class="posts-desk" style="overflow-x:auto">'
   if(todayItems.length) desk += sectTitle(`📅 今日（${today}）— ${todayItems.length} 筆`,'var(--accent)').replace('margin:16px 0 8px','margin-bottom:8px') + tableHead + `<tbody>${todayItems.map(renderRow).join('')}</tbody></table>`
-  if(pastItems.length) desk += sectTitle('📋 近期記錄','var(--text3)') + tableHead + `<tbody>${pastItems.slice(0,20).map(renderRow).join('')}</tbody></table>`
+  if(pastItems.length) desk += sectTitle(`📋 近期記錄 — 共 ${pastItems.length} 筆`,'var(--text3)') + tableHead + `<tbody>${pastItems.map(renderRow).join('')}</tbody></table>`
   desk += '</div>'
 
   // 手機：展開卡
   let mob = '<div class="posts-mob">'
   if(todayItems.length) mob += sectTitle(`📅 今日（${today}）— ${todayItems.length} 筆`,'var(--accent)').replace('margin:16px 0 8px','margin-bottom:8px') + todayItems.map(renderCard).join('')
-  if(pastItems.length) mob += sectTitle('📋 近期記錄','var(--text3)') + pastItems.slice(0,20).map(renderCard).join('')
+  if(pastItems.length) mob += sectTitle(`📋 近期記錄 — 共 ${pastItems.length} 筆`,'var(--text3)') + pastItems.map(renderCard).join('')
   mob += '</div>'
 
   wrap.innerHTML = desk + mob
