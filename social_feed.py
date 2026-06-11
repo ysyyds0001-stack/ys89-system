@@ -135,6 +135,8 @@ def from_thread_activities(rows, name_to_code):
         note = a.get("topic") or a.get("notes") or None
         pm = a.get("platformMetrics") or {}
         platforms = a.get("platforms") or list(pm.keys()) or ["Threads"]
+        # utmContent：優先用系統記錄的欄位（炒話題新增時自動產生），再退而求其次解析連結
+        utm = (a.get("utmContent") or "").strip() or parse_utm_content(url)
         for plat in platforms:
             m = pm.get(plat) or {}
             out.append({
@@ -143,7 +145,7 @@ def from_thread_activities(rows, name_to_code):
                 "personaName": persona_name,
                 "platform": norm_platform(plat),
                 "postUrl": url,
-                "utmContent": parse_utm_content(url),
+                "utmContent": utm or None,
                 "impressions": num_or_none(m.get("views", a.get("views"))),
                 "likes": num_or_none(m.get("likes", a.get("likes"))),
                 "comments": num_or_none(m.get("replies", a.get("replies"))),
