@@ -1281,15 +1281,29 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   <div class="modal">
     <div class="mh"><div class="mt">新增發文記錄</div><button class="mc" onclick="closeModal('modal-add-post')">✕</button></div>
     <div class="fr">
-      <div class="fg"><label>發文日期</label><input type="date" id="po-date"></div>
-      <div class="fg"><label>發文角色</label><select id="po-persona"><option value="">選擇角色</option></select></div>
+      <div class="fg"><label>發文日期</label><input type="date" id="po-date" onchange="poGenUtm()"></div>
+      <div class="fg"><label>發文角色</label><select id="po-persona" onchange="poGenUtm()"><option value="">選擇角色</option></select></div>
     </div>
     <div class="fr">
       <div class="fg"><label>平台</label><select id="po-platform"><option>IG</option><option>FB</option><option>Threads</option><option>IG+FB</option><option>IG+Threads</option><option>FB+Threads</option><option>全平台</option></select></div>
       <div class="fg"><label>引用文章</label><select id="po-article"><option value="">選擇文章</option></select></div>
     </div>
     <div class="fg"><label>主題摘要</label><input id="po-topic" placeholder="例：USDT走勢分析"></div>
-    <div class="fg"><label>🔗 貼文連結（選填，發布後填入）</label><input id="po-posturl" type="url" placeholder="https://www.instagram.com/p/... 或 threads.net/@..."></div>
+    <div class="fg">
+      <label>UTM 追蹤碼（自動產生，可改）</label>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input id="po-utm" placeholder="選角色後自動產生，例：akki-0610-1" style="flex:1;font-family:monospace;color:#4ade80" oninput="_syncCopy('po-utm','po-utm-copy')">
+        <button type="button" class="btn btn-sm btn-outline" onclick="poGenUtm(true)" title="重新產生">↻</button>
+        <button type="button" class="btn btn-sm btn-outline btn-copy" id="po-utm-copy" onclick="cpd(this)" title="複製">⧉</button>
+      </div>
+      <div class="tm" style="font-size:.68rem;margin-top:3px">把這串放進短連結的 utm_content，GA4 才能歸因到這篇貼文</div>
+    </div>
+    <div class="fg">
+      <label>🔗 貼文連結（選填，發布後填入）</label>
+      <input id="po-posturl" type="url" placeholder="https://www.instagram.com/p/... 或 threads.net/@..." oninput="poOnUrlChange()" onpaste="setTimeout(poOnUrlChange,60)">
+      <div id="po-posturl-title" style="font-size:.72rem;color:var(--text3);margin-top:4px;min-height:1em;word-break:break-all"></div>
+    </div>
+    <div class="fg"><label>短連結（選填，貼上 lihi 等短網址供後續追蹤）</label><input id="po-shortlink" type="url" placeholder="https://lihi2.me/..."></div>
     <hr>
     <div class="tm" style="margin-bottom:10px">流量數據（發文後填入）</div>
     <div class="fr">
@@ -2857,9 +2871,13 @@ function renderPosts(){
       <td style="white-space:nowrap">${p.date||'—'}</td>
       <td><span class="badge b-green">${p.personaName||'—'}</span></td>
       <td>${(p.platforms&&p.platforms.length?p.platforms:[p.platform]).filter(Boolean).map(pl=>`<span class="badge b-blue" style="margin-right:2px">${pl}</span>`).join('')||'—'}</td>
-      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.topic||''}">${p.topic||'—'}</td>
+      <td style="max-width:160px">
+        <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.topic||''}">${p.topic||'—'}</div>
+        ${p.utmContent?`<div style="font-family:monospace;font-size:.62rem;color:#4ade80;white-space:nowrap" title="UTM 追蹤碼">🏷 ${p.utmContent}</div>`:''}
+      </td>
       <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.77rem" class="tm" title="${p.articleTitle||''}">${p.articleTitle||'—'}</td>
-      <td style="white-space:nowrap;text-align:center">${p.postUrl?`<a href="${escAttr(p.postUrl)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px">🔗 查看</a>`:''}
+      <td style="white-space:nowrap;text-align:center">${p.postUrl?`<a href="${escAttr(p.postUrl)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px" title="貼文連結">🔗 查看</a>`:''}
+        ${p.shortLink?`<a href="${escAttr(p.shortLink)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px;color:#fbbf24" title="短連結（導論壇文章）">🔗短</a>`:''}
         <button class="btn btn-xs btn-outline" onclick="openSetPostUrl('${p.id}')" title="${p.postUrl?'編輯連結':'添加貼文連結'}">${p.postUrl?'✏':'＋連結'}</button></td>
       <td>${p.views||0}</td><td>${p.reach||0}</td><td>${p.likes||0}</td><td>${p.comments||0}</td><td>${p.saves||0}</td><td>${p.shares||0}</td>
       <td class="flex" style="gap:5px"><button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新</button><button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button></td>
@@ -2877,6 +2895,7 @@ function renderPosts(){
       <div class="po-body">
         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">${plats.map(pl=>`<span class="badge b-blue">${pl}</span>`).join('')||'—'}</div>
         ${p.articleTitle?`<div style="font-size:.74rem;color:var(--text3);margin-bottom:6px">📄 ${p.articleTitle}</div>`:''}
+        ${p.utmContent?`<div style="font-family:monospace;font-size:.7rem;color:#4ade80;margin-bottom:6px">🏷 ${p.utmContent}</div>`:''}
         <div class="po-metrics">
           <div><div class="mv">${p.views||0}</div><div class="ml">瀏覽</div></div>
           <div><div class="mv">${p.reach||0}</div><div class="ml">觸及</div></div>
@@ -2887,6 +2906,7 @@ function renderPosts(){
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           ${p.postUrl?`<a href="${escAttr(p.postUrl)}" target="_blank" class="btn btn-xs btn-copy">🔗 查看貼文</a>`:''}
+          ${p.shortLink?`<a href="${escAttr(p.shortLink)}" target="_blank" class="btn btn-xs btn-copy" style="color:#fbbf24">🔗 短連結</a>`:''}
           <button class="btn btn-xs btn-outline" onclick="openSetPostUrl('${p.id}')">${p.postUrl?'✏ 編輯連結':'＋連結'}</button>
           <button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新數據</button>
           <button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button>
@@ -2897,9 +2917,70 @@ function renderPosts(){
 }
 function poToggle(el){ el.closest('.po-card')?.classList.toggle('open') }
 
+// ── 共用：UTM 追蹤碼 / 標題抓取（炒話題與發文追蹤共用）──
+function _syncCopy(utmElId, copyBtnId){
+  const v=document.getElementById(utmElId)?.value||''
+  const b=document.getElementById(copyBtnId); if(b) b.setAttribute('data-cp',v)
+}
+function _personaCodeById(pid){
+  if(!pid) return ''
+  const all=[...(DB.get('personas')||[]),...(DB.get('community')||[])]
+  const rec=all.find(x=>x.id===pid)
+  return rec ? actorCode(rec) : ''
+}
+function _nextUtmSeq(prefix){
+  const seqs=[]
+  ;(DB.get('links')||[]).forEach(l=>{ if(l.utmContent&&l.utmContent.startsWith(prefix)) seqs.push(parseInt(l.utmContent.slice(prefix.length))||0) })
+  ;(DB.get('thread_activities')||[]).forEach(a=>{ if(a.utmContent&&a.utmContent.startsWith(prefix)) seqs.push(parseInt(a.utmContent.slice(prefix.length))||0) })
+  ;(DB.get('posts')||[]).forEach(a=>{ if(a.utmContent&&a.utmContent.startsWith(prefix)) seqs.push(parseInt(a.utmContent.slice(prefix.length))||0) })
+  return Math.max(0,...seqs)+1
+}
+function _mmdd(dateStr){
+  return dateStr ? dateStr.slice(5,7)+dateStr.slice(8,10)
+    : (function(){const d=new Date();return String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')})()
+}
+async function _fetchTitleGeneric(url, urlElId, el, setTitle){
+  const myUrl=url
+  try{
+    const opt = (typeof AbortSignal!=='undefined'&&AbortSignal.timeout) ? {signal:AbortSignal.timeout(12000)} : {}
+    const r=await fetch('https://r.jina.ai/'+url, opt)
+    const text=await r.text()
+    if((document.getElementById(urlElId).value||'').trim()!==myUrl) return
+    const md=(text.split(/Markdown Content:\s*/i)[1]||'')
+    const h=md.match(/^#+\s+(.+)$/m)
+    const tline=text.match(/^Title:\s*(.+)$/m)
+    let title=((h&&h[1])||(tline&&tline[1])||'').trim()
+    if(title.length>120) title=title.slice(0,120)+'…'
+    if(title){ setTitle(title); el.textContent='📄 '+title }
+  }catch(e){}
+}
+
+// ── 發文追蹤：UTM 追蹤碼 + 標題預覽 ──
+let _poUrlTitle=''
+function poGenUtm(force){
+  const el=document.getElementById('po-utm'); if(!el) return
+  const code=_personaCodeById(document.getElementById('po-persona').value)
+  if(!code){ if(force) el.value=''; _syncCopy('po-utm','po-utm-copy'); return }
+  el.value=code+'-'+_mmdd(document.getElementById('po-date').value)+'-'+_nextUtmSeq(code+'-'+_mmdd(document.getElementById('po-date').value)+'-')
+  _syncCopy('po-utm','po-utm-copy')
+}
+function poOnUrlChange(){
+  const url=(document.getElementById('po-posturl').value||'').trim()
+  const el=document.getElementById('po-posturl-title'); if(!el) return
+  _poUrlTitle=''
+  if(!/^https?:\/\//.test(url)){ el.textContent=''; return }
+  el.textContent='🔗 '+taUrlLabel(url)
+  _fetchTitleGeneric(url, 'po-posturl', el, t=>{ _poUrlTitle=t })
+}
+
 function openAddPostModal(){
   renderTracker()
   document.getElementById('po-date').value=new Date().toISOString().split('T')[0]
+  document.getElementById('po-utm').value=''
+  document.getElementById('po-shortlink').value=''
+  document.getElementById('po-posturl-title').textContent=''
+  _poUrlTitle=''
+  _syncCopy('po-utm','po-utm-copy')
   openModal('modal-add-post')
 }
 
@@ -2927,6 +3008,9 @@ function savePost(){
     articleId:aid,articleTitle:a?.title||'',
     topic:document.getElementById('po-topic').value,
     postUrl:document.getElementById('po-posturl')?.value?.trim()||'',
+    utmContent:document.getElementById('po-utm')?.value?.trim()||'',
+    shortLink:document.getElementById('po-shortlink')?.value?.trim()||'',
+    urlTitle:(_poUrlTitle||'').trim()||(document.getElementById('po-posturl')?.value?.trim()?taUrlLabel(document.getElementById('po-posturl').value.trim()):''),
     likes:+document.getElementById('po-likes').value||0,
     comments:+document.getElementById('po-comments').value||0,
     shares:+document.getElementById('po-shares').value||0,
@@ -4871,14 +4955,8 @@ function taGenUtm(force){
   if(isEdit && !force && utmEl.value.trim()){ taSyncUtmCopy(); return }
   const code=taPersonaCode()
   if(!code){ if(force) utmEl.value=''; taSyncUtmCopy(); return }
-  const dateStr=document.getElementById('ta-date').value
-  const mmdd = dateStr ? dateStr.slice(5,7)+dateStr.slice(8,10)
-    : (function(){const d=new Date();return String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')})()
-  const prefix=code+'-'+mmdd+'-'
-  const seqs=[]
-  ;(DB.get('links')||[]).forEach(l=>{ if(l.utmContent&&l.utmContent.startsWith(prefix)) seqs.push(parseInt(l.utmContent.slice(prefix.length))||0) })
-  ;(DB.get('thread_activities')||[]).forEach(a=>{ if(a.utmContent&&a.utmContent.startsWith(prefix)) seqs.push(parseInt(a.utmContent.slice(prefix.length))||0) })
-  utmEl.value=prefix+(Math.max(0,...seqs)+1)
+  const prefix=code+'-'+_mmdd(document.getElementById('ta-date').value)+'-'
+  utmEl.value=prefix+_nextUtmSeq(prefix)
   taSyncUtmCopy()
 }
 

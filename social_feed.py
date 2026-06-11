@@ -172,13 +172,14 @@ def from_posts(rows, name_to_code):
         imp = p.get("views")
         if imp in (None, "", 0):
             imp = p.get("reach")
+        utm = (p.get("utmContent") or "").strip() or parse_utm_content(url)
         out.append({
             "date": date,
             "persona": code,
             "personaName": persona_name,
             "platform": norm_platform(p.get("platform")),
             "postUrl": url,
-            "utmContent": parse_utm_content(url),
+            "utmContent": utm or None,
             "impressions": num_or_none(imp),
             "likes": num_or_none(p.get("likes")),
             "comments": num_or_none(p.get("comments")),

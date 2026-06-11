@@ -1,6 +1,20 @@
 {
-  "lastUpdated": "2026-06-11T06:30:23Z",
+  "lastUpdated": "2026-06-11T08:05:01Z",
   "posts": [
+    {
+      "date": "2026-06-11",
+      "persona": null,
+      "personaName": "世足排雷週記",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/@uncle_wc/post/DZb71WViV12?xmt=AQG0G8NIYL7PHbPyEFh-BQay1taH012SdXCXYg36rqt1VQ",
+      "utmContent": "shizu-0611-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "世界盃免費觀賽資訊"
+    },
     {
       "date": "2026-06-11",
       "persona": "akki",
@@ -42,6 +56,62 @@
       "linkClicks": null,
       "registrations": null,
       "note": "手機看直播"
+    },
+    {
+      "date": "2026-06-11",
+      "persona": "crab",
+      "personaName": "蟹蟹世足觀測站",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/@_livenewsxiea/post/DZb9PBrERgE?xmt=AQG0TixGXMs4v6KYBaW718KpWER-L0rJoypBQy2aB7eTjA",
+      "utmContent": "crab-0611-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "6/12賽事提醒"
+    },
+    {
+      "date": "2026-06-11",
+      "persona": "god",
+      "personaName": "世足大財神",
+      "platform": "ig",
+      "postUrl": "https://www.instagram.com/p/DZcB7iAGIct/?img_index=1",
+      "utmContent": null,
+      "impressions": 0,
+      "likes": 0,
+      "comments": 0,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "台灣運彩出金完整教學 2026｜中獎兌獎流程、稅金計算、線上 vs 實體門市差異"
+    },
+    {
+      "date": "2026-06-11",
+      "persona": "akki",
+      "personaName": "阿奇",
+      "platform": "ig",
+      "postUrl": "https://www.instagram.com/p/DZcAsLEGa_j/?img_index=1",
+      "utmContent": null,
+      "impressions": 0,
+      "likes": 0,
+      "comments": 0,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "台灣運彩出金完整教學 2026｜中獎兌獎流程、稅金計算、線上 vs 實體門市差異"
+    },
+    {
+      "date": "2026-06-11",
+      "persona": "kk",
+      "personaName": "kk",
+      "platform": "ig",
+      "postUrl": "https://www.instagram.com/p/DZcAQ-MkUY0/?img_index=1",
+      "utmContent": null,
+      "impressions": 0,
+      "likes": 0,
+      "comments": 0,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "台灣運彩出金完整教學 2026｜中獎兌獎流程、稅金計算、線上 vs 實體門市差異"
     },
     {
       "date": "2026-06-10",
@@ -1251,7 +1321,7 @@
   "daily": [
     {
       "date": "2026-06-11",
-      "totalImpressions": null,
+      "totalImpressions": 0,
       "totalLinkClicks": null,
       "totalRegistrations": null
     },
