@@ -35,12 +35,16 @@ jobs:
         run: |
           python ga4_fetch.py
 
+      - name: 📡 產生對外社群成效 API (social-feed.json)
+        run: |
+          python social_feed.py
+
       - name: 📝 提交變更
         run: |
           git config user.name "GA4 Bot"
           git config user.email "noreply@github.com"
-          git add ga4-data.json
-          git commit -m "🔄 自動更新 GA4 數據 - $(date '+%Y-%m-%d %H:%M:%S UTC')" || echo "沒有變更"
+          git add ga4-data.json social-feed.json
+          git commit -m "🔄 自動更新 GA4 + social-feed 數據 - $(date '+%Y-%m-%d %H:%M:%S UTC')" || echo "沒有變更"
 
       - name: 🚀 推送回 repo
         run: |
