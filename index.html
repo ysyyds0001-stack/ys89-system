@@ -808,8 +808,16 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       </div>
       <div class="fg"><label>⑥ 文章/貼文標題 <span style="color:var(--text3);font-size:.72rem">記錄這條 UTM 是給哪篇用的</span></label>
         <input type="text" id="u-title" placeholder="例：2026世界盃觀賽懶人包 / 世足倒數10天話題"></div>
-      <div class="fg"><label>⑦ 用途 <span style="color:var(--text3);font-size:.72rem">文章發布 or 炒話題</span></label>
-        <select id="u-usage"><option value="文章發布">📄 文章發布</option><option value="炒話題">🔥 炒話題</option><option value="其他">其他</option></select></div>
+      <div class="fg"><label>⑦ 發文分類 <span style="color:var(--text3);font-size:.72rem">存檔後自動記到對應分頁</span></label>
+        <select id="u-usage" onchange="utmUsageChange()">
+          <option value="炒群">🔥 社群平台炒群</option>
+          <option value="匿名">📝 匿名社群發文</option>
+          <option value="fb">📘 臉書社團/粉專</option>
+          <option value="none">（只存短連結，不建發文記錄）</option>
+        </select></div>
+      <div class="fg" id="u-platform-wrap" style="display:none"><label>平台 / 社團 <span style="color:var(--text3);font-size:.72rem">記到哪個平台</span></label>
+        <input id="u-platform" list="u-platform-list" placeholder="Medium / Dcard / 社團名…">
+        <datalist id="u-platform-list"><option>Medium</option><option>Pixnet 痞客邦</option><option>方格子 Vocus</option><option>Blogger</option><option>HackMD</option><option>Tumblr</option><option>Dcard</option><option>PTT</option><option>Mobile01</option><option>巴哈姆特</option></datalist></div>
 
       <div style="background:var(--g3);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-top:4px">
         <div style="font-size:.74rem;color:var(--accent);font-weight:700;margin-bottom:7px">🔗 貼文用這條（已帶 UTM 追蹤）</div>
@@ -818,7 +826,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
           <input type="text" id="u-shortlink" placeholder="https://wc.ys89.com/... 或 lihi2.me/..."></div>
         <div style="display:flex;gap:8px;margin-top:9px">
           <button class="btn btn-copy" style="flex:1;justify-content:center" data-cp="" id="u-copy-btn" onclick="cpd(this)">📋 複製連結</button>
-          <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="utmSaveToLinks()">💾 存進短連結</button>
+          <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="utmSaveToLinks()">💾 儲存（存短連結＋建發文記錄）</button>
         </div>
       </div>
       <div id="u-agent-box" style="background:var(--g2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:10px;display:none">
@@ -832,7 +840,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <div class="tm" style="font-size:.78rem;line-height:1.7">
         <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">①</span><div>在這裡 <b>選水軍 → 選平台 → 選落地頁</b>，系統自動產生帶 <code>utm_source / utm_medium / utm_content</code> 的追蹤連結。水軍名單來自 <b style="color:var(--accent)">社群水軍號</b>，那邊改 utm 碼這裡即時同步。</div></div>
         <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">②</span><div>填 <b>⑥標題</b>（這條給哪篇用）、<b>⑦用途</b>（文章發布／炒話題），把連結貼到 lihi 縮短後，<b>短連結貼回⑦下方欄</b>。</div></div>
-        <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">③</span><div>按 <b style="color:var(--accent)">💾 存進短連結</b> → 這條會帶 <b>標題・用途・產出時間・UTM碼・短連結</b> 一起歸檔到「<b>短連結</b>」分頁的該水軍 UTM追蹤 區塊。</div></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">③</span><div>選 <b>⑦ 發文分類</b>（社群平台炒群／匿名社群發文／臉書社團粉專），按 <b style="color:var(--accent)">💾 儲存</b> → 同時存進短連結庫 <b>並自動到對應分頁建立一筆發文記錄</b>（標題・UTM碼・短連結・時間）。</div></div>
         <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">④</span><div>之後到 <b style="color:var(--accent)">發文追蹤 / 炒話題追蹤</b> 記錄發文時，用「<b>📎 帶入已建的 UTM/短連結</b>」下拉，<b>一鍵帶入 UTM碼＋短連結＋標題</b>，不用重 key。</div></div>
         <div style="display:flex;gap:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">⑤</span><div>系統每天把這些碼寫進對外 <code>social-feed.json</code>，SEO 成效儀表板用 <code>utm_content</code> 接 GA4，自動算出「這篇貼文帶幾人進論壇」。GA4 分頁也會用水軍中文名顯示 utm_source。</div></div>
       </div>
@@ -4928,7 +4936,7 @@ function utmInit(){
     html+=`<optgroup label="${t.label}">`+byT[t.k].map(a=>`<option value="${a.id}">${a.name}（${a.code}）</option>`).join('')+`</optgroup>`; });
   sel.innerHTML=html||'<option value="">（請先到社群水軍號新增帳號）</option>';
   if(cur && utmPersonas().some(a=>a.id===cur)) sel.value=cur;
-  utmGen();
+  utmUsageChange(); utmGen();
 }
 function utmCampChange(){ document.getElementById('u-campaign-custom').style.display=document.getElementById('u-campaign').value==='__custom__'?'block':'none'; utmGen(); }
 function utmLandChange(){ document.getElementById('u-landing-custom').style.display=document.getElementById('u-landing').value==='__custom__'?'block':'none'; utmGen(); }
@@ -4985,11 +4993,41 @@ function utmSaveToLinks(){
     status:'使用中', note:`UTM 產生器 · ${usage}`, isSeoAsset:false,
     utmContent:ct, title, usage, createdAt:new Date().toISOString() });
   DB.set('links',all); DB.push('links').catch(()=>{});
-  toast(`已存進短連結 → ${p.name}${title?'（'+title+'）':''}`);
+  // 依分類建立發文記錄到對應分頁
+  const recMsg=_utmCreateChannelRecord(usage, p, code, ct, title, shortUrl);
+  toast(`已存短連結${recMsg?' + '+recMsg:''} → ${p.name}${title?'（'+title+'）':''}`);
   document.getElementById('u-content').value=utmSuggestContent(p);
   if(document.getElementById('u-title')) document.getElementById('u-title').value='';
   if(document.getElementById('u-shortlink')) document.getElementById('u-shortlink').value='';
+  if(document.getElementById('u-platform')) document.getElementById('u-platform').value='';
   utmGen();
+}
+function utmUsageChange(){
+  const v=document.getElementById('u-usage')?.value;
+  const wrap=document.getElementById('u-platform-wrap');
+  if(wrap) wrap.style.display=(v==='匿名'||v==='fb')?'':'none';
+}
+// 從 UTM 產生器建立發文記錄（炒群→thread_activities；匿名/fb→channel_posts）
+function _utmCreateChannelRecord(usage, p, code, utmContent, title, shortUrl){
+  const today=new Date().toISOString().split('T')[0], now=new Date().toISOString();
+  if(usage==='炒群'){
+    const med=document.getElementById('u-medium').value;
+    const platMap={th_post:'Threads',th_bio:'Threads',th_comment:'Threads',ig_post:'IG',ig_bio:'IG',ig_comment:'IG',fb_post:'FB'};
+    const plat=platMap[med]||'Threads';
+    const list=DB.get('thread_activities')||[];
+    list.push({id:DB.id(),date:today,personaId:'',personaName:p.name,platforms:[plat],strategy:'引流/導到ys89',dir:'',topic:title||'',url:'',content:'',utmContent,shortLink:shortUrl||'',urlTitle:title||'',status:'待記錄',platformMetrics:{},notes:'UTM產生器建立',createdAt:now,updatedAt:now});
+    DB.set('thread_activities',list);
+    return '記到社群平台炒群';
+  }
+  if(usage==='匿名'||usage==='fb'){
+    const channel=usage==='fb'?'fb':'seeding';
+    const platform=(document.getElementById('u-platform')?.value||'').trim();
+    const list=DB.get('channel_posts')||[];
+    list.push({id:DB.id(),date:today,channel,role:code,roleName:p.name,platform,contentType:'經驗分享',linkMode:'link',title:title||'',utmContent,shortLink:shortUrl||'',url:'',urlTitle:title||'',status:'已發(待回查)',engaged:'',note:'UTM產生器建立',createdAt:now,updatedAt:now});
+    DB.set('channel_posts',list);
+    return channel==='fb'?'記到臉書社團/粉專':'記到匿名社群發文';
+  }
+  return '';
 }
 function utmRenderRecent(p){
   const box=document.getElementById('u-recent'); if(!box||!p) return;
