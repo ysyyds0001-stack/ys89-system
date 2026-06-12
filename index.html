@@ -811,7 +811,8 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
           <option value="https://worldgoals.live/">worldgoals.live / 直播頁</option>
           <option value="__custom__">✏️ 自訂網址…</option>
         </select>
-        <input type="text" id="u-landing-custom" placeholder="https://..." style="margin-top:8px;display:none" oninput="utmGen()"></div>
+        <input type="text" id="u-landing-custom" placeholder="https://..." style="margin-top:8px;display:none" oninput="utmGen()">
+        <input type="text" id="u-landing-note" placeholder="📝 這個落地頁的備註（例：論壇出金頁、評測比較頁）" style="margin-top:8px;font-size:.82rem" oninput="_utmScheduleAutoSave()"></div>
       <div class="fg"><label>⑤ 貼文編號 <span style="color:var(--text3);font-size:.72rem">utm_content · 區分是哪一則貼文帶的量</span></label>
         <div style="display:flex;gap:8px">
           <input type="text" id="u-content" placeholder="自動產生，可改" style="flex:1" oninput="utmGen()">
@@ -4905,7 +4906,7 @@ function _renderChannel(scope, ids){
       <td style="padding:7px;white-space:nowrap">${p.date||'—'}</td>
       <td style="padding:7px"><span class="badge b-green">${p.roleName||p.role||'—'}</span></td>
       <td style="padding:7px">${p.platform||'—'}</td>
-      <td style="padding:7px;max-width:200px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title||'—'}</div>${p.urlTitle&&p.urlTitle!==p.title?`<div style="font-size:.66rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escAttr(p.urlTitle)}">📄 ${p.urlTitle}</div>`:''}<div class="tm" style="font-size:.66rem">${p.contentType||''}${p.linkMode==='mention'?' · 純提及':''}</div></td>
+      <td style="padding:7px;max-width:200px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title||'—'}</div>${p.urlTitle&&p.urlTitle!==p.title?`<div style="font-size:.66rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escAttr(p.urlTitle)}">📄 ${p.urlTitle}</div>`:''}<div class="tm" style="font-size:.66rem">${p.contentType||''}${p.linkMode==='mention'?' · 純提及':''}</div>${p.landingNote?`<div style="font-size:.64rem;color:#a78bfa">→ ${p.landingNote}</div>`:''}</td>
       <td style="padding:7px">${p.utmContent?`<code style="color:#4ade80;font-size:.66rem">🏷${p.utmContent}</code>`:p.linkMode==='mention'?'<span class="tm" style="font-size:.66rem">純提及</span>':'<span class="tm">—</span>'}${p.shortLink?` <a href="${escAttr(p.shortLink)}" target="_blank" style="font-size:.66rem;color:#fbbf24">🔗短</a>`:''}</td>
       <td style="padding:7px;text-align:center;white-space:nowrap"><span style="color:${stColor[p.status]||'#8A7D74'};font-size:.78rem;font-weight:600">${p.status||'—'}</span>${p.engaged==='yes'?'<br><span style="font-size:.62rem;color:#f59e0b">💬有互動</span>':''}</td>
       <td style="padding:7px;white-space:nowrap"><button class="btn btn-xs btn-outline" onclick="openEditChannelPost('${p.id}')">✏</button> <button class="btn btn-xs btn-danger" onclick="delChannelPost('${p.id}')">✕</button></td>
@@ -4976,6 +4977,7 @@ function renderLinks(){
           <div class="lk-card-h">
             <div>
               <div class="lk-tgt">${l.title?'📄 '+l.title+' — ':''}${l.entryName}</div>
+              ${l.landingNote?`<div style="font-size:.68rem;color:#a78bfa;margin-top:2px">→ 導到：${l.landingNote}</div>`:''}
               ${l.note?`<div class="lk-note">${l.note}</div>`:''}
               ${l.createdAt?`<div style="font-size:.66rem;color:var(--text3);margin-top:2px">🕒 ${(l.createdAt||'').slice(0,10)}${l.usage?' · '+l.usage:''}${l.utmContent?' · 🏷 '+l.utmContent:''}</div>`:''}
             </div>
@@ -5092,9 +5094,10 @@ function _utmAutoSaveLink(){
   const short=(document.getElementById('u-shortlink')?.value||'').trim();
   const links=DB.get('links').length?DB.get('links'):[...DEFAULT_LINKS];
   let rec=links.find(l=>l.utmContent===ct && l.accountCode===code && l.placement==='UTM追蹤');
+  const landingNote=(document.getElementById('u-landing-note')?.value||'').trim();
   const fields={ accountName:p.name, platform:_medPlatform(med),
     entryName:`${title?title+' · ':''}${ct} · ${med}`, originalUrl:url, shortLinkUrl:short, useShortLink:!!short,
-    note:'UTM 產生器 · 自動保存', utmContent:ct, title, usage:document.getElementById('u-usage')?.value||'', updatedAt:new Date().toISOString() };
+    note:'UTM 產生器 · 自動保存', utmContent:ct, title, landingNote, usage:document.getElementById('u-usage')?.value||'', updatedAt:new Date().toISOString() };
   if(rec){ Object.assign(rec,fields); }
   else { links.push({ id:'lk'+Date.now(), category:'水軍', accountCode:code, placement:'UTM追蹤', purpose:'社群 UTM 追蹤', status:'使用中', isSeoAsset:false, createdAt:new Date().toISOString(), ...fields }); }
   DB.set('links',links); DB.push('links').catch(()=>{});
@@ -5115,11 +5118,12 @@ function utmSaveToLinks(){
   const title=(document.getElementById('u-title')?.value||'').trim();
   const shortUrl=(document.getElementById('u-shortlink')?.value||'').trim();
   const usage=document.getElementById('u-usage')?.value||'其他';
+  const landingNote=(document.getElementById('u-landing-note')?.value||'').trim();
   const all=DB.get('links').length?DB.get('links'):[...DEFAULT_LINKS];
   // 短連結：同一 utm_content 一筆（自動保存可能已建，這裡更新/補建，不重複碼）
   let rec=all.find(l=>l.utmContent===ct && l.accountCode===code && l.placement==='UTM追蹤');
   const lf={ accountName:p.name, platform:_medPlatform(med), entryName:`${title?title+' · ':''}${ct||utmCampVal()} · ${med}`,
-    originalUrl:url, shortLinkUrl:shortUrl, useShortLink:!!shortUrl, note:`UTM 產生器 · ${usage}`, utmContent:ct, title, usage, updatedAt:new Date().toISOString() };
+    originalUrl:url, shortLinkUrl:shortUrl, useShortLink:!!shortUrl, note:`UTM 產生器 · ${usage}`, utmContent:ct, title, landingNote, usage, updatedAt:new Date().toISOString() };
   if(rec){ Object.assign(rec,lf); }
   else { all.push({ id:'lk'+Date.now(), category:'水軍', accountCode:code, placement:'UTM追蹤', purpose:'社群 UTM 追蹤', status:'使用中', isSeoAsset:false, createdAt:new Date().toISOString(), ...lf }); }
   DB.set('links',all); DB.push('links').catch(()=>{});
@@ -5130,6 +5134,7 @@ function utmSaveToLinks(){
   if(document.getElementById('u-title')) document.getElementById('u-title').value='';
   if(document.getElementById('u-shortlink')) document.getElementById('u-shortlink').value='';
   if(document.getElementById('u-platform')) document.getElementById('u-platform').value='';
+  if(document.getElementById('u-landing-note')) document.getElementById('u-landing-note').value='';
   utmGen();
 }
 function utmUsageChange(){
@@ -5140,11 +5145,13 @@ function utmUsageChange(){
 // 從 UTM 產生器建立發文記錄（炒群→thread_activities；匿名/fb→channel_posts）
 function _utmCreateChannelRecord(usage, p, code, utmContent, title, shortUrl){
   const today=new Date().toISOString().split('T')[0], now=new Date().toISOString();
+  const landingUrl=utmBuildUrl(p);
+  const landingNote=(document.getElementById('u-landing-note')?.value||'').trim();
   if(usage==='炒群'){
     const med=document.getElementById('u-medium').value;
     const plat=_medPlatform(med);
     const list=DB.get('thread_activities')||[];
-    list.push({id:DB.id(),date:today,personaId:'',personaName:p.name,platforms:[plat],strategy:'引流/導到ys89',dir:'',topic:title||'',url:'',content:'',utmContent,shortLink:shortUrl||'',urlTitle:title||'',status:'待記錄',platformMetrics:{},notes:'UTM產生器建立',createdAt:now,updatedAt:now});
+    list.push({id:DB.id(),date:today,personaId:'',personaName:p.name,platforms:[plat],strategy:'引流/導到ys89',dir:'',topic:title||'',url:'',content:'',utmContent,shortLink:shortUrl||'',urlTitle:title||'',landingUrl,landingNote,status:'待記錄',platformMetrics:{},notes:'UTM產生器建立',createdAt:now,updatedAt:now});
     DB.set('thread_activities',list);
     return '記到社群平台炒群';
   }
@@ -5152,7 +5159,7 @@ function _utmCreateChannelRecord(usage, p, code, utmContent, title, shortUrl){
     const channel=usage==='fb'?'fb':'seeding';
     const platform=(document.getElementById('u-platform')?.value||'').trim();
     const list=DB.get('channel_posts')||[];
-    list.push({id:DB.id(),date:today,channel,role:code,roleName:p.name,platform,contentType:'經驗分享',linkMode:'link',title:title||'',utmContent,shortLink:shortUrl||'',url:'',urlTitle:title||'',status:'已發(待回查)',engaged:'',note:'UTM產生器建立',createdAt:now,updatedAt:now});
+    list.push({id:DB.id(),date:today,channel,role:code,roleName:p.name,platform,contentType:'經驗分享',linkMode:'link',title:title||'',utmContent,shortLink:shortUrl||'',url:'',urlTitle:title||'',landingUrl,landingNote,status:'已發(待回查)',engaged:'',note:'UTM產生器建立',createdAt:now,updatedAt:now});
     DB.set('channel_posts',list);
     return channel==='fb'?'記到臉書社團/粉專':'記到匿名社群發文';
   }
