@@ -191,6 +191,36 @@ def from_posts(rows, name_to_code):
     return out
 
 
+def from_channel_posts(rows, name_to_code):
+    """匿名社群發文(seeding) + 臉書社團/粉專(fb) → 貼文。指標社群端不逐則記錄，僅帶 utmContent 供 GA4 join。"""
+    out = []
+    for p in rows:
+        date = (p.get("date") or "")[:10]
+        if not date:
+            continue
+        channel = p.get("channel") or "seeding"
+        persona_name = p.get("roleName") or None
+        code = (p.get("role") or "").strip() or resolve_code(persona_name, name_to_code)
+        platform = "fb" if channel == "fb" else norm_platform(p.get("platform"))
+        utm = (p.get("utmContent") or "").strip() or parse_utm_content(p.get("url"))
+        out.append({
+            "date": date,
+            "persona": code or None,
+            "personaName": persona_name,
+            "platform": platform,
+            "postUrl": p.get("url") or p.get("shortLink") or None,
+            "utmContent": utm or None,
+            "impressions": None,
+            "likes": None,
+            "comments": None,
+            "linkClicks": None,
+            "registrations": None,
+            "note": p.get("title") or p.get("note") or None,
+            "_src": "channel_posts",
+        })
+    return out
+
+
 def dedupe(posts):
     """以 (postUrl, platform) 去重；thread_activities 較完整優先保留。"""
     seen, out = {}, []
@@ -265,14 +295,22 @@ def main():
     print("🔗 抓取資料源 …")
     thread_acts = fetch_json(f"{SYS_API}/thread_activities")
     posts_raw = fetch_json(f"{SYS_API}/posts")
+    try:
+        channel_posts = fetch_json(f"{SYS_API}/channel_posts")
+        if not isinstance(channel_posts, list):
+            channel_posts = []
+    except Exception:
+        channel_posts = []
     master = fetch_json(f"{UTM_API}/personas")
     if not isinstance(master, list):
         master = master.get("personas") or master.get("results") or master.get("data") or []
-    print(f"   thread_activities={len(thread_acts)}  posts={len(posts_raw)}  personas={len(master)}")
+    print(f"   thread_activities={len(thread_acts)}  posts={len(posts_raw)}  channel_posts={len(channel_posts)}  personas={len(master)}")
 
     name_to_code, _ = build_persona_index(master)
 
-    posts = from_thread_activities(thread_acts, name_to_code) + from_posts(posts_raw, name_to_code)
+    posts = (from_thread_activities(thread_acts, name_to_code)
+             + from_posts(posts_raw, name_to_code)
+             + from_channel_posts(channel_posts, name_to_code))
     posts = dedupe(posts)
     posts = within_window(posts, DAYS_WINDOW)
     posts.sort(key=lambda x: (x["date"], x.get("postUrl") or ""), reverse=True)
