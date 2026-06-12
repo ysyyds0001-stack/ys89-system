@@ -841,6 +841,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
           <button class="btn btn-copy" style="flex:1;justify-content:center" data-cp="" id="u-copy-btn" onclick="cpd(this)">📋 複製連結</button>
           <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="utmSaveToLinks()">💾 儲存（存短連結＋建發文記錄）</button>
         </div>
+        <div id="u-autosave-ind" style="font-size:.7rem;color:#4ade80;margin-top:6px;text-align:center;min-height:1em"></div>
       </div>
       <div id="u-agent-box" style="background:var(--g2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:10px;display:none">
         <div style="font-size:.72rem;color:var(--accent);font-weight:700;margin-bottom:5px">📇 這個水軍的代理註冊連結（放 LINE/簡介引導註冊）</div>
@@ -5023,6 +5024,7 @@ function utmInit(){
   sel.innerHTML=html||'<option value="">（請先到社群水軍號新增帳號）</option>';
   if(cur && utmPersonas().some(a=>a.id===cur)) sel.value=cur;
   utmFillLanding(); utmUsageChange(); utmGen();
+  clearTimeout(_utmAutoTimer);  // 進頁面的自動產生不自動保存，等使用者實際操作才存
 }
 // ④ 落地頁下拉直接讀「入口」分頁 → UTM 與入口形成閉環（要導哪入口都有紀載）
 function utmFillLanding(){
@@ -5076,6 +5078,28 @@ function utmGen(){
   if(p.proxy){ box.style.display='block'; const a=`https://ys89.bet/?proxy=${p.proxy}`; document.getElementById('u-agent').textContent=a; document.getElementById('u-agent-btn').setAttribute('data-cp',a); }
   else box.style.display='none';
   utmRenderRecent(p);
+  _utmScheduleAutoSave();
+}
+// 自動保存：生成完防抖 1.2s 後，把這條 UTM 連結存進短連結庫（同一 utm_content 只一筆、更新不重複）
+let _utmAutoTimer=null;
+function _utmScheduleAutoSave(){ clearTimeout(_utmAutoTimer); _utmAutoTimer=setTimeout(_utmAutoSaveLink,1200); }
+function _utmAutoSaveLink(){
+  const p=utmCurrentPersona(); if(!p) return;
+  const code=commCode(p), ct=utmContentVal();
+  if(!ct || ct.startsWith('-') || !code) return;
+  const url=utmBuildUrl(p), med=document.getElementById('u-medium').value;
+  const title=(document.getElementById('u-title')?.value||'').trim();
+  const short=(document.getElementById('u-shortlink')?.value||'').trim();
+  const links=DB.get('links').length?DB.get('links'):[...DEFAULT_LINKS];
+  let rec=links.find(l=>l.utmContent===ct && l.accountCode===code && l.placement==='UTM追蹤');
+  const fields={ accountName:p.name, platform:_medPlatform(med),
+    entryName:`${title?title+' · ':''}${ct} · ${med}`, originalUrl:url, shortLinkUrl:short, useShortLink:!!short,
+    note:'UTM 產生器 · 自動保存', utmContent:ct, title, usage:document.getElementById('u-usage')?.value||'', updatedAt:new Date().toISOString() };
+  if(rec){ Object.assign(rec,fields); }
+  else { links.push({ id:'lk'+Date.now(), category:'水軍', accountCode:code, placement:'UTM追蹤', purpose:'社群 UTM 追蹤', status:'使用中', isSeoAsset:false, createdAt:new Date().toISOString(), ...fields }); }
+  DB.set('links',links); DB.push('links').catch(()=>{});
+  const ind=document.getElementById('u-autosave-ind'); if(ind) ind.textContent='✓ 已自動保存到短連結庫';
+  if(document.getElementById('pg-utm')?.classList.contains('active')) utmRenderRecent(p);
 }
 function _medPlatform(med){
   med=med||''
@@ -5086,19 +5110,18 @@ function _medPlatform(med){
 function utmSaveToLinks(){
   const p=utmCurrentPersona(); if(!p){ toast('請先選水軍','err'); return; }
   const url=utmBuildUrl(p), med=document.getElementById('u-medium').value, code=commCode(p);
-  const all=DB.get('links').length?DB.get('links'):[...DEFAULT_LINKS];
-  if(all.some(l=>l.originalUrl===url && l.accountCode===code)){ toast('這條已存過了'); return; }
   const ct=utmContentVal();
   if(!ct || ct.startsWith('-') || !commCode(p)){ toast('⚠️ 此角色沒有有效的 UTM 代碼，請到社群水軍號設定 code 再存','err'); return; }
   const title=(document.getElementById('u-title')?.value||'').trim();
   const shortUrl=(document.getElementById('u-shortlink')?.value||'').trim();
   const usage=document.getElementById('u-usage')?.value||'其他';
-  all.push({ id:'lk'+Date.now(), category:'水軍', accountCode:code, accountName:p.name,
-    platform:_medPlatform(med), placement:'UTM追蹤',
-    entryName:`${title?title+' · ':''}${ct||utmCampVal()} · ${med}`,
-    purpose:'社群 UTM 追蹤', originalUrl:url, shortLinkUrl:shortUrl, useShortLink:!!shortUrl,
-    status:'使用中', note:`UTM 產生器 · ${usage}`, isSeoAsset:false,
-    utmContent:ct, title, usage, createdAt:new Date().toISOString() });
+  const all=DB.get('links').length?DB.get('links'):[...DEFAULT_LINKS];
+  // 短連結：同一 utm_content 一筆（自動保存可能已建，這裡更新/補建，不重複碼）
+  let rec=all.find(l=>l.utmContent===ct && l.accountCode===code && l.placement==='UTM追蹤');
+  const lf={ accountName:p.name, platform:_medPlatform(med), entryName:`${title?title+' · ':''}${ct||utmCampVal()} · ${med}`,
+    originalUrl:url, shortLinkUrl:shortUrl, useShortLink:!!shortUrl, note:`UTM 產生器 · ${usage}`, utmContent:ct, title, usage, updatedAt:new Date().toISOString() };
+  if(rec){ Object.assign(rec,lf); }
+  else { all.push({ id:'lk'+Date.now(), category:'水軍', accountCode:code, placement:'UTM追蹤', purpose:'社群 UTM 追蹤', status:'使用中', isSeoAsset:false, createdAt:new Date().toISOString(), ...lf }); }
   DB.set('links',all); DB.push('links').catch(()=>{});
   // 依分類建立發文記錄到對應分頁
   const recMsg=_utmCreateChannelRecord(usage, p, code, ct, title, shortUrl);
