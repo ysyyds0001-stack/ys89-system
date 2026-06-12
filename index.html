@@ -289,9 +289,9 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'articles')">文章庫</div>
   <div class="nav-tab" onclick="nav(this,'community')">社群水軍號</div>
   <div class="nav-tab" onclick="nav(this,'roles')">🎭 角色主檔</div>
-  <div class="nav-tab" onclick="nav(this,'threadtracker')">🔥 炒話題追蹤</div>
-  <div class="nav-tab" onclick="nav(this,'channel')">📣 鋪文/社團</div>
-  <div class="nav-tab" onclick="nav(this,'threads')">📱 Threads</div>
+  <div class="nav-tab" onclick="nav(this,'threadtracker')">🔥 社群平台炒群</div>
+  <div class="nav-tab" onclick="nav(this,'channel')">📝 匿名社群發文</div>
+  <div class="nav-tab" onclick="nav(this,'channelfb')">📘 臉書社團/粉專</div>
   <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
   <div class="nav-tab" onclick="nav(this,'utm')">🏷️ UTM 產生器</div>
   <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口</div>
@@ -867,23 +867,36 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   </div>
 </div>
 
-<!-- ===== PAGE: 鋪文/社團 ===== -->
+<!-- ===== PAGE: 匿名社群發文 ===== -->
 <div id="pg-channel" class="page">
   <div class="fb" style="margin-bottom:14px">
     <div>
-      <h2 style="font-size:1.2rem;font-weight:700">📣 鋪文 / FB社團 追蹤</h2>
-      <p class="tm" style="margin-top:3px">第三方部落格/論壇鋪文 + FB社團經營 · 角色依主檔能力過濾 · 可掛 UTM · 追存活/互動</p>
+      <h2 style="font-size:1.2rem;font-weight:700">📝 匿名社群發文</h2>
+      <p class="tm" style="margin-top:3px">Medium/Pixnet/方格子/Dcard/PTT 等第三方部落格・論壇 · 可掛 UTM · 追存活/互動</p>
     </div>
     <div class="flex">
-      <select id="cp-f-channel" onchange="renderChannelPosts()" style="width:120px">
-        <option value="">全部管道</option><option value="seeding">📣 鋪文</option><option value="fb">📘 FB社團</option>
-      </select>
-      <select id="cp-f-platform" onchange="renderChannelPosts()" style="width:130px"><option value="">全部平台</option></select>
-      <button class="btn btn-primary" onclick="openAddChannelPost()">+ 新增記錄</button>
+      <select id="cp-f-platform" onchange="renderChannelPosts()" style="width:150px"><option value="">全部平台</option></select>
+      <button class="btn btn-primary" onclick="openAddChannelPost('seeding')">+ 新增記錄</button>
     </div>
   </div>
   <div class="g4" id="cp-stats" style="margin-bottom:16px"></div>
   <div class="card"><div id="cp-table" style="overflow-x:auto"></div></div>
+</div>
+
+<!-- ===== PAGE: 臉書社團/粉專 ===== -->
+<div id="pg-channelfb" class="page">
+  <div class="fb" style="margin-bottom:14px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">📘 臉書社團 / 粉專</h2>
+      <p class="tm" style="margin-top:3px">FB 社團經營、粉專貼文 · 可掛 UTM · 追存活/互動</p>
+    </div>
+    <div class="flex">
+      <select id="cpfb-f-platform" onchange="renderChannelFb()" style="width:160px"><option value="">全部社團/粉專</option></select>
+      <button class="btn btn-primary" onclick="openAddChannelPost('fb')">+ 新增記錄</button>
+    </div>
+  </div>
+  <div class="g4" id="cpfb-stats" style="margin-bottom:16px"></div>
+  <div class="card"><div id="cpfb-table" style="overflow-x:auto"></div></div>
 </div>
 
 <!-- 新增鋪文/社團記錄 -->
@@ -1061,8 +1074,8 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
 <div id="pg-threadtracker" class="page">
   <div class="fb" style="margin-bottom:18px">
     <div>
-      <h2 style="font-size:1.2rem;font-weight:700">🔥 炒話題追蹤</h2>
-      <p class="tm" style="margin-top:3px">每日炒話題記錄 · 隔日成效追蹤 · 連結速達</p>
+      <h2 style="font-size:1.2rem;font-weight:700">🔥 社群平台炒群</h2>
+      <p class="tm" style="margin-top:3px">IG/Threads/FB 炒話題、炒熱度 · 隔日成效追蹤 · 連結速達</p>
     </div>
     <div class="flex">
       <select id="tt-filter-platform" style="width:110px" onchange="renderThreadTracker()">
@@ -1077,46 +1090,6 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   </div>
   <div id="tt-today-banner" style="margin-bottom:16px"></div>
   <div id="tt-table"></div>
-</div>
-
-<!-- ===== PAGE: Threads 腳本 ===== -->
-<div id="pg-threads" class="page">
-  <div class="fb" style="margin-bottom:18px">
-    <div>
-      <h2 style="font-size:1.2rem;font-weight:700">Threads 腳本庫</h2>
-      <p class="tm" style="margin-top:3px">熱門仿文腳本 · 角色炒話題回覆規劃</p>
-    </div>
-    <select id="th-dir-filter" onchange="renderThreads()" style="width:160px">
-      <option value="">全部方向</option>
-      <option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option>
-      <option>百家樂</option><option>老虎機</option><option>捕魚機</option>
-    </select>
-  </div>
-  <!-- URL 投餵靈感區 -->
-  <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:10px;padding:14px 16px;margin-bottom:20px">
-    <div style="font-size:.85rem;font-weight:600;color:var(--accent);margin-bottom:10px">🔗 投餵熱門帖 URL → 生成仿文靈感提示詞</div>
-    <div style="display:flex;gap:8px">
-      <input id="th-inspire-url" placeholder="貼入 Threads 熱門帖的網址..." style="flex:1">
-      <button class="btn btn-primary" onclick="genThreadInspire()">✨ 生成靈感</button>
-    </div>
-    <div id="th-inspire-result" style="margin-top:10px"></div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
-    <div>
-      <div class="fb" style="margin-bottom:12px">
-        <div style="font-size:.9rem;font-weight:600;color:var(--accent)">✍️ 仿文腳本</div>
-        <button class="btn btn-primary btn-sm" onclick="openAddThreadsPost()">+ 新增</button>
-      </div>
-      <div id="th-posts-list"></div>
-    </div>
-    <div>
-      <div class="fb" style="margin-bottom:12px">
-        <div style="font-size:.9rem;font-weight:600;color:var(--accent)">🔥 炒話題回覆串</div>
-        <button class="btn btn-primary btn-sm" onclick="openAddThreadsReply()">+ 新增</button>
-      </div>
-      <div id="th-replies-list"></div>
-    </div>
-  </div>
 </div>
 
 <!-- ===== PAGE: 入口管理 ===== -->
@@ -2755,7 +2728,7 @@ function nav(el,page){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
-  const renders={roles:renderRoles,channel:renderChannelPosts,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,threads:renderThreads,entrances:renderEntrances,links:renderLinks,cast:renderCast}
+  const renders={roles:renderRoles,channel:renderChannelPosts,channelfb:renderChannelFb,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,entrances:renderEntrances,links:renderLinks,cast:renderCast}
   if(page==='todo'){initTodayTodos(false);renderTodo()}
   else if(page==='ga4'){ if(_ga4Data) renderGA4(_ga4Data); }
   else if(page==='utm'){ utmInit() }
@@ -4736,11 +4709,12 @@ function cpLinkModeChange(){
   document.getElementById('cp-utm-wrap').style.display=mention?'none':''
   if(!mention) cpGenUtm()
 }
-function openAddChannelPost(){
+function _rerenderChannels(){ try{renderChannelPosts()}catch(e){} try{renderChannelFb()}catch(e){} }
+function openAddChannelPost(preset){
   document.getElementById('cp-id').value=''
   document.getElementById('cp-modal-title').textContent='新增鋪文/社團記錄'
   document.getElementById('cp-date').value=new Date().toISOString().split('T')[0]
-  document.getElementById('cp-channel').value=document.getElementById('cp-f-channel').value||'seeding'
+  document.getElementById('cp-channel').value=preset||'seeding'
   ;['cp-platform','cp-title','cp-utm','cp-shortlink','cp-url','cp-note'].forEach(i=>document.getElementById(i).value='')
   document.getElementById('cp-type').value='經驗分享'
   document.getElementById('cp-linkmode').value='link'
@@ -4801,51 +4775,49 @@ function saveChannelPost(){
   if(id){ const i=list.findIndex(x=>x.id===id); if(i>=0) list[i]={...list[i],...obj} }
   else list.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
   DB.set('channel_posts',list)
-  closeModal('modal-channel-post'); renderChannelPosts()
+  closeModal('modal-channel-post'); _rerenderChannels()
   toast(id?'記錄已更新':'記錄已新增')
 }
 function delChannelPost(id){
   if(!confirm('刪除這筆記錄？'))return
-  DB.set('channel_posts',(DB.get('channel_posts')||[]).filter(x=>x.id!==id)); renderChannelPosts()
+  DB.set('channel_posts',(DB.get('channel_posts')||[]).filter(x=>x.id!==id)); _rerenderChannels()
 }
-function renderChannelPosts(){
-  const all=(DB.get('channel_posts')||[])
-  // 動態建平台篩選選項（從現有記錄）
-  const platSel=document.getElementById('cp-f-platform')
+function _renderChannel(scope, ids){
+  const all=(DB.get('channel_posts')||[]).filter(p=>p.channel===scope)
+  const platSel=document.getElementById(ids.platFilter)
   if(platSel){
     const plats=[...new Set(all.map(p=>(p.platform||'').trim()).filter(Boolean))].sort()
-    const cur=platSel.value
-    platSel.innerHTML='<option value="">全部平台</option>'+plats.map(p=>`<option>${p}</option>`).join('')
+    const cur=platSel.value, first=platSel.options[0]?platSel.options[0].outerHTML:'<option value="">全部</option>'
+    platSel.innerHTML=first+plats.map(p=>`<option>${p}</option>`).join('')
     if(plats.includes(cur)) platSel.value=cur
   }
   let list=all.slice().reverse()
-  const cf=document.getElementById('cp-f-channel')?.value
-  const pf2=document.getElementById('cp-f-platform')?.value
-  if(cf) list=list.filter(p=>p.channel===cf)
+  const pf2=platSel?platSel.value:''
   if(pf2) list=list.filter(p=>(p.platform||'').trim()===pf2)
   const reviewed=list.filter(p=>p.status==='存活'||p.status==='被刪')
   const alive=list.filter(p=>p.status==='存活').length
   const aliveRate=reviewed.length?Math.round(alive/reviewed.length*100):0
-  document.getElementById('cp-stats').innerHTML=[
+  document.getElementById(ids.stats).innerHTML=[
     ['總記錄',list.length,'var(--accent)'],['存活率',aliveRate+'%','#4ade80'],
     ['有互動',list.filter(p=>p.engaged==='yes').length,'#f59e0b'],['已掛碼',list.filter(p=>p.utmContent).length,'#a78bfa']
   ].map(([l,v,c])=>`<div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:${c}">${v}</div><div class="tm">${l}</div></div>`).join('')
-  const wrap=document.getElementById('cp-table')
-  if(!list.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無記錄，點右上「+ 新增記錄」開始</div>';return}
-  const chIcon={seeding:'📣 鋪文',fb:'📘 FB社團'}, stColor={'存活':'#4ade80','被刪':'#f87171','已發(待回查)':'#f59e0b'}
+  const wrap=document.getElementById(ids.table)
+  if(!list.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無記錄，點右上「+ 新增記錄」開始（或到 UTM 產生器發文時直接存）</div>';return}
+  const stColor={'存活':'#4ade80','被刪':'#f87171','已發(待回查)':'#f59e0b'}
   wrap.innerHTML=`<table style="width:100%;font-size:.84rem;border-collapse:collapse">
-    <thead><tr style="border-bottom:2px solid var(--border)"><th style="text-align:left;padding:7px">日期</th><th style="text-align:left;padding:7px">管道</th><th style="text-align:left;padding:7px">角色</th><th style="text-align:left;padding:7px">平台</th><th style="text-align:left;padding:7px">標題/類型</th><th style="text-align:left;padding:7px">UTM/連結</th><th style="padding:7px">狀態</th><th style="padding:7px">操作</th></tr></thead>
+    <thead><tr style="border-bottom:2px solid var(--border)"><th style="text-align:left;padding:7px">日期</th><th style="text-align:left;padding:7px">角色</th><th style="text-align:left;padding:7px">${scope==='fb'?'社團/粉專':'平台'}</th><th style="text-align:left;padding:7px">標題/類型</th><th style="text-align:left;padding:7px">UTM/連結</th><th style="padding:7px">狀態</th><th style="padding:7px">操作</th></tr></thead>
     <tbody>${list.map(p=>`<tr style="border-bottom:1px solid var(--border)">
       <td style="padding:7px;white-space:nowrap">${p.date||'—'}</td>
-      <td style="padding:7px;white-space:nowrap">${chIcon[p.channel]||p.channel}</td>
       <td style="padding:7px"><span class="badge b-green">${p.roleName||p.role||'—'}</span></td>
       <td style="padding:7px">${p.platform||'—'}</td>
-      <td style="padding:7px;max-width:170px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title||'—'}</div><div class="tm" style="font-size:.66rem">${p.contentType||''}${p.linkMode==='mention'?' · 純提及':''}</div></td>
+      <td style="padding:7px;max-width:200px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title||'—'}</div>${p.urlTitle&&p.urlTitle!==p.title?`<div style="font-size:.66rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escAttr(p.urlTitle)}">📄 ${p.urlTitle}</div>`:''}<div class="tm" style="font-size:.66rem">${p.contentType||''}${p.linkMode==='mention'?' · 純提及':''}</div></td>
       <td style="padding:7px">${p.utmContent?`<code style="color:#4ade80;font-size:.66rem">🏷${p.utmContent}</code>`:p.linkMode==='mention'?'<span class="tm" style="font-size:.66rem">純提及</span>':'<span class="tm">—</span>'}${p.shortLink?` <a href="${escAttr(p.shortLink)}" target="_blank" style="font-size:.66rem;color:#fbbf24">🔗短</a>`:''}</td>
       <td style="padding:7px;text-align:center;white-space:nowrap"><span style="color:${stColor[p.status]||'#8A7D74'};font-size:.78rem;font-weight:600">${p.status||'—'}</span>${p.engaged==='yes'?'<br><span style="font-size:.62rem;color:#f59e0b">💬有互動</span>':''}</td>
       <td style="padding:7px;white-space:nowrap"><button class="btn btn-xs btn-outline" onclick="openEditChannelPost('${p.id}')">✏</button> <button class="btn btn-xs btn-danger" onclick="delChannelPost('${p.id}')">✕</button></td>
     </tr>`).join('')}</tbody></table>`
 }
+function renderChannelPosts(){ _renderChannel('seeding',{table:'cp-table',stats:'cp-stats',platFilter:'cp-f-platform'}) }
+function renderChannelFb(){ _renderChannel('fb',{table:'cpfb-table',stats:'cpfb-stats',platFilter:'cpfb-f-platform'}) }
 
 function renderLinks(){
   const all=DB.get('links').length?DB.get('links'):DEFAULT_LINKS
