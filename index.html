@@ -776,9 +776,21 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <div class="fr">
         <div class="fg"><label>② 貼在哪 <span style="color:var(--text3);font-size:.72rem">utm_medium</span></label>
           <select id="u-medium" onchange="utmGen()">
-            <option value="th_post">Threads 貼文</option><option value="th_bio">Threads 簡介</option><option value="th_comment">Threads 留言</option>
-            <option value="ig_post">IG 貼文</option><option value="ig_bio">IG 簡介</option><option value="ig_comment">IG 留言</option>
-            <option value="fb_post">FB 貼文</option><option value="comment">留言（其他）</option><option value="yt">YouTube</option><option value="social">其他社群</option>
+            <optgroup label="Threads">
+              <option value="th_post">Threads 貼文</option><option value="th_bio">Threads 簡介</option><option value="th_comment">Threads 留言</option>
+            </optgroup>
+            <optgroup label="Instagram">
+              <option value="ig_post">IG 貼文</option><option value="ig_bio">IG 簡介</option><option value="ig_comment">IG 留言</option>
+            </optgroup>
+            <optgroup label="Facebook">
+              <option value="fb_post">FB 貼文</option><option value="fb_bio">FB 簡介(個人)</option><option value="fb_group">FB 社團</option><option value="fb_page">FB 粉專</option><option value="fb_comment">FB 留言</option>
+            </optgroup>
+            <optgroup label="部落格/論壇(匿名社群)">
+              <option value="blog_post">部落格內文</option><option value="forum_post">論壇發文</option><option value="forum_reply">論壇回文</option><option value="link_in_bio">簡介連結</option>
+            </optgroup>
+            <optgroup label="其他">
+              <option value="line">LINE</option><option value="yt">YouTube</option><option value="comment">其他留言</option><option value="social">其他社群</option>
+            </optgroup>
           </select></div>
         <div class="fg"><label>③ 活動 <span style="color:var(--text3);font-size:.72rem">utm_campaign</span></label>
           <select id="u-campaign" onchange="utmCampChange()">
@@ -4975,10 +4987,15 @@ function utmGen(){
   else box.style.display='none';
   utmRenderRecent(p);
 }
+function _medPlatform(med){
+  med=med||''
+  if(med.startsWith('th'))return'Threads'; if(med.startsWith('ig'))return'IG'; if(med.startsWith('fb'))return'FB'
+  if(med.startsWith('line'))return'LINE'; if(med.startsWith('yt'))return'YouTube'
+  if(med.startsWith('forum'))return'論壇'; if(med.startsWith('blog'))return'部落格'; return'其他'
+}
 function utmSaveToLinks(){
   const p=utmCurrentPersona(); if(!p){ toast('請先選水軍','err'); return; }
   const url=utmBuildUrl(p), med=document.getElementById('u-medium').value, code=commCode(p);
-  const platMap={th_post:'Threads',th_bio:'Threads',th_comment:'Threads',ig_post:'IG',ig_bio:'IG',ig_comment:'IG',fb_post:'FB',yt:'YouTube'};
   const all=DB.get('links').length?DB.get('links'):[...DEFAULT_LINKS];
   if(all.some(l=>l.originalUrl===url && l.accountCode===code)){ toast('這條已存過了'); return; }
   const ct=utmContentVal();
@@ -4987,7 +5004,7 @@ function utmSaveToLinks(){
   const shortUrl=(document.getElementById('u-shortlink')?.value||'').trim();
   const usage=document.getElementById('u-usage')?.value||'其他';
   all.push({ id:'lk'+Date.now(), category:'水軍', accountCode:code, accountName:p.name,
-    platform:platMap[med]||'Threads', placement:'UTM追蹤',
+    platform:_medPlatform(med), placement:'UTM追蹤',
     entryName:`${title?title+' · ':''}${ct||utmCampVal()} · ${med}`,
     purpose:'社群 UTM 追蹤', originalUrl:url, shortLinkUrl:shortUrl, useShortLink:!!shortUrl,
     status:'使用中', note:`UTM 產生器 · ${usage}`, isSeoAsset:false,
@@ -5012,8 +5029,7 @@ function _utmCreateChannelRecord(usage, p, code, utmContent, title, shortUrl){
   const today=new Date().toISOString().split('T')[0], now=new Date().toISOString();
   if(usage==='炒群'){
     const med=document.getElementById('u-medium').value;
-    const platMap={th_post:'Threads',th_bio:'Threads',th_comment:'Threads',ig_post:'IG',ig_bio:'IG',ig_comment:'IG',fb_post:'FB'};
-    const plat=platMap[med]||'Threads';
+    const plat=_medPlatform(med);
     const list=DB.get('thread_activities')||[];
     list.push({id:DB.id(),date:today,personaId:'',personaName:p.name,platforms:[plat],strategy:'引流/導到ys89',dir:'',topic:title||'',url:'',content:'',utmContent,shortLink:shortUrl||'',urlTitle:title||'',status:'待記錄',platformMetrics:{},notes:'UTM產生器建立',createdAt:now,updatedAt:now});
     DB.set('thread_activities',list);
