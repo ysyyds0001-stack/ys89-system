@@ -1167,6 +1167,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <select id="tt-filter-platform" style="width:110px" onchange="renderThreadTracker()">
         <option value="">全部平台</option><option>Threads</option><option>IG</option><option>FB</option>
       </select>
+      <select id="tt-filter-landing" style="width:200px" onchange="renderThreadTracker()" title="導向網站"><option value="">🎯 全部導向網站</option></select>
       <select id="tt-filter-persona" style="width:120px" onchange="renderThreadTracker()"><option value="">全部角色</option></select>
       <select id="tt-filter-status" style="width:100px" onchange="renderThreadTracker()">
         <option value="">全部狀態</option><option>待記錄</option><option>已記錄</option>
@@ -5402,12 +5403,22 @@ function renderThreadTracker(){
   }
 
   let list = (DB.get('thread_activities')||[]).slice().reverse()
+  // 導向網站篩選選項（依站台彙整，顯示篇數）
+  const landSel=document.getElementById('tt-filter-landing')
+  if(landSel){
+    const counts={}; list.forEach(a=>{ const s=_siteOf(a.landingUrl); if(s) counts[s]=(counts[s]||0)+1 })
+    const cur=landSel.value, opts=Object.entries(counts).sort((a,b)=>b[1]-a[1])
+    landSel.innerHTML='<option value="">🎯 全部導向網站</option>'+opts.map(([s,n])=>`<option value="${escAttr(s)}">${s}（${n}篇）</option>`).join('')
+    if(opts.some(([s])=>s===cur)) landSel.value=cur
+  }
   const pf = document.getElementById('tt-filter-persona')?.value
   const sf = document.getElementById('tt-filter-status')?.value
   const plf = document.getElementById('tt-filter-platform')?.value
+  const lf = document.getElementById('tt-filter-landing')?.value
   if(pf) list = list.filter(a=>a.personaName===pf)
   if(sf) list = list.filter(a=>a.status===sf)
   if(plf) list = list.filter(a=>(a.platforms||['Threads']).includes(plf))
+  if(lf) list = list.filter(a=>_siteOf(a.landingUrl)===lf)
 
   const wrap = document.getElementById('tt-table')
   if(!list.length){
