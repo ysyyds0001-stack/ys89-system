@@ -292,6 +292,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'threadtracker')">🔥 社群平台炒群</div>
   <div class="nav-tab" onclick="nav(this,'channel')">📝 匿名社群發文</div>
   <div class="nav-tab" onclick="nav(this,'channelfb')">📘 臉書社團/粉專</div>
+  <div class="nav-tab" onclick="nav(this,'conv')">💰 財神轉化</div>
   <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
   <div class="nav-tab" onclick="nav(this,'utm')">🏷️ UTM 產生器</div>
   <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口</div>
@@ -969,6 +970,56 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     </div>
     <div class="fg"><label>備註</label><input id="cp-note"></div>
     <div class="fb" style="margin-top:6px"><button class="btn btn-outline" onclick="closeModal('modal-channel-post')">取消</button><button class="btn btn-primary" onclick="saveChannelPost()">儲存</button></div>
+  </div>
+</div>
+
+<!-- ===== PAGE: 財神轉化（預測領牌 → 收益）===== -->
+<div id="pg-conv" class="page">
+  <div class="fb" style="margin-bottom:14px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">💰 財神轉化（預測領牌 → 收益）</h2>
+      <p class="tm" style="margin-top:3px">記錄「世足大財神」發預測 → IG/Threads 私訊進來領牌 → 導 LINE（mu_021）→ 註冊/入金收益。每通私訊登一筆，看哪則預測真的帶來營收。</p>
+    </div>
+    <div class="flex">
+      <select id="cv-f-role" onchange="renderConversions()" style="width:140px"><option value="">全部角色</option></select>
+      <select id="cv-f-status" onchange="renderConversions()" style="width:140px"><option value="">全部狀態</option></select>
+      <button class="btn btn-primary" onclick="openAddConv()">+ 新增私訊轉化</button>
+    </div>
+  </div>
+  <div id="cv-stats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"></div>
+  <div class="card" style="margin-bottom:16px;border-left:3px solid #4ade80">
+    <div class="card-title">🪙 漏斗說明</div>
+    <p class="tm" style="font-size:.74rem;margin:0">私訊進來 → 已回覆導LINE → 已加LINE → 已註冊 → <b style="color:#4ade80">已入金(轉化)</b>。填「轉化收益」就會算進總營收與轉化率，證明預測內容實際帶單。</p>
+  </div>
+  <div class="card"><div id="cv-table" style="overflow-x:auto"></div></div>
+</div>
+
+<!-- 新增/編輯 財神轉化私訊 -->
+<div id="modal-conv" class="overlay">
+  <div class="modal" style="max-width:560px">
+    <div class="mh"><div class="mt" id="cv-modal-title">新增私訊轉化</div><button class="mc" onclick="closeModal('modal-conv')">✕</button></div>
+    <input type="hidden" id="cv-id">
+    <div class="fr">
+      <div class="fg"><label>日期（私訊進來）</label><input type="date" id="cv-date"></div>
+      <div class="fg"><label>角色（誰的預測帶進來）</label><select id="cv-role"></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>來源平台</label><select id="cv-platform"><option>IG私訊</option><option>Threads私訊</option><option>FB私訊</option><option>LINE</option><option>其他</option></select></div>
+      <div class="fg"><label>對方帳號 / 暱稱</label><input id="cv-handle" placeholder="例：yd.916__ / 陳志榮"></div>
+    </div>
+    <div class="fg"><label>對方說了什麼（領牌意圖）</label><input id="cv-message" placeholder="例：想領牌 / 想領明天的比賽 / 美國巴拉圭波膽 2:0 還 2:1"></div>
+    <div class="fr">
+      <div class="fg"><label>對應預測 / 比賽</label><input id="cv-match" placeholder="例：6/12 墨西哥、南韓全過"></div>
+      <div class="fg"><label>導向（CTA）</label><input id="cv-leadto" placeholder="例：LINE：mu_021"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>漏斗狀態</label><select id="cv-status">
+        <option>私訊進來</option><option>已回覆導LINE</option><option>已加LINE</option><option>已註冊</option><option>已入金(轉化)</option><option>無回應/流失</option>
+      </select></div>
+      <div class="fg"><label>轉化收益 NT$</label><input id="cv-revenue" type="number" min="0" placeholder="0" inputmode="numeric"></div>
+    </div>
+    <div class="fg"><label>備註</label><input id="cv-note" placeholder="加 LINE 後備註、入金金額細節…"></div>
+    <div class="fb" style="margin-top:6px"><button class="btn btn-outline" onclick="closeModal('modal-conv')">取消</button><button class="btn btn-primary" onclick="saveConv()">儲存</button></div>
   </div>
 </div>
 
@@ -2797,6 +2848,14 @@ const DEFAULT_REPORT_POSTS=[
   {id:'rp21',date:"2026-06-11",role:"社區主任",topic:"賠了15萬怎麼玩",site:"https://ys89.fun/world-cup-2026",url:"https://www.dcard.tw/f/sportsevents/p/261645715"},
   {id:'rp22',date:"2026-06-11",role:"世足大財神",topic:"6/12預測",site:"https://ys89.biz//live-104",url:"https://www.threads.com/@wc_godofwealth/post/DZcXAhDH3ud?xmt=AQG0sDkaPZ2kWl85BWwSNkUAC7AeZQF2BZBJ5Tc1fXwmVQ"}
 ]
+// 💰 財神轉化（IG 私訊領牌 → 導 LINE → 收益）— 6/12~6/14 進來的領牌私訊
+const DEFAULT_CONVERSIONS=[
+  {id:'cv1',date:'2026-06-12',role:'god',roleName:'世足大財神',platform:'IG私訊',handle:'yd.916__',message:'美國 vs 巴拉圭 波膽買 2:0 跟 2:1 哪個好？',match:'美國 vs 巴拉圭',leadTo:'LINE：mu_021',status:'已回覆導LINE',revenue:0,note:'看預測後私訊問波膽，已回覆導 LINE 領牌',createdAt:'2026-06-12T12:29:00.000Z',updatedAt:'2026-06-12T12:29:00.000Z'},
+  {id:'cv2',date:'2026-06-12',role:'god',roleName:'世足大財神',platform:'IG私訊',handle:'kkm0vv0（Ka Ka）',message:'（貼圖私訊 — 想領牌）',match:'',leadTo:'LINE：mu_021',status:'已回覆導LINE',revenue:0,note:'已回覆導 LINE 領牌',createdAt:'2026-06-12T12:54:00.000Z',updatedAt:'2026-06-12T12:54:00.000Z'},
+  {id:'cv3',date:'2026-06-13',role:'god',roleName:'世足大財神',platform:'IG私訊',handle:'sweeloongtan（Sweeloong Tan）',message:'想看比分細節（回應 6/12 全過戰績圖）',match:'6/12 墨西哥、南韓全過',leadTo:'LINE：mu_021',status:'已回覆導LINE',revenue:0,note:'看了 68% 命中戰績圖後私訊',createdAt:'2026-06-13T17:25:00.000Z',updatedAt:'2026-06-13T17:25:00.000Z'},
+  {id:'cv4',date:'2026-06-13',role:'god',roleName:'世足大財神',platform:'IG私訊',handle:'xysnrai_',message:'想領明天的比賽',match:'',leadTo:'LINE：mu_021',status:'已回覆導LINE',revenue:0,note:'已回覆導 LINE 領牌',createdAt:'2026-06-13T18:35:00.000Z',updatedAt:'2026-06-13T18:35:00.000Z'},
+  {id:'cv5',date:'2026-06-14',role:'god',roleName:'世足大財神',platform:'IG私訊',handle:'along0210a（陳志榮）',message:'想領牌 謝謝😊',match:'',leadTo:'LINE：mu_021',status:'已回覆導LINE',revenue:0,note:'已回覆導 LINE 領牌',createdAt:'2026-06-14T22:06:00.000Z',updatedAt:'2026-06-14T22:06:00.000Z'}
+];
 // 📝 鋪文/匿名平台角色（第三方部落格/論壇帳號）
 const DEFAULT_SEEDING_ACCOUNTS=[
   {id:'sd1', platform:'Medium',        name:'阿哲的遊戲筆記',      code:'azhe'},
@@ -2836,12 +2895,13 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads','role_channels','channel_posts','seeding_accounts','report_roles','report_posts'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads','role_channels','channel_posts','seeding_accounts','report_roles','report_posts','conversions'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(!DB.get('seeding_accounts').length) DB.set('seeding_accounts',DEFAULT_SEEDING_ACCOUNTS)
     if(!DB.get('report_roles').length) DB.set('report_roles',DEFAULT_REPORT_ROLES)
     if(!DB.get('report_posts').length) DB.set('report_posts',DEFAULT_REPORT_POSTS)
+    if(!DB.get('conversions').length) DB.set('conversions',DEFAULT_CONVERSIONS)
     if(sync) sync.textContent='已同步'
     setTimeout(()=>{if(sync)sync.textContent=''},2000)
   }catch(e){
@@ -2858,7 +2918,7 @@ function nav(el,page){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
-  const renders={roles:renderRoles,channel:renderChannelPosts,channelfb:renderChannelFb,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,entrances:renderEntrances,links:renderLinks,cast:renderCast}
+  const renders={roles:renderRoles,channel:renderChannelPosts,channelfb:renderChannelFb,conv:renderConversions,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,entrances:renderEntrances,links:renderLinks,cast:renderCast}
   if(page==='todo'){initTodayTodos(false);renderTodo()}
   else if(page==='ga4'){ if(_ga4Data) renderGA4(_ga4Data); }
   else if(page==='utm'){ utmInit() }
@@ -4991,6 +5051,125 @@ function _renderChannel(scope, ids){
 }
 function renderChannelPosts(){ _renderChannel('seeding',{table:'cp-table',stats:'cp-stats',platFilter:'cp-f-platform'}) }
 function renderChannelFb(){ _renderChannel('fb',{table:'cpfb-table',stats:'cpfb-stats',platFilter:'cpfb-f-platform'}) }
+
+// ===== 💰 財神轉化（預測領牌 → 收益）=====
+const CONV_STATUS=['私訊進來','已回覆導LINE','已加LINE','已註冊','已入金(轉化)','無回應/流失'];
+const CONV_RANK={'私訊進來':0,'已回覆導LINE':1,'已加LINE':2,'已註冊':3,'已入金(轉化)':4,'無回應/流失':-1};
+const CONV_COLOR={'私訊進來':'#94a3b8','已回覆導LINE':'#38bdf8','已加LINE':'#a78bfa','已註冊':'#fbbf24','已入金(轉化)':'#4ade80','無回應/流失':'#f87171'};
+function _convRoleList(){ const seen=new Set(),out=[]; allActors().forEach(a=>{const c=commCode(a); if(!c||seen.has(c))return; seen.add(c); out.push({code:c,name:a.name})}); return out; }
+function _fillConvRoleSelects(){
+  const roles=_convRoleList();
+  const opts=roles.map(r=>`<option value="${escAttr(r.code)}">${r.name}（${r.code}）</option>`).join('');
+  const sel=document.getElementById('cv-role'); if(sel){ const cur=sel.value; sel.innerHTML=opts; sel.value=cur||'god'; if(!sel.value&&roles[0])sel.value=roles[0].code; }
+  const f=document.getElementById('cv-f-role'); if(f){ const cur=f.value; f.innerHTML='<option value="">全部角色</option>'+opts; f.value=cur; }
+  const fs=document.getElementById('cv-f-status'); if(fs&&fs.options.length<=1){ fs.innerHTML='<option value="">全部狀態</option>'+CONV_STATUS.map(s=>`<option>${s}</option>`).join(''); }
+}
+function renderConversions(){
+  _fillConvRoleSelects();
+  const all=DB.get('conversions')||[];
+  const fr=document.getElementById('cv-f-role')?.value||'';
+  const fst=document.getElementById('cv-f-status')?.value||'';
+  let list=all.slice();
+  if(fr) list=list.filter(c=>c.role===fr);
+  if(fst) list=list.filter(c=>c.status===fst);
+  list.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.createdAt||'').localeCompare(a.createdAt||''));
+  // 統計（用未過濾的全量算漏斗，過濾只影響清單）
+  const base=fr?all.filter(c=>c.role===fr):all;
+  const rank=c=>CONV_RANK[c.status]??0;
+  const isRev=c=>rank(c)>=4||(+c.revenue||0)>0;
+  const total=base.length;
+  const toLine=base.filter(c=>rank(c)>=1).length;
+  const addedLine=base.filter(c=>rank(c)>=2).length;
+  const converted=base.filter(isRev).length;
+  const revenue=base.reduce((s,c)=>s+(+c.revenue||0),0);
+  const rate=total?Math.round(converted/total*100):0;
+  const st=(v,l,c)=>`<div class="card-sm" style="text-align:center;min-width:104px"><div style="font-size:1.4rem;font-weight:700;color:${c}">${v}</div><div class="tm">${l}</div></div>`;
+  document.getElementById('cv-stats').innerHTML=
+    st(total,'總私訊','var(--accent)')+st(toLine,'已導LINE','#38bdf8')+st(addedLine,'已加LINE','#a78bfa')+
+    st(converted,'已轉化','#4ade80')+st('NT$ '+revenue.toLocaleString(),'總收益','#4ade80')+st(rate+'%','轉化率','#fbbf24');
+  const box=document.getElementById('cv-table');
+  if(!list.length){ box.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無私訊轉化紀錄，按右上「+ 新增私訊轉化」開始記錄</div>'; return; }
+  box.innerHTML='<div style="display:flex;flex-direction:column;gap:10px;padding:4px">'+list.map(c=>{
+    const col=CONV_COLOR[c.status]||'#94a3b8';
+    const rev=(+c.revenue||0)>0?`<span style="font-size:.78rem;font-weight:700;color:#4ade80;margin-left:auto">💰 NT$ ${(+c.revenue).toLocaleString()}</span>`:'';
+    return `<div style="background:#0d0b0a;border:1px solid var(--border);border-left:3px solid ${col};border-radius:9px;padding:11px 13px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:.68rem;font-weight:700;color:${col};background:${col}1e;border:1px solid ${col}55;border-radius:9px;padding:2px 9px">${c.status}</span>
+        <span style="font-weight:700;font-size:.9rem">${c.handle||'(未填帳號)'}</span>
+        <span style="font-size:.7rem;color:var(--text3)">· ${c.platform||''}</span>
+        ${rev}
+      </div>
+      ${c.message?`<div style="font-size:.84rem;margin-top:6px;color:var(--text)">💬 ${c.message}</div>`:''}
+      <div style="font-size:.72rem;color:var(--text3);margin-top:5px;display:flex;gap:10px;flex-wrap:wrap">
+        ${c.match?`<span>🎯 ${c.match}</span>`:''}
+        ${c.leadTo?`<span>➡️ ${c.leadTo}</span>`:''}
+        <span>🕒 ${(c.date||'').slice(0,10)}</span>
+        <span>🎭 ${c.roleName||c.role||''}</span>
+      </div>
+      ${c.note?`<div style="font-size:.7rem;color:var(--text3);margin-top:4px">📝 ${c.note}</div>`:''}
+      <div style="display:flex;gap:5px;margin-top:8px">
+        <button class="btn btn-xs btn-outline" onclick="openEditConv('${c.id}')" style="font-size:.66rem">✏ 編輯</button>
+        <button class="btn btn-xs btn-danger" onclick="delConv('${c.id}')" style="font-size:.66rem">✕ 刪除</button>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+function openAddConv(){
+  document.getElementById('cv-id').value='';
+  document.getElementById('cv-modal-title').textContent='新增私訊轉化';
+  _fillConvRoleSelects();
+  document.getElementById('cv-date').value=new Date().toISOString().slice(0,10);
+  const r=document.getElementById('cv-role'); if(r) r.value=_convRoleList().some(x=>x.code==='god')?'god':(r.options[0]?.value||'');
+  document.getElementById('cv-platform').value='IG私訊';
+  ['cv-handle','cv-message','cv-match','cv-note','cv-revenue'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('cv-leadto').value='LINE：mu_021';
+  document.getElementById('cv-status').value='私訊進來';
+  openModal('modal-conv');
+}
+function openEditConv(id){
+  const c=(DB.get('conversions')||[]).find(x=>x.id===id); if(!c)return;
+  document.getElementById('cv-id').value=c.id;
+  document.getElementById('cv-modal-title').textContent='編輯私訊轉化';
+  _fillConvRoleSelects();
+  document.getElementById('cv-date').value=c.date||'';
+  document.getElementById('cv-role').value=c.role||'god';
+  document.getElementById('cv-platform').value=c.platform||'IG私訊';
+  document.getElementById('cv-handle').value=c.handle||'';
+  document.getElementById('cv-message').value=c.message||'';
+  document.getElementById('cv-match').value=c.match||'';
+  document.getElementById('cv-leadto').value=c.leadTo||'LINE：mu_021';
+  document.getElementById('cv-status').value=c.status||'私訊進來';
+  document.getElementById('cv-revenue').value=(+c.revenue||0)||'';
+  document.getElementById('cv-note').value=c.note||'';
+  openModal('modal-conv');
+}
+function saveConv(){
+  const id=document.getElementById('cv-id').value;
+  const roleCode=document.getElementById('cv-role').value;
+  const roleName=(_convRoleList().find(r=>r.code===roleCode)||{}).name||roleCode;
+  const now=new Date().toISOString();
+  const data={ date:document.getElementById('cv-date').value, role:roleCode, roleName,
+    platform:document.getElementById('cv-platform').value,
+    handle:document.getElementById('cv-handle').value.trim(),
+    message:document.getElementById('cv-message').value.trim(),
+    match:document.getElementById('cv-match').value.trim(),
+    leadTo:document.getElementById('cv-leadto').value.trim(),
+    status:document.getElementById('cv-status').value,
+    revenue:+document.getElementById('cv-revenue').value||0,
+    note:document.getElementById('cv-note').value.trim(), updatedAt:now };
+  const all=DB.get('conversions')||[];
+  if(id){ const c=all.find(x=>x.id===id); if(c) Object.assign(c,data); }
+  else all.push({id:DB.id(),createdAt:now,...data});
+  DB.set('conversions',all); DB.push('conversions').catch(()=>{});
+  closeModal('modal-conv'); renderConversions();
+  toast('已儲存私訊轉化'+(data.revenue>0?`（收益 NT$ ${data.revenue.toLocaleString()}）`:''));
+}
+function delConv(id){
+  if(!confirm('確定刪除這筆私訊轉化紀錄？'))return;
+  const all=(DB.get('conversions')||[]).filter(x=>x.id!==id);
+  DB.set('conversions',all); DB.push('conversions').catch(()=>{});
+  renderConversions(); toast('已刪除');
+}
 
 function renderLinks(){
   const all=DB.get('links').length?DB.get('links'):DEFAULT_LINKS
