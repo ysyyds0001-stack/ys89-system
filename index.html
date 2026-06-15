@@ -5149,7 +5149,11 @@ let _utmLastPersona=null;
 function utmGen(){
   const p=utmCurrentPersona(); const out=document.getElementById('u-out'); if(!out) return;
   if(!p){ out.textContent='（請先在社群水軍號新增帳號）'; return; }
-  if(_utmLastPersona!==p.id){ _utmLastPersona=p.id; document.getElementById('u-content').value=utmSuggestContent(p); }
+  if(_utmLastPersona!==p.id){ _utmLastPersona=p.id; document.getElementById('u-content').value=utmSuggestContent(p);
+    // 換角色時，⑦發文分類自動跟著角色類型走（鋪文/匿名平台→匿名、粉專→fb、其餘→炒群），仍可手動改
+    const us=document.getElementById('u-usage');
+    if(us){ const t=roleType(commCode(p)); us.value=t==='seeding'?'匿名':t==='fb'?'fb':'炒群'; utmUsageChange(); }
+  }
   const url=utmBuildUrl(p);
   out.innerHTML=url.replace(/utm_source=([^&]*)/,'utm_source=<b style="color:var(--accent2)">$1</b>').replace(/utm_medium=([^&]*)/,'utm_medium=<b style="color:var(--accent2)">$1</b>').replace(/utm_content=([^&]*)/,'utm_content=<b style="color:#4ade80">$1</b>');
   document.getElementById('u-copy-btn').setAttribute('data-cp',url);
