@@ -1671,6 +1671,11 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <div class="tm" style="font-size:.68rem;margin-top:3px">把這串放進短連結的 utm_content，GA4 才能歸因到這篇貼文</div>
     </div>
     <div class="fg">
+      <label>🎯 導向網站（原始連結／落地頁）— 這篇炒話題導去哪</label>
+      <input id="ta-landing" list="ta-landing-list" placeholder="例：https://ys89.games/live-104">
+      <datalist id="ta-landing-list"></datalist>
+    </div>
+    <div class="fg">
       <label>貼文連結（選填，可貼任一平台連結）</label>
       <input id="ta-url" type="url" placeholder="https://www.threads.net/... 或 instagram.com/p/..." oninput="taOnUrlChange()" onpaste="setTimeout(taOnUrlChange,60)">
       <div id="ta-url-title" style="font-size:.72rem;color:var(--text3);margin-top:4px;min-height:1em;word-break:break-all"></div>
@@ -2758,6 +2763,39 @@ const DEFAULT_PERSONAS=[
     postPrompts:[],createdAt:new Date().toISOString()}
 ]
 
+// 📊 業主報告：帳號導向配置（從 Excel「文章導向連結內容」整理）
+const DEFAULT_REPORT_ROLES=[
+  {id:'rr1',category:'YS 主帳',name:'YS主帳號',followers:13,direction:'品牌主帳',site:'https://ys89.games/live-104'},
+  {id:'rr2',category:'YS89 編輯角色',name:'阿奇',followers:86,direction:'賽程・直播・賠率',site:'https://ys89.games/live-104'},
+  {id:'rr3',category:'社群號·體育賽事新聞分析',name:'kk',followers:124,direction:'純資訊站 · AEO',site:'https://fifa-worldcups.tw'},
+  {id:'rr4',category:'社群號·體育賽事新聞分析',name:'蟹蟹世足觀測站',followers:386,direction:'直播入口(分組分析・球隊球星)',site:'https://ys89.me/live-104'},
+  {id:'rr5',category:'社群號·體育賽事新聞分析',name:'世足大財神',followers:221,direction:'投注攻略教學',site:'https://ys89.biz//live-104'},
+  {id:'rr6',category:'社群號·體育賽事新聞分析',name:'強棒大叔｜世足排雷週記',followers:413,direction:'台灣觀賽直播攻略',site:'https://ys89.info/live-104'},
+]
+const DEFAULT_REPORT_POSTS=[
+  {id:'rp1',date:"2026-06-03",role:"阿奇",topic:"世足賽賠率",site:"https://ys89.games/live-104",url:"https://www.threads.com/@noloxd6467/post/DZH8uzGGwSs?xmt=AQG062KYfO2mwjJsC9e15AdvP5wDrrogk0G0Hb63kgHiAiXvv1kAsjjLvE2Yyy7YxvRTnHiJ&slof=1"},
+  {id:'rp2',date:"2026-06-03",role:"阿奇",topic:"回覆直播",site:"https://ys89.games/live-104",url:"https://www.threads.com/@ys89_com/post/DZIC4wNlHuW?xmt=AQG0EHpyfrXPYbq5_yV-I99yLq78wD7sp6ehyTO8Kgr-XA"},
+  {id:'rp3',date:"2026-06-04",role:"miya",topic:"世界盃餐廳",site:"https://fifa-worldcups.tw",url:"https://www.threads.com/@miya.chen215/post/DZKKvj-ibmL?xmt=AQG0T4O5e4e4s1ZbT4Diw_7SyzILkwhitSF4XKZblPfaCBmWNpw8SdpCAju2h0j9--bwCS8&slof=1"},
+  {id:'rp4',date:"2026-06-04",role:"luna",topic:"炒話題",site:"https://ys89.games/live-104",url:"https://www.threads.com/@ooasj2356/post/DZKMKTLFAm1?xmt=AQG03yZUTsqMwNUzPdNpTFay1Dr12NAbwYvy-gyNgsXbrpMcl6IYOFkeR7HMJu2iXcoIphBS&slof=1"},
+  {id:'rp5',date:"2026-06-04",role:"排雷週記",topic:"直播",site:"https://ys89.info/live-104",url:""},
+  {id:'rp6',date:"2026-06-04",role:"jason",topic:"引用阿奇直播",site:"https://ys89.games/live-104",url:""},
+  {id:'rp7',date:"2026-06-05",role:"阿奇",topic:"直播",site:"https://ys89.games/live-104",url:"https://www.threads.com/@noloxd6467/post/DZMXqtOk5LU?xmt=AQG0UA9xxOHjFBOEIqZFHGsTsjhTzD_hw4xyS6lR0JA5IrelPvwt86TJU092UmJF2ffl8DkF&slof=1"},
+  {id:'rp8',date:"2026-06-05",role:"miya",topic:"世足餐廳推薦",site:"https://fifa-worldcups.tw/",url:"https://www.threads.com/@miya.chen215/post/DZKKvj-ibmL?xmt=AQG0RGA-u5JjE0Whuawr1LBYblY6nq1H4nCRSwjeYVMlwg"},
+  {id:'rp9',date:"2026-06-08",role:"阿奇",topic:"盲推註冊",site:"https://ys89.bet/?proxy=cysc9m",url:"https://www.threads.com/@dzz552025/post/DZUc91dESY8?xmt=AQG0EB96tQVHtIKeuVUBz2aSGPBNwz_9DlFsgZeoMLofig"},
+  {id:'rp10',date:"2026-06-08",role:"YS",topic:"預測荷蘭冠軍",site:"https://ys89.games/live-104",url:"https://www.threads.com/@ys89_com/post/DZUEP1pEheh?xmt=AQG0mgdc1wXaMNdcsPCQusRG2DIqZFFamLVQRM45Oj2-1A"},
+  {id:'rp11',date:"2026-06-08",role:"世足排雷週記",topic:"這種分組容易看走眼",site:"https://ys89.fun/",url:"https://www.threads.com/@uncle_wc/post/DZUvD9Cj6fl?xmt=AQG0omX0FLxwJ-qNPxh08mVOWO6c0xA18ShIdIlDw7Tk_Q"},
+  {id:'rp12',date:"2026-06-09",role:"陳玉樺",topic:"賽程",site:"https://ys89.fun/world-cup-2026",url:"https://www.facebook.com/share/p/18ieos7vyR/"},
+  {id:'rp13',date:"2026-06-10",role:"阿奇",topic:"世界盃焦點戰",site:"https://ys89.fun/world-cup-2026",url:"https://www.threads.com/@noloxd6467/post/DZZxPXlk2PI?xmt=AQG0AlxQc2sIwAGEX4QuX2KgRDksOgq1M2vUD2IC5BGw8w"},
+  {id:'rp14',date:"2026-06-10",role:"YS",topic:"焦點賽程表",site:"https://ys89.fun/world-cup-2026/",url:"https://www.threads.com/@ys89_com/post/DZZzOw-lJCS?xmt=AQG04v1NWOxl5yFjzcfOY5Kh6B-xncNG2uPHRNlcRtNBaw"},
+  {id:'rp15',date:"2026-06-10",role:"蟹蟹",topic:"世足懶人包",site:"https://ys89.fun/world-cup-2026/",url:"https://www.threads.com/@_livenewsxiea/post/DZZ10DTD2Kw?xmt=AQG0l0eBV1dKFuRTpqIiiyOGIEXa9BhDu8utaeIAx-dHmw"},
+  {id:'rp16',date:"2026-06-10",role:"BS",topic:"世足男球員",site:"https://ys89.fun/world-cup-2026",url:"https://www.threads.com/@ths22346/post/DZZ-KkyE1fC?xmt=AQG03DdGiegzt_sWGq2Qzer72RiMiFFbhmtupOOIJvdYEacVoP8NDsllT3iEN0Thnt4GLeXr&slof=1"},
+  {id:'rp17',date:"2026-06-11",role:"世足排雷週記",topic:"免費觀賽資訊",site:"https://fifa-worldcups.tw",url:"https://www.threads.com/@uncle_wc/post/DZb71WViV12?xmt=AQG0G8NIYL7PHbPyEFh-BQay1taH012SdXCXYg36rqt1VQ"},
+  {id:'rp18',date:"2026-06-11",role:"蟹蟹",topic:"免費觀賽資訊",site:"https://ys89.me/live-104",url:"https://www.threads.com/@_livenewsxiea/post/DZb9PBrERgE?xmt=AQG0TixGXMs4v6KYBaW718KpWER-L0rJoypBQy2aB7eTjA"},
+  {id:'rp19',date:"2026-06-11",role:"lanlin",topic:"免費觀賽資訊",site:"https://ys89.games/live-104",url:"https://www.threads.com/@ugrsrbs53/post/DZcGpz5k5jX?xmt=AQG0gATOkJv2WGRlKWdIK8H1u-bAxzAwjL7UZsyoocAwmIDgilb7dZqHijdjkz_Ctpt0Aao"},
+  {id:'rp20',date:"2026-06-11",role:"阿埔",topic:"免費觀賽資訊",site:"https://ys89.info/live-104",url:"https://www.facebook.com/groups/1509764527458400/permalink/1510674200700766/?rdid=K5DA4z7ddMu56qpE#"},
+  {id:'rp21',date:"2026-06-11",role:"社區主任",topic:"賠了15萬怎麼玩",site:"https://ys89.fun/world-cup-2026",url:"https://www.dcard.tw/f/sportsevents/p/261645715"},
+  {id:'rp22',date:"2026-06-11",role:"世足大財神",topic:"6/12預測",site:"https://ys89.biz//live-104",url:"https://www.threads.com/@wc_godofwealth/post/DZcXAhDH3ud?xmt=AQG0sDkaPZ2kWl85BWwSNkUAC7AeZQF2BZBJ5Tc1fXwmVQ"}
+]
 // 📝 鋪文/匿名平台角色（第三方部落格/論壇帳號）
 const DEFAULT_SEEDING_ACCOUNTS=[
   {id:'sd1', platform:'Medium',        name:'阿哲的遊戲筆記',      code:'azhe'},
@@ -2796,10 +2834,12 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads','role_channels','channel_posts','seeding_accounts'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads','role_channels','channel_posts','seeding_accounts','report_roles','report_posts'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(!DB.get('seeding_accounts').length) DB.set('seeding_accounts',DEFAULT_SEEDING_ACCOUNTS)
+    if(!DB.get('report_roles').length) DB.set('report_roles',DEFAULT_REPORT_ROLES)
+    if(!DB.get('report_posts').length) DB.set('report_posts',DEFAULT_REPORT_POSTS)
     if(sync) sync.textContent='已同步'
     setTimeout(()=>{if(sync)sync.textContent=''},2000)
   }catch(e){
@@ -5407,8 +5447,9 @@ function renderThreadTracker(){
         ${plats.map(p=>`<span style="font-size:.68rem;padding:1px 6px;border-radius:8px;background:${TM_PLATFORM_COLORS[p]}20;color:${TM_PLATFORM_COLORS[p]};margin-right:2px">${p}</span>`).join('')}
       </td>
       <td><span style="color:${sc};font-size:.78rem;font-weight:600">${a.strategy||'—'}</span></td>
-      <td style="max-width:220px">
+      <td style="max-width:230px">
         <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.topic||'—'}</div>
+        ${a.landingUrl?`<div style="font-size:.66rem;color:#a78bfa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="導向網站：${escAttr(a.landingUrl)}">🎯 ${_siteOf(a.landingUrl)||a.landingUrl}</div>`:''}
         ${a.urlTitle?`<div style="font-size:.66rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escAttr(a.urlTitle)}">📄 ${a.urlTitle}</div>`:''}
         ${a.utmContent?`<div style="font-family:monospace;font-size:.62rem;color:#4ade80;white-space:nowrap" title="UTM 追蹤碼">🏷 ${a.utmContent}</div>`:''}
       </td>
@@ -5442,6 +5483,7 @@ function renderThreadTracker(){
           ${plats.map(p=>`<span style="font-size:.68rem;padding:2px 8px;border-radius:8px;background:${TM_PLATFORM_COLORS[p]}20;color:${TM_PLATFORM_COLORS[p]}">${p}</span>`).join('')}
         </div>
         <div style="margin-bottom:10px">${metricsSummary}</div>
+        ${a.landingUrl?`<div style="font-size:.72rem;color:#a78bfa;margin-bottom:6px">🎯 導向：${a.landingUrl}</div>`:''}
         ${a.urlTitle?`<div style="font-size:.74rem;color:var(--text2);margin-bottom:6px">📄 ${a.urlTitle}</div>`:''}
         ${a.utmContent?`<div style="font-family:monospace;font-size:.7rem;color:#4ade80;margin-bottom:8px">🏷 ${a.utmContent}</div>`:''}
         <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -5608,6 +5650,8 @@ function openAddThreadActivity(){
   document.getElementById('ta-content').value = ''
   document.getElementById('ta-utm').value = ''
   document.getElementById('ta-shortlink').value = ''
+  document.getElementById('ta-landing').value = ''
+  _fillTaLanding()
   document.getElementById('ta-url-title').textContent = ''
   _taUrlTitle=''
   const _tap=document.getElementById('ta-utm-pick'); if(_tap){ _tap.innerHTML='<option value="">— 自動產生新碼，或從這帶入已建的 —</option>'; _tap.value='' }
@@ -5642,9 +5686,11 @@ function openEditThreadActivity(id){
   } else {
     if(customEl){ customEl.value=''; customEl.style.display='none' }
   }
-  // UTM / 短連結 / 標題
+  // UTM / 短連結 / 標題 / 導向網站
   document.getElementById('ta-utm').value = a.utmContent || ''
   document.getElementById('ta-shortlink').value = a.shortLink || ''
+  _fillTaLanding()
+  document.getElementById('ta-landing').value = a.landingUrl || ''
   _taUrlTitle = a.urlTitle || ''
   const titleEl = document.getElementById('ta-url-title')
   if(a.urlTitle) titleEl.textContent = '📄 '+a.urlTitle
@@ -5655,6 +5701,13 @@ function openEditThreadActivity(id){
   openModal('modal-thread-activity')
 }
 
+function _fillTaLanding(){
+  const dl=document.getElementById('ta-landing-list'); if(!dl) return
+  const ents=DB.get('entrances').length?DB.get('entrances'):DEFAULT_ENTRANCES
+  // 入口網址 + 常見 live-104 落地頁
+  const urls=[...new Set([...ents.map(e=>e.url),'https://ys89.games/live-104','https://ys89.me/live-104','https://ys89.info/live-104','https://ys89.biz//live-104','https://ys89.fun/world-cup-2026','https://fifa-worldcups.tw'].filter(Boolean))]
+  dl.innerHTML=urls.map(u=>`<option value="${escAttr(u)}">`).join('')
+}
 function saveThreadActivity(){
   const id = document.getElementById('ta-id').value
   const pval = document.getElementById('ta-persona').value
@@ -5673,6 +5726,7 @@ function saveThreadActivity(){
     dir: document.getElementById('ta-dir').value,
     topic: document.getElementById('ta-topic').value.trim(),
     url: document.getElementById('ta-url').value.trim(),
+    landingUrl: document.getElementById('ta-landing').value.trim(),
     content: document.getElementById('ta-content').value.trim(),
     utmContent: document.getElementById('ta-utm').value.trim(),
     shortLink: document.getElementById('ta-shortlink').value.trim(),
