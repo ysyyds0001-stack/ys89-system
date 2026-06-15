@@ -5460,7 +5460,7 @@ function renderThreadTracker(){
       <td><span style="color:${sc};font-size:.78rem;font-weight:600">${a.strategy||'—'}</span></td>
       <td style="max-width:230px">
         <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.topic||'—'}</div>
-        ${a.landingUrl?`<div style="font-size:.66rem;color:#a78bfa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="導向網站：${escAttr(a.landingUrl)}">🎯 ${_siteOf(a.landingUrl)||a.landingUrl}</div>`:''}
+        ${a.landingUrl?`<div style="font-size:.66rem;color:#a78bfa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="導向網站：${escAttr(a.landingUrl)}${a.landingVerified?'（已用短連結查證實際落地）':''}">🎯 ${_siteOf(a.landingUrl)||a.landingUrl}${a.landingVerified?' <span style="color:#4ade80">✓查證</span>':''}</div>`:''}
         ${a.urlTitle?`<div style="font-size:.66rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escAttr(a.urlTitle)}">📄 ${a.urlTitle}</div>`:''}
         ${a.utmContent?`<div style="font-family:monospace;font-size:.62rem;color:#4ade80;white-space:nowrap" title="UTM 追蹤碼">🏷 ${a.utmContent}</div>`:''}
       </td>
@@ -5494,7 +5494,7 @@ function renderThreadTracker(){
           ${plats.map(p=>`<span style="font-size:.68rem;padding:2px 8px;border-radius:8px;background:${TM_PLATFORM_COLORS[p]}20;color:${TM_PLATFORM_COLORS[p]}">${p}</span>`).join('')}
         </div>
         <div style="margin-bottom:10px">${metricsSummary}</div>
-        ${a.landingUrl?`<div style="font-size:.72rem;color:#a78bfa;margin-bottom:6px">🎯 導向：${a.landingUrl}</div>`:''}
+        ${a.landingUrl?`<div style="font-size:.72rem;color:#a78bfa;margin-bottom:6px">🎯 導向：${a.landingUrl}${a.landingVerified?' <span style="color:#4ade80">✓已查證</span>':''}</div>`:''}
         ${a.urlTitle?`<div style="font-size:.74rem;color:var(--text2);margin-bottom:6px">📄 ${a.urlTitle}</div>`:''}
         ${a.utmContent?`<div style="font-family:monospace;font-size:.7rem;color:#4ade80;margin-bottom:8px">🏷 ${a.utmContent}</div>`:''}
         <div style="display:flex;gap:6px;flex-wrap:wrap">
