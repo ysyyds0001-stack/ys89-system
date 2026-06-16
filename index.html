@@ -1560,7 +1560,8 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
         <div id="pt-Threads" onclick="togglePlat(this)" style="padding:5px 16px;border-radius:20px;cursor:pointer;font-size:.85rem;border:1px solid var(--border2);color:var(--text3);user-select:none">Threads</div>
       </div>
     </div>
-    <div class="fr"><div class="fg"><label>瀏覽次數</label><input type="number" id="um-views"></div><div class="fg"><label>已觸及帳號</label><input type="number" id="um-reach"></div></div>
+    <div class="fr"><div class="fg"><label>曝光次數 <span style="color:var(--text3);font-size:.68rem">IG 洞察首行</span></label><input type="number" id="um-impressions" placeholder="0"></div><div class="fg"><label>已觸及帳號</label><input type="number" id="um-reach"></div></div>
+    <div class="fr"><div class="fg"><label>瀏覽次數 <span style="color:var(--text3);font-size:.68rem">影片/Reels</span></label><input type="number" id="um-views"></div><div class="fg"><label>連結點擊</label><input type="number" id="um-linkclicks" placeholder="0"></div></div>
     <div class="fr"><div class="fg"><label>按讚</label><input type="number" id="um-likes"></div><div class="fg"><label>留言</label><input type="number" id="um-comments"></div></div>
     <div class="fr"><div class="fg"><label>儲存</label><input type="number" id="um-saves"></div><div class="fg"><label>分享</label><input type="number" id="um-shares"></div></div>
     <div class="fb" style="margin-top:6px">
@@ -3133,16 +3134,19 @@ function renderTracker(){
   const posts=DB.get('posts'),personas=DB.get('personas')
   const sel=document.getElementById('tf-persona')
   sel.innerHTML='<option value="">全部角色</option>'+personas.map(p=>`<option>${p.name}</option>`).join('')
+  const ti=posts.reduce((a,p)=>a+(+p.impressions||0),0)
   const tl=posts.reduce((a,p)=>a+(+p.likes||0),0)
   const tc=posts.reduce((a,p)=>a+(+p.comments||0),0)
-  const ts=posts.reduce((a,p)=>a+(+p.shares||0),0)
   const tr=posts.reduce((a,p)=>a+(+p.reach||0),0)
+  const noInsights=posts.filter(p=>!(+p.impressions||+p.reach||+p.likes)).length
   document.getElementById('t-stats').innerHTML=[
     ['總發文',posts.length,''],
+    ['總曝光',ti.toLocaleString(),''],
+    ['總觸及',tr.toLocaleString(),''],
     ['總按讚',tl.toLocaleString(),''],
     ['總留言',tc.toLocaleString(),''],
-    ['總觸及',tr.toLocaleString(),'']
-  ].map(([l,v])=>`<div class="stat"><div class="stat-num">${v}</div><div class="stat-label">${l}</div></div>`).join('')
+    ['待填洞察',noInsights,'#f87171']
+  ].map(([l,v,c])=>`<div class="stat"><div class="stat-num" style="${c?'color:'+c:''}">${v}</div><div class="stat-label">${l}</div></div>`).join('')
   // populate selects
   const pSel=document.getElementById('po-persona')
   pSel.innerHTML='<option value="">選擇角色</option>'+personas.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')
@@ -3161,7 +3165,7 @@ function renderPosts(){
   const wrap=document.getElementById('posts-table')
   if(!posts.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無發文記錄</div>';return}
   const deskHtml=`<div class="posts-desk" style="overflow-x:auto"><table>
-    <thead><tr><th>日期</th><th>角色</th><th>平台</th><th>主題</th><th>引用文章</th><th>貼文連結</th><th>👀瀏覽</th><th>👁觸及</th><th>👍讚</th><th>💬留言</th><th>🔖儲存</th><th>🔄分享</th><th>操作</th></tr></thead>
+    <thead><tr><th>日期</th><th>角色</th><th>平台</th><th>主題</th><th>引用文章</th><th>貼文連結</th><th>📢曝光</th><th>👀瀏覽</th><th>👁觸及</th><th>👍讚</th><th>💬留言</th><th>🔖儲存</th><th>🔄分享</th><th>🔗點擊</th><th>操作</th></tr></thead>
     <tbody>${posts.map(p=>`<tr>
       <td style="white-space:nowrap">${p.date||'—'}</td>
       <td><span class="badge b-green">${p.personaName||'—'}</span></td>
@@ -3175,8 +3179,8 @@ function renderPosts(){
       <td style="white-space:nowrap;text-align:center">${p.postUrl?`<a href="${escAttr(p.postUrl)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px" title="貼文連結">🔗 查看</a>`:''}
         ${p.shortLink?`<a href="${escAttr(p.shortLink)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px;color:#fbbf24" title="短連結（導論壇文章）">🔗短</a>`:''}
         <button class="btn btn-xs btn-outline" onclick="openSetPostUrl('${p.id}')" title="${p.postUrl?'編輯連結':'添加貼文連結'}">${p.postUrl?'✏':'＋連結'}</button></td>
-      <td>${p.views||0}</td><td>${p.reach||0}</td><td>${p.likes||0}</td><td>${p.comments||0}</td><td>${p.saves||0}</td><td>${p.shares||0}</td>
-      <td class="flex" style="gap:5px"><button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新</button><button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button></td>
+      <td style="${!(p.impressions||p.views||p.reach||p.likes)? 'color:#f87171' :''}">${p.impressions||0}</td><td>${p.views||0}</td><td>${p.reach||0}</td><td>${p.likes||0}</td><td>${p.comments||0}</td><td>${p.saves||0}</td><td>${p.shares||0}</td><td>${p.linkclicks||0}</td>
+      <td class="flex" style="gap:5px"><button class="btn btn-xs btn-primary" onclick="openMetrics('${p.id}')" title="填入洞察報告數據">📊填入</button><button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button></td>
     </tr>`).join('')}</tbody>
   </table></div>`
   const mobHtml=`<div class="posts-mob">${posts.map(p=>{
@@ -3193,18 +3197,20 @@ function renderPosts(){
         ${p.articleTitle?`<div style="font-size:.74rem;color:var(--text3);margin-bottom:6px">📄 ${p.articleTitle}</div>`:''}
         ${p.utmContent?`<div style="font-family:monospace;font-size:.7rem;color:#4ade80;margin-bottom:6px">🏷 ${p.utmContent}</div>`:''}
         <div class="po-metrics">
-          <div><div class="mv">${p.views||0}</div><div class="ml">瀏覽</div></div>
-          <div><div class="mv">${p.reach||0}</div><div class="ml">觸及</div></div>
-          <div><div class="mv">${p.likes||0}</div><div class="ml">按讚</div></div>
-          <div><div class="mv">${p.comments||0}</div><div class="ml">留言</div></div>
-          <div><div class="mv">${p.saves||0}</div><div class="ml">儲存</div></div>
-          <div><div class="mv">${p.shares||0}</div><div class="ml">分享</div></div>
+          <div><div class="mv" style="${!(p.impressions)? 'color:#f87171':''}">${p.impressions||0}</div><div class="ml">📢曝光</div></div>
+          <div><div class="mv">${p.views||0}</div><div class="ml">👀瀏覽</div></div>
+          <div><div class="mv">${p.reach||0}</div><div class="ml">👁觸及</div></div>
+          <div><div class="mv">${p.likes||0}</div><div class="ml">👍讚</div></div>
+          <div><div class="mv">${p.comments||0}</div><div class="ml">💬留言</div></div>
+          <div><div class="mv">${p.saves||0}</div><div class="ml">🔖儲存</div></div>
+          <div><div class="mv">${p.shares||0}</div><div class="ml">🔄分享</div></div>
+          <div><div class="mv">${p.linkclicks||0}</div><div class="ml">🔗點擊</div></div>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           ${p.postUrl?`<a href="${escAttr(p.postUrl)}" target="_blank" class="btn btn-xs btn-copy">🔗 查看貼文</a>`:''}
           ${p.shortLink?`<a href="${escAttr(p.shortLink)}" target="_blank" class="btn btn-xs btn-copy" style="color:#fbbf24">🔗 短連結</a>`:''}
           <button class="btn btn-xs btn-outline" onclick="openSetPostUrl('${p.id}')">${p.postUrl?'✏ 編輯連結':'＋連結'}</button>
-          <button class="btn btn-xs btn-outline" onclick="openMetrics('${p.id}')">更新數據</button>
+          <button class="btn btn-xs btn-primary" onclick="openMetrics('${p.id}')">📊 填入洞察</button>
           <button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button>
         </div>
       </div>
@@ -3360,7 +3366,7 @@ function openMetrics(id){
   const p=DB.get('posts').find(x=>x.id===id); if(!p)return
   document.getElementById('um-id').value=id
   document.getElementById('um-posturl').value=p.postUrl||''
-  ;['views','reach','likes','comments','saves','shares'].forEach(k=>document.getElementById('um-'+k).value=p[k]||0)
+  ;['impressions','views','reach','likes','comments','saves','shares','linkclicks'].forEach(k=>{const el=document.getElementById('um-'+k);if(el)el.value=p[k]||0})
   // 重設平台按鈕
   const plats=p.platforms||(p.platform?[p.platform]:[])
   ;['IG','FB','Threads'].forEach(pl=>{
@@ -3378,14 +3384,16 @@ function updateMetrics(){
   const id=document.getElementById('um-id').value
   const posts=DB.get('posts')
   const i=posts.findIndex(x=>x.id===id); if(i<0)return
-  ;['views','reach','likes','comments','saves','shares'].forEach(k=>posts[i][k]=+document.getElementById('um-'+k).value||0)
+  ;['impressions','views','reach','likes','comments','saves','shares','linkclicks'].forEach(k=>{const el=document.getElementById('um-'+k);if(el)posts[i][k]=+el.value||0})
   const plats=['IG','FB','Threads'].filter(pl=>document.getElementById('pt-'+pl)?.dataset.on==='1')
   posts[i].platforms=plats
   posts[i].postUrl=document.getElementById('um-posturl')?.value?.trim()||posts[i].postUrl||''
+  posts[i].updatedAt=new Date().toISOString()
   DB.set('posts',posts)
+  DB.push('posts').catch(()=>{})
   closeModal('modal-metrics')
   renderPosts()
-  toast('數據已更新')
+  toast('數據已更新並同步雲端')
 }
 
 function delPost(id){
