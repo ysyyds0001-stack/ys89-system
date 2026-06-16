@@ -9,6 +9,8 @@ on:
 jobs:
   update-ga4:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: 📥 Checkout repo
         uses: actions/checkout@v4
@@ -48,4 +50,4 @@ jobs:
 
       - name: 🚀 推送回 repo
         run: |
-          git push origin main || git push origin master || echo "推送失敗，可能是同一分支"
+          git push origin main
