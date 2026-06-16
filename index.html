@@ -832,7 +832,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
         </select></div>
       <div class="fg" id="u-platform-wrap" style="display:none"><label>平台 / 社團 <span style="color:var(--text3);font-size:.72rem">記到哪個平台</span></label>
         <input id="u-platform" list="u-platform-list" placeholder="Medium / Dcard / 社團名…">
-        <datalist id="u-platform-list"><option>Medium</option><option>Pixnet 痞客邦</option><option>方格子 Vocus</option><option>Blogger</option><option>HackMD</option><option>Tumblr</option><option>Telegraph</option><option>Dcard</option><option>PTT</option><option>Mobile01</option><option>巴哈姆特</option></datalist></div>
+        <datalist id="u-platform-list"><option>Medium</option><option>Pixnet 痞客邦</option><option>方格子 Vocus</option><option>Blogger</option><option>HackMD</option><option>Tumblr</option><option>Telegraph</option><option>Reddit</option><option>Dcard</option><option>PTT</option><option>Mobile01</option><option>巴哈姆特</option></datalist></div>
 
       <div style="background:var(--g3);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-top:4px">
         <div style="font-size:.74rem;color:var(--accent);font-weight:700;margin-bottom:7px">🔗 貼文用這條（已帶 UTM 追蹤）</div>
@@ -2868,7 +2868,8 @@ const DEFAULT_SEEDING_ACCOUNTS=[
   {id:'sd6', platform:'HackMD',        name:'葉子玩法筆記',         code:'yezi'},
   {id:'sd7', platform:'Tumblr',        name:'nightcat-game-notes', code:'nightcat'},
   {id:'sd8', platform:'Dcard',         name:'陳坤/社團主任',        code:'dcard'},
-  {id:'sd9', platform:'Telegraph',     name:'Telegraph',           code:'telegraph'}
+  {id:'sd9', platform:'Telegraph',     name:'Telegraph',           code:'telegraph'},
+  {id:'sd10',platform:'Reddit',        name:'角角牛',               code:'boredcow',  handle:'boredcowlog'}
 ]
 const DEFAULT_COMMUNITY=[
   // A 組：流量吸引組
