@@ -3,7 +3,7 @@
     {
       "name": "akki",
       "medium": "th_post",
-      "sessions": 4566,
+      "sessions": 4582,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -11,7 +11,7 @@
     {
       "name": "crab",
       "medium": "th_post",
-      "sessions": 1197,
+      "sessions": 1217,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -19,7 +19,7 @@
     {
       "name": "(direct)",
       "medium": "(none)",
-      "sessions": 867,
+      "sessions": 876,
       "cls": "direct",
       "tag": "直接/未知",
       "tcls": "t-direct"
@@ -35,7 +35,7 @@
     {
       "name": "shizu",
       "medium": "th_post",
-      "sessions": 501,
+      "sessions": 504,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -51,7 +51,7 @@
     {
       "name": "line",
       "medium": "referral",
-      "sessions": 344,
+      "sessions": 349,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
@@ -67,7 +67,7 @@
     {
       "name": "uncle",
       "medium": "th_bio",
-      "sessions": 207,
+      "sessions": 209,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -75,15 +75,7 @@
     {
       "name": "god",
       "medium": "th_bio",
-      "sessions": 177,
-      "cls": "army",
-      "tag": "社群水軍",
-      "tcls": "t-army"
-    },
-    {
-      "name": "god",
-      "medium": "th_post",
-      "sessions": 135,
+      "sessions": 180,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -91,10 +83,18 @@
     {
       "name": "(not set)",
       "medium": "(not set)",
-      "sessions": 124,
+      "sessions": 147,
       "cls": "other",
       "tag": "其他",
       "tcls": "t-direct"
+    },
+    {
+      "name": "god",
+      "medium": "th_post",
+      "sessions": 136,
+      "cls": "army",
+      "tag": "社群水軍",
+      "tcls": "t-army"
     },
     {
       "name": "threads",
@@ -107,7 +107,7 @@
     {
       "name": "google",
       "medium": "organic",
-      "sessions": 85,
+      "sessions": 86,
       "cls": "organic",
       "tag": "自然搜尋",
       "tcls": "t-direct"
@@ -115,7 +115,7 @@
     {
       "name": "ditui",
       "medium": "offline",
-      "sessions": 78,
+      "sessions": 81,
       "cls": "offline",
       "tag": "地推",
       "tcls": "t-offline"
@@ -163,7 +163,7 @@
     {
       "name": "crab",
       "medium": "th_bio",
-      "sessions": 42,
+      "sessions": 44,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -249,6 +249,14 @@
       "tcls": "t-line"
     },
     {
+      "name": "ys89-seo-dashboard-wc.pages.dev",
+      "medium": "referral",
+      "sessions": 9,
+      "cls": "line",
+      "tag": "LINE",
+      "tcls": "t-line"
+    },
+    {
       "name": "ys89-seo-docs.pages.dev",
       "medium": "referral",
       "sessions": 8,
@@ -265,14 +273,6 @@
       "tcls": "t-army"
     },
     {
-      "name": "ys89-seo-dashboard-wc.pages.dev",
-      "medium": "referral",
-      "sessions": 7,
-      "cls": "line",
-      "tag": "LINE",
-      "tcls": "t-line"
-    },
-    {
       "name": "facebook",
       "medium": "bio",
       "sessions": 6,
@@ -282,15 +282,15 @@
     },
     {
       "name": "akki",
-      "medium": "ig_bio",
-      "sessions": 4,
+      "medium": "th_bio",
+      "sessions": 5,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
     },
     {
       "name": "akki",
-      "medium": "th_bio",
+      "medium": "ig_bio",
       "sessions": 4,
       "cls": "army",
       "tag": "社群水軍",
@@ -540,20 +540,20 @@
   "accounts": [
     {
       "name": "akki",
-      "s": 4575,
+      "s": 4589,
       "cta": 1124,
       "warn": false
     },
     {
       "name": "crab",
-      "s": 1241,
-      "cta": 455,
+      "s": 1262,
+      "cta": 457,
       "warn": false
     },
     {
       "name": "(direct)",
-      "s": 867,
-      "cta": 127,
+      "s": 876,
+      "cta": 129,
       "warn": false
     },
     {
@@ -564,7 +564,7 @@
     },
     {
       "name": "shizu",
-      "s": 501,
+      "s": 504,
       "cta": 147,
       "warn": false
     },
@@ -576,14 +576,14 @@
     },
     {
       "name": "line",
-      "s": 355,
+      "s": 360,
       "cta": 20,
       "warn": false
     },
     {
       "name": "god",
-      "s": 315,
-      "cta": 65,
+      "s": 319,
+      "cta": 66,
       "warn": false
     },
     {
@@ -594,7 +594,7 @@
     },
     {
       "name": "uncle",
-      "s": 209,
+      "s": 211,
       "cta": 65,
       "warn": false
     },
@@ -605,26 +605,26 @@
       "warn": false
     },
     {
+      "name": "(not set)",
+      "s": 147,
+      "cta": 77,
+      "warn": false
+    },
+    {
       "name": "facebook",
       "s": 138,
       "cta": 30,
       "warn": false
     },
     {
-      "name": "(not set)",
-      "s": 124,
-      "cta": 68,
-      "warn": false
-    },
-    {
       "name": "google",
-      "s": 85,
+      "s": 86,
       "cta": 7,
       "warn": false
     },
     {
       "name": "ditui",
-      "s": 78,
+      "s": 81,
       "cta": 21,
       "warn": false
     },
@@ -689,6 +689,12 @@
       "warn": false
     },
     {
+      "name": "ys89-seo-dashboard-wc.pages.dev",
+      "s": 9,
+      "cta": 1,
+      "warn": false
+    },
+    {
       "name": "ys89-seo-docs.pages.dev",
       "s": 8,
       "cta": 1,
@@ -696,12 +702,6 @@
     },
     {
       "name": "ianlin",
-      "s": 7,
-      "cta": 1,
-      "warn": false
-    },
-    {
-      "name": "ys89-seo-dashboard-wc.pages.dev",
       "s": 7,
       "cta": 1,
       "warn": false
@@ -842,23 +842,23 @@
   "pages": [
     {
       "t": "2026世界盃直播｜104場看直播完整入口・台灣時間賽程 - YS89球迷站",
-      "v": 5645
+      "v": 5662
     },
     {
       "t": "2026世界盃直播賽程｜104場觀賽入口・台灣時間・世足賽哪裡看一次看懂",
-      "v": 2128
+      "v": 2160
     },
     {
       "t": "2026 世界盃觀賽入口｜104場完整賽程・台灣時間・開賽提醒",
-      "v": 1713
+      "v": 1727
     },
     {
       "t": "2026世足賽直播｜104場線上看｜台灣時間賽程表+免費觀賽入口",
-      "v": 849
+      "v": 854
     },
     {
       "t": "2026世足賠率即時｜104場直播投注盤口・滾球同步看｜ys89.biz",
-      "v": 434
+      "v": 435
     },
     {
       "t": "2026世界盃賽程・分組・賠率・冠軍預測｜台灣最完整世界盃資訊站",
@@ -872,12 +872,12 @@
   "contents": [
     {
       "content": "crab-0611-1",
-      "sessions": 1196,
-      "cta": 438
+      "sessions": 1216,
+      "cta": 440
     },
     {
       "content": "shizu-0611-1",
-      "sessions": 501,
+      "sessions": 504,
       "cta": 147
     },
     {
@@ -892,7 +892,7 @@
     },
     {
       "content": "watch_104",
-      "sessions": 316,
+      "sessions": 321,
       "cta": 11
     },
     {
@@ -902,7 +902,7 @@
     },
     {
       "content": "link_in_bio",
-      "sessions": 113,
+      "sessions": 116,
       "cta": 27
     },
     {
@@ -912,8 +912,8 @@
     },
     {
       "content": "god-0612-1",
-      "sessions": 56,
-      "cta": 7
+      "sessions": 59,
+      "cta": 8
     },
     {
       "content": "banner_a",
@@ -1011,6 +1011,11 @@
       "cta": 0
     },
     {
+      "content": "god-0616-1",
+      "sessions": 1,
+      "cta": 0
+    },
+    {
       "content": "live104_watch",
       "sessions": 1,
       "cta": 0
@@ -1022,11 +1027,11 @@
     }
   ],
   "kpis": {
-    "activeUsers": 9393,
-    "sessions": 9946,
-    "eventCount": 44301,
-    "cta": 2220,
-    "conversionRate": 22.32
+    "activeUsers": 9445,
+    "sessions": 10020,
+    "eventCount": 44596,
+    "cta": 2234,
+    "conversionRate": 22.3
   },
-  "lastUpdated": "2026-06-16T11:48:41.623418"
+  "lastUpdated": "2026-06-16T18:28:38.110121"
 }

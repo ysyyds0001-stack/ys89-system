@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-16T11:48:44Z",
+  "lastUpdated": "2026-06-16T18:28:41Z",
   "posts": [
     {
       "date": "2026-06-16",
@@ -18,6 +18,21 @@
     },
     {
       "date": "2026-06-16",
+      "persona": "god",
+      "personaName": "世足大財神",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/@wc_godofwealth/post/DZpXiJ5H7Sc?xmt=AQG0CecxHuW2aymd4Y3-7V2-igI_A88bsWrRwK9179r-ow",
+      "landingUrl": "line:mu_021",
+      "utmContent": "god-0616-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "世界盃預測"
+    },
+    {
+      "date": "2026-06-16",
       "persona": "akki",
       "personaName": "阿奇",
       "platform": "threads",
@@ -30,6 +45,21 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
+    },
+    {
+      "date": "2026-06-16",
+      "persona": null,
+      "personaName": "Bam班",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/@cola4cc/post/DZpUwWLCdZ_?xmt=AQG05MBUOl080oIzxmjI508y1bDVaFqM6KLmxmRB45tMEXxb5O3W-qMCyt1Xi8HP6Tfx63T4&slof=1",
+      "landingUrl": null,
+      "utmContent": "bam-0616-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "哪裡玩世界盃"
     },
     {
       "date": "2026-06-16",
