@@ -3493,6 +3493,7 @@ function renderArticles(){
     ['無帳號方向',articles.filter(a=>!personas.some(p=>p.dir===a.dir)).length,'tm']
   ].map(([l,v,c])=>`<div class="stat"><div class="stat-num ${c||''}">${v}</div><div class="stat-label">${l}</div></div>`).join('')
 
+  const channelPosts=DB.get('channel_posts')||[]
   const wrap=document.getElementById('art-list')
   if(!articles.length){wrap.innerHTML='<div class="card" style="text-align:center;padding:40px;color:var(--text3)">尚無文章，點擊右上角新增</div>';return}
   wrap.innerHTML=articles.slice().reverse().map(a=>{
@@ -3501,6 +3502,7 @@ function renderArticles(){
     const doneNames=(a.postedBy||[]).map(x=>x.name)
     const todoList=needed.filter(p=>!done.includes(p.id))
     const doneList=needed.filter(p=>done.includes(p.id))
+    const cpUsed=channelPosts.filter(p=>p.articleId===a.id)
     const covPct=needed.length?Math.round(doneList.length/needed.length*100):0
     const covColor=covPct===100?'':covPct>=50?'warn':'danger'
     return`<div class="card" style="margin-bottom:12px">
@@ -3534,6 +3536,13 @@ function renderArticles(){
           <div class="cov-grid">${todoList.map(p=>`<span class="cov-chip todo">✗ ${p.name}</span>`).join('')}</div>`:''}
         </div>
       </div>`:`<div class="tm">方向「${a.dir||'未分類'}」尚無發文帳號</div>`}
+      ${cpUsed.length?`
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
+        <div class="tm" style="margin-bottom:6px">📝 匿名鋪文引用 <span style="color:var(--accent);font-weight:700">${cpUsed.length}</span> 次</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">
+          ${(()=>{const sa=DB.get('seeding_accounts')||[];return cpUsed.map(p=>{const plat=p.platform||(sa.find(s=>s.code===p.role)||{}).platform||'';return`<span style="display:inline-flex;align-items:center;gap:4px;background:var(--g3);border:1px solid var(--border2);border-radius:6px;padding:2px 8px;font-size:.72rem"><span style="color:var(--accent)">${plat||'鋪文'}</span><span>${p.roleName||p.role||'?'}</span><span class="tm">${(p.date||'').slice(5)}</span></span>`}).join('')})()}
+        </div>
+      </div>`:''}
       ${a.summary?`<div class="tm" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);line-height:1.6">${a.summary}</div>`:''}
     </div>`
   }).join('')
