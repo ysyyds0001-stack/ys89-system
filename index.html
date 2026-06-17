@@ -54,6 +54,7 @@ nav{background:#0d0b0a;border-bottom:1px solid var(--border);padding:0 20px;disp
 .nav-tab{padding:13px 16px;cursor:pointer;color:var(--text3);font-size:.87rem;border-bottom:2px solid transparent;transition:.2s;white-space:nowrap}
 .nav-tab:hover{color:var(--text)}
 .nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-sep{width:1px;background:var(--border);margin:10px 6px;flex-shrink:0}
 
 /* PAGE */
 .page{display:none;padding:20px 24px;max-width:1440px;margin:0 auto}
@@ -283,19 +284,25 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 <nav>
   <div class="nav-brand">YS89<span>發文管理系統</span></div>
   <div id="sync-status" style="font-size:.72rem;color:var(--accent);margin-left:8px;opacity:.8"></div>
-  <div class="nav-tab" onclick="nav(this,'ga4')">📊 GA4 成效</div>
-  <div class="nav-tab active" onclick="nav(this,'personas')">發文角色</div>
-  <div class="nav-tab" onclick="nav(this,'tracker')">發文追蹤</div>
-  <div class="nav-tab" onclick="nav(this,'articles')">文章庫</div>
-  <div class="nav-tab" onclick="nav(this,'community')">社群水軍號</div>
-  <div class="nav-tab" onclick="nav(this,'roles')">🎭 角色主檔</div>
-  <div class="nav-tab" onclick="nav(this,'threadtracker')">🔥 社群平台炒群</div>
-  <div class="nav-tab" onclick="nav(this,'channel')">📝 匿名社群發文</div>
-  <div class="nav-tab" onclick="nav(this,'channelfb')">📘 臉書社團/粉專</div>
+  <div class="nav-sep"></div>
+  <div class="nav-tab active" onclick="nav(this,'multipost')">📡 多平台發文</div>
+  <div class="nav-tab" onclick="nav(this,'threadtracker')">🔥 社群炒群</div>
+  <div class="nav-tab" onclick="nav(this,'channel')">📝 匿名社群</div>
+  <div class="nav-tab" onclick="nav(this,'channelfb')">📘 臉書社團</div>
   <div class="nav-tab" onclick="nav(this,'conv')">💰 財神轉化</div>
-  <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
+  <div class="nav-sep"></div>
+  <div class="nav-tab" onclick="nav(this,'personas')">👤 發文角色</div>
+  <div class="nav-tab" onclick="nav(this,'community')">🌐 社群水軍號</div>
+  <div class="nav-tab" onclick="nav(this,'roles')">🎭 角色主檔</div>
+  <div class="nav-sep"></div>
+  <div class="nav-tab" onclick="nav(this,'ga4')">📊 GA4 成效</div>
+  <div class="nav-tab" onclick="nav(this,'tracker')">📈 發文追蹤</div>
+  <div class="nav-tab" onclick="nav(this,'articles')">📚 文章庫</div>
+  <div class="nav-sep"></div>
   <div class="nav-tab" onclick="nav(this,'utm')">🏷️ UTM 產生器</div>
+  <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
   <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口</div>
+  <div class="nav-sep"></div>
   <div class="nav-tab" onclick="nav(this,'todo')">📋 今日待辦</div>
   <div class="nav-tab" onclick="nav(this,'cast')">🎬 劇本</div>
   <div class="nav-tab" onclick="nav(this,'guide')">📖 使用說明</div>
@@ -1038,6 +1045,183 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
 </div>
 
 <!-- ===== PAGE: 使用說明 ===== -->
+<div id="pg-multipost" class="page active">
+  <div class="fb" style="margin-bottom:14px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">📡 多平台發文</h2>
+      <p class="tm" style="margin-top:3px">一鍵同步發到 Blogger · Tumblr · HackMD · Telegram · Pixnet · Reddit</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="mp-server-dot" style="width:8px;height:8px;border-radius:50%;background:#ccc;display:inline-block"></span>
+      <span id="mp-server-txt" class="tm" style="font-size:.8rem">伺服器檢查中…</span>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start">
+    <!-- 左：表單 -->
+    <div class="card">
+      <div class="fg" style="margin-bottom:12px">
+        <label style="font-weight:600;font-size:.88rem">標題 *</label>
+        <input id="mp-title" type="text" placeholder="例：梅西帽子戲法！阿根廷 3-0 擊敗阿爾及利亞" style="width:100%;padding:8px 10px;background:var(--g3);border:1px solid var(--border2);border-radius:8px;color:var(--text1);font-size:.9rem">
+      </div>
+      <div class="fg" style="margin-bottom:12px">
+        <label style="font-weight:600;font-size:.88rem">摘要</label>
+        <textarea id="mp-summary" rows="3" placeholder="簡短描述，出現在 Telegram 和 Tumblr 的說明文字" style="width:100%;padding:8px 10px;background:var(--g3);border:1px solid var(--border2);border-radius:8px;color:var(--text1);font-size:.9rem;resize:vertical"></textarea>
+      </div>
+      <div class="fg" style="margin-bottom:12px">
+        <label style="font-weight:600;font-size:.88rem">文章 URL *</label>
+        <input id="mp-url" type="url" placeholder="https://ys89.fun/..." style="width:100%;padding:8px 10px;background:var(--g3);border:1px solid var(--border2);border-radius:8px;color:var(--text1);font-size:.9rem">
+      </div>
+      <div class="fg" style="margin-bottom:16px">
+        <label style="font-weight:600;font-size:.88rem">標籤（逗號分隔）</label>
+        <input id="mp-tags" type="text" placeholder="世界盃,運彩,賠率分析" style="width:100%;padding:8px 10px;background:var(--g3);border:1px solid var(--border2);border-radius:8px;color:var(--text1);font-size:.9rem">
+      </div>
+
+      <!-- 平台勾選 -->
+      <div style="margin-bottom:16px">
+        <div style="font-weight:600;font-size:.88rem;margin-bottom:10px">發文平台</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--g3);border-radius:8px;cursor:pointer;border:1px solid var(--border2)">
+            <input type="checkbox" id="mp-chk-blogger" checked style="width:16px;height:16px;accent-color:var(--accent)">
+            <span>📝 Blogger</span><span class="tm" style="font-size:.75rem;margin-left:auto">haogamediary</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--g3);border-radius:8px;cursor:pointer;border:1px solid var(--border2)">
+            <input type="checkbox" id="mp-chk-hackmd" checked style="width:16px;height:16px;accent-color:var(--accent)">
+            <span>📓 HackMD</span><span class="tm" style="font-size:.75rem;margin-left:auto">葉子</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--g3);border-radius:8px;cursor:pointer;border:1px solid var(--border2)">
+            <input type="checkbox" id="mp-chk-tumblr" checked style="width:16px;height:16px;accent-color:var(--accent)">
+            <span>🎨 Tumblr</span><span class="tm" style="font-size:.75rem;margin-left:auto">nightcat</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--g3);border-radius:8px;cursor:pointer;border:1px solid var(--border2)">
+            <input type="checkbox" id="mp-chk-telegram" checked style="width:16px;height:16px;accent-color:var(--accent)">
+            <span>✈️ Telegram</span><span class="tm" style="font-size:.75rem;margin-left:auto">ys post</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--g3);border-radius:8px;cursor:pointer;border:1px solid var(--border2)">
+            <input type="checkbox" id="mp-chk-pixnet" checked style="width:16px;height:16px;accent-color:var(--accent)">
+            <span>📷 Pixnet</span><span class="tm" style="font-size:.75rem;margin-left:auto">老K娛樂筆記</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--g3);border-radius:8px;cursor:pointer;border:1px solid var(--border2)">
+            <input type="checkbox" id="mp-chk-reddit" style="width:16px;height:16px;accent-color:var(--accent)">
+            <span>🤖 Reddit</span><span class="tm" style="font-size:.75rem;margin-left:auto">角角牛</span>
+          </label>
+        </div>
+      </div>
+
+      <button id="mp-btn" onclick="mpSubmit()" class="btn btn-primary" style="width:100%;padding:12px;font-size:1rem;font-weight:700">🚀 一鍵發文</button>
+    </div>
+
+    <!-- 右：發文結果 -->
+    <div>
+      <div class="card" id="mp-results" style="display:none">
+        <div style="font-weight:700;font-size:.95rem;margin-bottom:12px">發文結果</div>
+        <div id="mp-results-body"></div>
+      </div>
+      <div class="card" style="margin-top:12px;background:var(--g2)">
+        <div style="font-weight:600;font-size:.85rem;margin-bottom:8px;color:var(--text2)">⚙️ 使用說明</div>
+        <ol style="font-size:.8rem;color:var(--text3);line-height:1.8;padding-left:16px;margin:0">
+          <li>先啟動本地伺服器：<br><code style="font-size:.75rem;background:var(--g3);padding:2px 6px;border-radius:4px">python api_server.py</code></li>
+          <li>填好標題 / URL</li>
+          <li>勾選平台</li>
+          <li>按「一鍵發文」</li>
+        </ol>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border2)">
+          <div style="font-size:.78rem;color:var(--text3)">API Server 路徑：</div>
+          <code style="font-size:.72rem;color:var(--accent);word-break:break-all">C:\Users\haoli\AppData\Local\Temp\ys89-system\api_server.py</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // 多平台發文功能
+  const API = 'http://localhost:5566';
+
+  function mpCheckServer(){
+    fetch(API+'/api/health',{signal:AbortSignal.timeout(2000)})
+      .then(r=>r.json()).then(()=>{
+        document.getElementById('mp-server-dot').style.background='#22c55e';
+        document.getElementById('mp-server-txt').textContent='API 伺服器已連線';
+      }).catch(()=>{
+        document.getElementById('mp-server-dot').style.background='#ef4444';
+        document.getElementById('mp-server-txt').textContent='伺服器未啟動（需執行 api_server.py）';
+      });
+  }
+
+  window.mpSubmit = function(){
+    const title = document.getElementById('mp-title').value.trim();
+    const url   = document.getElementById('mp-url').value.trim();
+    if(!title||!url){ alert('請填寫標題和 URL'); return; }
+
+    const platforms = [];
+    ['blogger','hackmd','tumblr','telegram','pixnet','reddit'].forEach(p=>{
+      if(document.getElementById('mp-chk-'+p)?.checked) platforms.push(p);
+    });
+    if(!platforms.length){ alert('請至少勾選一個平台'); return; }
+
+    const btn = document.getElementById('mp-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ 發文中…';
+
+    const body = {
+      title,
+      summary: document.getElementById('mp-summary').value.trim(),
+      url,
+      tags: document.getElementById('mp-tags').value.trim(),
+      platforms
+    };
+
+    const res = document.getElementById('mp-results');
+    const resBody = document.getElementById('mp-results-body');
+    res.style.display='block';
+    resBody.innerHTML = platforms.map(p=>`
+      <div id="mp-r-${p}" style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border2)">
+        <span style="font-size:1rem">⏳</span>
+        <span style="font-size:.88rem;flex:1">${{blogger:'Blogger',hackmd:'HackMD',tumblr:'Tumblr',telegram:'Telegram',pixnet:'Pixnet',reddit:'Reddit'}[p]}</span>
+        <span class="tm" style="font-size:.78rem">發送中…</span>
+      </div>`).join('');
+
+    fetch(API+'/api/post',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    })
+    .then(r=>r.json())
+    .then(data=>{
+      const nameMap={blogger:'Blogger',hackmd:'HackMD',tumblr:'Tumblr',telegram:'Telegram',pixnet:'Pixnet',reddit:'Reddit'};
+      Object.entries(data.results||{}).forEach(([p,r])=>{
+        const el=document.getElementById('mp-r-'+p);
+        if(!el)return;
+        if(r.ok){
+          el.innerHTML=`<span style="font-size:1rem">✅</span>
+            <span style="font-size:.88rem;flex:1">${nameMap[p]}</span>
+            ${r.url?`<a href="${r.url}" target="_blank" style="font-size:.78rem;color:var(--accent)">查看 →</a>`:'<span class="tm" style="font-size:.78rem">成功</span>'}`;
+        } else {
+          el.innerHTML=`<span style="font-size:1rem">❌</span>
+            <span style="font-size:.88rem;flex:1">${nameMap[p]}</span>
+            <span style="font-size:.75rem;color:#ef4444" title="${r.error||''}">${(r.error||'失敗').substring(0,30)}</span>`;
+        }
+      });
+    })
+    .catch(e=>{
+      resBody.innerHTML=`<div style="color:#ef4444;font-size:.85rem">❌ 無法連線 API 伺服器，請先執行 api_server.py</div>`;
+    })
+    .finally(()=>{
+      btn.disabled=false;
+      btn.textContent='🚀 一鍵發文';
+    });
+  };
+
+  // 每次切到此頁時檢查伺服器
+  document.addEventListener('click',e=>{
+    if(e.target.getAttribute?.('onclick')?.includes('multipost')) setTimeout(mpCheckServer,100);
+  });
+  setTimeout(mpCheckServer,1500);
+})();
+</script>
+
 <div id="pg-guide" class="page">
   <div style="margin-bottom:14px">
     <h2 style="font-size:1.2rem;font-weight:700">📖 使用說明</h2>
@@ -1095,7 +1279,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
 </div>
 
 <!-- ===== PAGE: 發文角色 ===== -->
-<div id="pg-personas" class="page active">
+<div id="pg-personas" class="page">
   <div class="fb" style="margin-bottom:18px">
     <div>
       <h2 style="font-size:1.2rem;font-weight:700">發文角色</h2>
