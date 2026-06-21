@@ -3,7 +3,7 @@
     {
       "name": "akki",
       "medium": "th_post",
-      "sessions": 5582,
+      "sessions": 5873,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -11,7 +11,7 @@
     {
       "name": "crab",
       "medium": "th_post",
-      "sessions": 1666,
+      "sessions": 1672,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -19,7 +19,7 @@
     {
       "name": "(direct)",
       "medium": "(none)",
-      "sessions": 974,
+      "sessions": 988,
       "cls": "direct",
       "tag": "直接/未知",
       "tcls": "t-direct"
@@ -27,10 +27,18 @@
     {
       "name": "shizu",
       "medium": "th_post",
-      "sessions": 560,
+      "sessions": 564,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
+    },
+    {
+      "name": "line",
+      "medium": "referral",
+      "sessions": 538,
+      "cls": "line",
+      "tag": "LINE",
+      "tcls": "t-line"
     },
     {
       "name": "fb",
@@ -39,14 +47,6 @@
       "cls": "other",
       "tag": "其他",
       "tcls": "t-direct"
-    },
-    {
-      "name": "line",
-      "medium": "referral",
-      "sessions": 523,
-      "cls": "line",
-      "tag": "LINE",
-      "tcls": "t-line"
     },
     {
       "name": "ig",
@@ -59,7 +59,7 @@
     {
       "name": "uncle",
       "medium": "th_bio",
-      "sessions": 303,
+      "sessions": 321,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -67,7 +67,7 @@
     {
       "name": "god",
       "medium": "th_bio",
-      "sessions": 235,
+      "sessions": 273,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -81,17 +81,9 @@
       "tcls": "t-army"
     },
     {
-      "name": "(not set)",
-      "medium": "(not set)",
-      "sessions": 141,
-      "cls": "other",
-      "tag": "其他",
-      "tcls": "t-direct"
-    },
-    {
       "name": "god",
       "medium": "th_post",
-      "sessions": 137,
+      "sessions": 141,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -107,7 +99,7 @@
     {
       "name": "google",
       "medium": "organic",
-      "sessions": 94,
+      "sessions": 95,
       "cls": "organic",
       "tag": "自然搜尋",
       "tcls": "t-direct"
@@ -171,10 +163,18 @@
     {
       "name": "m.facebook.com",
       "medium": "referral",
-      "sessions": 39,
+      "sessions": 40,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
+    },
+    {
+      "name": "(not set)",
+      "medium": "(not set)",
+      "sessions": 39,
+      "cls": "other",
+      "tag": "其他",
+      "tcls": "t-direct"
     },
     {
       "name": "bing",
@@ -187,7 +187,7 @@
     {
       "name": "ys89_me",
       "medium": "referral",
-      "sessions": 30,
+      "sessions": 31,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
@@ -203,7 +203,7 @@
     {
       "name": "tw.search.yahoo.com",
       "medium": "referral",
-      "sessions": 24,
+      "sessions": 26,
       "cls": "other",
       "tag": "其他",
       "tcls": "t-direct"
@@ -259,7 +259,7 @@
     {
       "name": "ianlin",
       "medium": "th_post",
-      "sessions": 8,
+      "sessions": 9,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -449,14 +449,6 @@
       "tcls": "t-army"
     },
     {
-      "name": "(data not available)",
-      "medium": "(data not available)",
-      "sessions": 1,
-      "cls": "other",
-      "tag": "其他",
-      "tcls": "t-direct"
-    },
-    {
       "name": "Facebook",
       "medium": "Carat_display",
       "sessions": 1,
@@ -580,26 +572,32 @@
   "accounts": [
     {
       "name": "akki",
-      "s": 5592,
-      "cta": 1395,
+      "s": 5884,
+      "cta": 1492,
       "warn": false
     },
     {
       "name": "crab",
-      "s": 1729,
+      "s": 1735,
       "cta": 705,
       "warn": false
     },
     {
       "name": "(direct)",
-      "s": 974,
-      "cta": 145,
+      "s": 988,
+      "cta": 148,
       "warn": false
     },
     {
       "name": "shizu",
-      "s": 560,
-      "cta": 173,
+      "s": 564,
+      "cta": 176,
+      "warn": false
+    },
+    {
+      "name": "line",
+      "s": 549,
+      "cta": 30,
       "warn": false
     },
     {
@@ -609,9 +607,9 @@
       "warn": false
     },
     {
-      "name": "line",
-      "s": 534,
-      "cta": 29,
+      "name": "god",
+      "s": 418,
+      "cta": 84,
       "warn": false
     },
     {
@@ -621,15 +619,9 @@
       "warn": false
     },
     {
-      "name": "god",
-      "s": 376,
-      "cta": 72,
-      "warn": false
-    },
-    {
       "name": "uncle",
-      "s": 306,
-      "cta": 100,
+      "s": 324,
+      "cta": 116,
       "warn": false
     },
     {
@@ -645,12 +637,6 @@
       "warn": false
     },
     {
-      "name": "(not set)",
-      "s": 141,
-      "cta": 87,
-      "warn": false
-    },
-    {
       "name": "facebook",
       "s": 138,
       "cta": 30,
@@ -658,8 +644,8 @@
     },
     {
       "name": "google",
-      "s": 94,
-      "cta": 12,
+      "s": 95,
+      "cta": 13,
       "warn": false
     },
     {
@@ -682,14 +668,26 @@
     },
     {
       "name": "m.facebook.com",
-      "s": 39,
+      "s": 40,
       "cta": 1,
+      "warn": false
+    },
+    {
+      "name": "(not set)",
+      "s": 39,
+      "cta": 24,
       "warn": false
     },
     {
       "name": "bing",
       "s": 31,
-      "cta": 1,
+      "cta": 2,
+      "warn": false
+    },
+    {
+      "name": "ys89_me",
+      "s": 31,
+      "cta": 3,
       "warn": false
     },
     {
@@ -699,15 +697,9 @@
       "warn": false
     },
     {
-      "name": "ys89_me",
-      "s": 30,
-      "cta": 3,
-      "warn": false
-    },
-    {
       "name": "tw.search.yahoo.com",
-      "s": 24,
-      "cta": 1,
+      "s": 26,
+      "cta": 2,
       "warn": false
     },
     {
@@ -736,7 +728,7 @@
     },
     {
       "name": "ianlin",
-      "s": 8,
+      "s": 9,
       "cta": 1,
       "warn": false
     },
@@ -837,12 +829,6 @@
       "warn": false
     },
     {
-      "name": "(data not available)",
-      "s": 1,
-      "cta": 0,
-      "warn": false
-    },
-    {
       "name": "Facebook",
       "s": 1,
       "cta": 1,
@@ -912,43 +898,48 @@
   "pages": [
     {
       "t": "2026世界盃直播｜104場看直播完整入口・台灣時間賽程 - YS89球迷站",
-      "v": 6809
+      "v": 7090
     },
     {
       "t": "2026世界盃直播賽程｜104場觀賽入口・台灣時間・世足賽哪裡看一次看懂",
-      "v": 2722
+      "v": 2727
     },
     {
       "t": "2026 世界盃觀賽入口｜104場完整賽程・台灣時間・開賽提醒",
-      "v": 2154
+      "v": 2172
     },
     {
       "t": "2026世足賽直播｜104場線上看｜台灣時間賽程表+免費觀賽入口",
-      "v": 1035
+      "v": 1059
     },
     {
       "t": "2026世足賠率即時｜104場直播投注盤口・滾球同步看｜ys89.biz",
-      "v": 454
+      "v": 464
     },
     {
       "t": "如何觀看 2026 世界盃 104 場直播・3 步驟解鎖教學｜台灣觀賽直播攻略",
-      "v": 271
+      "v": 280
     },
     {
       "t": "2026世界盃賽程・分組・賠率・冠軍預測｜台灣最完整世界盃資訊站",
-      "v": 254
+      "v": 255
     }
   ],
   "contents": [
     {
       "content": "crab-0611-1",
-      "sessions": 1665,
+      "sessions": 1671,
       "cta": 677
     },
     {
       "content": "shizu-0611-1",
-      "sessions": 560,
-      "cta": 173
+      "sessions": 564,
+      "cta": 176
+    },
+    {
+      "content": "watch_104",
+      "sessions": 498,
+      "cta": 18
     },
     {
       "content": "120254552208000197",
@@ -956,14 +947,14 @@
       "cta": 6
     },
     {
-      "content": "watch_104",
-      "sessions": 486,
-      "cta": 18
-    },
-    {
       "content": "120254550901910197",
       "sessions": 426,
       "cta": 27
+    },
+    {
+      "content": "god-0612-1",
+      "sessions": 141,
+      "cta": 23
     },
     {
       "content": "link_in_bio",
@@ -974,11 +965,6 @@
       "content": "god-0611-1",
       "sessions": 131,
       "cta": 22
-    },
-    {
-      "content": "god-0612-1",
-      "sessions": 108,
-      "cta": 13
     },
     {
       "content": "fifa_site",
@@ -997,8 +983,8 @@
     },
     {
       "content": "schedule",
-      "sessions": 32,
-      "cta": 7
+      "sessions": 34,
+      "cta": 8
     },
     {
       "content": "prediction",
@@ -1006,14 +992,14 @@
       "cta": 3
     },
     {
+      "content": "footer_network",
+      "sessions": 20,
+      "cta": 10
+    },
+    {
       "content": "forum_games",
       "sessions": 20,
       "cta": 1
-    },
-    {
-      "content": "footer_network",
-      "sessions": 19,
-      "cta": 10
     },
     {
       "content": "apu-0612-1",
@@ -1022,7 +1008,7 @@
     },
     {
       "content": "odds",
-      "sessions": 16,
+      "sessions": 17,
       "cta": 4
     },
     {
@@ -1031,14 +1017,14 @@
       "cta": 2
     },
     {
+      "content": "ianlin-0612-1",
+      "sessions": 9,
+      "cta": 1
+    },
+    {
       "content": "games",
       "sessions": 8,
       "cta": 0
-    },
-    {
-      "content": "ianlin-0612-1",
-      "sessions": 8,
-      "cta": 1
     },
     {
       "content": "test_a",
@@ -1102,11 +1088,11 @@
     }
   ],
   "kpis": {
-    "activeUsers": 11219,
-    "sessions": 12000,
-    "eventCount": 53325,
-    "cta": 2906,
-    "conversionRate": 24.22
+    "activeUsers": 11597,
+    "sessions": 12336,
+    "eventCount": 54601,
+    "cta": 3013,
+    "conversionRate": 24.42
   },
-  "lastUpdated": "2026-06-20T10:40:16.930463"
+  "lastUpdated": "2026-06-21T11:36:16.333857"
 }
