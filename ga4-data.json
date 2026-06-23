@@ -3,7 +3,7 @@
     {
       "name": "akki",
       "medium": "th_post",
-      "sessions": 5958,
+      "sessions": 6103,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -11,7 +11,7 @@
     {
       "name": "crab",
       "medium": "th_post",
-      "sessions": 1673,
+      "sessions": 1674,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -19,7 +19,7 @@
     {
       "name": "(direct)",
       "medium": "(none)",
-      "sessions": 993,
+      "sessions": 998,
       "cls": "direct",
       "tag": "直接/未知",
       "tcls": "t-direct"
@@ -27,7 +27,7 @@
     {
       "name": "shizu",
       "medium": "th_post",
-      "sessions": 565,
+      "sessions": 570,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -35,7 +35,7 @@
     {
       "name": "line",
       "medium": "referral",
-      "sessions": 544,
+      "sessions": 551,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
@@ -67,7 +67,7 @@
     {
       "name": "god",
       "medium": "th_bio",
-      "sessions": 276,
+      "sessions": 287,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -99,7 +99,7 @@
     {
       "name": "google",
       "medium": "organic",
-      "sessions": 95,
+      "sessions": 98,
       "cls": "organic",
       "tag": "自然搜尋",
       "tcls": "t-direct"
@@ -111,6 +111,14 @@
       "cls": "offline",
       "tag": "地推",
       "tcls": "t-offline"
+    },
+    {
+      "name": "(not set)",
+      "medium": "(not set)",
+      "sessions": 83,
+      "cls": "other",
+      "tag": "其他",
+      "tcls": "t-direct"
     },
     {
       "name": "facebook",
@@ -129,14 +137,6 @@
       "tcls": "t-direct"
     },
     {
-      "name": "(not set)",
-      "medium": "(not set)",
-      "sessions": 69,
-      "cls": "other",
-      "tag": "其他",
-      "tcls": "t-direct"
-    },
-    {
       "name": "threads",
       "medium": "social",
       "sessions": 63,
@@ -147,7 +147,7 @@
     {
       "name": "crab",
       "medium": "th_bio",
-      "sessions": 60,
+      "sessions": 61,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -163,7 +163,7 @@
     {
       "name": "ys89.me",
       "medium": "cta",
-      "sessions": 48,
+      "sessions": 50,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
@@ -179,7 +179,7 @@
     {
       "name": "bing",
       "medium": "organic",
-      "sessions": 32,
+      "sessions": 33,
       "cls": "organic",
       "tag": "自然搜尋",
       "tcls": "t-direct"
@@ -203,7 +203,7 @@
     {
       "name": "tw.search.yahoo.com",
       "medium": "referral",
-      "sessions": 27,
+      "sessions": 28,
       "cls": "other",
       "tag": "其他",
       "tcls": "t-direct"
@@ -219,7 +219,7 @@
     {
       "name": "ys89-seo-dashboard-wc.pages.dev",
       "medium": "referral",
-      "sessions": 18,
+      "sessions": 20,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
@@ -231,6 +231,14 @@
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
+    },
+    {
+      "name": "ianlin",
+      "medium": "th_post",
+      "sessions": 11,
+      "cls": "army",
+      "tag": "社群水軍",
+      "tcls": "t-army"
     },
     {
       "name": "line",
@@ -257,14 +265,6 @@
       "tcls": "t-line"
     },
     {
-      "name": "ianlin",
-      "medium": "th_post",
-      "sessions": 9,
-      "cls": "army",
-      "tag": "社群水軍",
-      "tcls": "t-army"
-    },
-    {
       "name": "ys89-seo-docs.pages.dev",
       "medium": "referral",
       "sessions": 8,
@@ -273,17 +273,17 @@
       "tcls": "t-line"
     },
     {
-      "name": "facebook",
-      "medium": "bio",
+      "name": "akki",
+      "medium": "th_bio",
       "sessions": 6,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
     },
     {
-      "name": "akki",
-      "medium": "th_bio",
-      "sessions": 5,
+      "name": "facebook",
+      "medium": "bio",
+      "sessions": 6,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -580,31 +580,31 @@
   "accounts": [
     {
       "name": "akki",
-      "s": 5967,
-      "cta": 1502,
+      "s": 6115,
+      "cta": 1544,
       "warn": false
     },
     {
       "name": "crab",
-      "s": 1736,
+      "s": 1738,
       "cta": 705,
       "warn": false
     },
     {
       "name": "(direct)",
-      "s": 993,
-      "cta": 148,
+      "s": 998,
+      "cta": 150,
       "warn": false
     },
     {
       "name": "shizu",
-      "s": 565,
-      "cta": 177,
+      "s": 570,
+      "cta": 178,
       "warn": false
     },
     {
       "name": "line",
-      "s": 555,
+      "s": 562,
       "cta": 31,
       "warn": false
     },
@@ -616,8 +616,8 @@
     },
     {
       "name": "god",
-      "s": 421,
-      "cta": 84,
+      "s": 432,
+      "cta": 85,
       "warn": false
     },
     {
@@ -652,8 +652,8 @@
     },
     {
       "name": "google",
-      "s": 95,
-      "cta": 13,
+      "s": 98,
+      "cta": 14,
       "warn": false
     },
     {
@@ -663,20 +663,20 @@
       "warn": false
     },
     {
+      "name": "(not set)",
+      "s": 83,
+      "cta": 55,
+      "warn": false
+    },
+    {
       "name": "chatgpt.com",
       "s": 75,
       "cta": 0,
       "warn": false
     },
     {
-      "name": "(not set)",
-      "s": 69,
-      "cta": 47,
-      "warn": false
-    },
-    {
       "name": "ys89.me",
-      "s": 48,
+      "s": 50,
       "cta": 5,
       "warn": false
     },
@@ -688,8 +688,8 @@
     },
     {
       "name": "bing",
-      "s": 32,
-      "cta": 2,
+      "s": 33,
+      "cta": 3,
       "warn": false
     },
     {
@@ -706,8 +706,8 @@
     },
     {
       "name": "tw.search.yahoo.com",
-      "s": 27,
-      "cta": 2,
+      "s": 28,
+      "cta": 3,
       "warn": false
     },
     {
@@ -718,7 +718,7 @@
     },
     {
       "name": "ys89-seo-dashboard-wc.pages.dev",
-      "s": 18,
+      "s": 20,
       "cta": 3,
       "warn": false
     },
@@ -729,15 +729,15 @@
       "warn": false
     },
     {
-      "name": "ys89-seo-dashboard.pages.dev",
+      "name": "ianlin",
       "s": 11,
-      "cta": 3,
+      "cta": 1,
       "warn": false
     },
     {
-      "name": "ianlin",
-      "s": 9,
-      "cta": 1,
+      "name": "ys89-seo-dashboard.pages.dev",
+      "s": 11,
+      "cta": 3,
       "warn": false
     },
     {
@@ -912,23 +912,23 @@
   "pages": [
     {
       "t": "2026世界盃直播｜104場看直播完整入口・台灣時間賽程 - YS89球迷站",
-      "v": 7207
+      "v": 7429
     },
     {
       "t": "2026世界盃直播賽程｜104場觀賽入口・台灣時間・世足賽哪裡看一次看懂",
-      "v": 2730
+      "v": 2733
     },
     {
       "t": "2026 世界盃觀賽入口｜104場完整賽程・台灣時間・開賽提醒",
-      "v": 2176
+      "v": 2191
     },
     {
       "t": "2026世足賽直播｜104場線上看｜台灣時間賽程表+免費觀賽入口",
-      "v": 1062
+      "v": 1066
     },
     {
       "t": "2026世足賠率即時｜104場直播投注盤口・滾球同步看｜ys89.biz",
-      "v": 466
+      "v": 475
     },
     {
       "t": "如何觀看 2026 世界盃 104 場直播・3 步驟解鎖教學｜台灣觀賽直播攻略",
@@ -936,23 +936,23 @@
     },
     {
       "t": "2026世界盃賽程・分組・賠率・冠軍預測｜台灣最完整世界盃資訊站",
-      "v": 260
+      "v": 264
     }
   ],
   "contents": [
     {
       "content": "crab-0611-1",
-      "sessions": 1672,
+      "sessions": 1673,
       "cta": 677
     },
     {
       "content": "shizu-0611-1",
-      "sessions": 565,
-      "cta": 177
+      "sessions": 570,
+      "cta": 178
     },
     {
       "content": "watch_104",
-      "sessions": 501,
+      "sessions": 507,
       "cta": 19
     },
     {
@@ -967,12 +967,12 @@
     },
     {
       "content": "god-0612-1",
-      "sessions": 142,
-      "cta": 23
+      "sessions": 144,
+      "cta": 24
     },
     {
       "content": "link_in_bio",
-      "sessions": 132,
+      "sessions": 134,
       "cta": 38
     },
     {
@@ -992,12 +992,12 @@
     },
     {
       "content": "me_step3_watch",
-      "sessions": 48,
+      "sessions": 50,
       "cta": 5
     },
     {
       "content": "schedule",
-      "sessions": 37,
+      "sessions": 38,
       "cta": 8
     },
     {
@@ -1026,14 +1026,14 @@
       "cta": 4
     },
     {
+      "content": "ianlin-0612-1",
+      "sessions": 11,
+      "cta": 1
+    },
+    {
       "content": "apu-0611-1",
       "sessions": 9,
       "cta": 2
-    },
-    {
-      "content": "ianlin-0612-1",
-      "sessions": 9,
-      "cta": 1
     },
     {
       "content": "games",
@@ -1102,11 +1102,11 @@
     }
   ],
   "kpis": {
-    "activeUsers": 11723,
-    "sessions": 12454,
-    "eventCount": 55066,
-    "cta": 3038,
-    "conversionRate": 24.39
+    "activeUsers": 11901,
+    "sessions": 12678,
+    "eventCount": 55908,
+    "cta": 3091,
+    "conversionRate": 24.38
   },
-  "lastUpdated": "2026-06-22T06:30:13.722736"
+  "lastUpdated": "2026-06-23T05:02:00.029611"
 }
