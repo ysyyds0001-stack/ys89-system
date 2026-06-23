@@ -51,3 +51,7 @@ jobs:
       - name: 🚀 推送回 repo
         run: |
           git push origin main
+
+      - name: 📨 推送每日成效報告到 Mike Bot
+        run: |
+          python daily_report.py
