@@ -3,7 +3,7 @@
     {
       "name": "akki",
       "medium": "th_post",
-      "sessions": 6277,
+      "sessions": 6388,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -19,7 +19,7 @@
     {
       "name": "(direct)",
       "medium": "(none)",
-      "sessions": 1022,
+      "sessions": 1046,
       "cls": "direct",
       "tag": "直接/未知",
       "tcls": "t-direct"
@@ -27,7 +27,7 @@
     {
       "name": "shizu",
       "medium": "th_post",
-      "sessions": 579,
+      "sessions": 588,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -35,7 +35,7 @@
     {
       "name": "line",
       "medium": "referral",
-      "sessions": 556,
+      "sessions": 560,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
@@ -59,7 +59,7 @@
     {
       "name": "god",
       "medium": "th_bio",
-      "sessions": 328,
+      "sessions": 344,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -67,7 +67,7 @@
     {
       "name": "uncle",
       "medium": "th_bio",
-      "sessions": 325,
+      "sessions": 328,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -99,17 +99,9 @@
     {
       "name": "google",
       "medium": "organic",
-      "sessions": 99,
+      "sessions": 100,
       "cls": "organic",
       "tag": "自然搜尋",
-      "tcls": "t-direct"
-    },
-    {
-      "name": "(not set)",
-      "medium": "(not set)",
-      "sessions": 94,
-      "cls": "other",
-      "tag": "其他",
       "tcls": "t-direct"
     },
     {
@@ -132,6 +124,14 @@
       "name": "chatgpt.com",
       "medium": "ai-assistant",
       "sessions": 75,
+      "cls": "other",
+      "tag": "其他",
+      "tcls": "t-direct"
+    },
+    {
+      "name": "(not set)",
+      "medium": "(not set)",
+      "sessions": 70,
       "cls": "other",
       "tag": "其他",
       "tcls": "t-direct"
@@ -163,7 +163,7 @@
     {
       "name": "ys89.me",
       "medium": "cta",
-      "sessions": 50,
+      "sessions": 51,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
@@ -179,7 +179,7 @@
     {
       "name": "bing",
       "medium": "organic",
-      "sessions": 34,
+      "sessions": 35,
       "cls": "organic",
       "tag": "自然搜尋",
       "tcls": "t-direct"
@@ -275,7 +275,7 @@
     {
       "name": "akki",
       "medium": "th_bio",
-      "sessions": 6,
+      "sessions": 7,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -457,6 +457,14 @@
       "tcls": "t-army"
     },
     {
+      "name": "(data not available)",
+      "medium": "(data not available)",
+      "sessions": 1,
+      "cls": "other",
+      "tag": "其他",
+      "tcls": "t-direct"
+    },
+    {
       "name": "Facebook",
       "medium": "Carat_display",
       "sessions": 1,
@@ -588,8 +596,8 @@
   "accounts": [
     {
       "name": "akki",
-      "s": 6288,
-      "cta": 1578,
+      "s": 6399,
+      "cta": 1631,
       "warn": false
     },
     {
@@ -600,20 +608,20 @@
     },
     {
       "name": "(direct)",
-      "s": 1022,
-      "cta": 151,
+      "s": 1046,
+      "cta": 152,
       "warn": false
     },
     {
       "name": "shizu",
-      "s": 579,
-      "cta": 180,
+      "s": 588,
+      "cta": 184,
       "warn": false
     },
     {
       "name": "line",
-      "s": 567,
-      "cta": 31,
+      "s": 571,
+      "cta": 32,
       "warn": false
     },
     {
@@ -624,8 +632,8 @@
     },
     {
       "name": "god",
-      "s": 473,
-      "cta": 92,
+      "s": 489,
+      "cta": 98,
       "warn": false
     },
     {
@@ -636,8 +644,8 @@
     },
     {
       "name": "uncle",
-      "s": 328,
-      "cta": 117,
+      "s": 331,
+      "cta": 119,
       "warn": false
     },
     {
@@ -660,14 +668,8 @@
     },
     {
       "name": "google",
-      "s": 99,
-      "cta": 15,
-      "warn": false
-    },
-    {
-      "name": "(not set)",
-      "s": 94,
-      "cta": 57,
+      "s": 100,
+      "cta": 16,
       "warn": false
     },
     {
@@ -683,8 +685,14 @@
       "warn": false
     },
     {
+      "name": "(not set)",
+      "s": 70,
+      "cta": 43,
+      "warn": false
+    },
+    {
       "name": "ys89.me",
-      "s": 50,
+      "s": 51,
       "cta": 5,
       "warn": false
     },
@@ -696,7 +704,7 @@
     },
     {
       "name": "bing",
-      "s": 34,
+      "s": 35,
       "cta": 3,
       "warn": false
     },
@@ -851,6 +859,12 @@
       "warn": false
     },
     {
+      "name": "(data not available)",
+      "s": 1,
+      "cta": 0,
+      "warn": false
+    },
+    {
       "name": "Facebook",
       "s": 1,
       "cta": 1,
@@ -926,31 +940,31 @@
   "pages": [
     {
       "t": "2026世界盃直播｜104場看直播完整入口・台灣時間賽程 - YS89球迷站",
-      "v": 7591
+      "v": 7724
     },
     {
       "t": "2026世界盃直播賽程｜104場觀賽入口・台灣時間・世足賽哪裡看一次看懂",
-      "v": 2734
+      "v": 2735
     },
     {
       "t": "2026 世界盃觀賽入口｜104場完整賽程・台灣時間・開賽提醒",
-      "v": 2206
+      "v": 2228
     },
     {
       "t": "2026世足賽直播｜104場線上看｜台灣時間賽程表+免費觀賽入口",
-      "v": 1085
+      "v": 1098
     },
     {
       "t": "2026世足賠率即時｜104場直播投注盤口・滾球同步看｜ys89.biz",
-      "v": 482
+      "v": 485
     },
     {
       "t": "如何觀看 2026 世界盃 104 場直播・3 步驟解鎖教學｜台灣觀賽直播攻略",
-      "v": 280
+      "v": 287
     },
     {
-      "t": "2026世界盃賽程・分組・賠率・冠軍預測｜台灣最完整世界盃資訊站",
-      "v": 266
+      "t": "2026世足投注攻略・讓分盤・波膽・串關完整教學｜台灣世足運彩攻略站",
+      "v": 268
     }
   ],
   "contents": [
@@ -961,12 +975,12 @@
     },
     {
       "content": "shizu-0611-1",
-      "sessions": 579,
-      "cta": 180
+      "sessions": 588,
+      "cta": 184
     },
     {
       "content": "watch_104",
-      "sessions": 508,
+      "sessions": 511,
       "cta": 19
     },
     {
@@ -981,12 +995,12 @@
     },
     {
       "content": "god-0612-1",
-      "sessions": 181,
-      "cta": 29
+      "sessions": 194,
+      "cta": 33
     },
     {
       "content": "link_in_bio",
-      "sessions": 134,
+      "sessions": 135,
       "cta": 38
     },
     {
@@ -1006,13 +1020,13 @@
     },
     {
       "content": "me_step3_watch",
-      "sessions": 50,
+      "sessions": 51,
       "cta": 5
     },
     {
       "content": "schedule",
-      "sessions": 42,
-      "cta": 8
+      "sessions": 43,
+      "cta": 9
     },
     {
       "content": "prediction",
@@ -1116,11 +1130,11 @@
     }
   ],
   "kpis": {
-    "activeUsers": 12117,
-    "sessions": 12940,
-    "eventCount": 56811,
-    "cta": 3090,
-    "conversionRate": 23.88
+    "activeUsers": 12284,
+    "sessions": 13091,
+    "eventCount": 57542,
+    "cta": 3153,
+    "conversionRate": 24.09
   },
-  "lastUpdated": "2026-06-24T05:32:08.440649"
+  "lastUpdated": "2026-06-25T05:06:18.695701"
 }
