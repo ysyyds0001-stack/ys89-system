@@ -62,6 +62,17 @@ def get_date_range():
     start = (datetime.now() - timedelta(days=28)).strftime("%Y-%m-%d")
     return start, today
 
+def get_weekly_ranges():
+    """近 3 天 / 本週 7 天 / 上週 7 天 / 近 28 天 的日期範圍"""
+    now = datetime.now()
+    today = now.strftime("%Y-%m-%d")
+    return {
+        "3d":    ((now - timedelta(days=2)).strftime("%Y-%m-%d"), today),
+        "7d":    ((now - timedelta(days=6)).strftime("%Y-%m-%d"), today),
+        "prev7d":((now - timedelta(days=13)).strftime("%Y-%m-%d"), (now - timedelta(days=7)).strftime("%Y-%m-%d")),
+        "28d":   ((now - timedelta(days=27)).strftime("%Y-%m-%d"), today),
+    }
+
 def fetch_traffic_sources(client):
     """
     拉取流量來源分析
@@ -287,9 +298,8 @@ def fetch_content_performance(client):
 
     return sorted(by_content.values(), key=lambda x: x["sessions"], reverse=True)
 
-def fetch_kpis(client):
-    """拉取關鍵指標 (KPI)"""
-    start_date, end_date = get_date_range()
+def fetch_kpis_range(client, start_date, end_date):
+    """拉取指定日期範圍的 KPI"""
 
     request = RunReportRequest(
         property=PROPERTY_FULL,
@@ -339,6 +349,56 @@ def fetch_kpis(client):
         "conversionRate": round(conversion_rate, 2),
     }
 
+def fetch_kpis(client):
+    """拉取 KPI（28 天）"""
+    start_date, end_date = get_date_range()
+    return fetch_kpis_range(client, start_date, end_date)
+
+def fetch_accounts_range(client, start_date, end_date):
+    """拉取指定日期範圍的帳號成效 Top 5"""
+    sess_req = RunReportRequest(
+        property=PROPERTY_FULL,
+        dimensions=[Dimension(name="sessionSource")],
+        metrics=[Metric(name="sessions")],
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+    )
+    sess_resp = client.run_report(sess_req)
+    sessions_by_source = {}
+    for row in sess_resp.rows:
+        source = row.dimension_values[0].value
+        sessions = int(row.metric_values[0].value or 0)
+        sessions_by_source[source] = sessions
+
+    cta_filter = FilterExpression(
+        or_group={
+            "expressions": [
+                FilterExpression(
+                    filter=Filter(field_name="eventName", string_filter={"value": event})
+                )
+                for event in CTA_EVENTS
+            ]
+        }
+    )
+    cta_req = RunReportRequest(
+        property=PROPERTY_FULL,
+        dimensions=[Dimension(name="sessionSource")],
+        metrics=[Metric(name="sessions")],
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        dimension_filter=cta_filter,
+    )
+    cta_resp = client.run_report(cta_req)
+    cta_by_source = {}
+    for row in cta_resp.rows:
+        source = row.dimension_values[0].value
+        cta_by_source[source] = int(row.metric_values[0].value or 0)
+
+    accounts = []
+    for source, s in sessions_by_source.items():
+        cta = cta_by_source.get(source, 0)
+        accounts.append({"name": source, "s": s, "cta": cta})
+
+    return sorted(accounts, key=lambda x: x["s"], reverse=True)[:5]
+
 # ═══════════════════════════════════════════════════════════════
 # 主程式
 # ═══════════════════════════════════════════════════════════════
@@ -367,6 +427,14 @@ def main():
     print("📈 拉取 KPI...")
     kpis = fetch_kpis(client)
 
+    print("📅 拉取多區間 KPI（3天/7天/上週/28天）...")
+    ranges = get_weekly_ranges()
+    period_kpis   = {}
+    period_accts  = {}
+    for key, (s, e) in ranges.items():
+        period_kpis[key]  = fetch_kpis_range(client, s, e)
+        period_accts[key] = fetch_accounts_range(client, s, e)
+
     # 組合數據
     ga4_data = {
         "sources": sources,
@@ -374,6 +442,15 @@ def main():
         "pages": pages,
         "contents": contents,
         "kpis": kpis,
+        "kpis_3d":      period_kpis["3d"],
+        "kpis_7d":      period_kpis["7d"],
+        "kpis_prev7d":  period_kpis["prev7d"],
+        "kpis_28d":     period_kpis["28d"],
+        "accounts_3d":  period_accts["3d"],
+        "accounts_7d":  period_accts["7d"],
+        "accounts_prev7d": period_accts["prev7d"],
+        "accounts_28d": period_accts["28d"],
+        "ranges": {k: f"{v[0]}~{v[1]}" for k, v in ranges.items()},
         "lastUpdated": datetime.now().isoformat(),
     }
 
