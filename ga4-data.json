@@ -3,7 +3,7 @@
     {
       "name": "akki",
       "medium": "th_post",
-      "sessions": 6388,
+      "sessions": 6412,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -19,7 +19,7 @@
     {
       "name": "(direct)",
       "medium": "(none)",
-      "sessions": 1046,
+      "sessions": 1047,
       "cls": "direct",
       "tag": "直接/未知",
       "tcls": "t-direct"
@@ -27,7 +27,7 @@
     {
       "name": "shizu",
       "medium": "th_post",
-      "sessions": 588,
+      "sessions": 589,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -59,7 +59,7 @@
     {
       "name": "god",
       "medium": "th_bio",
-      "sessions": 344,
+      "sessions": 345,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -99,7 +99,7 @@
     {
       "name": "google",
       "medium": "organic",
-      "sessions": 100,
+      "sessions": 101,
       "cls": "organic",
       "tag": "自然搜尋",
       "tcls": "t-direct"
@@ -113,6 +113,14 @@
       "tcls": "t-offline"
     },
     {
+      "name": "(not set)",
+      "medium": "(not set)",
+      "sessions": 80,
+      "cls": "other",
+      "tag": "其他",
+      "tcls": "t-direct"
+    },
+    {
       "name": "facebook",
       "medium": "paid_social",
       "sessions": 77,
@@ -124,14 +132,6 @@
       "name": "chatgpt.com",
       "medium": "ai-assistant",
       "sessions": 75,
-      "cls": "other",
-      "tag": "其他",
-      "tcls": "t-direct"
-    },
-    {
-      "name": "(not set)",
-      "medium": "(not set)",
-      "sessions": 70,
       "cls": "other",
       "tag": "其他",
       "tcls": "t-direct"
@@ -203,7 +203,7 @@
     {
       "name": "tw.search.yahoo.com",
       "medium": "referral",
-      "sessions": 28,
+      "sessions": 29,
       "cls": "other",
       "tag": "其他",
       "tcls": "t-direct"
@@ -596,7 +596,7 @@
   "accounts": [
     {
       "name": "akki",
-      "s": 6399,
+      "s": 6420,
       "cta": 1631,
       "warn": false
     },
@@ -608,14 +608,14 @@
     },
     {
       "name": "(direct)",
-      "s": 1046,
+      "s": 1047,
       "cta": 152,
       "warn": false
     },
     {
       "name": "shizu",
-      "s": 588,
-      "cta": 184,
+      "s": 589,
+      "cta": 185,
       "warn": false
     },
     {
@@ -632,7 +632,7 @@
     },
     {
       "name": "god",
-      "s": 489,
+      "s": 490,
       "cta": 98,
       "warn": false
     },
@@ -668,7 +668,7 @@
     },
     {
       "name": "google",
-      "s": 100,
+      "s": 101,
       "cta": 16,
       "warn": false
     },
@@ -679,15 +679,15 @@
       "warn": false
     },
     {
-      "name": "chatgpt.com",
-      "s": 75,
-      "cta": 0,
+      "name": "(not set)",
+      "s": 80,
+      "cta": 51,
       "warn": false
     },
     {
-      "name": "(not set)",
-      "s": 70,
-      "cta": 43,
+      "name": "chatgpt.com",
+      "s": 75,
+      "cta": 0,
       "warn": false
     },
     {
@@ -722,7 +722,7 @@
     },
     {
       "name": "tw.search.yahoo.com",
-      "s": 28,
+      "s": 29,
       "cta": 3,
       "warn": false
     },
@@ -940,7 +940,7 @@
   "pages": [
     {
       "t": "2026世界盃直播｜104場看直播完整入口・台灣時間賽程 - YS89球迷站",
-      "v": 7724
+      "v": 7739
     },
     {
       "t": "2026世界盃直播賽程｜104場觀賽入口・台灣時間・世足賽哪裡看一次看懂",
@@ -952,11 +952,11 @@
     },
     {
       "t": "2026世足賽直播｜104場線上看｜台灣時間賽程表+免費觀賽入口",
-      "v": 1098
+      "v": 1099
     },
     {
       "t": "2026世足賠率即時｜104場直播投注盤口・滾球同步看｜ys89.biz",
-      "v": 485
+      "v": 487
     },
     {
       "t": "如何觀看 2026 世界盃 104 場直播・3 步驟解鎖教學｜台灣觀賽直播攻略",
@@ -964,7 +964,7 @@
     },
     {
       "t": "2026世足投注攻略・讓分盤・波膽・串關完整教學｜台灣世足運彩攻略站",
-      "v": 268
+      "v": 269
     }
   ],
   "contents": [
@@ -975,8 +975,8 @@
     },
     {
       "content": "shizu-0611-1",
-      "sessions": 588,
-      "cta": 184
+      "sessions": 589,
+      "cta": 185
     },
     {
       "content": "watch_104",
@@ -1130,11 +1130,11 @@
     }
   ],
   "kpis": {
-    "activeUsers": 12284,
-    "sessions": 13091,
-    "eventCount": 57542,
-    "cta": 3153,
-    "conversionRate": 24.09
+    "activeUsers": 12294,
+    "sessions": 13118,
+    "eventCount": 57617,
+    "cta": 3164,
+    "conversionRate": 24.12
   },
-  "lastUpdated": "2026-06-25T05:06:18.695701"
+  "lastUpdated": "2026-06-25T05:43:33.746749"
 }
