@@ -1136,5 +1136,147 @@
     "cta": 3164,
     "conversionRate": 24.12
   },
-  "lastUpdated": "2026-06-25T05:43:33.746749"
+  "kpis_3d": {
+    "activeUsers": 524,
+    "sessions": 561,
+    "eventCount": 2280,
+    "cta": 155,
+    "conversionRate": 27.63
+  },
+  "kpis_7d": {
+    "activeUsers": 1433,
+    "sessions": 1570,
+    "eventCount": 6144,
+    "cta": 421,
+    "conversionRate": 26.82
+  },
+  "kpis_prev7d": {
+    "activeUsers": 7649,
+    "sessions": 8093,
+    "eventCount": 33928,
+    "cta": 2143,
+    "conversionRate": 26.48
+  },
+  "kpis_28d": {
+    "activeUsers": 12288,
+    "sessions": 13101,
+    "eventCount": 57573,
+    "cta": 3163,
+    "conversionRate": 24.14
+  },
+  "accounts_3d": [
+    {
+      "name": "akki",
+      "s": 369,
+      "cta": 85
+    },
+    {
+      "name": "(not set)",
+      "s": 77,
+      "cta": 50
+    },
+    {
+      "name": "god",
+      "s": 64,
+      "cta": 11
+    },
+    {
+      "name": "(direct)",
+      "s": 48,
+      "cta": 1
+    },
+    {
+      "name": "shizu",
+      "s": 22,
+      "cta": 8
+    }
+  ],
+  "accounts_7d": [
+    {
+      "name": "akki",
+      "s": 1076,
+      "cta": 284
+    },
+    {
+      "name": "god",
+      "s": 134,
+      "cta": 27
+    },
+    {
+      "name": "(direct)",
+      "s": 107,
+      "cta": 8
+    },
+    {
+      "name": "(not set)",
+      "s": 78,
+      "cta": 51
+    },
+    {
+      "name": "uncle",
+      "s": 55,
+      "cta": 24
+    }
+  ],
+  "accounts_prev7d": [
+    {
+      "name": "akki",
+      "s": 3348,
+      "cta": 977
+    },
+    {
+      "name": "crab",
+      "s": 1673,
+      "cta": 694
+    },
+    {
+      "name": "shizu",
+      "s": 507,
+      "cta": 159
+    },
+    {
+      "name": "fb",
+      "s": 490,
+      "cta": 26
+    },
+    {
+      "name": "line",
+      "s": 465,
+      "cta": 21
+    }
+  ],
+  "accounts_28d": [
+    {
+      "name": "akki",
+      "s": 6420,
+      "cta": 1631
+    },
+    {
+      "name": "crab",
+      "s": 1738,
+      "cta": 705
+    },
+    {
+      "name": "(direct)",
+      "s": 1039,
+      "cta": 151
+    },
+    {
+      "name": "shizu",
+      "s": 589,
+      "cta": 185
+    },
+    {
+      "name": "line",
+      "s": 571,
+      "cta": 32
+    }
+  ],
+  "ranges": {
+    "3d": "2026-06-23~2026-06-25",
+    "7d": "2026-06-19~2026-06-25",
+    "prev7d": "2026-06-12~2026-06-18",
+    "28d": "2026-05-29~2026-06-25"
+  },
+  "lastUpdated": "2026-06-25T05:45:09.847872"
 }
