@@ -1727,12 +1727,12 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   </div>
 </div>
 
-<!-- ===== PAGE: 財神轉化（預測領牌 → 收益）===== -->
+<!-- ===== PAGE: 轉化區 ===== -->
 <div id="pg-conv" class="page">
   <div class="fb" style="margin-bottom:14px">
     <div>
-      <h2 style="font-size:1.2rem;font-weight:700">💰 財神轉化（預測領牌 → 收益）</h2>
-      <p class="tm" style="margin-top:3px">記錄「世足大財神」發預測 → IG/Threads 私訊進來領牌 → 導 LINE（mu_021）→ 註冊/入金收益。每通私訊登一筆，看哪則預測真的帶來營收。</p>
+      <h2 style="font-size:1.2rem;font-weight:700">💰 轉化區</h2>
+      <p class="tm" style="margin-top:3px">記錄各角色私訊轉化績效：發預測 → 私訊進來領牌 → 導 LINE/TG → 註冊 / 入金。</p>
     </div>
     <div class="flex">
       <select id="cv-f-role" onchange="renderConversions()" style="width:140px"><option value="">全部角色</option></select>
@@ -1740,6 +1740,29 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <button class="btn btn-primary" onclick="openAddConv()">+ 新增私訊轉化</button>
     </div>
   </div>
+
+  <!-- 角色績效排行 -->
+  <div class="card" style="margin-bottom:14px;border-left:3px solid #f59e0b">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="card-title" style="color:#f59e0b;margin:0">🏆 角色轉化績效</div>
+      <span style="font-size:.68rem;color:var(--text3)">依私訊數排序</span>
+    </div>
+    <div id="cv-persona-stats" class="t-scroll">
+      <table>
+        <thead><tr>
+          <th>角色</th>
+          <th style="text-align:right">私訊</th>
+          <th style="text-align:right">導LINE</th>
+          <th style="text-align:right">導TG</th>
+          <th style="text-align:right">轉化</th>
+          <th style="text-align:right">轉化率</th>
+          <th style="text-align:right">收益</th>
+        </tr></thead>
+        <tbody id="cv-persona-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
   <div id="cv-stats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"></div>
   <div class="card" style="margin-bottom:16px;border-left:3px solid #4ade80">
     <div class="card-title">🪙 兩條導流漏斗</div>
@@ -6271,7 +6294,12 @@ const CONV_COLOR={'私訊進來':'#94a3b8','已回覆導LINE':'#38bdf8','已回�
 function _convRoleList(){ const seen=new Set(),out=[]; allActors().forEach(a=>{const c=commCode(a); if(!c||seen.has(c))return; seen.add(c); out.push({code:c,name:a.name})}); return out; }
 function _fillConvRoleSelects(){
   const roles=_convRoleList();
-  const opts=roles.map(r=>`<option value="${escAttr(r.code)}">${r.name}（${r.code}）</option>`).join('');
+  // 補入轉化記錄裡有但角色庫沒有的角色
+  const existCodes=new Set(roles.map(r=>r.code));
+  (DB.get('conversions')||[]).forEach(c=>{
+    if(c.role&&!existCodes.has(c.role)){ existCodes.add(c.role); roles.push({code:c.role,name:c.roleName||c.role}); }
+  });
+  const opts=roles.map(r=>`<option value="${escAttr(r.code)}">${r.name}</option>`).join('');
   const sel=document.getElementById('cv-role'); if(sel){ const cur=sel.value; sel.innerHTML=opts; sel.value=cur||'god'; if(!sel.value&&roles[0])sel.value=roles[0].code; }
   const f=document.getElementById('cv-f-role'); if(f){ const cur=f.value; f.innerHTML='<option value="">全部角色</option>'+opts; f.value=cur; }
   const fs=document.getElementById('cv-f-status'); if(fs&&fs.options.length<=1){ fs.innerHTML='<option value="">全部狀態</option>'+CONV_STATUS.map(s=>`<option>${s}</option>`).join(''); }
@@ -6324,6 +6352,48 @@ function renderConversions(){
         ${fB(total,'總私訊','var(--accent)')}${fB(converted,'已轉化','#4ade80')}${fB('NT$&nbsp;'+revenue.toLocaleString(),'總收益','#4ade80')}${fB(rate+'%','轉化率','#fbbf24')}
       </div>
     </div>`;
+  // ── 角色績效排行 ──
+  const roleMap={};
+  all.forEach(c=>{
+    const key=c.role||'unknown';
+    const name=c.roleName||c.role||'未知角色';
+    if(!roleMap[key]) roleMap[key]={name,total:0,lined:0,tged:0,conv:0,rev:0};
+    roleMap[key].total++;
+    if(c.leadTo?.includes('LINE：mu_021')) roleMap[key].lined++;
+    if(c.leadTo?.includes('Telegram：pickhelp_bot')&&!c.leadTo?.includes('LINE：mu_021')) roleMap[key].tged++;
+    if(c.status==='已入金(轉化)'){ roleMap[key].conv++; roleMap[key].rev+=(+c.revenue||0); }
+  });
+  const roleRows=Object.entries(roleMap).map(([id,r])=>({...r,id})).sort((a,b)=>b.total-a.total);
+  const tbody=document.getElementById('cv-persona-tbody');
+  if(tbody){
+    if(!roleRows.length){
+      tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:12px">尚無記錄</td></tr>';
+    } else {
+      tbody.innerHTML=roleRows.map(r=>{
+        const rate=r.total?Math.round(r.conv/r.total*100):0;
+        const rateCol=rate>=20?'#4ade80':rate>=10?'#f59e0b':'#f87171';
+        return `<tr style="cursor:pointer" onclick="document.getElementById('cv-f-role').value='${r.id}';renderConversions()">
+          <td><b>${r.name}</b></td>
+          <td style="text-align:right;font-weight:700;color:var(--accent)">${r.total}</td>
+          <td style="text-align:right;color:#38bdf8">${r.lined||'—'}</td>
+          <td style="text-align:right;color:#a78bfa">${r.tged||'—'}</td>
+          <td style="text-align:right;font-weight:700;color:#4ade80">${r.conv||'—'}</td>
+          <td style="text-align:right;font-weight:700;color:${rateCol}">${rate}%</td>
+          <td style="text-align:right;color:#4ade80">${r.rev?'NT$&nbsp;'+r.rev.toLocaleString():'—'}</td>
+        </tr>`;
+      }).join('')
+      + `<tr style="border-top:2px solid var(--border);font-weight:800">
+          <td style="color:var(--text3)">合計</td>
+          <td style="text-align:right;color:var(--accent)">${roleRows.reduce((s,r)=>s+r.total,0)}</td>
+          <td style="text-align:right;color:#38bdf8">${roleRows.reduce((s,r)=>s+r.lined,0)||'—'}</td>
+          <td style="text-align:right;color:#a78bfa">${roleRows.reduce((s,r)=>s+r.tged,0)||'—'}</td>
+          <td style="text-align:right;color:#4ade80">${roleRows.reduce((s,r)=>s+r.conv,0)||'—'}</td>
+          <td style="text-align:right;color:#fbbf24">${all.length?Math.round(roleRows.reduce((s,r)=>s+r.conv,0)/all.length*100):0}%</td>
+          <td style="text-align:right;color:#4ade80">${(()=>{const t=roleRows.reduce((s,r)=>s+r.rev,0);return t?'NT$&nbsp;'+t.toLocaleString():'—'})()} </td>
+        </tr>`;
+    }
+  }
+
   const box=document.getElementById('cv-table');
   if(!list.length){ box.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無私訊轉化紀錄，按右上「+ 新增私訊轉化」開始記錄</div>'; return; }
   // 按日期分組
