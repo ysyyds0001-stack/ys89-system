@@ -294,6 +294,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'channel')">📝 匿名社群</div>
   <div class="nav-tab" onclick="nav(this,'channelfb')">📘 臉書社團</div>
   <div class="nav-tab" onclick="nav(this,'conv')">💰 財神轉化</div>
+  <div class="nav-tab" onclick="nav(this,'fortune')">⚽ 財神預測</div>
   <div class="nav-sep"></div>
   <div class="nav-tab" onclick="nav(this,'personas')">👤 發文角色</div>
   <div class="nav-tab" onclick="nav(this,'community')">🌐 社群水軍號</div>
@@ -2293,6 +2294,80 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   <div id="cast-page"></div>
 </div>
 
+<!-- ===== PAGE: 財神預測 ===== -->
+<div id="pg-fortune" class="page">
+  <div class="fb" style="margin-bottom:12px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">⚽ 財神預測管理</h2>
+      <p class="tm" style="margin-top:3px">世足大財神 · 每日比分預測文案生成 × 準確率追蹤</p>
+    </div>
+  </div>
+
+  <!-- 日期 + 操作列 -->
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+    <input type="date" id="fp-date" style="background:var(--g3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;color:var(--text);font-size:.85rem">
+    <button class="btn btn-primary btn-xs" onclick="fpAddGame()">＋ 新增比賽</button>
+    <button class="btn btn-xs" onclick="fpClearAll()" style="color:#f87171">清空</button>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="fpGenerate()">🔮 生成文案</button>
+    <button class="btn btn-primary" onclick="fpSave()" style="background:#4ade80;color:#000">💾 儲存預測</button>
+  </div>
+
+  <!-- AI JSON 快速匯入 -->
+  <div class="card" style="margin-bottom:14px;border-left:3px solid #60a5fa">
+    <div class="card-title" style="font-size:.8rem;color:#60a5fa;margin-bottom:6px">📋 快速匯入（貼入 Claude 生成的 JSON）</div>
+    <div style="display:flex;gap:6px;align-items:flex-start">
+      <textarea id="fp-json-import" rows="3" style="flex:1;font-size:.72rem;font-family:monospace;background:var(--g3);border:1px solid var(--border);border-radius:6px;padding:6px;color:var(--text);resize:vertical" placeholder='{"date":"2026-06-26","games":[{"time":"04:00","team1":"德國","flag1":"🇩🇪","team2":"厄瓜多","flag2":"🇪🇨","analysis":"...","dirLine":"財神...","secondScore":"德國 2：0 厄瓜多","mainScore":"德國 1：0 厄瓜多"}]}'></textarea>
+      <button class="btn btn-primary btn-xs" onclick="fpImportJson()" style="white-space:nowrap">載入</button>
+    </div>
+  </div>
+
+  <!-- 賽事輸入卡片列表 -->
+  <div id="fp-games-list" style="margin-bottom:16px"></div>
+
+  <!-- 生成文案輸出 -->
+  <div id="fp-output" style="display:none">
+    <div class="g2" style="gap:12px;margin-bottom:16px">
+      <div class="card" style="border-left:3px solid var(--accent)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div class="card-title" style="margin:0">📝 主文案（風向觀察）</div>
+          <button class="btn btn-xs btn-copy" onclick="fpCopyText('fp-copy-main')">複製</button>
+        </div>
+        <textarea id="fp-copy-main" rows="18" style="width:100%;font-size:.75rem;font-family:inherit;background:var(--g2);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);resize:vertical;line-height:1.6"></textarea>
+      </div>
+      <div class="card" style="border-left:3px solid #f59e0b">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div class="card-title" style="margin:0">🔥 首選比分文案</div>
+          <button class="btn btn-xs btn-copy" onclick="fpCopyText('fp-copy-scores')">複製</button>
+        </div>
+        <textarea id="fp-copy-scores" rows="18" style="width:100%;font-size:.75rem;font-family:inherit;background:var(--g2);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);resize:vertical;line-height:1.6"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- 隔日對照 -->
+  <div class="card" style="margin-bottom:14px;border-left:3px solid #a78bfa">
+    <div class="card-title" style="color:#a78bfa;margin-bottom:10px">📊 隔日對照 — 輸入實際比分 · 查看準確率</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+      <select id="fp-check-date" onchange="fpLoadCheck(this.value)" style="background:var(--g3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;color:var(--text);font-size:.85rem">
+        <option value="">— 選擇預測日期 —</option>
+      </select>
+      <button class="btn btn-xs" onclick="fpRefreshCheckDates()">🔄</button>
+    </div>
+    <div id="fp-check-list"></div>
+    <div id="fp-accuracy-result" style="margin-top:10px"></div>
+    <div id="fp-save-actual-btn" style="display:none;margin-top:10px">
+      <button class="btn btn-primary btn-xs" onclick="fpSaveActual()">💾 儲存實際比分 + 計算準確率</button>
+    </div>
+  </div>
+
+  <!-- 歷史準確率 -->
+  <div class="card">
+    <div class="card-title" style="margin-bottom:10px">📈 預測歷史記錄</div>
+    <div id="fp-history" class="t-scroll"></div>
+  </div>
+</div>
+
 <!-- modal: 新增/編輯短連結 -->
 <div id="modal-add-link" class="overlay">
   <div class="modal modal-lg">
@@ -4001,6 +4076,7 @@ function nav(el,page){
   if(page==='todo'){initTodayTodos(false);renderTodo()}
   else if(page==='ga4'){ if(_ga4Data) renderGA4(_ga4Data); }
   else if(page==='utm'){ utmInit() }
+  else if(page==='fortune'){ fpInit() }
   else renders[page]&&renders[page]()
 }
 function openModal(id){document.getElementById(id).classList.add('show')}
@@ -8258,6 +8334,393 @@ async function recoverLocalStorageData(){
     console.warn('Data recovery skipped (backup file not found)')
     return false
   }
+}
+
+// ===== 財神預測 =====
+const FP_NUMS = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣'];
+const FP_FLAGS = {
+  '德國':'🇩🇪','法國':'🇫🇷','西班牙':'🇪🇸','英格蘭':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','英國':'🇬🇧',
+  '巴西':'🇧🇷','阿根廷':'🇦🇷','葡萄牙':'🇵🇹','荷蘭':'🇳🇱','比利時':'🇧🇪',
+  '義大利':'🇮🇹','克羅埃西亞':'🇭🇷','丹麥':'🇩🇰','瑞士':'🇨🇭','瑞典':'🇸🇪',
+  '挪威':'🇳🇴','波蘭':'🇵🇱','土耳其':'🇹🇷','烏克蘭':'🇺🇦','奧地利':'🇦🇹',
+  '匈牙利':'🇭🇺','塞爾維亞':'🇷🇸','斯洛伐克':'🇸🇰','捷克':'🇨🇿','羅馬尼亞':'🇷🇴',
+  '日本':'🇯🇵','韓國':'🇰🇷','澳洲':'🇦🇺','伊朗':'🇮🇷','沙烏地':'🇸🇦',
+  '卡達':'🇶🇦','中國':'🇨🇳','台灣':'🇹🇼',
+  '美國':'🇺🇸','加拿大':'🇨🇦','墨西哥':'🇲🇽','巴拉圭':'🇵🇾','厄瓜多':'🇪🇨',
+  '烏拉圭':'🇺🇾','智利':'🇨🇱','哥倫比亞':'🇨🇴','秘魯':'🇵🇪','委內瑞拉':'🇻🇪',
+  '哥斯大黎加':'🇨🇷','巴拿馬':'🇵🇦','宏都拉斯':'🇭🇳','薩爾瓦多':'🇸🇻',
+  '牙買加':'🇯🇲','庫拉索':'🇨🇼','特立尼達':'🇹🇹',
+  '摩洛哥':'🇲🇦','奈及利亞':'🇳🇬','塞內加爾':'🇸🇳','喀麥隆':'🇨🇲',
+  '迦納':'🇬🇭','突尼西亞':'🇹🇳','埃及':'🇪🇬','象牙海岸':'🇨🇮',
+  '南非':'🇿🇦','馬利':'🇲🇱','阿爾及利亞':'🇩🇿','剛果':'🇨🇩',
+};
+let _fpGameIdx = 0; // global counter for unique game IDs
+let _fpActiveIds = []; // ordered list of active game IDs
+let _fpCheckData = null; // currently loaded check prediction
+
+function fpInit() {
+  // set today's date
+  const d = document.getElementById('fp-date');
+  if (d && !d.value) d.value = new Date().toISOString().split('T')[0];
+  fpRenderHistory();
+  fpRefreshCheckDates();
+  if (_fpActiveIds.length === 0) fpAddGame();
+}
+
+function fpAddGame() {
+  const id = _fpGameIdx++;
+  _fpActiveIds.push(id);
+  fpRenderGameList();
+}
+
+function fpDeleteGame(id) {
+  _fpActiveIds = _fpActiveIds.filter(x => x !== id);
+  fpRenderGameList();
+}
+
+function fpMoveGame(id, dir) {
+  const i = _fpActiveIds.indexOf(id);
+  if (dir === -1 && i > 0) { [_fpActiveIds[i-1], _fpActiveIds[i]] = [_fpActiveIds[i], _fpActiveIds[i-1]]; }
+  if (dir === 1 && i < _fpActiveIds.length-1) { [_fpActiveIds[i], _fpActiveIds[i+1]] = [_fpActiveIds[i+1], _fpActiveIds[i]]; }
+  fpRenderGameList();
+}
+
+function fpFlagHint(inputEl) {
+  const name = inputEl.value.trim();
+  const flag = FP_FLAGS[name];
+  if (flag) {
+    const id = inputEl.dataset.flagTarget;
+    const flagEl = document.getElementById(id);
+    if (flagEl && !flagEl.value) flagEl.value = flag;
+  }
+}
+
+function fpRenderGameList() {
+  const el = document.getElementById('fp-games-list');
+  if (!el) return;
+  // save current input values before re-render
+  const saved = {};
+  _fpActiveIds.forEach(id => {
+    ['time','team1','flag1','team2','flag2','analysis','dirline','second','main'].forEach(f => {
+      const el2 = document.getElementById(`fp-${f}-${id}`);
+      if (el2) saved[`${f}-${id}`] = el2.value;
+    });
+  });
+  el.innerHTML = _fpActiveIds.map((id, idx) => `
+    <div class="card" style="margin-bottom:8px;border-left:3px solid var(--amber)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-weight:800;color:var(--amber);font-size:.9rem">比賽 ${idx+1} ${FP_NUMS[idx]||''}</div>
+        <div style="display:flex;gap:4px">
+          ${idx>0?`<button class="btn btn-xs" onclick="fpMoveGame(${id},-1)" title="上移">↑</button>`:''}
+          ${idx<_fpActiveIds.length-1?`<button class="btn btn-xs" onclick="fpMoveGame(${id},1)" title="下移">↓</button>`:''}
+          <button class="btn btn-xs" onclick="fpDeleteGame(${id})" style="color:#f87171">✕</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:80px 1fr 1fr;gap:8px;margin-bottom:8px;align-items:end">
+        <div class="fg">
+          <label style="font-size:.68rem">時間</label>
+          <input id="fp-time-${id}" value="${saved[`time-${id}`]||''}" placeholder="04:00"
+            style="width:100%;background:var(--g3);border:1px solid var(--border);border-radius:5px;padding:4px 7px;color:var(--text);font-size:.82rem">
+        </div>
+        <div class="fg">
+          <label style="font-size:.68rem">主隊</label>
+          <div style="display:flex;gap:4px">
+            <input id="fp-flag1-${id}" value="${saved[`flag1-${id}`]||''}" placeholder="🏳️"
+              style="width:36px;background:var(--g3);border:1px solid var(--border);border-radius:5px;padding:4px;color:var(--text);font-size:1rem;text-align:center">
+            <input id="fp-team1-${id}" value="${saved[`team1-${id}`]||''}" placeholder="隊伍名稱" data-flag-target="fp-flag1-${id}"
+              oninput="fpFlagHint(this)"
+              style="flex:1;background:var(--g3);border:1px solid var(--border);border-radius:5px;padding:4px 7px;color:var(--text);font-size:.82rem">
+          </div>
+        </div>
+        <div class="fg">
+          <label style="font-size:.68rem">客隊</label>
+          <div style="display:flex;gap:4px">
+            <input id="fp-team2-${id}" value="${saved[`team2-${id}`]||''}" placeholder="隊伍名稱" data-flag-target="fp-flag2-${id}"
+              oninput="fpFlagHint(this)"
+              style="flex:1;background:var(--g3);border:1px solid var(--border);border-radius:5px;padding:4px 7px;color:var(--text);font-size:.82rem">
+            <input id="fp-flag2-${id}" value="${saved[`flag2-${id}`]||''}" placeholder="🏳️"
+              style="width:36px;background:var(--g3);border:1px solid var(--border);border-radius:5px;padding:4px;color:var(--text);font-size:1rem;text-align:center">
+          </div>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:8px">
+        <label style="font-size:.68rem">分析文字</label>
+        <textarea id="fp-analysis-${id}" rows="3" placeholder="這場賽前風向…（約 2-3 句）"
+          style="width:100%;background:var(--g3);border:1px solid var(--border);border-radius:5px;padding:5px 7px;color:var(--text);font-size:.8rem;resize:vertical">${saved[`analysis-${id}`]||''}</textarea>
+      </div>
+      <div class="fg" style="margin-bottom:8px">
+        <label style="font-size:.68rem">財神結論句</label>
+        <input id="fp-dirline-${id}" value="${saved[`dirline-${id}`]||''}" placeholder="財神這邊先看德國掌握比賽節奏"
+          style="width:100%;background:var(--g3);border:1px solid var(--border);border-radius:5px;padding:4px 7px;color:var(--text);font-size:.8rem">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="fg">
+          <label style="font-size:.68rem">次選比分 <span style="color:var(--text3)">（主文用）</span></label>
+          <input id="fp-second-${id}" value="${saved[`second-${id}`]||''}" placeholder="厄瓜多 0：2 德國"
+            style="width:100%;background:var(--g3);border:1px solid var(--border);border-radius:5px;padding:4px 7px;color:var(--text);font-size:.8rem">
+        </div>
+        <div class="fg">
+          <label style="font-size:.68rem">首選比分 <span style="color:var(--text3)">（比分文案用）</span></label>
+          <input id="fp-main-${id}" value="${saved[`main-${id}`]||''}" placeholder="厄瓜多 0：1 德國"
+            style="width:100%;background:var(--g3);border:1px solid var(--border);border-radius:5px;padding:4px 7px;color:var(--text);font-size:.82rem;font-weight:700;border-color:#f59e0b">
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function fpReadGames() {
+  return _fpActiveIds.map(id => ({
+    id,
+    time: document.getElementById(`fp-time-${id}`)?.value.trim()||'',
+    team1: document.getElementById(`fp-team1-${id}`)?.value.trim()||'',
+    flag1: document.getElementById(`fp-flag1-${id}`)?.value.trim()||'',
+    team2: document.getElementById(`fp-team2-${id}`)?.value.trim()||'',
+    flag2: document.getElementById(`fp-flag2-${id}`)?.value.trim()||'',
+    analysis: document.getElementById(`fp-analysis-${id}`)?.value.trim()||'',
+    dirLine: document.getElementById(`fp-dirline-${id}`)?.value.trim()||'',
+    secondScore: document.getElementById(`fp-second-${id}`)?.value.trim()||'',
+    mainScore: document.getElementById(`fp-main-${id}`)?.value.trim()||'',
+    actualScore: '',
+    hit: null,
+  }));
+}
+
+function fpGenerate() {
+  const date = document.getElementById('fp-date')?.value||'';
+  if(!date){ toast('請先選日期'); return; }
+  const [y,m,d] = date.split('-');
+  const dateDisp = `${parseInt(m)}/${parseInt(d)}`;
+  const games = fpReadGames();
+  if(!games.length){ toast('請先新增比賽'); return; }
+
+  // 主文案
+  let main = `⚽️🏆 世足大財神｜${dateDisp} 賽事風向觀察`;
+  games.forEach((g, i) => {
+    main += `\n【${FP_NUMS[i]} ${dateDisp} ${g.time}】${g.flag1} ${g.team1} vs ${g.team2} ${g.flag2}`;
+    main += `\n${g.analysis}`;
+    main += `\n${g.dirLine}`;
+    main += `\n🔥 首選比分、讓分、大小分：找小財神領牌 次選比分：${g.secondScore}\n`;
+  });
+  main += `\n💬 首選比分、讓分、大小分 👉 找小財神領牌 今天繼續看`;
+
+  // 比分文案
+  let scores = `-----------------------------------------------\n`;
+  games.forEach((g, i) => {
+    if(i===0) scores += `\n🔥 首選比分：${g.mainScore}\n`;
+    else scores += `\n【${FP_NUMS[i]} ${dateDisp} ${g.time}】${g.flag1} ${g.team1} vs ${g.team2} ${g.flag2}\n🔥 首選比分：${g.mainScore}\n`;
+  });
+
+  document.getElementById('fp-copy-main').value = main;
+  document.getElementById('fp-copy-scores').value = scores;
+  document.getElementById('fp-output').style.display = 'block';
+  document.getElementById('fp-output').scrollIntoView({behavior:'smooth',block:'start'});
+  toast('文案已生成 ✅');
+}
+
+function fpSave() {
+  const date = document.getElementById('fp-date')?.value||'';
+  if(!date){ toast('請先選日期'); return; }
+  const games = fpReadGames();
+  const mainCopy = document.getElementById('fp-copy-main')?.value||'';
+  const scoresCopy = document.getElementById('fp-copy-scores')?.value||'';
+  const list = DB.get('fortune_predictions')||[];
+  const existing = list.findIndex(p=>p.date===date);
+  const rec = {
+    id: `fp-${date}`,
+    date,
+    games,
+    copyMain: mainCopy,
+    copyScores: scoresCopy,
+    accuracy: null,
+    createdAt: new Date().toISOString(),
+  };
+  if(existing>=0) list[existing]=rec; else list.unshift(rec);
+  DB.set('fortune_predictions', list);
+  fpRenderHistory();
+  fpRefreshCheckDates();
+  toast('💾 預測已儲存');
+}
+
+function fpClearAll() {
+  if(!confirm('清空目前所有比賽輸入？')) return;
+  _fpActiveIds = [];
+  _fpGameIdx = 0;
+  fpRenderGameList();
+  document.getElementById('fp-output').style.display='none';
+  fpAddGame();
+}
+
+function fpCopyText(id) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  navigator.clipboard.writeText(el.value).then(()=>toast('✅ 已複製')).catch(()=>{
+    el.select(); document.execCommand('copy'); toast('✅ 已複製');
+  });
+}
+
+function fpImportJson() {
+  const raw = document.getElementById('fp-json-import')?.value.trim();
+  if(!raw){ toast('請先貼入 JSON 內容'); return; }
+  let data;
+  try { data = JSON.parse(raw); } catch(e){ toast('❌ JSON 格式錯誤：'+e.message); return; }
+  // set date
+  if(data.date) document.getElementById('fp-date').value = data.date;
+  // rebuild games
+  _fpActiveIds = [];
+  _fpGameIdx = 0;
+  const games = data.games||[];
+  games.forEach(() => { _fpActiveIds.push(_fpGameIdx++); });
+  fpRenderGameList();
+  // fill values
+  games.forEach((g, i) => {
+    const id = i;
+    const set = (f, v) => { const el=document.getElementById(`fp-${f}-${id}`); if(el&&v!=null) el.value=v; };
+    set('time', g.time); set('team1', g.team1); set('flag1', g.flag1||FP_FLAGS[g.team1]||'');
+    set('team2', g.team2); set('flag2', g.flag2||FP_FLAGS[g.team2]||'');
+    set('analysis', g.analysis); set('dirline', g.dirLine||g.dirline||'');
+    set('second', g.secondScore||g.second||'');
+    set('main', g.mainScore||g.main||'');
+  });
+  document.getElementById('fp-json-import').value='';
+  toast(`✅ 已匯入 ${games.length} 場比賽`);
+}
+
+function fpRefreshCheckDates() {
+  const sel = document.getElementById('fp-check-date');
+  if(!sel) return;
+  const list = DB.get('fortune_predictions')||[];
+  sel.innerHTML = '<option value="">— 選擇預測日期 —</option>' +
+    list.map(p=>`<option value="${p.date}">${p.date}${p.accuracy!=null?` ✅ ${p.accuracy.exactHits}/${p.accuracy.total} 準`:''}</option>`).join('');
+}
+
+function fpLoadCheck(date) {
+  if(!date) { document.getElementById('fp-check-list').innerHTML=''; return; }
+  const list = DB.get('fortune_predictions')||[];
+  const pred = list.find(p=>p.date===date);
+  if(!pred){ document.getElementById('fp-check-list').innerHTML='<div style="color:var(--text3);font-size:.8rem">找不到此日期的預測記錄</div>'; return; }
+  _fpCheckData = JSON.parse(JSON.stringify(pred));
+  const [y,m,d2] = date.split('-');
+  const dateDisp = `${parseInt(m)}/${parseInt(d2)}`;
+  document.getElementById('fp-check-list').innerHTML = pred.games.map((g,i)=>`
+    <div style="background:var(--g2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-weight:700;font-size:.85rem">${FP_NUMS[i]} ${g.flag1} ${g.team1} vs ${g.team2} ${g.flag2}</div>
+        <div style="font-size:.7rem;color:var(--text3)">${dateDisp} ${g.time}</div>
+      </div>
+      <div style="font-size:.75rem;color:var(--accent);margin-bottom:6px">預測首選：<b>${g.mainScore||'—'}</b>　次選：${g.secondScore||'—'}</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <label style="font-size:.72rem;color:var(--text3);white-space:nowrap">實際比分</label>
+        <input id="fp-actual-${i}" value="${g.actualScore||''}" placeholder="例：0:2 或 1:1"
+          style="width:100px;background:var(--g3);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:.82rem">
+        <div id="fp-hit-${i}" style="font-size:.8rem">${g.hit!=null?(g.hit==='exact'?'✅ 比分準':g.hit==='direction'?'🟡 方向準':'❌ 不準'):'—'}</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('fp-save-actual-btn').style.display='block';
+  document.getElementById('fp-accuracy-result').innerHTML='';
+}
+
+function fpSaveActual() {
+  if(!_fpCheckData){ toast('請先選擇預測日期'); return; }
+  const games = _fpCheckData.games;
+  let exactHits=0, dirHits=0, total=games.length;
+  games.forEach((g,i)=>{
+    const actual = document.getElementById(`fp-actual-${i}`)?.value.trim()||'';
+    g.actualScore = actual;
+    if(!actual||!g.mainScore){ g.hit=null; return; }
+    // parse scores: "1:2" "1-2" "1：2"
+    const parseScore = s => {
+      const m = s.replace('：',':').replace('−','-').replace('-',':').match(/(\d+)\s*[:\-]\s*(\d+)/);
+      return m ? [parseInt(m[1]),parseInt(m[2])] : null;
+    };
+    const pMain = parseScore(g.mainScore.match(/(\d+[：:\-]\d+)/)?.[1]||'');
+    const pActual = parseScore(actual);
+    if(!pMain||!pActual){ g.hit=null; return; }
+    if(pMain[0]===pActual[0]&&pMain[1]===pActual[1]){ g.hit='exact'; exactHits++; dirHits++; }
+    else {
+      const predDir = pMain[0]>pMain[1]?1:pMain[0]<pMain[1]?-1:0;
+      const actDir = pActual[0]>pActual[1]?1:pActual[0]<pActual[1]?-1:0;
+      if(predDir===actDir){ g.hit='direction'; dirHits++; }
+      else g.hit='miss';
+    }
+    document.getElementById(`fp-hit-${i}`).innerHTML =
+      g.hit==='exact'?'✅ 比分準':g.hit==='direction'?'🟡 方向準':'❌ 不準';
+  });
+  const acc = { exactHits, dirHits, total,
+    exactPct: total?Math.round(exactHits/total*100):0,
+    dirPct: total?Math.round(dirHits/total*100):0 };
+  _fpCheckData.accuracy = acc;
+  // save back
+  const list = DB.get('fortune_predictions')||[];
+  const idx = list.findIndex(p=>p.date===_fpCheckData.date);
+  if(idx>=0){ list[idx] = _fpCheckData; DB.set('fortune_predictions',list); }
+  document.getElementById('fp-accuracy-result').innerHTML=`
+    <div style="background:var(--g2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px">
+      <div style="font-weight:700;color:var(--accent);font-size:.95rem;margin-bottom:6px">📊 ${_fpCheckData.date} 預測準確率</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="text-align:center;background:var(--g3);border-radius:6px;padding:10px">
+          <div style="font-size:1.5rem;font-weight:800;color:#4ade80">${acc.exactHits}/${acc.total}</div>
+          <div style="font-size:.7rem;color:var(--text3)">比分完全準確</div>
+          <div style="font-size:1rem;font-weight:700;color:#4ade80">${acc.exactPct}%</div>
+        </div>
+        <div style="text-align:center;background:var(--g3);border-radius:6px;padding:10px">
+          <div style="font-size:1.5rem;font-weight:800;color:#f59e0b">${acc.dirHits}/${acc.total}</div>
+          <div style="font-size:.7rem;color:var(--text3)">勝負方向準確</div>
+          <div style="font-size:1rem;font-weight:700;color:#f59e0b">${acc.dirPct}%</div>
+        </div>
+      </div>
+    </div>`;
+  fpRenderHistory();
+  fpRefreshCheckDates();
+  toast('✅ 準確率已儲存');
+}
+
+function fpRenderHistory() {
+  const el = document.getElementById('fp-history');
+  if(!el) return;
+  const list = (DB.get('fortune_predictions')||[]).slice(0,30);
+  if(!list.length){ el.innerHTML='<div style="color:var(--text3);font-size:.8rem;padding:8px">尚無預測記錄</div>'; return; }
+  el.innerHTML = `<table><thead><tr>
+    <th>日期</th><th style="text-align:right">場次</th><th style="text-align:right">比分準</th><th style="text-align:right">方向準</th><th style="text-align:right">準確率</th><th></th>
+  </tr></thead><tbody>` +
+  list.map(p=>{
+    const a = p.accuracy;
+    const accStr = a ? `${a.exactHits}/${a.total}` : '—';
+    const pctStr = a ? `${a.exactPct}%` : '—';
+    const dirStr = a ? `${a.dirHits}/${a.total}` : '—';
+    const tag = a ? (a.exactPct>=50?'<span class="b-green">佳</span>':a.dirPct>=50?'<span style="color:#f59e0b">中</span>':'<span class="b-red">差</span>') : '<span style="color:var(--text3)">待確認</span>';
+    return `<tr>
+      <td><b>${p.date}</b></td>
+      <td style="text-align:right">${p.games.length}</td>
+      <td style="text-align:right;color:#4ade80;font-weight:700">${accStr}</td>
+      <td style="text-align:right;color:#f59e0b">${dirStr}</td>
+      <td style="text-align:right">${pctStr}</td>
+      <td style="text-align:right">${tag} <button class="btn btn-xs" onclick="fpLoadPrediction('${p.date}')" style="font-size:.65rem">載入</button></td>
+    </tr>`;
+  }).join('') + '</tbody></table>';
+}
+
+function fpLoadPrediction(date) {
+  const list = DB.get('fortune_predictions')||[];
+  const pred = list.find(p=>p.date===date);
+  if(!pred) return;
+  document.getElementById('fp-date').value = date;
+  _fpActiveIds=[];
+  _fpGameIdx=0;
+  pred.games.forEach(()=>{ _fpActiveIds.push(_fpGameIdx++); });
+  fpRenderGameList();
+  pred.games.forEach((g,i)=>{
+    const set=(f,v)=>{const el=document.getElementById(`fp-${f}-${i}`);if(el&&v!=null)el.value=v;};
+    set('time',g.time);set('team1',g.team1);set('flag1',g.flag1);
+    set('team2',g.team2);set('flag2',g.flag2);
+    set('analysis',g.analysis);set('dirline',g.dirLine);
+    set('second',g.secondScore);set('main',g.mainScore);
+  });
+  if(pred.copyMain){
+    document.getElementById('fp-copy-main').value=pred.copyMain;
+    document.getElementById('fp-copy-scores').value=pred.copyScores;
+    document.getElementById('fp-output').style.display='block';
+  }
+  toast(`📅 已載入 ${date} 預測`);
 }
 
 // ===== INIT =====
