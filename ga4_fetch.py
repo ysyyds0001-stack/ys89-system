@@ -248,14 +248,18 @@ def fetch_top_pages(client):
     pages = sorted(pages, key=lambda x: x["v"], reverse=True)[:7]
     return pages
 
-def fetch_content_performance(client):
-    """
-    依 utm_content（貼文 ID）拆出單篇貼文成效
-    返回: [{content, sessions, cta}, ...]  ← 給「成效報表」對到每一則貼文
-    """
-    start_date, end_date = get_date_range()
-
-    # 各 utm_content 的工作階段
+def fetch_content_range(client, start_date, end_date):
+    """依 utm_content 拆出指定區間的貼文成效"""
+    cta_filter = FilterExpression(
+        or_group={
+            "expressions": [
+                FilterExpression(
+                    filter=Filter(field_name="eventName", string_filter={"value": event})
+                )
+                for event in CTA_EVENTS
+            ]
+        }
+    )
     sess_req = RunReportRequest(
         property=PROPERTY_FULL,
         dimensions=[Dimension(name="sessionManualAdContent")],
@@ -271,17 +275,6 @@ def fetch_content_performance(client):
             continue
         by_content[c] = {"content": c, "sessions": s, "cta": 0}
 
-    # 各 utm_content 的 CTA（關鍵事件）
-    cta_filter = FilterExpression(
-        or_group={
-            "expressions": [
-                FilterExpression(
-                    filter=Filter(field_name="eventName", string_filter={"value": event})
-                )
-                for event in CTA_EVENTS
-            ]
-        }
-    )
     cta_req = RunReportRequest(
         property=PROPERTY_FULL,
         dimensions=[Dimension(name="sessionManualAdContent")],
@@ -297,6 +290,11 @@ def fetch_content_performance(client):
             by_content[c]["cta"] = cta
 
     return sorted(by_content.values(), key=lambda x: x["sessions"], reverse=True)
+
+def fetch_content_performance(client):
+    """依 utm_content 拆出 28 天貼文成效"""
+    start_date, end_date = get_date_range()
+    return fetch_content_range(client, start_date, end_date)
 
 def fetch_kpis_range(client, start_date, end_date):
     """拉取指定日期範圍的 KPI"""
@@ -429,18 +427,28 @@ def main():
 
     print("📅 拉取多區間 KPI（3天/7天/上週/28天）...")
     ranges = get_weekly_ranges()
-    period_kpis   = {}
-    period_accts  = {}
+    period_kpis    = {}
+    period_accts   = {}
+    period_contents = {}
     for key, (s, e) in ranges.items():
-        period_kpis[key]  = fetch_kpis_range(client, s, e)
-        period_accts[key] = fetch_accounts_range(client, s, e)
+        period_kpis[key]    = fetch_kpis_range(client, s, e)
+        period_accts[key]   = fetch_accounts_range(client, s, e)
+        if key in ("3d", "7d"):
+            print(f"   📝 拉取 {key} 貼文成效...")
+            try:
+                period_contents[key] = fetch_content_range(client, s, e)
+            except Exception as ex:
+                print(f"   ⚠ {key} 貼文成效失敗：{ex}")
+                period_contents[key] = []
 
     # 組合數據
     ga4_data = {
         "sources": sources,
         "accounts": accounts,
         "pages": pages,
-        "contents": contents,
+        "contents":     contents,
+        "contents_3d":  period_contents.get("3d", []),
+        "contents_7d":  period_contents.get("7d", []),
         "kpis": kpis,
         "kpis_3d":      period_kpis["3d"],
         "kpis_7d":      period_kpis["7d"],
