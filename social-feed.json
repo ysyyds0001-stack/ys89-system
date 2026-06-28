@@ -1,6 +1,21 @@
 {
-  "lastUpdated": "2026-06-27T04:54:15Z",
+  "lastUpdated": "2026-06-28T05:18:07Z",
   "posts": [
+    {
+      "date": "2026-06-27",
+      "persona": "god",
+      "personaName": "世足大財神",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/@wc_godofwealth/post/DaFY7QOn1Dr?xmt=AQG0zoGDCPXVREWNRv0M5XSelIj-wrt0N43Us2cV4QwUaE3IMCFEBlgbrXik2ELk478MmfgJ&slof=1",
+      "landingUrl": null,
+      "utmContent": "god-0627-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "世界盃預測"
+    },
     {
       "date": "2026-06-26",
       "persona": null,
@@ -4158,6 +4173,12 @@
     }
   ],
   "daily": [
+    {
+      "date": "2026-06-27",
+      "totalImpressions": null,
+      "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
     {
       "date": "2026-06-26",
       "totalImpressions": null,
