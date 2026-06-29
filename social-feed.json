@@ -1,17 +1,32 @@
 {
-  "lastUpdated": "2026-06-28T05:18:07Z",
+  "lastUpdated": "2026-06-29T05:51:34Z",
   "posts": [
+    {
+      "date": "2026-06-28",
+      "persona": "god",
+      "personaName": "世足大財神",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/@wc_godofwealth/post/DaHzK3nH7hy?xmt=AQG0uY4ziC9nJ-LYyIFM2fi93hkKvwPfZTLGtdL17n89oA",
+      "landingUrl": null,
+      "utmContent": "god-0628-1",
+      "impressions": 1902,
+      "likes": 7,
+      "comments": 0,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "世界盃預測"
+    },
     {
       "date": "2026-06-27",
       "persona": "god",
       "personaName": "世足大財神",
       "platform": "threads",
-      "postUrl": "https://www.threads.com/@wc_godofwealth/post/DaFY7QOn1Dr?xmt=AQG0zoGDCPXVREWNRv0M5XSelIj-wrt0N43Us2cV4QwUaE3IMCFEBlgbrXik2ELk478MmfgJ&slof=1",
+      "postUrl": "https://www.threads.com/@wc_godofwealth/post/DaFY7QOn1Dr?xmt=AQG0uY4ziC9nJ-LYyIFM2fi93hkKvwPfZTLGtdL17n89oA",
       "landingUrl": null,
-      "utmContent": "god-0627-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "utmContent": "god-0629-1",
+      "impressions": 11000,
+      "likes": 20,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": "世界盃預測"
@@ -24,9 +39,9 @@
       "postUrl": "https://www.threads.com/@wc_ccai/post/DaDBbI-k8WC?xmt=AQG0KU5yzjLDKLCgLwQo4P6ThW4pEYNr0R8kkRh67SENfg",
       "landingUrl": "https://t.me/pickhelp_bot?utm_source=cc&utm_medium=th_post&utm_campaign=wc2026&utm_content=cc-0626-1",
       "utmContent": "cc-0626-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 1593,
+      "likes": 4,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -39,9 +54,9 @@
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DaC2PhJGStG",
       "landingUrl": null,
       "utmContent": "cyq-0626-3",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 761,
+      "likes": 1,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": "AI分析工具"
@@ -54,9 +69,9 @@
       "postUrl": "https://www.threads.com/@noloxd6467/post/DaCqFmKk4en",
       "landingUrl": null,
       "utmContent": "akki-0626-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 1420,
+      "likes": 1,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": "0626"
@@ -69,9 +84,9 @@
       "postUrl": "https://www.threads.com/@dddgo0805/post/DaDD4xGDzOa?xmt=AQG0rZzp_67Caw4c0MC5FM8ync1vH40Vn5Pwj22KSuLLPA",
       "landingUrl": "https://t.me/pickhelp_bot?utm_source=diego&utm_medium=th_post&utm_campaign=wc2026&utm_content=diego-0626-1",
       "utmContent": "diego-0626-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 1598,
+      "likes": 3,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -4174,14 +4189,20 @@
   ],
   "daily": [
     {
+      "date": "2026-06-28",
+      "totalImpressions": 1902,
+      "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
+    {
       "date": "2026-06-27",
-      "totalImpressions": null,
+      "totalImpressions": 11000,
       "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
       "date": "2026-06-26",
-      "totalImpressions": null,
+      "totalImpressions": 5372,
       "totalLinkClicks": null,
       "totalRegistrations": null
     },
