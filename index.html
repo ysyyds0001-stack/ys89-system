@@ -369,6 +369,18 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     </div>
   </div>
 
+  <!-- 📡 平台曝光度 vs GA4 流量 -->
+  <div class="card" style="border-left:3px solid #60a5fa;margin-bottom:18px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+      <div>
+        <div class="card-title" style="margin-bottom:2px">📡 平台曝光度 vs GA4 流量</div>
+        <p class="tm" style="font-size:.74rem">從「社群炒群」讀取的 Threads 成效，對比同期 GA4 進站數 ── 找出高曝光低導流（貼文引流力不足）或低曝光高導流（精準但觸及小）的帳號</p>
+      </div>
+      <span id="expRangeLabel" style="font-size:.72rem;color:var(--text3);white-space:nowrap;padding-top:4px"></span>
+    </div>
+    <div id="expPanel"></div>
+  </div>
+
   <!-- 關鍵發現 -->
   <div class="card" style="background:linear-gradient(135deg, #150e0b, #0f0d0b);border:1px solid var(--amber);margin-bottom:18px">
     <div class="card-title" style="color:var(--accent2);margin-bottom:14px">🔍 關鍵發現</div>
@@ -820,6 +832,134 @@ function switchGA4Period(p) {
                  : p==='7d' ? (d.contents_7d||d.contents||[])
                  : (d.contents||[]);
   renderPostTable(postData, pd.label);
+
+  // 曝光度面板
+  renderExposurePanel(d, p);
+}
+
+function renderExposurePanel(d, period) {
+  const el  = document.getElementById('expPanel');
+  const lbl = document.getElementById('expRangeLabel');
+  if (!el) return;
+
+  // 依期間決定日期範圍與 GA4 帳號資料
+  const ranges = d.ranges || {};
+  const rangeMap = {
+    '3d':  { str: ranges['3d']  || '', ga4: d.accounts_3d  || [], label: '近 3 天' },
+    '7d':  { str: ranges['7d']  || '', ga4: d.accounts_7d  || [], label: '近 7 天' },
+    '28d': { str: ranges['28d'] || '', ga4: d.accounts_28d || [], label: '近 28 天' },
+    'cum': { str: ranges['28d'] || '', ga4: d.accounts_28d || [], label: '累積 28 天' },
+  };
+  const rm = rangeMap[period] || rangeMap['7d'];
+  if (lbl) lbl.textContent = rm.str ? `資料：${rm.str}` : '';
+
+  const [startDate, endDate] = rm.str.includes('~') ? rm.str.split('~') : ['', ''];
+
+  // 建立 GA4 帳號 Map
+  // 28d/cum 使用全量 accounts（不限 top 5）；7d/3d 只用期間 top 5，避免跨期時間不對稱
+  const ga4Map = {};
+  if (period === '28d' || period === 'cum') {
+    (d.accounts || []).forEach(a => { ga4Map[a.name] = a; });
+  } else {
+    rm.ga4.forEach(a => { ga4Map[a.name] = a; });
+  }
+
+  // 從社群炒群記錄篩出期間內有成效資料的活動
+  const ta = (typeof DB !== 'undefined' && DB.get) ? (DB.get('thread_activities') || []) : [];
+  const inRange = ta.filter(a => {
+    if (!a.date) return false;
+    if (startDate && a.date < startDate) return false;
+    if (endDate   && a.date > endDate)   return false;
+    return true;
+  });
+
+  if (!inRange.length) {
+    el.innerHTML = '<p style="color:var(--text3);font-size:.8rem;padding:6px 0">此期間無社群炒群發文記錄</p>';
+    return;
+  }
+
+  // 彙整：以 utm_content 前段（帳號代碼）分組
+  const bySource = {};
+  inRange.forEach(a => {
+    const src  = (a.utmContent || '').split('-')[0] || 'unknown';
+    const name = (typeof PERSONA_MAP !== 'undefined' && PERSONA_MAP[src]) ? PERSONA_MAP[src] : (a.personaName || src);
+    if (!bySource[src]) bySource[src] = { src, name, posts: 0, recorded: 0, views: 0, likes: 0, reposts: 0 };
+    const g = bySource[src];
+    g.posts++;
+    const m = a.platformMetrics?.Threads;
+    if (m && (m.views || m.likes || m.reposts)) {
+      g.recorded++;
+      g.views   += (m.views   || 0);
+      g.likes   += (m.likes   || 0);
+      g.reposts += (m.reposts || 0);
+    }
+  });
+
+  const rows = Object.values(bySource).sort((a, b) => b.views - a.views);
+  const totViews = rows.reduce((s, r) => s + r.views, 0) || 1;
+  const totGA4   = rows.reduce((s, r) => s + (ga4Map[r.src]?.s || 0), 0);
+
+  // 找出顯示名重複的帳號，標上 source code 以便區分
+  const nameCounts = {};
+  rows.forEach(r => { nameCounts[r.name] = (nameCounts[r.name] || 0) + 1; });
+
+  const rowsHtml = rows.map(r => {
+    const ga4  = ga4Map[r.src] || { s: 0, cta: 0 };
+    const pct  = r.views > 0 ? r.views / totViews * 100 : 0;
+    const rate = r.views > 0 && ga4.s > 0 ? ga4.s / r.views * 100 : null;
+    const rc   = rate === null ? '#6b7280' : rate >= 10 ? '#4ade80' : rate >= 3 ? '#f59e0b' : '#f87171';
+    const miss = r.recorded < r.posts
+      ? ` <span style="color:#6b7280;font-size:.68rem">(${r.recorded}/${r.posts} 已讀)</span>` : '';
+    const srcTag = nameCounts[r.name] > 1
+      ? ` <span style="color:#4b5563;font-size:.68rem">(${r.src})</span>` : '';
+    const bar  = r.views > 0
+      ? `<div style="background:var(--g3);border-radius:2px;margin-top:3px;height:3px"><div style="width:${Math.min(pct,100)}%;height:3px;background:#60a5fa;border-radius:2px"></div></div>` : '';
+    return `<tr>
+      <td><b>${r.name}</b>${srcTag}${miss}</td>
+      <td style="text-align:right">${r.posts}</td>
+      <td style="text-align:right">${r.views > 0 ? fmt(r.views) : '—'}</td>
+      <td style="min-width:80px">${r.views > 0 ? `<span style="font-size:.8rem">${pct.toFixed(1)}%</span>${bar}` : '—'}</td>
+      <td style="text-align:right">${r.likes + r.reposts > 0 ? fmt(r.likes + r.reposts) : '—'}</td>
+      <td style="text-align:right">${ga4.s > 0 ? fmt(ga4.s) : '—'}</td>
+      <td style="text-align:right;font-weight:700;color:${rc}">${rate !== null ? rate.toFixed(1)+'%' : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  const overallRate = totViews > 1 && totGA4 > 0 ? (totGA4 / totViews * 100).toFixed(1) + '%' : '—';
+
+  el.innerHTML = `
+    <div class="t-scroll">
+    <table>
+      <thead><tr>
+        <th>帳號</th>
+        <th style="text-align:right">貼文數</th>
+        <th style="text-align:right">Threads 瀏覽</th>
+        <th style="min-width:80px">曝光佔比</th>
+        <th style="text-align:right">讚＋轉</th>
+        <th style="text-align:right">GA4 進站</th>
+        <th style="text-align:right" title="GA4進站 ÷ Threads瀏覽">導流率</th>
+      </tr></thead>
+      <tbody>
+        ${rowsHtml}
+        <tr style="border-top:1px solid var(--border2);font-weight:700;color:var(--text)">
+          <td>合計</td>
+          <td style="text-align:right">${rows.reduce((s,r)=>s+r.posts,0)}</td>
+          <td style="text-align:right">${totViews > 1 ? fmt(totViews) : '—'}</td>
+          <td style="color:#60a5fa">100%</td>
+          <td style="text-align:right">${fmt(rows.reduce((s,r)=>s+r.likes+r.reposts,0))}</td>
+          <td style="text-align:right">${fmt(totGA4)}</td>
+          <td style="text-align:right;color:#60a5fa">${overallRate}</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:.7rem;color:var(--text3);margin-top:8px">
+      導流率 = GA4 進站 ÷ Threads 瀏覽（已記錄的貼文）。
+      <span style="color:#4ade80">≥10%</span> 精準
+      <span style="color:#f59e0b">3–10%</span> 普通
+      <span style="color:#f87171">&lt;3%</span> 引流弱
+      <span style="color:#6b7280">&gt;100%</span> bio 連結或未記錄貼文也在帶流量 ── 代表有隱藏導流力
+    </p>`;
 }
 
 function renderPostTable(posts, label) {
