@@ -1697,7 +1697,14 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
           <option value="匿名">📝 匿名社群發文</option>
           <option value="fb">📘 臉書社團/粉專</option>
           <option value="none">（只存短連結，不建發文記錄）</option>
-        </select></div>
+        </select>
+        <!-- 匿名模式：關聯來源文章 -->
+        <div id="u-source-article-wrap" style="display:none;margin-top:8px">
+          <select id="u-source-article" style="width:100%;font-size:.8rem;background:#070605;border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:5px 8px">
+            <option value="">— 不關聯文章（只存 UTM 記錄）—</option>
+          </select>
+          <div style="font-size:.67rem;color:var(--accent);margin-top:4px">✅ 選擇後存檔 → 自動更新文章庫「匿名發佈進度」</div>
+        </div></div>
       <div class="fg" id="u-platform-wrap" style="display:none"><label>平台 / 社團 <span style="color:var(--text3);font-size:.72rem">記到哪個平台</span></label>
         <input id="u-platform" list="u-platform-list" placeholder="Medium / Dcard / 社團名…">
         <datalist id="u-platform-list"><option>Medium</option><option>Pixnet 痞客邦</option><option>方格子 Vocus</option><option>Blogger</option><option>HackMD</option><option>Tumblr</option><option>Telegraph</option><option>Reddit</option><option>Dcard</option><option>PTT</option><option>Mobile01</option><option>巴哈姆特</option></datalist></div>
@@ -3243,6 +3250,16 @@ async function syncArticleToMike(a){
   const personas=DB.get('personas')
   const needed=personas.filter(p=>p.dir===a.dir)
   const todo=needed.filter(p=>!(a.postedBy||[]).find(x=>x.pid===p.id)).map(p=>`@${p.name}`).join(' ')
+  // 匿名社群帳號發佈狀態
+  const seedList=(DB.get('seeding_accounts')||[]).filter(x=>!x.accountStatus||x.accountStatus==='active')
+  const aLog=(DB.get('anon_pub_log')||{})[a.url||'']||{}
+  const seedDone=seedList.filter(x=>aLog[x.id]?.done)
+  const seedTodo=seedList.filter(x=>!aLog[x.id]?.done)
+  const seedSection=seedList.length?[
+    ``,
+    `📝 <b>匿名社群發佈（${seedDone.length}/${seedList.length}）</b>`,
+    seedTodo.length?`待發：${seedTodo.map(s=>s.name+`(<code>/blog ${commCode(s)}</code>)`).join(' ')}`:' ✅ 全部完成',
+  ]:[]
   const lines=[
     `📰 <b>新文章入庫</b>`,
     ``,
@@ -3254,15 +3271,51 @@ async function syncArticleToMike(a){
     `📱 <b>對應 Threads 腳本（${scripts.length}篇）</b>`,
     scriptLines,
     ``,
-    `👤 待發角色：${todo||'（皆已發）'}`,
+    `👤 社群待發角色：${todo||'（皆已發）'}`,
+    ...seedSection,
     ``,
     `💬 發布後回覆：`,
-    `<code>/done 角色名</code>  確認最新文章`,
-    `<code>/list</code>  查看待發清單`,
+    `<code>/done 角色名</code>  確認社群最新文章`,
+    `<code>/blog 帳號code</code>  確認匿名社群已發佈`,
   ].filter(x=>x!==null&&x!==undefined)
   const ok=await sendToMike(lines.join('\n'))
   if(ok)toast('✅ 已同步給 mike')
   else toast('⚠️ mike 傳送失敗，請檢查網路','err')
+}
+
+// 拉取 Mike Telegram 回報（處理 /blog code 指令）
+async function pollMikeForBlog(articleUrl){
+  if(!articleUrl){toast('文章無 URL，無法拉取','err');return}
+  const offset=parseInt(localStorage.getItem('mike_blog_offset')||'0')
+  try{
+    const r=await fetch(`${TG_API}/getUpdates?offset=${offset}&timeout=0`)
+    const data=await r.json()
+    if(!data.ok){toast('Mike 連線失敗','err');return}
+    let lastId=offset, count=0
+    const log=DB.get('anon_pub_log')||{}
+    const seedList=DB.get('seeding_accounts')||[]
+    for(const upd of data.result){
+      lastId=Math.max(lastId,upd.update_id+1)
+      const text=(upd.message?.text||'').trim()
+      const m=text.match(/^\/blog\s+(\S+)/i)
+      if(m){
+        const sc=m[1].toLowerCase()
+        const acct=seedList.find(a=>commCode(a)===sc)
+        if(acct){
+          if(!log[articleUrl])log[articleUrl]={}
+          log[articleUrl][acct.id]={done:true,doneAt:new Date().toISOString().slice(0,10),via:'mike'}
+          count++
+        }
+      }
+    }
+    localStorage.setItem('mike_blog_offset',String(lastId))
+    if(count>0){
+      DB.set('anon_pub_log',log); renderArticles()
+      toast(`✅ 從 Mike 收到 ${count} 筆匿名發佈確認`)
+    }else{
+      toast('Mike 尚無新的 /blog 回報')
+    }
+  }catch(e){toast('拉取失敗：'+e.message,'err')}
 }
 
 async function notifyMikeNewScript(s){
@@ -4811,6 +4864,7 @@ function renderArticles(){
           <button class="btn btn-xs btn-outline" onclick="openBatchGen('${(a.url||'').replace(/'/g,"\\'")}','${a.dir||''}','${(a.title||'').replace(/'/g,"\\'")}')">📋 批次生成</button>
           ${(()=>{const alog=(DB.get('anon_pub_log')||{})[a.url||'']||{};const sa=(DB.get('seeding_accounts')||[]).filter(x=>!x.accountStatus||x.accountStatus==='active');const ad=sa.filter(x=>alog[x.id]?.done).length;const at=sa.length;return at?`<span style="background:${ad===at?'#16a34a18':'#6b728018'};color:${ad===at?'#4ade80':'#9ca3af'};border:1px solid ${ad===at?'#16a34a40':'#6b728040'};border-radius:4px;font-size:.65rem;padding:1px 7px">📝 ${ad}/${at}</span>`:''})()||''}
           <button class="btn btn-xs" style="background:#229ED9;color:#fff;border:none;cursor:pointer;padding:3px 8px;border-radius:4px;font-size:.78rem" onclick="syncArticleToMike(DB.get('articles').find(x=>x.id==='${a.id}'))">📤 mike</button>
+          <button class="btn btn-xs btn-outline" style="font-size:.72rem" onclick="pollMikeForBlog('${(a.url||'').replace(/'/g,"\\'")}')">📨 拉取確認</button>
           <button class="btn btn-xs btn-danger" onclick="delArticle('${a.id}')">刪除</button>
         </div>
       </div>
@@ -7139,6 +7193,24 @@ function utmSaveToLinks(){
   if(rec){ Object.assign(rec,lf); }
   else { all.push({ id:'lk'+Date.now(), category:'水軍', accountCode:code, placement:'UTM追蹤', purpose:'社群 UTM 追蹤', status:'使用中', isSeoAsset:false, createdAt:new Date().toISOString(), ...lf }); }
   DB.set('links',all); DB.push('links').catch(()=>{});
+  // 匿名模式：若選了關聯文章，自動更新 anon_pub_log
+  if(usage==='匿名'){
+    const artKey=(document.getElementById('u-source-article')?.value||'').trim();
+    if(artKey){
+      const arts=DB.get('articles')||[];
+      const art=arts.find(a=>(a.url||a.id)===artKey);
+      const seedAcct=(DB.get('seeding_accounts')||[]).find(a=>commCode(a)===code);
+      if(art&&seedAcct){
+        const artUrl=art.url||art.id;
+        const log=DB.get('anon_pub_log')||{};
+        if(!log[artUrl])log[artUrl]={}
+        log[artUrl][seedAcct.id]={done:true,doneAt:new Date().toISOString().slice(0,10),utmContent:ct}
+        DB.set('anon_pub_log',log)
+        toast(`✅ 已標記：${seedAcct.name} → 「${art.title.slice(0,20)}…」完成發佈`)
+      }
+      document.getElementById('u-source-article').value=''
+    }
+  }
   // 依分類建立發文記錄到對應分頁
   const recMsg=_utmCreateChannelRecord(usage, p, code, ct, title, shortUrl);
   const slCount=shorts.length; const slMsg=slCount>1?` (${slCount} 個短連結)`:'';
@@ -7154,6 +7226,19 @@ function utmUsageChange(){
   const v=document.getElementById('u-usage')?.value;
   const wrap=document.getElementById('u-platform-wrap');
   if(wrap) wrap.style.display=(v==='匿名'||v==='fb')?'':'none';
+  // 匿名模式：顯示關聯文章下拉，填充文章庫
+  const artWrap=document.getElementById('u-source-article-wrap');
+  if(artWrap){
+    artWrap.style.display=(v==='匿名')?'block':'none';
+    if(v==='匿名'){
+      const sel=document.getElementById('u-source-article');
+      if(sel){
+        const arts=(DB.get('articles')||[]).slice().reverse();
+        sel.innerHTML='<option value="">— 不關聯文章（只存 UTM 記錄）—</option>'+
+          arts.map(a=>`<option value="${(a.url||a.id).replace(/"/g,'&quot;')}">${a.title.slice(0,48)}${a.title.length>48?'…':''}</option>`).join('')
+      }
+    }
+  }
 }
 // 選「貼在哪」時自動切換發文分類（Threads/IG→炒群，FB→fb，部落格/論壇→匿名）
 function utmMedChange(){
