@@ -6649,18 +6649,29 @@ function _renderChannel(scope, ids){
   ].map(([l,v,c])=>`<div class="card-sm" style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:${c}">${v}</div><div class="tm">${l}</div></div>`).join('')
   const wrap=document.getElementById(ids.table)
   if(!list.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無記錄，點右上「+ 新增記錄」開始（或到 UTM 產生器發文時直接存）</div>';return}
-  const stColor={'存活':'#4ade80','被刪':'#f87171','已發(待回查)':'#f59e0b'}
+  const stColor={'存活':'#4ade80','被刪':'#f87171'}
+  // 文章庫 URL → 標題快查表
+  const artMap={}; (DB.get('articles')||[]).forEach(a=>{if(a.url)artMap[a.url.replace(/\/$/,'')]=a.title;});
+  const landingTitle=lu=>{if(!lu)return '';try{const b=new URL(lu);b.search='';const k=b.href.replace(/\/$/,'');return artMap[k]||'';}catch(e){return '';}};
   wrap.innerHTML=`<table style="width:100%;font-size:.84rem;border-collapse:collapse">
     <thead><tr style="border-bottom:2px solid var(--border)"><th style="text-align:left;padding:7px">日期</th><th style="text-align:left;padding:7px">角色</th><th style="text-align:left;padding:7px">${scope==='fb'?'社團/粉專':'平台'}</th><th style="text-align:left;padding:7px">標題/類型</th><th style="text-align:left;padding:7px">UTM/連結</th><th style="padding:7px">狀態</th><th style="padding:7px">操作</th></tr></thead>
-    <tbody>${list.map(p=>`<tr style="border-bottom:1px solid var(--border)">
+    <tbody>${list.map(p=>{
+      const artName=landingTitle(p.landingUrl||p.originalUrl||'');
+      const statusShow=p.status&&p.status!=='已發(待回查)'?`<span style="color:${stColor[p.status]||'#8A7D74'};font-size:.78rem;font-weight:600">${p.status}</span>`:'<span style="color:var(--text3);font-size:.72rem">—</span>';
+      return `<tr style="border-bottom:1px solid var(--border)">
       <td style="padding:7px;white-space:nowrap">${p.date||'—'}</td>
       <td style="padding:7px"><span class="badge b-green">${p.roleName||p.role||'—'}</span></td>
       <td style="padding:7px">${p.platform||'—'}</td>
       <td style="padding:7px;max-width:200px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title||'—'}</div>${p.urlTitle&&p.urlTitle!==p.title?`<div style="font-size:.66rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escAttr(p.urlTitle)}">📄 ${p.urlTitle}</div>`:''}<div class="tm" style="font-size:.66rem">${p.contentType||''}${p.linkMode==='mention'?' · 純提及':''}</div>${p.landingNote?`<div style="font-size:.64rem;color:#a78bfa">→ ${p.landingNote}</div>`:''}</td>
-      <td style="padding:7px">${p.utmContent?`<code style="color:#4ade80;font-size:.66rem">🏷${p.utmContent}</code>`:p.linkMode==='mention'?'<span class="tm" style="font-size:.66rem">純提及</span>':'<span class="tm">—</span>'}${p.shortLink?` <a href="${escAttr(p.shortLink)}" target="_blank" style="font-size:.66rem;color:#fbbf24">🔗短</a>`:''}</td>
-      <td style="padding:7px;text-align:center;white-space:nowrap"><span style="color:${stColor[p.status]||'#8A7D74'};font-size:.78rem;font-weight:600">${p.status||'—'}</span>${p.engaged==='yes'?'<br><span style="font-size:.62rem;color:#f59e0b">💬有互動</span>':''}</td>
+      <td style="padding:7px;min-width:160px">
+        ${p.utmContent?`<code style="color:#4ade80;font-size:.66rem">🏷 ${p.utmContent}</code>`:p.linkMode==='mention'?'<span class="tm" style="font-size:.66rem">純提及</span>':'<span class="tm">—</span>'}
+        ${p.shortLink?` <a href="${escAttr(p.shortLink)}" target="_blank" style="font-size:.66rem;color:#fbbf24">🔗短</a>`:''}
+        ${artName?`<div style="font-size:.65rem;color:#a78bfa;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px" title="${escAttr(artName)}">📄 ${artName}</div>`:''}
+        ${p.url?`<div style="margin-top:4px"><a href="${escAttr(p.url)}" target="_blank" style="font-size:.72rem;color:#60a5fa;display:inline-flex;align-items:center;gap:3px">↗ 查看貼文</a></div>`:''}
+      </td>
+      <td style="padding:7px;text-align:center;white-space:nowrap">${statusShow}${p.engaged==='yes'?'<br><span style="font-size:.62rem;color:#f59e0b">💬有互動</span>':''}</td>
       <td style="padding:7px;white-space:nowrap"><button class="btn btn-xs btn-outline" onclick="openEditChannelPost('${p.id}')">✏</button> <button class="btn btn-xs btn-danger" onclick="delChannelPost('${p.id}')">✕</button></td>
-    </tr>`).join('')}</tbody></table>`
+    </tr>`;}).join('')}</tbody></table>`
 }
 function renderChannelPosts(){
   _renderChannel('seeding',{table:'cp-table',stats:'cp-stats',platFilter:'cp-f-platform'})
