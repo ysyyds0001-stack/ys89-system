@@ -4870,7 +4870,6 @@ function renderArticles(){
           <button class="btn btn-xs btn-outline" onclick="openBatchGen('${(a.url||'').replace(/'/g,"\\'")}','${a.dir||''}','${(a.title||'').replace(/'/g,"\\'")}')">📋 批次生成</button>
           ${(()=>{const alog=(DB.get('anon_pub_log')||{})[a.url||'']||{};const sa=(DB.get('seeding_accounts')||[]).filter(x=>!x.accountStatus||x.accountStatus==='active');const ad=sa.filter(x=>alog[x.id]?.done).length;const at=sa.length;return at?`<span style="background:${ad===at?'#16a34a18':'#6b728018'};color:${ad===at?'#4ade80':'#9ca3af'};border:1px solid ${ad===at?'#16a34a40':'#6b728040'};border-radius:4px;font-size:.65rem;padding:1px 7px">📝 ${ad}/${at}</span>`:''})()||''}
           <button class="btn btn-xs" style="background:#229ED9;color:#fff;border:none;cursor:pointer;padding:3px 8px;border-radius:4px;font-size:.78rem" onclick="syncArticleToMike(DB.get('articles').find(x=>x.id==='${a.id}'))">📤 mike</button>
-          <button class="btn btn-xs btn-outline" style="font-size:.72rem" onclick="pollMikeForBlog('${(a.url||'').replace(/'/g,"\\'")}')">📨 拉取確認</button>
           <button class="btn btn-xs btn-danger" onclick="delArticle('${a.id}')">刪除</button>
         </div>
       </div>
