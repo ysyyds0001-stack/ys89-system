@@ -4941,7 +4941,6 @@ function saveCommunity(){
     name, group:document.getElementById('cm-group').value,
     handle:document.getElementById('cm-handle').value.trim(),
     code:document.getElementById('cm-code').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'')||utmCode(name),
-    proxy:document.getElementById('cm-proxy').value.trim(),
     role:document.getElementById('cm-role').value,
     followers:+document.getElementById('cm-followers').value||0,
     direction:document.getElementById('cm-direction').value,
@@ -4950,6 +4949,7 @@ function saveCommunity(){
     weekTasks:document.getElementById('cm-week-tasks').value,
     status:document.getElementById('cm-status').value
   }
+  if(_codeExists(obj.code,id,'community')){toast('⚠ UTM code「'+obj.code+'」已被其他角色使用，請改用其他代碼','err');return}
   if(id){const i=list.findIndex(x=>x.id===id);if(i>=0)list[i]={...list[i],...obj}}
   else list.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
   DB.set('community',list)
@@ -5181,6 +5181,35 @@ function initWaterArmyAccounts(){
 }
 
 // ── 角色分頁統一管理 ──────────────────────────────────
+// 跨三個 table 檢查 code 是否已存在（excludeId/excludeTable 是編輯時排除自己）
+function _codeExists(code, excludeId, excludeTable){
+  if(!code) return false
+  const c=code.trim().toLowerCase()
+  for(const t of ['seeding_accounts','personas','community']){
+    const found=(DB.get(t)||[]).some(a=>{
+      if(a.id===excludeId && t===excludeTable) return false
+      const ac=(a.code||utmCode(a.name)||'').toLowerCase()
+      return ac===c
+    })
+    if(found) return true
+  }
+  return false
+}
+// 刪除角色（先確認有無 UTM 記錄）
+function _deleteActor(id, tableKey, code, name){
+  const prefix=(code||'').toLowerCase()+'-'
+  const hasRec=
+    (DB.get('links')||[]).some(l=>(l.accountCode===code)||(l.utmContent||'').startsWith(prefix))||
+    (DB.get('thread_activities')||[]).some(a=>(a.utmContent||'').startsWith(prefix))||
+    (DB.get('posts')||[]).some(p=>(p.utmContent||'').startsWith(prefix))
+  const msg=hasRec
+    ?`「${name}」已有過往發文記錄。\n刪除角色不會刪除任何記錄，記錄仍可在追蹤頁查看。\n\n確定刪除角色？`
+    :`確定刪除「${name}」？`
+  if(!confirm(msg)) return
+  const list=(DB.get(tableKey)||[]).filter(a=>a.id!==id)
+  DB.set(tableKey,list); actorsChanged(); renderCommunity()
+  toast('已刪除：'+name)
+}
 window._actorsShowInactive=false
 function actorsToggleInactive(){
   window._actorsShowInactive=!window._actorsShowInactive
@@ -5244,6 +5273,7 @@ function _actorCard(a,tableKey,opts){
       <button class="btn btn-xs btn-outline" onclick="${opts.editFn}">✏ 編輯</button>
       <button class="btn btn-xs btn-outline" onclick="_toggleActorStatus('${esc(a.id)}','${tableKey}','${nextSt}')">${toggleLbl}</button>
       <button class="btn btn-xs btn-outline" onclick="_viewActorRecords('${esc(code||a.name)}')">📊 發文記錄</button>
+      <button class="btn btn-xs btn-outline" onclick="_deleteActor('${esc(a.id)}','${tableKey}','${esc(code)}','${esc(a.name)}')" style="margin-left:auto;color:#f87171;border-color:#ef444430">🗑 刪除</button>
     </div>
   </div>`
 }
@@ -5288,6 +5318,7 @@ function saveAnonActor(){
   if(!name){toast('請輸入帳號名稱','err');return}
   const list=DB.get('seeding_accounts')||[]
   const code=document.getElementById('anon-code').value.trim()||utmCode(name)
+  if(_codeExists(code,id,'seeding_accounts')){toast('⚠ UTM code「'+code+'」已被其他角色使用，請改用其他代碼','err');return}
   const rec={name,code,handle:document.getElementById('anon-handle').value.trim(),
     platform:document.getElementById('anon-platform').value,
     prompt:document.getElementById('anon-prompt').value.trim(),
