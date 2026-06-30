@@ -4949,7 +4949,8 @@ function saveCommunity(){
     weekTasks:document.getElementById('cm-week-tasks').value,
     status:document.getElementById('cm-status').value
   }
-  if(_codeExists(obj.code,id,'community')){toast('⚠ UTM code「'+obj.code+'」已被其他角色使用，請改用其他代碼','err');return}
+  const currentCmCode=id?((DB.get('community')||[]).find(x=>x.id===id)?.code||''):''
+  if(_codeExists(obj.code,id,'community',currentCmCode)){toast('⚠ UTM code「'+obj.code+'」已被其他角色使用，請改用其他代碼','err');return}
   if(id){const i=list.findIndex(x=>x.id===id);if(i>=0)list[i]={...list[i],...obj}}
   else list.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
   DB.set('community',list)
@@ -5181,14 +5182,17 @@ function initWaterArmyAccounts(){
 }
 
 // ── 角色分頁統一管理 ──────────────────────────────────
-// 跨三個 table 檢查 code 是否已存在（excludeId/excludeTable 是編輯時排除自己）
-function _codeExists(code, excludeId, excludeTable){
+// 跨三個 table 檢查 code 是否已存在
+// currentCode：編輯時傳入角色現有 code，相同 code 出現在其他 table = 跨平台，允許
+function _codeExists(code, excludeId, excludeTable, currentCode){
   if(!code) return false
   const c=code.trim().toLowerCase()
+  const cur=(currentCode||'').toLowerCase()
   for(const t of ['seeding_accounts','personas','community']){
     const found=(DB.get(t)||[]).some(a=>{
-      if(a.id===excludeId && t===excludeTable) return false
+      if(a.id===excludeId && t===excludeTable) return false  // 排除自己
       const ac=(a.code||utmCode(a.name)||'').toLowerCase()
+      if(ac===c && cur===c) return false  // 跨平台同 code，不算重複
       return ac===c
     })
     if(found) return true
@@ -5318,7 +5322,8 @@ function saveAnonActor(){
   if(!name){toast('請輸入帳號名稱','err');return}
   const list=DB.get('seeding_accounts')||[]
   const code=document.getElementById('anon-code').value.trim()||utmCode(name)
-  if(_codeExists(code,id,'seeding_accounts')){toast('⚠ UTM code「'+code+'」已被其他角色使用，請改用其他代碼','err');return}
+  const currentCode=id?(list.find(x=>x.id===id)?.code||''):''
+  if(_codeExists(code,id,'seeding_accounts',currentCode)){toast('⚠ UTM code「'+code+'」已被其他角色使用，請改用其他代碼','err');return}
   const rec={name,code,handle:document.getElementById('anon-handle').value.trim(),
     platform:document.getElementById('anon-platform').value,
     prompt:document.getElementById('anon-prompt').value.trim(),
