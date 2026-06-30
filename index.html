@@ -2208,7 +2208,10 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <h2 style="font-size:1.2rem;font-weight:700">文章庫</h2>
       <p class="tm" style="margin-top:3px">追蹤每篇文章各方向帳號的發布覆蓋率，確保同方向帳號都發過</p>
     </div>
-    <button class="btn btn-primary" onclick="openAddArticleModal()">+ 新增文章</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline" style="font-size:.82rem" onclick="scanUtmToAnonLog()">🔍 掃描 UTM 自動標記</button>
+      <button class="btn btn-primary" onclick="openAddArticleModal()">+ 新增文章</button>
+    </div>
   </div>
   <div class="g4" id="art-stats" style="margin-bottom:18px"></div>
   <div id="art-list"></div>
@@ -7198,23 +7201,31 @@ function utmSaveToLinks(){
   if(rec){ Object.assign(rec,lf); }
   else { all.push({ id:'lk'+Date.now(), category:'水軍', accountCode:code, placement:'UTM追蹤', purpose:'社群 UTM 追蹤', status:'使用中', isSeoAsset:false, createdAt:new Date().toISOString(), ...lf }); }
   DB.set('links',all); DB.push('links').catch(()=>{});
-  // 匿名模式：若選了關聯文章，自動更新 anon_pub_log
+  // 匿名模式：自動標記 anon_pub_log（手選 > 自動從 landing URL 偵測）
   if(usage==='匿名'){
+    const arts=DB.get('articles')||[];
     const artKey=(document.getElementById('u-source-article')?.value||'').trim();
-    if(artKey){
-      const arts=DB.get('articles')||[];
-      const art=arts.find(a=>(a.url||a.id)===artKey);
-      const seedAcct=(DB.get('seeding_accounts')||[]).find(a=>commCode(a)===code);
-      if(art&&seedAcct){
-        const artUrl=art.url||art.id;
-        const log=DB.get('anon_pub_log')||{};
-        if(!log[artUrl])log[artUrl]={}
+    let art=artKey?arts.find(a=>(a.url||a.id)===artKey):null;
+    // 未手選 → 用 landing URL 去掉 UTM 參數後比對
+    if(!art&&url){
+      try{
+        const base=new URL(url);base.search='';
+        const baseHref=base.href.replace(/\/$/,'');
+        art=arts.find(a=>{const au=(a.url||'').replace(/\/$/,'');return au===baseHref;})
+      }catch(e){}
+    }
+    const seedAcct=(DB.get('seeding_accounts')||[]).find(a=>commCode(a)===code);
+    if(art&&seedAcct){
+      const artUrl=art.url||art.id;
+      const log=DB.get('anon_pub_log')||{};
+      if(!log[artUrl])log[artUrl]={}
+      if(!log[artUrl][seedAcct.id]?.done){
         log[artUrl][seedAcct.id]={done:true,doneAt:new Date().toISOString().slice(0,10),utmContent:ct}
         DB.set('anon_pub_log',log)
         toast(`✅ 已標記：${seedAcct.name} → 「${art.title.slice(0,20)}…」完成發佈`)
       }
-      document.getElementById('u-source-article').value=''
     }
+    if(artKey&&document.getElementById('u-source-article'))document.getElementById('u-source-article').value=''
   }
   // 依分類建立發文記錄到對應分頁
   const recMsg=_utmCreateChannelRecord(usage, p, code, ct, title, shortUrl);
@@ -7226,6 +7237,31 @@ function utmSaveToLinks(){
   if(document.getElementById('u-platform')) document.getElementById('u-platform').value='';
   if(document.getElementById('u-landing-note')) document.getElementById('u-landing-note').value='';
   utmGen();
+}
+// 掃描所有匿名 UTM 記錄，依 landing URL 自動標記 anon_pub_log
+function scanUtmToAnonLog(){
+  const arts=DB.get('articles')||[];
+  const seeds=DB.get('seeding_accounts')||[];
+  const log=DB.get('anon_pub_log')||{};
+  const links=(DB.get('links')||[]).filter(l=>l.usage==='匿名');
+  let count=0;
+  links.forEach(lk=>{
+    if(!lk.originalUrl) return;
+    let base='';
+    try{const u=new URL(lk.originalUrl);u.search='';base=u.href.replace(/\/$/,'');}catch(e){return;}
+    const art=arts.find(a=>(a.url||'').replace(/\/$/,'')=== base);
+    if(!art) return;
+    const acct=seeds.find(a=>commCode(a)===lk.accountCode);
+    if(!acct) return;
+    const artUrl=art.url||art.id;
+    if(!log[artUrl])log[artUrl]={};
+    if(!log[artUrl][acct.id]?.done){
+      log[artUrl][acct.id]={done:true,doneAt:(lk.updatedAt||lk.createdAt||'').slice(0,10)||new Date().toISOString().slice(0,10),utmContent:lk.utmContent,via:'scan'};
+      count++;
+    }
+  });
+  if(count>0){DB.set('anon_pub_log',log);renderArticles();toast(`✅ 掃描完成：自動標記 ${count} 筆匿名發佈記錄`);}
+  else toast('未找到可對應的新記錄（URL 需與文章庫一致）');
 }
 function utmUsageChange(){
   const v=document.getElementById('u-usage')?.value;
