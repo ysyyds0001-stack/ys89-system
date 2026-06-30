@@ -1647,7 +1647,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
         <select id="u-persona" onchange="utmGen()"></select></div>
       <div class="fr">
         <div class="fg"><label>② 貼在哪 <span style="color:var(--text3);font-size:.72rem">utm_medium</span></label>
-          <select id="u-medium" onchange="utmGen()">
+          <select id="u-medium" onchange="utmMedChange()">
             <optgroup label="Threads">
               <option value="th_post">Threads 貼文</option><option value="th_bio">Threads 簡介</option><option value="th_comment">Threads 留言</option>
             </optgroup>
@@ -6941,6 +6941,18 @@ function utmUsageChange(){
   const v=document.getElementById('u-usage')?.value;
   const wrap=document.getElementById('u-platform-wrap');
   if(wrap) wrap.style.display=(v==='匿名'||v==='fb')?'':'none';
+}
+// 選「貼在哪」時自動切換發文分類（Threads/IG→炒群，FB→fb，部落格/論壇→匿名）
+function utmMedChange(){
+  const med=document.getElementById('u-medium')?.value||'';
+  const us=document.getElementById('u-usage');
+  if(us){
+    if(med.startsWith('th')||med.startsWith('ig')) us.value='炒群';
+    else if(med.startsWith('fb')) us.value='fb';
+    else if(med.startsWith('blog')||med.startsWith('forum')||med.startsWith('link')) us.value='匿名';
+    utmUsageChange();
+  }
+  utmGen();
 }
 // 從 UTM 產生器建立發文記錄（炒群→thread_activities；匿名/fb→channel_posts）
 function _utmCreateChannelRecord(usage, p, code, utmContent, title, shortUrl){
