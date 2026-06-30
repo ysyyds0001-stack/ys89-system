@@ -3288,9 +3288,15 @@ async function pollMikeForBlog(articleUrl){
   if(!articleUrl){toast('文章無 URL，無法拉取','err');return}
   const offset=parseInt(localStorage.getItem('mike_blog_offset')||'0')
   try{
-    const r=await fetch(`${TG_API}/getUpdates?offset=${offset}&timeout=0`)
-    const data=await r.json()
-    if(!data.ok){toast('Mike 連線失敗','err');return}
+    let r=await fetch(`${TG_API}/getUpdates?offset=${offset}&timeout=0`)
+    let data=await r.json()
+    // Webhook 衝突 → 自動移除 webhook 再重試
+    if(!data.ok&&data.error_code===409){
+      await fetch(`${TG_API}/deleteWebhook`)
+      r=await fetch(`${TG_API}/getUpdates?offset=${offset}&timeout=0`)
+      data=await r.json()
+    }
+    if(!data.ok){toast('Mike 連線失敗：'+(data.description||'未知錯誤'),'err');return}
     let lastId=offset, count=0
     const log=DB.get('anon_pub_log')||{}
     const seedList=DB.get('seeding_accounts')||[]
