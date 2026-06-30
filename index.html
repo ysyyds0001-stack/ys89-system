@@ -4886,6 +4886,25 @@ function renderArticles(){
           <div class="cov-grid">${todoList.map(p=>`<span class="cov-chip todo">✗ ${p.name}</span>`).join('')}</div>`:''}
         </div>
       </div>`:`<div class="tm">方向「${a.dir||'未分類'}」尚無發文帳號</div>`}
+      ${(()=>{
+        const alog=(DB.get('anon_pub_log')||{})[a.url||'']||{}
+        const sa=(DB.get('seeding_accounts')||[]).filter(x=>!x.accountStatus||x.accountStatus==='active')
+        if(!sa.length) return ''
+        const done=sa.filter(x=>alog[x.id]?.done)
+        const todo=sa.filter(x=>!alog[x.id]?.done)
+        const pct=Math.round(done.length/sa.length*100)
+        return `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
+          <div class="flex" style="align-items:center;gap:8px;margin-bottom:8px">
+            <span class="tm" style="font-weight:600">📝 匿名部落格鋪文</span>
+            <span style="font-size:.72rem;font-weight:700;color:${pct===100?'#4ade80':pct>0?'#fbbf24':'#9ca3af'}">${done.length}/${sa.length}</span>
+            ${pct===100?'<span style="font-size:.66rem;background:#16a34a20;color:#4ade80;border:1px solid #16a34a40;border-radius:4px;padding:1px 6px">✅ 全數完成</span>':''}
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px">
+            ${done.map(x=>`<span style="display:inline-flex;align-items:center;gap:4px;background:#16a34a18;border:1px solid #16a34a40;border-radius:6px;padding:3px 9px;font-size:.72rem;color:#4ade80" title="完成於 ${alog[x.id]?.doneAt||''}">✓ ${x.name}</span>`).join('')}
+            ${todo.map(x=>`<span style="display:inline-flex;align-items:center;gap:4px;background:var(--g3);border:1px solid var(--border2);border-radius:6px;padding:3px 9px;font-size:.72rem;color:#9ca3af">✗ ${x.name}</span>`).join('')}
+          </div>
+        </div>`
+      })()}
       ${cpUsed.length?`
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
         <div class="tm" style="margin-bottom:6px">📝 匿名鋪文引用 <span style="color:var(--accent);font-weight:700">${cpUsed.length}</span> 次</div>
