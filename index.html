@@ -7117,10 +7117,11 @@ function renderThreadTracker(){
     </div>`
   }
 
-  // 填充角色下拉
+  // 填充角色下拉（世足角色 + 社群水軍號全部）
   const personaSel = document.getElementById('tt-filter-persona')
   if(personaSel && personaSel.options.length <= 1){
-    DB.get('personas').forEach(p=>{
+    const allForFilter=[...(DB.get('personas')||[]),...(DB.get('community')||[])]
+    allForFilter.forEach(p=>{
       const o=document.createElement('option'); o.value=p.name; o.textContent=p.name
       personaSel.appendChild(o)
     })
@@ -7361,7 +7362,10 @@ function taGenUtm(force){
   if(isEdit && !force && utmEl.value.trim()){ taSyncUtmCopy(); return }
   const code=taPersonaCode()
   if(!code){ if(force) utmEl.value=''; taSyncUtmCopy(); return }
-  const prefix=code+'-'+_mmdd(document.getElementById('ta-date').value)+'-'
+  // 平台後綴：單一平台且非 Threads 加後綴（-ig / -fb），Threads 不加保持相容
+  const selPlats=['Threads','IG','FB'].filter(p=>document.getElementById('ta-plat-'+p)?.checked)
+  const platSuffix=selPlats.length===1&&selPlats[0]!=='Threads'?'-'+selPlats[0].toLowerCase():''
+  const prefix=code+platSuffix+'-'+_mmdd(document.getElementById('ta-date').value)+'-'
   utmEl.value=prefix+_nextUtmSeq(prefix)
   taSyncUtmCopy()
 }
