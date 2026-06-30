@@ -296,9 +296,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'conv')">💰 轉化區</div>
   <div class="nav-tab" onclick="nav(this,'fortune')">⚽ 財神預測</div>
   <div class="nav-sep"></div>
-  <div class="nav-tab" onclick="nav(this,'personas')">👤 發文角色</div>
-  <div class="nav-tab" onclick="nav(this,'community')">🌐 社群水軍號</div>
-  <div class="nav-tab" onclick="nav(this,'roles')">🎭 角色主檔</div>
+  <div class="nav-tab" onclick="nav(this,'community')">👤 角色</div>
   <div class="nav-sep"></div>
   <div class="nav-tab" onclick="nav(this,'ga4')">📊 GA4 成效</div>
   <div class="nav-tab" onclick="nav(this,'tracker')">📈 發文追蹤</div>
@@ -1746,36 +1744,8 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   </div>
 </div>
 
-<!-- ===== PAGE: 角色主檔 ===== -->
-<div id="pg-roles" class="page">
-  <div class="fb" style="margin-bottom:14px">
-    <div>
-      <h2 style="font-size:1.2rem;font-weight:700">🎭 角色主檔</h2>
-      <p class="tm" style="margin-top:3px">一個人一筆（用 UTM 碼去重）· 標記他能跑哪些管道 · 各管道日誌都從這份清單選人</p>
-    </div>
-    <div class="flex">
-      <select id="roles-f-channel" onchange="renderRoles()" style="width:170px">
-        <option value="">全部角色</option>
-        <option value="social">📱 只看 社群平台</option>
-        <option value="buzz">🔥 只看 炒群</option>
-        <option value="fb">📘 只看 FB社團</option>
-        <option value="seeding">📣 只看 鋪文</option>
-      </select>
-    </div>
-  </div>
-  <div id="roles-stats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"></div>
-  <div class="card" style="margin-bottom:16px;border-left:3px solid var(--accent)">
-    <div class="card-title">🎯 導流對照表 — 哪個帳號導到哪個網站（業主一問就看這裡）</div>
-    <p class="tm" style="font-size:.74rem;margin-bottom:10px">自動從「短連結庫 + 發文記錄」彙整每個角色實際導去的落地網站。發文時用 UTM 產生器選 ④落地頁，這裡就會自動長出來。</p>
-    <input id="roles-routemap-search" placeholder="🔍 快速查詢：輸入角色名、代碼、或網站（例：阿奇 / akki / ys89.games）" style="width:100%;margin-bottom:10px;font-size:.84rem" oninput="renderRouteMap()">
-    <div id="roles-routemap" style="overflow-x:auto"></div>
-  </div>
-  <div class="card">
-    <div class="card-title">角色分類 × 管道能力（依類型分組，可改類型與勾選）</div>
-    <p class="tm" style="font-size:.74rem;margin-bottom:10px">左側「類型」下拉可重新歸類｜右側勾選＝該角色可在此管道出現。📱 社群平台＝IG/Threads 主社群｜🔥 炒群＝炒話題炒熱度｜📘 FB社團｜📣 鋪文＝痞客邦/Medium/Dcard/PTT 等</p>
-    <div id="roles-table" style="overflow-x:auto"></div>
-  </div>
-</div>
+<!-- pg-roles 已合併到 pg-community (角色分頁) -->
+<div id="pg-roles" class="page" style="display:none"></div>
 
 <!-- ===== PAGE: 匿名社群發文 ===== -->
 <div id="pg-channel" class="page">
@@ -2199,25 +2169,8 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   </div>
 </div>
 
-<!-- ===== PAGE: 發文角色 ===== -->
-<div id="pg-personas" class="page">
-  <div class="fb" style="margin-bottom:18px">
-    <div>
-      <h2 style="font-size:1.2rem;font-weight:700">發文角色</h2>
-      <p class="tm" style="margin-top:3px">管理每個發文帳號的人設、提示詞、發文記錄</p>
-    </div>
-    <div class="flex">
-      <select id="filter-dir" onchange="renderPersonas()" style="width:160px">
-        <option value="">全部方向</option>
-        <option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option>
-        <option>百家樂</option><option>老虎機</option><option>捕魚機</option><option>通用</option>
-      </select>
-      <button class="btn btn-outline" onclick="openBatchGen()">📋 批次生成</button>
-      <button class="btn btn-primary" onclick="openModal('modal-add-persona')">+ 新增角色</button>
-    </div>
-  </div>
-  <div id="personas-grid" class="g2"></div>
-</div>
+<!-- pg-personas 已合併到 pg-community (角色分頁) -->
+<div id="pg-personas" class="page" style="display:none"><select id="filter-dir" style="display:none"></select></div>
 
 <!-- ===== PAGE: 發文追蹤 ===== -->
 <div id="pg-tracker" class="page">
@@ -2254,27 +2207,56 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   <div id="art-list"></div>
 </div>
 
-<!-- ===== PAGE: 社群號 ===== -->
+<!-- ===== PAGE: 角色 ===== -->
 <div id="pg-community" class="page">
-  <div class="fb" style="margin-bottom:18px">
+  <div class="fb" style="margin-bottom:16px">
     <div>
-      <h2 style="font-size:1.2rem;font-weight:700">社群水軍號</h2>
-      <p class="tm" style="margin-top:3px">水軍號管理 · 人設設定 · 路徑目標 · 每週KPI計畫</p>
+      <h2 style="font-size:1.2rem;font-weight:700">👤 角色</h2>
+      <p class="tm" style="margin-top:3px">所有發文角色 · 依發文社群分類 · 停用/停權不刪除，過往記錄永久保留</p>
     </div>
-    <div class="flex">
-      <button class="btn btn-outline" onclick="openWeeklyKpi()">📋 本週KPI一覽</button>
-      <button class="btn btn-primary" onclick="generateWeeklyKpi()">⚡ 一鍵帶入本週KPI</button>
-      <button class="btn btn-outline" onclick="initWaterArmyAccounts()" title="載入A/B/C三組完整17個帳號設定">🔄 初始化帳號設定</button>
-      <button class="btn btn-outline" onclick="openAddCommunityModal()">+ 新增帳號</button>
+    <button class="btn btn-outline" id="actors-inactive-btn" onclick="actorsToggleInactive()" style="font-size:.78rem">👁 顯示停用/停權</button>
+  </div>
+  <!-- 各分類區塊由 renderCommunity() 動態產生 -->
+  <div id="actors-body"></div>
+  <!-- 保留舊元素供內部函式參照（隱藏） -->
+  <div style="display:none">
+    <div id="cm-kpi-banner"></div>
+    <div id="cm-matrix-kpi"></div>
+    <div id="cm-loop-ref"></div>
+    <div id="cm-grid"></div>
+  </div>
+</div>
+
+<!-- 新增匿名社群角色 modal -->
+<div id="modal-actor-anon" class="overlay">
+  <div class="modal" style="max-width:480px">
+    <div class="mh"><div class="mt" id="anon-modal-title">新增匿名社群角色</div><button class="mc" onclick="closeModal('modal-actor-anon')">✕</button></div>
+    <input type="hidden" id="anon-id">
+    <div class="fr">
+      <div class="fg"><label>帳號名稱</label><input id="anon-name" placeholder="例：阿哲的遊戲筆記"></div>
+      <div class="fg"><label>UTM 代號</label><input id="anon-code" placeholder="例：azhe（自動產生可改）"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>平台</label>
+        <select id="anon-platform">
+          <option>Blogger</option><option>Medium</option><option>Pixnet 痞客邦</option><option>方格子</option><option>其他</option>
+        </select>
+      </div>
+      <div class="fg"><label>平台帳號 @handle（選填）</label><input id="anon-handle" placeholder="例：azhe-blog"></div>
+    </div>
+    <div class="fg"><label>備註</label><input id="anon-note" placeholder="角色特色、方向等"></div>
+    <div class="fg"><label>帳號狀態</label>
+      <select id="anon-accountStatus">
+        <option value="active">✅ 啟用</option>
+        <option value="inactive">⏸ 停用</option>
+        <option value="banned">⚠️ 停權</option>
+      </select>
+    </div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-actor-anon')">取消</button>
+      <button class="btn btn-primary" onclick="saveAnonActor()">儲存</button>
     </div>
   </div>
-  <div id="cm-kpi-banner" style="margin-bottom:16px"></div>
-  <!-- 全矩陣KPI看板 -->
-  <div id="cm-matrix-kpi" style="margin-bottom:20px"></div>
-  <!-- 閉環示意 -->
-  <div id="cm-loop-ref" style="margin-bottom:20px"></div>
-  <!-- A/B/C 分組帳號 -->
-  <div id="cm-grid"></div>
 </div>
 
 <!-- ===== PAGE: 今日待辦 ===== -->
@@ -5197,13 +5179,146 @@ function initWaterArmyAccounts(){
   toast(`✅ 完成：新增 ${added} 個、更新 ${updated} 個帳號`)
 }
 
-function renderCommunity(){
-  const list=DB.get('community')
-  const grid=document.getElementById('cm-grid')
-  window._cmPrompts={}
-  list.forEach(a=>{if(a.prompt)window._cmPrompts[a.id]=a.prompt})
+// ── 角色分頁統一管理 ──────────────────────────────────
+window._actorsShowInactive=false
+function actorsToggleInactive(){
+  window._actorsShowInactive=!window._actorsShowInactive
+  const btn=document.getElementById('actors-inactive-btn')
+  if(btn) btn.textContent=window._actorsShowInactive?'👁 隱藏停用/停權':'👁 顯示停用/停權'
+  renderCommunity()
+}
+function _actorStatusBadge(s){
+  if(!s||s==='active') return '<span style="background:#16a34a18;color:#4ade80;border:1px solid #16a34a40;border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">啟用</span>'
+  if(s==='banned') return '<span style="background:#ef444418;color:#f87171;border:1px solid #ef444440;border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">⚠ 停權</span>'
+  return '<span style="background:#6b728018;color:#9ca3af;border:1px solid #6b728040;border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">停用</span>'
+}
+function _actorCard(a,tableKey,opts){
+  const acctStatus=a.accountStatus||'active', inactive=acctStatus!=='active'
+  const platforms=a.platforms||(a.platform?[a.platform]:[])
+  const platIcon=p=>({'Blogger':'📝','Medium':'📝','Pixnet 痞客邦':'📝','方格子':'📝','IG':'📸','Threads':'🧵','FB':'📘'}[p]||'🔗')
+  const platStr=platforms.map(p=>platIcon(p)+' '+p).join(' · ')
+  const code=a.code||(typeof actorCode==='function'?actorCode(a):'')
+  const typeBadge=opts.typeBadge==='論壇'
+    ?'<span style="background:#3b82f618;color:#60a5fa;border:1px solid #3b82f640;border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">論壇型</span>'
+    :opts.typeBadge==='水軍'
+    ?'<span style="background:#f59e0b18;color:#fbbf24;border:1px solid #f59e0b40;border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">水軍型</span>':''
+  const crossBadge=opts.crossPlat?'<span style="background:#8b5cf618;color:#a78bfa;border:1px solid #8b5cf640;border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">跨平台</span>':''
+  const nextSt=acctStatus==='active'?'inactive':acctStatus==='inactive'?'banned':'active'
+  const toggleLbl=acctStatus==='active'?'⏸ 停用':acctStatus==='inactive'?'⚠ 停權':'▶ 啟用'
+  const esc=s=>(s||'').replace(/'/g,"\\'")
+  return `<div style="${inactive?'opacity:.45;':''}background:#0d0b0a;border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:7px">
+      <div style="min-width:0">
+        <div style="font-weight:700;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.name}</div>
+        <div style="font-size:.7rem;color:var(--text3);margin-top:2px">${code?`<span style="color:var(--accent);font-family:monospace">${code}</span>`:''} ${a.handle?`· @${a.handle}`:''}</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:3px;justify-content:flex-end;flex-shrink:0">${_actorStatusBadge(acctStatus)}${typeBadge}${crossBadge}</div>
+    </div>
+    ${platStr?`<div style="font-size:.73rem;color:var(--text2);margin-bottom:8px">${platStr}</div>`:''}
+    <div style="display:flex;gap:5px;flex-wrap:wrap">
+      <button class="btn btn-xs btn-outline" onclick="${opts.editFn}">編輯</button>
+      <button class="btn btn-xs btn-outline" onclick="_toggleActorStatus('${esc(a.id)}','${tableKey}','${nextSt}')">${toggleLbl}</button>
+      <button class="btn btn-xs btn-outline" onclick="_viewActorRecords('${esc(code||a.name)}')">📊 記錄</button>
+    </div>
+  </div>`
+}
+function _toggleActorStatus(id,tableKey,nextStatus){
+  const list=DB.get(tableKey)||[]
+  const actor=list.find(a=>a.id===id); if(!actor) return
+  actor.accountStatus=nextStatus
+  DB.set(tableKey,list); actorsChanged(); renderCommunity()
+  const lbl={'active':'啟用','inactive':'停用','banned':'停權'}
+  toast(actor.name+' → '+(lbl[nextStatus]||nextStatus))
+}
+function _viewActorRecords(code){
+  const tab=document.querySelector('.nav-tab[onclick*="threadtracker"]')
+  if(tab){ nav(tab,'threadtracker'); setTimeout(()=>{ const s=document.getElementById('tt-filter-persona'); if(s){s.value=code;if(typeof renderThreadTracker==='function')renderThreadTracker()} },300) }
+}
+// 匿名社群角色 modal
+function openAddAnonActor(){
+  document.getElementById('anon-id').value=''
+  document.getElementById('anon-modal-title').textContent='新增匿名社群角色'
+  ;['anon-name','anon-code','anon-handle','anon-note'].forEach(i=>document.getElementById(i).value='')
+  document.getElementById('anon-platform').value='Blogger'
+  document.getElementById('anon-accountStatus').value='active'
+  openModal('modal-actor-anon')
+}
+function openEditAnonActor(id){
+  const list=DB.get('seeding_accounts')||[]
+  const a=list.find(x=>x.id===id); if(!a) return
+  document.getElementById('anon-id').value=a.id
+  document.getElementById('anon-modal-title').textContent='編輯匿名社群角色'
+  document.getElementById('anon-name').value=a.name||''
+  document.getElementById('anon-code').value=a.code||''
+  document.getElementById('anon-handle').value=a.handle||''
+  document.getElementById('anon-note').value=a.note||''
+  document.getElementById('anon-platform').value=a.platform||'Blogger'
+  document.getElementById('anon-accountStatus').value=a.accountStatus||'active'
+  openModal('modal-actor-anon')
+}
+function saveAnonActor(){
+  const id=document.getElementById('anon-id').value
+  const name=document.getElementById('anon-name').value.trim()
+  if(!name){toast('請輸入帳號名稱','err');return}
+  const list=DB.get('seeding_accounts')||[]
+  const code=document.getElementById('anon-code').value.trim()||utmCode(name)
+  const rec={name,code,handle:document.getElementById('anon-handle').value.trim(),
+    platform:document.getElementById('anon-platform').value,
+    note:document.getElementById('anon-note').value.trim(),
+    accountStatus:document.getElementById('anon-accountStatus').value}
+  if(id){ const a=list.find(x=>x.id===id); if(a) Object.assign(a,rec) }
+  else{ list.push({id:DB.id(),...rec}) }
+  DB.set('seeding_accounts',list); closeModal('modal-actor-anon'); actorsChanged(); renderCommunity()
+  toast('✅ 已儲存')
+}
 
-  // ── 全矩陣KPI看板 ──
+function renderCommunity(){
+  const body=document.getElementById('actors-body'); if(!body) return
+  // 保留 KPI banner 給內部使用
+  try{ renderKpiBanner() }catch(e){}
+  window._cmPrompts={}
+  ;(DB.get('community')||[]).forEach(a=>{if(a.prompt)window._cmPrompts[a.id]=a.prompt})
+
+  // ── 角色卡片渲染 ──
+  const showInactive=window._actorsShowInactive||false
+  const filter=a=>showInactive||!a.accountStatus||a.accountStatus==='active'
+  const seedList=(DB.get('seeding_accounts')||[]).filter(filter)
+  const persList=(DB.get('personas')||[]).filter(filter)
+  const commList=(DB.get('community')||[]).filter(filter)
+  const seedCodes=new Set((DB.get('seeding_accounts')||[]).map(a=>a.code||(typeof actorCode==='function'?actorCode(a):'')).filter(Boolean))
+
+  const sec1=seedList.map(a=>_actorCard(a,'seeding_accounts',{editFn:`openEditAnonActor('${(a.id||'').replace(/'/g,"\\'")}')`,crossPlat:false})).join('')
+  const sec2=[
+    ...persList.map(a=>_actorCard(a,'personas',{typeBadge:'論壇',editFn:`openEditPersona('${(a.id||'').replace(/'/g,"\\'")}')`,crossPlat:seedCodes.has(a.code||'')})),
+    ...commList.map(a=>_actorCard(a,'community',{typeBadge:'水軍',editFn:`openEditCommunity('${(a.id||'').replace(/'/g,"\\'")}')`,crossPlat:seedCodes.has(a.code||'')}))
+  ].join('')
+
+  const secWrap=(title,sub,content,btns)=>`<div style="margin-bottom:28px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+      <div><div style="font-size:.92rem;font-weight:700;color:var(--accent)">${title}</div><div style="font-size:.71rem;color:var(--text3);margin-top:2px">${sub}</div></div>
+      <div style="display:flex;gap:6px">${btns}</div>
+    </div>${content}</div>`
+
+  body.innerHTML=
+    secWrap('📝 匿名社群角色','Blogger / Medium / Pixnet / 方格子 · 反向連結 SEO',
+      `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px">${sec1||'<div style="color:var(--text3);font-size:.8rem;padding:12px 0">尚無角色 — 點右側新增</div>'}</div>`,
+      `<button class="btn btn-xs btn-outline" onclick="openAddAnonActor()">+ 新增</button>`)+
+    `<div style="margin-bottom:28px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+        <div><div style="font-size:.92rem;font-weight:700;color:var(--accent)">📱 社群角色</div><div style="font-size:.71rem;color:var(--text3);margin-top:2px">IG / Threads · 論壇型主張內容 · 水軍型炒話題引流</div></div>
+        <div style="display:flex;gap:6px"><button class="btn btn-xs btn-outline" onclick="openAddPersona()">+ 論壇型</button><button class="btn btn-xs btn-outline" onclick="openAddCommunityModal()">+ 水軍型</button></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="background:#3b82f618;color:#60a5fa;border:1px solid #3b82f640;border-radius:4px;font-size:.67rem;padding:2px 8px">論壇型 — 主張原創內容</span>
+        <span style="background:#f59e0b18;color:#fbbf24;border:1px solid #f59e0b40;border-radius:4px;font-size:.67rem;padding:2px 8px">水軍型 — 炒話題引流</span>
+        <span style="background:#8b5cf618;color:#a78bfa;border:1px solid #8b5cf640;border-radius:4px;font-size:.67rem;padding:2px 8px">跨平台 — 同時有匿名社群帳號</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px">${sec2||'<div style="color:var(--text3);font-size:.8rem;padding:12px 0">尚無角色</div>'}</div>
+    </div>`+
+    secWrap('📘 臉書角色','FB 社團 / 粉專 · 社群導流',
+      `<div style="color:var(--text3);font-size:.8rem;padding:12px 0">尚無臉書角色 — 點右側新增</div>`,
+      `<button class="btn btn-xs btn-outline" onclick="openAddCommunityModal()">+ 新增</button>`)
+
   const matrixEl=document.getElementById('cm-matrix-kpi')
   if(matrixEl){
     matrixEl.innerHTML=`
@@ -6777,7 +6892,7 @@ function renderLinks(){
 }
 
 // ── 原生 UTM 產生器（讀社群水軍號 → 存進短連結）──
-function utmPersonas(){ return allActors(); }
+function utmPersonas(){ return allActors().filter(a=>!a.raw||!a.raw.accountStatus||a.raw.accountStatus==='active'); }
 function utmInit(){
   const sel=document.getElementById('u-persona'); if(!sel) return;
   const cur=sel.value;
