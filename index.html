@@ -2986,12 +2986,17 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <button class="mc" onclick="closeModal('modal-batch-gen')">✕</button>
     </div>
     <!-- URL -->
-    <div class="fg" style="flex-shrink:0;margin-bottom:12px">
+    <div class="fg" style="flex-shrink:0;margin-bottom:10px">
       <label>文章 URL</label>
-      <input id="bg-url" placeholder="https://..." style="font-size:.82rem">
+      <input id="bg-url" placeholder="https://..." style="font-size:.82rem" oninput="if(window._bgMode==='anon')renderBgAnonList()">
     </div>
-    <!-- Persona selector -->
-    <div style="flex-shrink:0;background:#0d0b0a;border:1px solid var(--border2);border-radius:9px;padding:12px 14px;margin-bottom:12px">
+    <!-- 分頁 Tab -->
+    <div style="display:flex;gap:0;background:#070605;border:1px solid var(--border2);border-radius:8px;padding:3px;margin-bottom:12px;flex-shrink:0">
+      <button id="bg-tab-social" onclick="switchBgTab('social')" style="flex:1;padding:6px 0;border-radius:6px;border:none;font-size:.8rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff">📱 社群角色 (IG/Threads)</button>
+      <button id="bg-tab-anon" onclick="switchBgTab('anon')" style="flex:1;padding:6px 0;border-radius:6px;border:none;font-size:.8rem;font-weight:600;cursor:pointer;background:transparent;color:var(--text2)">📝 匿名社群角色</button>
+    </div>
+    <!-- 社群角色 Persona selector -->
+    <div id="bg-section-social" style="flex-shrink:0;background:#0d0b0a;border:1px solid var(--border2);border-radius:9px;padding:12px 14px;margin-bottom:12px">
       <div class="fb" style="margin-bottom:10px">
         <div style="font-size:.8rem;font-weight:600;color:var(--text2)">選擇角色</div>
         <div class="flex" style="gap:6px;align-items:center">
@@ -3007,6 +3012,21 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       </div>
       <div id="bg-persona-list" style="display:flex;flex-wrap:wrap;gap:7px"></div>
     </div>
+    <!-- 匿名社群角色 selector -->
+    <div id="bg-section-anon" style="display:none;flex-shrink:0;background:#0d0b0a;border:1px solid var(--border2);border-radius:9px;padding:12px 14px;margin-bottom:12px">
+      <div class="fb" style="margin-bottom:10px">
+        <div>
+          <div style="font-size:.8rem;font-weight:600;color:var(--text2)">選擇匿名社群角色</div>
+          <div id="bg-anon-pub-status" style="font-size:.72rem;color:var(--text3);margin-top:3px">請先填入文章 URL</div>
+        </div>
+        <div class="flex" style="gap:6px;align-items:center">
+          <button class="btn btn-xs btn-outline" onclick="toggleBgAnonAll(true)">全選</button>
+          <button class="btn btn-xs btn-outline" onclick="toggleBgAnonAll(false)">取消</button>
+          <span id="bg-anon-count" style="color:var(--text3);font-size:.78rem"></span>
+        </div>
+      </div>
+      <div id="bg-anon-list" style="display:flex;flex-wrap:wrap;gap:7px"></div>
+    </div>
     <!-- Summary (optional) -->
     <div class="fg" style="flex-shrink:0;margin-bottom:14px">
       <label style="display:flex;align-items:center;gap:6px">
@@ -3016,7 +3036,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <textarea id="bg-summary" rows="2" placeholder="留空 = AI 自己讀取 URL 並抓取重點／或手填：例：2026 世界盃觀賽懶人包／台灣球迷必知7件事"></textarea>
     </div>
     <div class="fb" style="flex-shrink:0;margin-bottom:14px">
-      <div style="font-size:.78rem;color:var(--text3)">提示詞將逐一套入各角色的人設設定</div>
+      <div id="bg-bottom-hint" style="font-size:.78rem;color:var(--text3)">提示詞將逐一套入各角色的人設設定</div>
       <button class="btn btn-primary" onclick="runBatchGen()">⚡ 生成選中角色提示詞</button>
     </div>
     <div id="bg-results" style="overflow-y:auto;flex:1"></div>
@@ -4789,6 +4809,7 @@ function renderArticles(){
             <div class="tm">覆蓋率</div>
           </div>
           <button class="btn btn-xs btn-outline" onclick="openBatchGen('${(a.url||'').replace(/'/g,"\\'")}','${a.dir||''}','${(a.title||'').replace(/'/g,"\\'")}')">📋 批次生成</button>
+          ${(()=>{const alog=(DB.get('anon_pub_log')||{})[a.url||'']||{};const sa=(DB.get('seeding_accounts')||[]).filter(x=>!x.accountStatus||x.accountStatus==='active');const ad=sa.filter(x=>alog[x.id]?.done).length;const at=sa.length;return at?`<span style="background:${ad===at?'#16a34a18':'#6b728018'};color:${ad===at?'#4ade80':'#9ca3af'};border:1px solid ${ad===at?'#16a34a40':'#6b728040'};border-radius:4px;font-size:.65rem;padding:1px 7px">📝 ${ad}/${at}</span>`:''})()||''}
           <button class="btn btn-xs" style="background:#229ED9;color:#fff;border:none;cursor:pointer;padding:3px 8px;border-radius:4px;font-size:.78rem" onclick="syncArticleToMike(DB.get('articles').find(x=>x.id==='${a.id}'))">📤 mike</button>
           <button class="btn btn-xs btn-danger" onclick="delArticle('${a.id}')">刪除</button>
         </div>
@@ -5877,18 +5898,150 @@ function toggleBgAll(on){
 }
 
 function openBatchGen(url='', dir='', summary=''){
+  window._bgMode='social'
+  window._bgArticleKey=url||''
   document.getElementById('bg-url').value=url
   document.getElementById('bg-dir').value=dir
   document.getElementById('bg-summary').value=summary
   document.getElementById('bg-results').innerHTML=''
+  // 重置 tab 狀態
+  switchBgTab('social')
   renderBgPersonaList()
   openModal('modal-batch-gen')
+}
+
+// ── 匿名社群 tab 切換 ──────────────────────────────────
+window._bgMode='social'
+window._bgArticleKey=''
+function switchBgTab(tab){
+  window._bgMode=tab
+  const btnS=document.getElementById('bg-tab-social'), btnA=document.getElementById('bg-tab-anon')
+  const secS=document.getElementById('bg-section-social'), secA=document.getElementById('bg-section-anon')
+  const hint=document.getElementById('bg-bottom-hint')
+  const isAnon=tab==='anon'
+  if(btnS){btnS.style.background=isAnon?'transparent':'var(--accent)';btnS.style.color=isAnon?'var(--text2)':'#fff'}
+  if(btnA){btnA.style.background=isAnon?'var(--accent)':'transparent';btnA.style.color=isAnon?'#fff':'var(--text2)'}
+  if(secS)secS.style.display=isAnon?'none':'block'
+  if(secA)secA.style.display=isAnon?'block':'none'
+  if(hint)hint.textContent=isAnon?'提示詞套入角色已儲存的語氣設定 + 平台風格':'提示詞將逐一套入各角色的人設設定'
+  if(isAnon)renderBgAnonList()
+}
+function renderBgAnonList(){
+  const url=(document.getElementById('bg-url')?.value||'').trim()
+  window._bgArticleKey=url
+  const log=DB.get('anon_pub_log')||{}
+  const urlLog=log[url]||{}
+  const list=(DB.get('seeding_accounts')||[]).filter(a=>!a.accountStatus||a.accountStatus==='active')
+  const done=list.filter(a=>urlLog[a.id]?.done).length
+  const stEl=document.getElementById('bg-anon-pub-status')
+  if(stEl)stEl.innerHTML=url
+    ?`發佈進度：<b style="color:${done===list.length?'#4ade80':'#fbbf24'}">${done}/${list.length}</b> 個帳號已完成`
+    :'<span style="color:#f87171">請先填入文章 URL</span>'
+  const wrap=document.getElementById('bg-anon-list'); if(!wrap)return
+  wrap.innerHTML=list.map(a=>{
+    const isDone=!!(urlLog[a.id]?.done)
+    const hasPrompt=!!(a.prompt)
+    return`<label style="cursor:pointer;display:flex;align-items:center;gap:6px;background:#0B0B0D;border:1px solid ${isDone?'#16a34a40':'var(--border2)'};border-radius:6px;padding:5px 10px;${isDone?'opacity:.65':''}">
+      <input type="checkbox" class="bg-a-check" value="${a.id}" ${!isDone?'checked':''} onchange="updateBgAnonCount()" style="accent-color:var(--accent)">
+      <span style="font-size:.82rem">${a.name}</span>
+      <span style="font-size:.68rem;color:var(--text3)">${a.platform||'部落格'}</span>
+      ${isDone?`<span style="background:#16a34a18;color:#4ade80;border:1px solid #16a34a40;border-radius:4px;font-size:.62rem;padding:1px 6px">✅ 已發佈</span>`:''}
+      ${!hasPrompt?`<span style="color:#f87171;font-size:.67rem">⚠ 無提示詞</span>`:''}
+    </label>`
+  }).join('')
+  updateBgAnonCount()
+}
+function updateBgAnonCount(){
+  const n=[...document.querySelectorAll('.bg-a-check:checked')].length
+  const el=document.getElementById('bg-anon-count'); if(el)el.textContent=`已選 ${n} 位`
+}
+function toggleBgAnonAll(on){
+  document.querySelectorAll('.bg-a-check').forEach(c=>{c.checked=on}); updateBgAnonCount()
+}
+function buildAnonPrompt(acct, url, summary){
+  const plat=acct.platform||'Blogger'
+  const stored=(acct.prompt||'').trim()
+  return `你是「${acct.name}」，在 ${plat} 上發文的部落格作者。
+
+${stored?`【角色語氣與風格設定】\n${stored}\n\n`:''}請根據以下文章，撰寫一篇適合 ${plat} 平台發布的部落格文章：
+
+文章來源 URL：${url}
+${summary?`文章重點摘要：${summary}`:'（請自行讀取文章重點並進行改寫）'}
+
+撰寫要求：
+- 以 ${plat} 文章格式呈現（主標題、適當段落、小標題、結尾 Call-to-Action）
+- 語氣自然，符合角色設定，不要像廣告文案
+- 以台灣讀者角度出發
+- 文章末尾自然帶入 ys89.fun 娛樂城推薦（不超過2句）
+- 字數建議 600～1000 字
+- Tags 建議 5～8 個（世界盃、運彩、娛樂城、ys89 等）`
+}
+function toggleAnonPub(url, accountId, btn){
+  if(!url){toast('請先填入文章 URL','err');return}
+  const log=DB.get('anon_pub_log')||{}
+  if(!log[url])log[url]={}
+  const cur=!!(log[url][accountId]?.done)
+  if(!cur){
+    log[url][accountId]={done:true,doneAt:new Date().toISOString().slice(0,10)}
+    if(btn){btn.textContent='✅ 已發佈';btn.style.cssText='background:#16a34a20;color:#4ade80;border:1px solid #16a34a40;border-radius:5px;padding:2px 8px;font-size:.7rem;cursor:pointer'}
+    toast('✅ 已標記發佈完成')
+  }else{
+    log[url][accountId]={done:false}
+    if(btn){btn.textContent='○ 標記已發佈';btn.style.cssText='background:none;color:var(--text3);border:1px solid var(--border2);border-radius:5px;padding:2px 8px;font-size:.7rem;cursor:pointer'}
+    toast('已取消標記')
+  }
+  DB.set('anon_pub_log',log)
+  const list=(DB.get('seeding_accounts')||[]).filter(a=>!a.accountStatus||a.accountStatus==='active')
+  const done=Object.values(log[url]||{}).filter(v=>v.done).length
+  const stEl=document.getElementById('bg-anon-pub-status')
+  if(stEl)stEl.innerHTML=`發佈進度：<b style="color:${done===list.length?'#4ade80':'#fbbf24'}">${done}/${list.length}</b> 個帳號已完成`
+}
+function runBatchGenAnon(){
+  const url=(document.getElementById('bg-url')?.value||'').trim()
+  const summary=(document.getElementById('bg-summary')?.value||'').trim()
+  if(!url){toast('請填入文章 URL','err');return}
+  const checkedIds=new Set([...document.querySelectorAll('.bg-a-check:checked')].map(c=>c.value))
+  if(!checkedIds.size){toast('請至少勾選一位角色','err');return}
+  const all=DB.get('seeding_accounts')||[]
+  const list=all.filter(a=>checkedIds.has(a.id))
+  const log=DB.get('anon_pub_log')||{}
+  const urlLog=log[url]||{}
+  window._bgPrompts=window._bgPrompts||{}
+  list.forEach(a=>{window._bgPrompts[a.id]=buildAnonPrompt(a,url,summary)})
+  const wrap=document.getElementById('bg-results')
+  wrap.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    ${list.map(a=>{
+      const prompt=window._bgPrompts[a.id]
+      const isDone=!!(urlLog[a.id]?.done)
+      return`<div class="card">
+        <div class="fb" style="margin-bottom:10px">
+          <div>
+            <div style="font-weight:700;color:var(--accent)">${a.name}</div>
+            <div class="flex" style="gap:5px;margin-top:3px">
+              <span class="badge b-gray">${a.platform||'部落格'}</span>
+              ${a.prompt?'':`<span style="color:#f87171;font-size:.68rem">⚠ 無角色提示詞</span>`}
+            </div>
+          </div>
+          <div style="display:flex;gap:5px;flex-direction:column;align-items:flex-end">
+            <button class="btn btn-sm btn-copy" onclick="cpBgPrompt('${a.id}',this)">複製提示詞</button>
+            <button onclick="toggleAnonPub('${(url).replace(/'/g,"\\'")}','${a.id}',this)" style="${isDone?'background:#16a34a20;color:#4ade80;border:1px solid #16a34a40':'background:none;color:var(--text3);border:1px solid var(--border2)'};border-radius:5px;padding:2px 8px;font-size:.7rem;cursor:pointer">
+              ${isDone?'✅ 已發佈':'○ 標記已發佈'}
+            </button>
+          </div>
+        </div>
+        <div style="background:#0B0B0D;border:1px solid var(--border);border-radius:7px;padding:10px;font-size:.75rem;color:var(--text3);max-height:160px;overflow-y:auto;white-space:pre-wrap;line-height:1.55">${escHtml(prompt.slice(0,420))}…</div>
+        <div style="margin-top:8px;font-size:.72rem;color:var(--text3)">${prompt.length} 字元</div>
+      </div>`
+    }).join('')}
+  </div>`
+  toast(`已生成 ${list.length} 位匿名社群角色的提示詞`)
 }
 
 window._bgPrompts={}
 function cpBgPrompt(pid,btn){cp(window._bgPrompts[pid]||'',btn)}
 
 function runBatchGen(){
+  if(window._bgMode==='anon'){runBatchGenAnon();return}
   const url=document.getElementById('bg-url').value.trim()
   const summary=document.getElementById('bg-summary').value.trim()
   if(!url){toast('請填入文章URL','err');return}
