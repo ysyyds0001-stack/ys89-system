@@ -6317,6 +6317,7 @@ function saveRouting(){
 
 // ===== SHORT LINKS =====
 let _lkTab = 'all'
+let _convTab = '' // '' = 全部角色
 
 const LK_STATUS_BADGE = {
   '待建立':'b-gray','待確認':'b-yellow','使用中':'b-green','測試中':'b-warn',
@@ -6720,14 +6721,12 @@ function renderTraitsCard(){
 }
 function cpd2(id){ const el=document.getElementById(id); if(!el) return; navigator.clipboard.writeText(el.textContent.trim()).then(()=>toast('已複製')) }
 
-// ===== 💰 財神轉化（每日彙整，依角色分類）=====
+// ===== 💰 財神轉化（按角色分類，可篩選）=====
+const _CONV_COLORS=['#f59e0b','#38bdf8','#a78bfa','#34d399','#fb923c','#f472b6'];
 function renderConversions(){
   const all=(DB.get('conv_daily')||[]).slice().sort((a,b)=>b.date.localeCompare(a.date)||(a.roleName||'').localeCompare(b.roleName||''));
-  const totalInq=all.reduce((s,r)=>s+(+r.inq||0),0);
-  const totalReg=all.reduce((s,r)=>s+(+r.reg||0),0);
-  const totalDep=all.reduce((s,r)=>s+(+r.dep||0),0);
 
-  // 角色彙整統計卡
+  // 建立角色 map 和顏色對應
   const roleMap={};
   all.forEach(r=>{
     const k=r.roleName||'未知角色';
@@ -6737,52 +6736,82 @@ function renderConversions(){
     roleMap[k].dep+=(+r.dep||0);
   });
   const roleKeys=Object.keys(roleMap);
-  const fB=(n,lbl,col)=>`<div style="text-align:center;min-width:72px;padding:6px 10px;background:var(--g3);border-radius:7px;border:1px solid ${col}33"><div style="font-size:1rem;font-weight:700;color:${col}">${n}</div><div style="font-size:.6rem;color:var(--text3)">${lbl}</div></div>`;
+  const roleColor={};
+  roleKeys.forEach((k,i)=>roleColor[k]=_CONV_COLORS[i%_CONV_COLORS.length]);
+  const totalInq=roleKeys.reduce((s,k)=>s+roleMap[k].inq,0);
+  const totalReg=roleKeys.reduce((s,k)=>s+roleMap[k].reg,0);
+  const totalDep=roleKeys.reduce((s,k)=>s+roleMap[k].dep,0);
 
+  // ── 角色統計卡（可點擊篩選）──
   const statsEl=document.getElementById('cv-stats');
-  if(roleKeys.length>0){
-    statsEl.innerHTML=`<div style="width:100%;display:flex;flex-direction:column;gap:8px">
-      ${roleKeys.map(k=>{const rm=roleMap[k];return`<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:10px 14px">
-        <div style="font-size:.72rem;font-weight:700;color:var(--accent);margin-bottom:8px">🎭 ${k}</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          ${fB(rm.inq,'詢問','#94a3b8')}${fB(rm.reg,'註冊','#34d399')}${fB(rm.dep?'NT$&nbsp;'+rm.dep.toLocaleString():'0','儲值','#4ade80')}
-        </div>
-      </div>`}).join('')}
-      <div style="display:flex;gap:8px;flex-wrap:wrap;padding:4px 0">
-        ${fB(totalInq,'總詢問','#64748b')}${fB(totalReg,'總註冊','#22c55e')}${fB(totalDep?'NT$&nbsp;'+totalDep.toLocaleString():'0','總儲值','#4ade80')}
-      </div>
-    </div>`;
-  } else {
-    statsEl.innerHTML='';
-  }
+  statsEl.innerHTML=`<div style="width:100%;display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;flex-wrap:wrap;gap:10px">
+      ${roleKeys.map(k=>{
+        const rm=roleMap[k]; const col=roleColor[k]; const sel=_convTab===k;
+        return`<div onclick="_convTab='${k.replace(/'/g,"\\'")}';renderConversions()" style="flex:1;min-width:180px;cursor:pointer;background:${sel?'var(--g2)':'var(--g3)'};border:2px solid ${sel?col:col+'44'};border-radius:12px;padding:14px 18px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <span style="font-size:.8rem;font-weight:700;color:${col}">🎭 ${k}</span>
+            ${sel?`<span style="font-size:.65rem;background:${col}33;color:${col};padding:2px 8px;border-radius:20px">篩選中</span>`:''}
+          </div>
+          <div style="display:flex;gap:18px">
+            <div><div style="font-size:2rem;font-weight:900;color:${col};line-height:1">${rm.inq}</div><div style="font-size:.6rem;color:var(--text3);margin-top:3px">詢問人數</div></div>
+            <div style="width:1px;background:var(--border2)"></div>
+            <div><div style="font-size:2rem;font-weight:900;color:#34d399;line-height:1">${rm.reg||0}</div><div style="font-size:.6rem;color:var(--text3);margin-top:3px">註冊人數</div></div>
+            <div style="width:1px;background:var(--border2)"></div>
+            <div><div style="font-size:1.1rem;font-weight:800;color:#4ade80;line-height:1.2">${rm.dep?'NT$'+rm.dep.toLocaleString():'0'}</div><div style="font-size:.6rem;color:var(--text3);margin-top:3px">儲值金額</div></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--g3);border-radius:8px;border:1px solid var(--border)">
+      <span style="font-size:.7rem;color:var(--text3)">合計</span>
+      <span style="font-size:.9rem;font-weight:700;color:var(--text)">${totalInq}</span><span style="font-size:.65rem;color:var(--text3)">詢問</span>
+      <span style="margin-left:6px;font-size:.9rem;font-weight:700;color:#34d399">${totalReg}</span><span style="font-size:.65rem;color:var(--text3)">註冊</span>
+      <span style="margin-left:6px;font-size:.9rem;font-weight:700;color:#4ade80">${totalDep?'NT$'+totalDep.toLocaleString():'0'}</span><span style="font-size:.65rem;color:var(--text3)">儲值</span>
+      ${_convTab?`<button onclick="_convTab='';renderConversions()" style="margin-left:auto;font-size:.7rem;color:var(--text3);background:none;border:1px solid var(--border);border-radius:6px;padding:2px 10px;cursor:pointer">✕ 清除篩選</button>`:''}
+    </div>
+  </div>`;
 
+  // ── 篩選後明細表 ──
+  const filtered=_convTab?all.filter(r=>r.roleName===_convTab):all;
   const dailyEl=document.getElementById('cv-daily-stats');
-  if(!all.length){dailyEl.innerHTML='<div style="padding:24px;color:var(--text3);font-size:.82rem;text-align:center">尚無記錄，按右上「+ 新增」開始登記</div>';return;}
-  dailyEl.innerHTML=`<table style="width:100%;font-size:.82rem;border-collapse:collapse">
+  if(!filtered.length){dailyEl.innerHTML='<div style="padding:24px;color:var(--text3);text-align:center">尚無記錄</div>';return;}
+  const showRole=!_convTab;
+  const fInq=filtered.reduce((s,r)=>s+(+r.inq||0),0);
+  const fReg=filtered.reduce((s,r)=>s+(+r.reg||0),0);
+  const fDep=filtered.reduce((s,r)=>s+(+r.dep||0),0);
+
+  dailyEl.innerHTML=`
+    ${_convTab?`<div style="padding:8px 12px 6px;font-size:.75rem;font-weight:700;color:${roleColor[_convTab]||'var(--accent)'}">🎭 ${_convTab} — 每日明細</div>`:''}
+    <table style="width:100%;font-size:.84rem;border-collapse:collapse">
     <thead><tr style="border-bottom:2px solid var(--border)">
-      <th style="text-align:left;padding:7px 10px">日期</th>
-      <th style="text-align:left;padding:7px 8px;color:var(--accent)">角色</th>
-      <th style="text-align:center;padding:7px 8px;color:#94a3b8">💬 詢問</th>
-      <th style="text-align:center;padding:7px 8px;color:#34d399">✅ 註冊</th>
-      <th style="text-align:right;padding:7px 10px;color:#4ade80">💰 儲值金額</th>
-      <th style="text-align:center;padding:7px 8px"></th>
+      <th style="text-align:left;padding:8px 12px;width:110px">日期</th>
+      ${showRole?`<th style="text-align:left;padding:8px 10px">角色</th>`:''}
+      <th style="text-align:center;padding:8px 12px;color:#94a3b8">💬 詢問人數</th>
+      <th style="text-align:center;padding:8px 12px;color:#34d399">✅ 註冊人數</th>
+      <th style="text-align:right;padding:8px 14px;color:#4ade80">💰 儲值金額</th>
+      <th style="width:80px"></th>
     </tr></thead>
-    <tbody>${all.map(r=>`<tr style="border-bottom:1px solid var(--border2)">
-      <td style="padding:7px 10px;font-weight:600">${r.date}</td>
-      <td style="padding:7px 8px;font-weight:600;color:var(--accent)">${r.roleName||'—'}</td>
-      <td style="text-align:center;padding:7px 8px">${+r.inq||'—'}</td>
-      <td style="text-align:center;padding:7px 8px;color:#34d399">${+r.reg||'—'}</td>
-      <td style="text-align:right;padding:7px 10px;color:#4ade80">${+r.dep?'NT$ '+(+r.dep).toLocaleString():'—'}</td>
-      <td style="text-align:center;padding:7px 8px;white-space:nowrap">
-        <button class="btn btn-xs btn-outline" onclick="openEditConv('${r.id}')">編輯</button>
-        <button class="btn btn-xs" style="color:#f87171;background:none;border:1px solid #f8717155;border-radius:5px;cursor:pointer;font-size:.7rem;padding:2px 7px;margin-left:4px" onclick="delConv('${r.id}')">刪</button>
-      </td>
-    </tr>`).join('')}</tbody>
-    <tfoot><tr style="border-top:2px solid var(--border);font-weight:800">
-      <td style="padding:7px 10px;color:var(--text3)">合計</td><td></td>
-      <td style="text-align:center;padding:7px 8px">${totalInq||'—'}</td>
-      <td style="text-align:center;padding:7px 8px;color:#34d399">${totalReg||'—'}</td>
-      <td style="text-align:right;padding:7px 10px;color:#4ade80">${totalDep?'NT$ '+totalDep.toLocaleString():'—'}</td>
+    <tbody>${filtered.map(r=>{
+      const col=roleColor[r.roleName]||'#94a3b8';
+      return`<tr style="border-bottom:1px solid var(--border2)">
+        <td style="padding:9px 12px;font-weight:600;color:var(--text2)">${r.date}</td>
+        ${showRole?`<td style="padding:9px 10px"><span style="font-weight:700;color:${col};font-size:.82rem">${r.roleName||'—'}</span></td>`:''}
+        <td style="text-align:center;padding:9px 12px;font-size:1.05rem;font-weight:700;color:var(--text)">${+r.inq||'—'}</td>
+        <td style="text-align:center;padding:9px 12px;font-size:1.05rem;font-weight:700;color:#34d399">${+r.reg||'—'}</td>
+        <td style="text-align:right;padding:9px 14px;font-weight:700;color:#4ade80">${+r.dep?'NT$ '+(+r.dep).toLocaleString():'—'}</td>
+        <td style="padding:9px 8px;text-align:right;white-space:nowrap">
+          <button class="btn btn-xs btn-outline" onclick="openEditConv('${r.id}')">編輯</button>
+          <button class="btn btn-xs" style="color:#f87171;background:none;border:1px solid #f8717155;border-radius:5px;cursor:pointer;font-size:.7rem;padding:2px 7px;margin-left:3px" onclick="delConv('${r.id}')">刪</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+    <tfoot><tr style="border-top:2px solid var(--border);background:var(--g2)">
+      <td style="padding:9px 12px;font-weight:700;color:var(--text3)">合計</td>
+      ${showRole?`<td></td>`:''}
+      <td style="text-align:center;padding:9px 12px;font-size:1.05rem;font-weight:800">${fInq||'—'}</td>
+      <td style="text-align:center;padding:9px 12px;font-size:1.05rem;font-weight:800;color:#34d399">${fReg||'—'}</td>
+      <td style="text-align:right;padding:9px 14px;font-weight:800;color:#4ade80">${fDep?'NT$ '+fDep.toLocaleString():'—'}</td>
       <td></td>
     </tr></tfoot>
   </table>`;
