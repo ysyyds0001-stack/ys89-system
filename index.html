@@ -2709,7 +2709,15 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     <div class="mh"><div class="mt">新增發文記錄</div><button class="mc" onclick="closeModal('modal-add-post')">✕</button></div>
     <div class="fr">
       <div class="fg"><label>發文日期</label><input type="date" id="po-date" onchange="poGenUtm()"></div>
-      <div class="fg"><label>發文角色</label><select id="po-persona" onchange="poGenUtm()"><option value="">選擇角色</option></select></div>
+      <div class="fg"><label>發文角色</label><select id="po-persona" onchange="poGenUtm()"><option value="">選擇角色</option></select>
+        <div id="po-persona-prompt-wrap" style="display:none;margin-top:6px;background:#070605;border:1px solid var(--border2);border-radius:7px;padding:9px 12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+            <span style="font-size:.68rem;color:var(--accent);font-weight:600">💬 角色定位提示詞</span>
+            <button class="btn btn-xs btn-copy" id="po-prompt-copy-btn" onclick="cpd(this)" style="font-size:.65rem">一鍵複製</button>
+          </div>
+          <div id="po-persona-prompt-text" style="font-size:.74rem;color:var(--text2);line-height:1.6;white-space:pre-wrap;max-height:100px;overflow-y:auto"></div>
+        </div>
+      </div>
     </div>
     <div class="fr">
       <div class="fg"><label>平台</label><select id="po-platform"><option>IG</option><option>FB</option><option>Threads</option><option>IG+FB</option><option>IG+Threads</option><option>FB+Threads</option><option>全平台</option></select></div>
@@ -4523,8 +4531,9 @@ function savePromptLog(){
   personas[i].postPrompts.push({id:DB.id(),prompt,note:document.getElementById('lp-note').value,createdAt:new Date().toISOString()})
   DB.set('personas',personas)
   closeModal('modal-log-prompt')
-  renderPersonas()
-  toast('文案記錄已儲存')
+  toast('提示詞已儲存 ✅')
+  try{renderCommunity()}catch(e){}
+  try{renderPersonas()}catch(e){}
 }
 
 // ===== TRACKER =====
@@ -4686,8 +4695,19 @@ function poPickUtm(){ _applyUtmPick('po-utm-pick','po-utm','po-shortlink','po-po
 let _poUrlTitle=''
 function poGenUtm(force){
   const el=document.getElementById('po-utm'); if(!el) return
-  const code=_personaCodeById(document.getElementById('po-persona').value)
+  const pid=document.getElementById('po-persona').value
+  const code=_personaCodeById(pid)
   _fillUtmPicker('po-utm-pick', code)
+  // 帶入角色提示詞
+  const wrap=document.getElementById('po-persona-prompt-wrap')
+  const txt=document.getElementById('po-persona-prompt-text')
+  const cpBtn=document.getElementById('po-prompt-copy-btn')
+  if(wrap&&txt){
+    const persona=(DB.get('personas')||[]).find(p=>p.id===pid)
+    const prompt=(persona?.postPrompts?.length?persona.postPrompts[persona.postPrompts.length-1]?.prompt:'')||(persona?.prompt||persona?.role||'')
+    if(prompt){wrap.style.display='block';txt.textContent=prompt;if(cpBtn)cpBtn.dataset.cp=prompt}
+    else{wrap.style.display='none'}
+  }
   if(!code){ if(force) el.value=''; _syncCopy('po-utm','po-utm-copy'); return }
   el.value=code+'-'+_mmdd(document.getElementById('po-date').value)+'-'+_nextUtmSeq(code+'-'+_mmdd(document.getElementById('po-date').value)+'-')
   _syncCopy('po-utm','po-utm-copy')
@@ -5011,6 +5031,15 @@ function actorCode(a){
   if(LEGACY_CODE[n]) return LEGACY_CODE[n];
   for(const key of Object.keys(LEGACY_CODE).sort((a,b)=>b.length-a.length)){ if(key.length>1&&n.includes(key)) return LEGACY_CODE[key]; }
   return utmCode(n);
+}
+// 專門判斷是否為 PRO 角色：先比 code，再比名稱（防止 localStorage code 欄位是自動拼音導致對不上）
+function isProActor(a){
+  if(PRO_CODES.includes(actorCode(a))) return true
+  const n=(a&&a.name)||''
+  if(LEGACY_CODE[n]&&PRO_CODES.includes(LEGACY_CODE[n])) return true
+  for(const k of Object.keys(LEGACY_CODE).sort((x,y)=>y.length-x.length))
+    if(k.length>1&&n.includes(k)&&PRO_CODES.includes(LEGACY_CODE[k])) return true
+  return false
 }
 function allActors(){
   const out=[];
@@ -5366,7 +5395,7 @@ function _actorCard(a,tableKey,opts){
   // 取最新提示詞
   const latestPrompt=(a.postPrompts&&a.postPrompts.length)
     ?a.postPrompts[a.postPrompts.length-1]?.prompt||''
-    :(a.prompt||'')
+    :(a.prompt||a.role||'')
   const promptPreview=latestPrompt?latestPrompt.slice(0,100)+(latestPrompt.length>100?'…':''):''
   // 記錄提示詞的按鈕動作（依來源）
   const promptFn=tableKey==='personas'?`openLogPrompt('${esc(a.id)}','${esc(a.name)}')`
@@ -5474,9 +5503,17 @@ function renderCommunity(){
   const seedCodes=new Set((DB.get('seeding_accounts')||[]).map(a=>a.code||(typeof actorCode==='function'?actorCode(a):'')).filter(Boolean))
 
   const sec1=seedList.map(a=>_actorCard(a,'seeding_accounts',{editFn:`openEditAnonActor('${(a.id||'').replace(/'/g,"\\'")}')`,crossPlat:false})).join('')
+  const proPersonas=persList.filter(isProActor)
+  const proComm=commList.filter(isProActor)
+  const otherPersList=persList.filter(a=>!isProActor(a))
+  const otherCommList=commList.filter(a=>!isProActor(a))
+  const secPro=[
+    ...proPersonas.map(a=>_actorCard(a,'personas',{typeBadge:'論壇',editFn:`openEditPersona('${(a.id||'').replace(/'/g,"\\'")}')`,crossPlat:seedCodes.has(actorCode(a))})),
+    ...proComm.map(a=>_actorCard(a,'community',{typeBadge:'論壇',editFn:`openEditCommunity('${(a.id||'').replace(/'/g,"\\'")}')`,crossPlat:seedCodes.has(actorCode(a))}))
+  ].join('')
   const sec2=[
-    ...persList.map(a=>_actorCard(a,'personas',{typeBadge:'論壇',editFn:`openEditPersona('${(a.id||'').replace(/'/g,"\\'")}')`,crossPlat:seedCodes.has(a.code||'')})),
-    ...commList.map(a=>_actorCard(a,'community',{typeBadge:'水軍',editFn:`openEditCommunity('${(a.id||'').replace(/'/g,"\\'")}')`,crossPlat:seedCodes.has(a.code||'')}))
+    ...otherPersList.map(a=>_actorCard(a,'personas',{typeBadge:'論壇',editFn:`openEditPersona('${(a.id||'').replace(/'/g,"\\'")}')`,crossPlat:seedCodes.has(a.code||'')})),
+    ...otherCommList.map(a=>_actorCard(a,'community',{typeBadge:'水軍',editFn:`openEditCommunity('${(a.id||'').replace(/'/g,"\\'")}')`,crossPlat:seedCodes.has(a.code||'')}))
   ].join('')
 
   const secWrap=(title,sub,content,btns)=>`<div style="margin-bottom:28px">
@@ -5486,6 +5523,9 @@ function renderCommunity(){
     </div>${content}</div>`
 
   body.innerHTML=
+    secWrap('🎯 推論壇平台角色','阿奇 / 財神 / kk / 蟹蟹 / 世足排雷 · 導流論壇文章主力',
+      `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px">${secPro||'<div style="color:var(--text3);font-size:.8rem;padding:12px 0">尚無主力角色</div>'}</div>`,
+      `<button class="btn btn-xs btn-outline" onclick="openAddPersona()">+ 新增</button>`)+
     secWrap('📝 匿名社群角色','Blogger / Medium / Pixnet / 方格子 · 反向連結 SEO',
       `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px">${sec1||'<div style="color:var(--text3);font-size:.8rem;padding:12px 0">尚無角色 — 點右側新增</div>'}</div>`,
       `<button class="btn btn-xs btn-outline" onclick="openAddAnonActor()">+ 新增</button>`)+
@@ -6193,18 +6233,29 @@ const DEFAULT_ENTRANCES=[
   {id:'e6',name:'ys89.biz',url:'https://ys89.biz/',type:'worldcup',desc:'世足賽投注攻略教學（讓分/串關）',icon:'💰'},
   {id:'e7',name:'ys89.me',url:'https://ys89.me/',type:'worldcup',desc:'分組分析·球隊球星資料庫',icon:'🏆'},
   {id:'e8',name:'fifa-worldcups.tw',url:'https://fifa-worldcups.tw/',type:'worldcup',desc:'純資訊站·AI搜尋優化',icon:'ℹ️'},
-  {id:'e_ai1',name:'AI預測網站 lott168',url:'https://lott168.com/sports/',type:'predict',desc:'AI 運彩預測網站',icon:'🤖'},
-  {id:'e_ai2',name:'AI預測頻道（Telegram）',url:'https://t.me/+mvrIkGfqv_tjMzY1',type:'predict',desc:'AI 預測 Telegram 頻道',icon:'📡'},
+  {id:'e_ai3',name:'Picks168 信任頁',url:'https://picks168.com/trust/',type:'predict',desc:'AI預測平台信任背書入口',icon:'🏅'},
+  {id:'e_ai4',name:'Picks168 VIP試用',url:'https://picks168.com/vip-trial/',type:'predict',desc:'AI預測平台 VIP 免費試用入口',icon:'🎟️'},
 ]
 const DEFAULT_ROUTING={Mon:['e3','e1'],Tue:['e4'],Wed:['e5'],Thu:['e6'],Fri:['e7'],Sat:['e8','e2'],Sun:['e1','e2']}
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
 const DAY_NAMES={Mon:'週一',Tue:'週二',Wed:'週三',Thu:'週四',Fri:'週五',Sat:'週六',Sun:'週日'}
+
+function seedDefaultEntrances(){
+  const saved=DB.get('entrances');
+  if(!saved.length) return;
+  const REMOVED=['e_ai1','e_ai2'];
+  const filtered=saved.filter(e=>!REMOVED.includes(e.id));
+  const ids=new Set(filtered.map(e=>e.id));
+  const missing=DEFAULT_ENTRANCES.filter(e=>!ids.has(e.id));
+  if(filtered.length!==saved.length||missing.length){ DB.set('entrances',[...filtered,...missing]); }
+}
 
 function getTodayKey(){
   return['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date().getDay()]
 }
 
 function renderEntrances(){
+  seedDefaultEntrances();
   renderTodayRouting()
   const ents=DB.get('entrances').length?DB.get('entrances'):DEFAULT_ENTRANCES
   const routing=DB.get('routing')||{}
@@ -6436,7 +6487,7 @@ function setLinkTab(tab, el){
 }
 
 // ===== 角色主檔（角色 × 管道能力）=====
-const PRO_CODES=['shizu','god','akki','crab','kk']
+const PRO_CODES=['shizu','god','akki','crab','kk','xie2']
 const FB_CODES=['apu','chen']  // FB社團/FB角色（無 IG 炒群）
 const ROLE_CHANNELS=[{k:'social',label:'📱 社群平台'},{k:'buzz',label:'🔥 炒群'},{k:'fb',label:'📘 FB社團/FB角色'},{k:'seeding',label:'📣 鋪文'}]
 function masterRoles(){
@@ -7164,7 +7215,15 @@ function utmInit(){
 function utmFillLanding(){
   const sel=document.getElementById('u-landing'); if(!sel) return;
   const cur=sel.value;
-  const ents=DB.get('entrances').length?DB.get('entrances'):DEFAULT_ENTRANCES;
+  const PINNED_REMOVE=['e_ai1','e_ai2'];
+  const PINNED_AI=[
+    {id:'e_ai3',name:'🏅 Picks168 信任頁',url:'https://picks168.com/trust/',type:'predict'},
+    {id:'e_ai4',name:'🎟️ Picks168 VIP試用',url:'https://picks168.com/vip-trial/',type:'predict'},
+  ];
+  const _saved=DB.get('entrances');
+  const base=(_saved.length?_saved:DEFAULT_ENTRANCES).filter(e=>!PINNED_REMOVE.includes(e.id));
+  const pinnedIds=new Set(PINNED_AI.map(e=>e.id));
+  const ents=[...base.filter(e=>!pinnedIds.has(e.id)),...PINNED_AI];
   const typeName={worldcup:'⚽ 世界盃入口',predict:'🤖 AI 預測',forum:'🏠 論壇/官網',social:'📸 社群',line:'💬 LINE'};
   const order=['worldcup','predict','forum','social','line'];
   let html='';
@@ -9018,7 +9077,10 @@ const FP_FLAGS = {
   '牙買加':'🇯🇲','庫拉索':'🇨🇼','特立尼達':'🇹🇹',
   '摩洛哥':'🇲🇦','奈及利亞':'🇳🇬','塞內加爾':'🇸🇳','喀麥隆':'🇨🇲',
   '迦納':'🇬🇭','突尼西亞':'🇹🇳','埃及':'🇪🇬','象牙海岸':'🇨🇮',
-  '南非':'🇿🇦','馬利':'🇲🇱','阿爾及利亞':'🇩🇿','剛果':'🇨🇩',
+  '南非':'🇿🇦','馬利':'🇲🇱','阿爾及利亞':'🇩🇿','剛果':'🇨🇩','民主剛果':'🇨🇩',
+  '波士尼亞':'🇧🇦','黑山':'🇲🇪','北馬其頓':'🇲🇰','科索沃':'🇽🇰','阿爾巴尼亞':'🇦🇱',
+  '格魯吉亞':'🇬🇪','亞塞拜然':'🇦🇿','哈薩克':'🇰🇿','烏茲別克':'🇺🇿',
+  '紐西蘭':'🇳🇿','新加坡':'🇸🇬','越南':'🇻🇳','泰國':'🇹🇭','印度':'🇮🇳',
 };
 let _fpGameIdx = 0; // global counter for unique game IDs
 let _fpActiveIds = []; // ordered list of active game IDs
@@ -9392,7 +9454,7 @@ function fpLoadPrediction(date) {
 // ===== INIT =====
 (async()=>{
   await recoverLocalStorageData()
-  initData().then(()=>renderPersonas())
+  initData().then(()=>{ try{renderPersonas();}catch(e){} utmFillLanding(); })
 })()
 </script>
 </body>
