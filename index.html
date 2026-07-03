@@ -1861,10 +1861,13 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
 
 <!-- 新增/編輯 財神轉化 -->
 <div id="modal-conv" class="overlay">
-  <div class="modal" style="max-width:380px">
+  <div class="modal" style="max-width:400px">
     <div class="mh"><div class="mt" id="cv-modal-title">新增每日轉化</div><button class="mc" onclick="closeModal('modal-conv')">✕</button></div>
     <input type="hidden" id="cv-id">
-    <div class="fg"><label>日期</label><input type="date" id="cv-date" style="width:100%"></div>
+    <div class="fr">
+      <div class="fg"><label>日期</label><input type="date" id="cv-date" style="width:100%"></div>
+      <div class="fg"><label>角色</label><select id="cv-role" style="width:100%"></select></div>
+    </div>
     <div class="fg"><label>詢問人數</label><input id="cv-inq" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
     <div class="fg"><label>註冊人數</label><input id="cv-reg" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
     <div class="fg"><label>儲值金額 NT$</label><input id="cv-dep" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
@@ -6717,39 +6720,66 @@ function renderTraitsCard(){
 }
 function cpd2(id){ const el=document.getElementById(id); if(!el) return; navigator.clipboard.writeText(el.textContent.trim()).then(()=>toast('已複製')) }
 
-// ===== 💰 財神轉化（每日彙整）=====
+// ===== 💰 財神轉化（每日彙整，依角色分類）=====
 function renderConversions(){
-  const all=(DB.get('conv_daily')||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const all=(DB.get('conv_daily')||[]).slice().sort((a,b)=>b.date.localeCompare(a.date)||(a.roleName||'').localeCompare(b.roleName||''));
   const totalInq=all.reduce((s,r)=>s+(+r.inq||0),0);
   const totalReg=all.reduce((s,r)=>s+(+r.reg||0),0);
   const totalDep=all.reduce((s,r)=>s+(+r.dep||0),0);
-  const fB=(n,lbl,col)=>`<div style="text-align:center;min-width:90px;padding:8px 14px;background:var(--g3);border-radius:8px;border:1px solid ${col}33"><div style="font-size:1.15rem;font-weight:700;color:${col}">${n}</div><div style="font-size:.62rem;color:var(--text3)">${lbl}</div></div>`;
-  document.getElementById('cv-stats').innerHTML=
-    fB(totalInq,'總詢問','#94a3b8')+
-    fB(totalReg,'總註冊','#34d399')+
-    fB('NT$&nbsp;'+totalDep.toLocaleString(),'總儲值','#4ade80');
+
+  // 角色彙整統計卡
+  const roleMap={};
+  all.forEach(r=>{
+    const k=r.roleName||'未知角色';
+    if(!roleMap[k]) roleMap[k]={inq:0,reg:0,dep:0};
+    roleMap[k].inq+=(+r.inq||0);
+    roleMap[k].reg+=(+r.reg||0);
+    roleMap[k].dep+=(+r.dep||0);
+  });
+  const roleKeys=Object.keys(roleMap);
+  const fB=(n,lbl,col)=>`<div style="text-align:center;min-width:72px;padding:6px 10px;background:var(--g3);border-radius:7px;border:1px solid ${col}33"><div style="font-size:1rem;font-weight:700;color:${col}">${n}</div><div style="font-size:.6rem;color:var(--text3)">${lbl}</div></div>`;
+
+  const statsEl=document.getElementById('cv-stats');
+  if(roleKeys.length>0){
+    statsEl.innerHTML=`<div style="width:100%;display:flex;flex-direction:column;gap:8px">
+      ${roleKeys.map(k=>{const rm=roleMap[k];return`<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:10px 14px">
+        <div style="font-size:.72rem;font-weight:700;color:var(--accent);margin-bottom:8px">🎭 ${k}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${fB(rm.inq,'詢問','#94a3b8')}${fB(rm.reg,'註冊','#34d399')}${fB(rm.dep?'NT$&nbsp;'+rm.dep.toLocaleString():'0','儲值','#4ade80')}
+        </div>
+      </div>`}).join('')}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;padding:4px 0">
+        ${fB(totalInq,'總詢問','#64748b')}${fB(totalReg,'總註冊','#22c55e')}${fB(totalDep?'NT$&nbsp;'+totalDep.toLocaleString():'0','總儲值','#4ade80')}
+      </div>
+    </div>`;
+  } else {
+    statsEl.innerHTML='';
+  }
+
   const dailyEl=document.getElementById('cv-daily-stats');
   if(!all.length){dailyEl.innerHTML='<div style="padding:24px;color:var(--text3);font-size:.82rem;text-align:center">尚無記錄，按右上「+ 新增」開始登記</div>';return;}
   dailyEl.innerHTML=`<table style="width:100%;font-size:.82rem;border-collapse:collapse">
     <thead><tr style="border-bottom:2px solid var(--border)">
       <th style="text-align:left;padding:7px 10px">日期</th>
-      <th style="text-align:center;padding:7px 8px;color:#94a3b8">💬 詢問人數</th>
-      <th style="text-align:center;padding:7px 8px;color:#34d399">✅ 註冊人數</th>
+      <th style="text-align:left;padding:7px 8px;color:var(--accent)">角色</th>
+      <th style="text-align:center;padding:7px 8px;color:#94a3b8">💬 詢問</th>
+      <th style="text-align:center;padding:7px 8px;color:#34d399">✅ 註冊</th>
       <th style="text-align:right;padding:7px 10px;color:#4ade80">💰 儲值金額</th>
       <th style="text-align:center;padding:7px 8px"></th>
     </tr></thead>
     <tbody>${all.map(r=>`<tr style="border-bottom:1px solid var(--border2)">
       <td style="padding:7px 10px;font-weight:600">${r.date}</td>
-      <td style="text-align:center;padding:7px 8px">${r.inq||'—'}</td>
-      <td style="text-align:center;padding:7px 8px;color:#34d399">${r.reg||'—'}</td>
-      <td style="text-align:right;padding:7px 10px;color:#4ade80">${r.dep?'NT$ '+(+r.dep).toLocaleString():'—'}</td>
+      <td style="padding:7px 8px;font-weight:600;color:var(--accent)">${r.roleName||'—'}</td>
+      <td style="text-align:center;padding:7px 8px">${+r.inq||'—'}</td>
+      <td style="text-align:center;padding:7px 8px;color:#34d399">${+r.reg||'—'}</td>
+      <td style="text-align:right;padding:7px 10px;color:#4ade80">${+r.dep?'NT$ '+(+r.dep).toLocaleString():'—'}</td>
       <td style="text-align:center;padding:7px 8px;white-space:nowrap">
         <button class="btn btn-xs btn-outline" onclick="openEditConv('${r.id}')">編輯</button>
         <button class="btn btn-xs" style="color:#f87171;background:none;border:1px solid #f8717155;border-radius:5px;cursor:pointer;font-size:.7rem;padding:2px 7px;margin-left:4px" onclick="delConv('${r.id}')">刪</button>
       </td>
     </tr>`).join('')}</tbody>
     <tfoot><tr style="border-top:2px solid var(--border);font-weight:800">
-      <td style="padding:7px 10px;color:var(--text3)">合計</td>
+      <td style="padding:7px 10px;color:var(--text3)">合計</td><td></td>
       <td style="text-align:center;padding:7px 8px">${totalInq||'—'}</td>
       <td style="text-align:center;padding:7px 8px;color:#34d399">${totalReg||'—'}</td>
       <td style="text-align:right;padding:7px 10px;color:#4ade80">${totalDep?'NT$ '+totalDep.toLocaleString():'—'}</td>
@@ -6757,10 +6787,20 @@ function renderConversions(){
     </tr></tfoot>
   </table>`;
 }
+function _fillConvRoles(cur){
+  const sel=document.getElementById('cv-role'); if(!sel) return;
+  const pros=allActors().filter(isProActor);
+  const others=allActors().filter(a=>!isProActor(a));
+  let h=pros.map(a=>`<option value="${escAttr(a.name)}">${a.name}</option>`).join('');
+  if(others.length) h+=`<optgroup label="── 其他角色 ──">${others.map(a=>`<option value="${escAttr(a.name)}">${a.name}</option>`).join('')}</optgroup>`;
+  sel.innerHTML=h;
+  if(cur) sel.value=cur;
+}
 function openAddConv(){
   document.getElementById('cv-modal-title').textContent='新增每日轉化';
   document.getElementById('cv-id').value='';
   document.getElementById('cv-date').value=new Date().toISOString().slice(0,10);
+  _fillConvRoles();
   document.getElementById('cv-inq').value='';
   document.getElementById('cv-reg').value='';
   document.getElementById('cv-dep').value='';
@@ -6771,6 +6811,7 @@ function openEditConv(id){
   document.getElementById('cv-modal-title').textContent='編輯每日轉化';
   document.getElementById('cv-id').value=r.id;
   document.getElementById('cv-date').value=r.date||'';
+  _fillConvRoles(r.roleName||'');
   document.getElementById('cv-inq').value=r.inq||'';
   document.getElementById('cv-reg').value=r.reg||'';
   document.getElementById('cv-dep').value=r.dep||'';
@@ -6779,14 +6820,16 @@ function openEditConv(id){
 function saveConv(){
   const id=document.getElementById('cv-id').value;
   const date=document.getElementById('cv-date').value;
+  const roleName=document.getElementById('cv-role').value||'';
   const inq=+document.getElementById('cv-inq').value||0;
   const reg=+document.getElementById('cv-reg').value||0;
   const dep=+document.getElementById('cv-dep').value||0;
   if(!date){toast('請選擇日期','err');return;}
+  if(!roleName){toast('請選擇角色','err');return;}
   const now=new Date().toISOString();
   const all=DB.get('conv_daily')||[];
-  if(id){ const i=all.findIndex(x=>x.id===id); if(i>=0) all[i]={...all[i],date,inq,reg,dep,updatedAt:now}; }
-  else all.push({id:DB.id(),date,inq,reg,dep,createdAt:now,updatedAt:now});
+  if(id){ const i=all.findIndex(x=>x.id===id); if(i>=0) all[i]={...all[i],date,roleName,inq,reg,dep,updatedAt:now}; }
+  else all.push({id:DB.id(),date,roleName,inq,reg,dep,createdAt:now,updatedAt:now});
   DB.set('conv_daily',all); DB.push('conv_daily').catch(()=>{});
   closeModal('modal-conv'); renderConversions();
   toast('已儲存');
