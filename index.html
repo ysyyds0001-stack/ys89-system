@@ -6781,8 +6781,12 @@ function renderConversions(){
   const fReg=filtered.reduce((s,r)=>s+(+r.reg||0),0);
   const fDep=filtered.reduce((s,r)=>s+(+r.dep||0),0);
 
+  // 篩選標籤列
+  const tabs=[{k:'',label:'全部',count:all.length},...roleKeys.map(k=>({k,label:k,count:all.filter(r=>r.roleName===k).length}))];
   dailyEl.innerHTML=`
-    ${_convTab?`<div style="padding:8px 12px 6px;font-size:.75rem;font-weight:700;color:${roleColor[_convTab]||'var(--accent)'}">🎭 ${_convTab} — 每日明細</div>`:''}
+    <div style="display:flex;gap:6px;flex-wrap:wrap;padding:10px 12px 8px;border-bottom:1px solid var(--border)">
+      ${tabs.map(t=>{const col=t.k?roleColor[t.k]:'#64748b';const sel=_convTab===t.k;return`<button onclick="_convTab='${t.k.replace(/'/g,"\\'")}';renderConversions()" style="display:flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;border:1.5px solid ${sel?col:col+'44'};background:${sel?col+'22':'transparent'};color:${sel?col:'var(--text3)'};font-size:.78rem;font-weight:${sel?700:500};cursor:pointer">${t.label}<span style="font-size:.7rem;opacity:.7">${t.count}</span></button>`}).join('')}
+    </div>
     <table style="width:100%;font-size:.84rem;border-collapse:collapse">
     <thead><tr style="border-bottom:2px solid var(--border)">
       <th style="text-align:left;padding:8px 12px;width:110px">日期</th>
