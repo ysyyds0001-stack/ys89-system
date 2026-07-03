@@ -4223,6 +4223,19 @@ async function initData(){
     if(!DB.get('report_roles').length) DB.set('report_roles',DEFAULT_REPORT_ROLES)
     if(!DB.get('report_posts').length) DB.set('report_posts',DEFAULT_REPORT_POSTS)
     if(!DB.get('conversions').length) DB.set('conversions',DEFAULT_CONVERSIONS)
+    // 遷移舊 conversions → conv_daily（conv_daily 空白時一次性轉換）
+    if(!(DB.get('conv_daily')||[]).length && (DB.get('conversions')||[]).length){
+      const dm={};
+      (DB.get('conversions')||[]).forEach(c=>{
+        const d=c.date||''; if(!d) return;
+        if(!dm[d]) dm[d]={date:d,inq:0,reg:0,dep:0};
+        dm[d].inq++;
+        if(['已註冊','已入金(轉化)'].includes(c.status)) dm[d].reg++;
+        dm[d].dep+=(+c.revenue||0);
+      });
+      const migrated=Object.values(dm).map((r,i)=>({...r,id:'cdm'+i,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}));
+      if(migrated.length){ DB.set('conv_daily',migrated); DB.push('conv_daily').catch(()=>{}); }
+    }
     if(sync) sync.textContent='已同步'
     setTimeout(()=>{if(sync)sync.textContent=''},2000)
   }catch(e){
