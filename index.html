@@ -5024,7 +5024,7 @@ function commCode(a){ return (a&&a.code&&a.code.trim()) ? a.code.trim().toLowerC
 
 // ── 人設總線：發文角色 + 社群水軍號 → 統一來源，下游(UTM/GA4/短連結)都從這讀 ──
 // 歷史 utm 碼對照：這些人設沿用既有碼（GA4 歷史數據都掛在這些碼上，不能改成拼音）
-const LEGACY_CODE={'阿奇':'akki','財神':'god','大叔':'uncle','蟹蟹':'crab','kk':'kk','陳玉樺':'chen','世足排雷週記':'shizu','排雷週記':'shizu','龍哥':'dragon','Diego':'diego','YS主帳號':'ys','YS':'ys','cc':'cc','波奇':'boqi','陳亦強':'cyq'};
+const LEGACY_CODE={'阿奇':'akki','財神':'god','世足大財神':'god','大叔':'uncle','蟹蟹':'crab','kk':'kk','陳玉樺':'chen','世足排雷週記':'shizu','排雷週記':'shizu','龍哥':'dragon','Diego':'diego','YS主帳號':'ys','YS':'ys','cc':'cc','波奇':'boqi','陳亦強':'cyq'};
 function actorCode(a){
   if(a&&a.code&&a.code.trim()) return a.code.trim().toLowerCase();
   const n=(a&&a.name)||'';
@@ -5032,14 +5032,12 @@ function actorCode(a){
   for(const key of Object.keys(LEGACY_CODE).sort((a,b)=>b.length-a.length)){ if(key.length>1&&n.includes(key)) return LEGACY_CODE[key]; }
   return utmCode(n);
 }
-// 專門判斷是否為 PRO 角色：先比 code，再比名稱（防止 localStorage code 欄位是自動拼音導致對不上）
+// 判斷是否為 PRO 角色：用 code 或精確名稱比對（不用子字串，避免「世足大財神-體育代理」誤判）
 function isProActor(a){
   if(PRO_CODES.includes(actorCode(a))) return true
   const n=(a&&a.name)||''
-  if(LEGACY_CODE[n]&&PRO_CODES.includes(LEGACY_CODE[n])) return true
-  for(const k of Object.keys(LEGACY_CODE).sort((x,y)=>y.length-x.length))
-    if(k.length>1&&n.includes(k)&&PRO_CODES.includes(LEGACY_CODE[k])) return true
-  return false
+  const nc=LEGACY_CODE[n]
+  return !!(nc&&PRO_CODES.includes(nc))
 }
 function allActors(){
   const out=[];
