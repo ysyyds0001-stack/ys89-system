@@ -1849,117 +1849,26 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   <div class="fb" style="margin-bottom:14px">
     <div>
       <h2 style="font-size:1.2rem;font-weight:700">💰 轉化區</h2>
-      <p class="tm" style="margin-top:3px">記錄各角色私訊轉化績效：發預測 → 私訊進來領牌 → 導 LINE/TG → 註冊 / 入金。</p>
+      <p class="tm" style="margin-top:3px">每日登記詢問人數 / 註冊人數 / 儲值金額。</p>
     </div>
-    <div class="flex">
-      <select id="cv-f-role" onchange="renderConversions()" style="width:140px"><option value="">全部角色</option></select>
-      <select id="cv-f-status" onchange="renderConversions()" style="width:140px"><option value="">全部狀態</option></select>
-      <button class="btn btn-primary" onclick="openAddConv()">+ 新增私訊轉化</button>
-    </div>
+    <button class="btn btn-primary" onclick="openAddConv()">+ 新增</button>
   </div>
-
-  <!-- 角色績效排行 -->
-  <div class="card" style="margin-bottom:14px;border-left:3px solid #f59e0b">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <div class="card-title" style="color:#f59e0b;margin:0">🏆 角色轉化績效</div>
-      <span style="font-size:.68rem;color:var(--text3)">依私訊數排序</span>
-    </div>
-    <div id="cv-persona-stats" class="t-scroll">
-      <table>
-        <thead><tr>
-          <th>角色</th>
-          <th style="text-align:right">私訊</th>
-          <th style="text-align:right">導LINE</th>
-          <th style="text-align:right">導TG</th>
-          <th style="text-align:right">轉化</th>
-          <th style="text-align:right">轉化率</th>
-          <th style="text-align:right">收益</th>
-        </tr></thead>
-        <tbody id="cv-persona-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-
   <div id="cv-stats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"></div>
-  <div class="card" style="margin-bottom:16px;border-left:3px solid #4ade80">
-    <div class="card-title">🪙 兩條導流漏斗</div>
-    <p class="tm" style="font-size:.74rem;margin:0">
-      <span style="color:#38bdf8">📱 LINE 小財神路線</span>：私訊進來 → 已回覆導LINE → 已加LINE → 已註冊 → <b style="color:#4ade80">已入金(轉化)</b><br>
-      <span style="color:#7c3aed">🤖 TG 小幫手路線</span>：私訊進來 → 已回覆導TG → 已入TG機器人（世界盃AI賽事預測）<br>
-      填「轉化收益」會算進總營收與轉化率，證明預測內容實際帶單。
-    </p>
-  </div>
-  <!-- 每日漏斗統計 -->
-  <div class="card" style="margin-bottom:16px;border-left:3px solid #f59e0b">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <div class="card-title" style="color:#f59e0b;margin:0">📅 每日漏斗統計</div>
-    </div>
+  <div class="card">
     <div id="cv-daily-stats" class="t-scroll"></div>
   </div>
-  <div class="card"><div id="cv-table" style="overflow-x:auto"></div></div>
 </div>
 
-<!-- 新增/編輯 財神轉化私訊 -->
+<!-- 新增/編輯 財神轉化 -->
 <div id="modal-conv" class="overlay">
-  <div class="modal" style="max-width:560px">
-    <div class="mh"><div class="mt" id="cv-modal-title">新增私訊轉化</div><button class="mc" onclick="closeModal('modal-conv')">✕</button></div>
+  <div class="modal" style="max-width:380px">
+    <div class="mh"><div class="mt" id="cv-modal-title">新增每日轉化</div><button class="mc" onclick="closeModal('modal-conv')">✕</button></div>
     <input type="hidden" id="cv-id">
-    <div class="fr">
-      <div class="fg"><label>角色（誰的預測帶進來）</label><select id="cv-role"></select></div>
-      <div class="fg"><label>來源平台</label><select id="cv-platform"><option>IG私訊</option><option>Threads私訊</option><option>FB私訊</option><option>LINE</option><option>其他</option></select></div>
-    </div>
-    <div class="fr">
-      <div class="fg"><label>對方帳號 / 暱稱</label><input id="cv-handle" placeholder="例：yd.916__ / 陳志榮"></div>
-      <div class="fg"><label>導向（CTA）</label>
-        <select id="cv-leadto" onchange="_syncConvStatus()">
-          <option value="LINE：mu_021">📱 LINE 小財神（mu_021）</option>
-          <option value="Telegram：pickhelp_bot">🤖 TG 小幫手（AI賽事預測）</option>
-          <option value="LINE：mu_021 / Telegram：pickhelp_bot">兩者都導</option>
-        </select>
-      </div>
-    </div>
-    <div class="fr">
-      <div class="fg"><label>對方說了什麼（領牌意圖）</label><input id="cv-message" placeholder="例：想領牌 / 想領明天的比賽…"></div>
-      <div class="fg"><label>對應預測 / 比賽</label><input id="cv-match" placeholder="例：6/12 墨西哥、南韓全過"></div>
-    </div>
-    <div class="fr">
-      <div class="fg"><label>漏斗狀態</label><select id="cv-status"></select></div>
-      <div class="fg"><label>備註</label><input id="cv-note" placeholder="加 LINE 後備註…"></div>
-    </div>
-    <!-- 漏斗里程碑日期 -->
-    <div style="margin-top:10px;padding:12px 14px;border-radius:8px;border:1px solid #f59e0b44;background:#0d0a04">
-      <div style="font-size:.68rem;font-weight:700;color:#f59e0b;margin-bottom:10px">📊 漏斗里程碑日期</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div class="fg">
-          <label style="color:#94a3b8;font-size:.72rem">💬 詢問日期</label>
-          <input type="date" id="cv-date" style="width:100%">
-        </div>
-        <div class="fg">
-          <label style="color:#38bdf8;font-size:.72rem">📱 加入日期（LINE/TG）</label>
-          <input type="date" id="cv-joindate" style="width:100%">
-        </div>
-        <div class="fg">
-          <label style="color:#34d399;font-size:.72rem">✅ 註冊日期</label>
-          <input type="date" id="cv-regdate" style="width:100%">
-        </div>
-        <div class="fg">
-          <label style="color:#4ade80;font-size:.72rem">💰 儲值日期</label>
-          <input type="date" id="cv-depdate" style="width:100%">
-        </div>
-      </div>
-      <div class="fr" style="margin-top:8px">
-        <div class="fg"><label>儲值金額 NT$</label><input id="cv-revenue" type="number" min="0" placeholder="0" inputmode="numeric"></div>
-        <div class="fg"><label>推薦平台</label><select id="cv-refplatform"><option value="">— 未推薦 —</option><option>YS89</option><option>夜色娛樂城</option><option>其他</option></select></div>
-      </div>
-      <div class="fr" style="margin-top:6px">
-        <div class="fg"><label>帶碼 / 代理碼</label><input id="cv-refcode" placeholder="例：YS168"></div>
-        <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:18px">
-          <input type="checkbox" id="cv-firstdep" style="width:15px;height:15px;accent-color:#4ade80;cursor:pointer;flex-shrink:0">
-          <label for="cv-firstdep" style="cursor:pointer;font-size:.82rem;font-weight:600;color:var(--text)">首儲</label>
-        </div>
-      </div>
-    </div>
-    <div class="fb" style="margin-top:6px"><button class="btn btn-outline" onclick="closeModal('modal-conv')">取消</button><button class="btn btn-primary" onclick="saveConv()">儲存</button></div>
+    <div class="fg"><label>日期</label><input type="date" id="cv-date" style="width:100%"></div>
+    <div class="fg"><label>詢問人數</label><input id="cv-inq" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
+    <div class="fg"><label>註冊人數</label><input id="cv-reg" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
+    <div class="fg"><label>儲值金額 NT$</label><input id="cv-dep" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
+    <div class="fb" style="margin-top:14px"><button class="btn btn-outline" onclick="closeModal('modal-conv')">取消</button><button class="btn btn-primary" onclick="saveConv()">儲存</button></div>
   </div>
 </div>
 
@@ -4307,7 +4216,7 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads','role_channels','channel_posts','seeding_accounts','report_roles','report_posts','conversions'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads','role_channels','channel_posts','seeding_accounts','report_roles','report_posts','conversions','conv_daily'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(!DB.get('seeding_accounts').length) DB.set('seeding_accounts',DEFAULT_SEEDING_ACCOUNTS)
@@ -6795,304 +6704,84 @@ function renderTraitsCard(){
 }
 function cpd2(id){ const el=document.getElementById(id); if(!el) return; navigator.clipboard.writeText(el.textContent.trim()).then(()=>toast('已複製')) }
 
-// ===== 💰 財神轉化（預測領牌 → 收益）=====
-const CONV_STATUS=['私訊進來','已回覆導LINE','已回覆導TG','已加LINE','已入TG機器人','已註冊','已入金(轉化)','無回應/流失'];
-const CONV_RANK={'私訊進來':0,'已回覆導LINE':1,'已回覆導TG':1,'已加LINE':2,'已入TG機器人':2,'已註冊':3,'已入金(轉化)':4,'無回應/流失':-1};
-const CONV_COLOR={'私訊進來':'#94a3b8','已回覆導LINE':'#38bdf8','已回覆導TG':'#7c3aed','已加LINE':'#60a5fa','已入TG機器人':'#a78bfa','已註冊':'#fbbf24','已入金(轉化)':'#4ade80','無回應/流失':'#f87171'};
-function _convRoleList(){ const seen=new Set(),out=[]; allActors().forEach(a=>{const c=commCode(a); if(!c||seen.has(c))return; seen.add(c); out.push({code:c,name:a.name})}); return out; }
-function _fillConvRoleSelects(){
-  const roles=_convRoleList();
-  // 補入轉化記錄裡有但角色庫沒有的角色
-  const existCodes=new Set(roles.map(r=>r.code));
-  (DB.get('conversions')||[]).forEach(c=>{
-    if(c.role&&!existCodes.has(c.role)){ existCodes.add(c.role); roles.push({code:c.role,name:c.roleName||c.role}); }
-  });
-  const opts=roles.map(r=>`<option value="${escAttr(r.code)}">${r.name}</option>`).join('');
-  const sel=document.getElementById('cv-role'); if(sel){ const cur=sel.value; sel.innerHTML=opts; sel.value=cur||'god'; if(!sel.value&&roles[0])sel.value=roles[0].code; }
-  const f=document.getElementById('cv-f-role'); if(f){ const cur=f.value; f.innerHTML='<option value="">全部角色</option>'+opts; f.value=cur; }
-  const fs=document.getElementById('cv-f-status'); if(fs&&fs.options.length<=1){ fs.innerHTML='<option value="">全部狀態</option>'+CONV_STATUS.map(s=>`<option>${s}</option>`).join(''); }
-}
+// ===== 💰 財神轉化（每日彙整）=====
 function renderConversions(){
-  _fillConvRoleSelects();
-  const all=DB.get('conversions')||[];
-  const fr=document.getElementById('cv-f-role')?.value||'';
-  const fst=document.getElementById('cv-f-status')?.value||'';
-  let list=all.slice();
-  if(fr) list=list.filter(c=>c.role===fr);
-  if(fst) list=list.filter(c=>c.status===fst);
-  list.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.createdAt||'').localeCompare(a.createdAt||''));
-  // 統計（用未過濾的全量算漏斗，過濾只影響清單）
-  const base=fr?all.filter(c=>c.role===fr):all;
-  const rank=c=>CONV_RANK[c.status]??0;
-  const isRev=c=>rank(c)>=4||(+c.revenue||0)>0;
-  const total=base.length;
-  const _isLine=c=>c.leadTo&&c.leadTo.includes('LINE：mu_021');
-  const _isTGOnly=c=>c.leadTo&&c.leadTo.includes('Telegram：pickhelp_bot')&&!c.leadTo.includes('LINE：mu_021');
-  const lineDir=base.filter(_isLine).length;
-  const lineAdded=base.filter(c=>c.status==='已加LINE').length;
-  const lineReg=base.filter(c=>c.status==='已註冊').length;
-  const lineConv=base.filter(c=>c.status==='已入金(轉化)'&&_isLine(c)).length;
-  const lineRev=base.filter(c=>c.status==='已入金(轉化)'&&_isLine(c)).reduce((s,c)=>s+(+c.revenue||0),0);
-  const tgDir=base.filter(_isTGOnly).length;
-  const tgJoin=base.filter(c=>c.status==='已入TG機器人').length;
-  const tgConv=base.filter(c=>c.status==='已入金(轉化)'&&_isTGOnly(c)).length;
-  const tgRev=base.filter(c=>c.status==='已入金(轉化)'&&_isTGOnly(c)).reduce((s,c)=>s+(+c.revenue||0),0);
-  const converted=base.filter(isRev).length;
-  const revenue=base.reduce((s,c)=>s+(+c.revenue||0),0);
-  const rate=total?Math.round(converted/total*100):0;
-  const fB=(n,lbl,col,sub)=>`<div style="text-align:center;min-width:76px;padding:6px 10px;background:var(--g3);border-radius:7px;border:1px solid ${col}33"><div style="font-size:1.1rem;font-weight:700;color:${col}">${n}</div><div style="font-size:.62rem;color:var(--text3)">${lbl}</div>${sub?`<div style="font-size:.6rem;color:${col};margin-top:1px">${sub}</div>`:''}</div>`;
-  const arr=col=>`<span style="color:${col};padding:0 2px;font-size:.8rem">→</span>`;
-  document.getElementById('cv-stats').innerHTML=`
-    <div style="width:100%;display:flex;flex-direction:column;gap:8px">
-      <div style="background:#0a1520;border:1px solid #38bdf833;border-radius:10px;padding:10px 14px">
-        <div style="font-size:.68rem;font-weight:700;color:#38bdf8;margin-bottom:8px">📱 LINE 小財神（mu_021）</div>
-        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:3px">
-          ${fB(lineDir,'導LINE','#38bdf8')}${arr('#38bdf8')}${fB(lineAdded,'已加LINE','#60a5fa')}${arr('#60a5fa')}${fB(lineReg,'已註冊','#34d399')}${arr('#34d399')}${fB(lineConv,'已入金','#4ade80',lineRev?'NT$&nbsp;'+lineRev.toLocaleString():'')}
-        </div>
-      </div>
-      <div style="background:#100820;border:1px solid #7c3aed33;border-radius:10px;padding:10px 14px">
-        <div style="font-size:.68rem;font-weight:700;color:#a78bfa;margin-bottom:8px">🤖 TG 小幫手（pickhelp_bot）</div>
-        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:3px">
-          ${fB(tgDir,'導TG','#7c3aed')}${arr('#7c3aed')}${fB(tgJoin,'已入bot','#8b5cf6')}${arr('#8b5cf6')}${fB(tgConv,'已入金','#a78bfa',tgRev?'NT$&nbsp;'+tgRev.toLocaleString():'')}
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        ${fB(total,'總私訊','var(--accent)')}${fB(converted,'已轉化','#4ade80')}${fB('NT$&nbsp;'+revenue.toLocaleString(),'總收益','#4ade80')}${fB(rate+'%','轉化率','#fbbf24')}
-      </div>
-    </div>`;
-  // ── 角色績效排行 ──
-  const roleMap={};
-  all.forEach(c=>{
-    const key=c.role||'unknown';
-    const name=c.roleName||c.role||'未知角色';
-    if(!roleMap[key]) roleMap[key]={name,total:0,lined:0,tged:0,conv:0,rev:0};
-    roleMap[key].total++;
-    if(c.leadTo?.includes('LINE：mu_021')) roleMap[key].lined++;
-    if(c.leadTo?.includes('Telegram：pickhelp_bot')&&!c.leadTo?.includes('LINE：mu_021')) roleMap[key].tged++;
-    if(c.status==='已入金(轉化)'){ roleMap[key].conv++; roleMap[key].rev+=(+c.revenue||0); }
-  });
-  const roleRows=Object.entries(roleMap).map(([id,r])=>({...r,id})).sort((a,b)=>b.total-a.total);
-  const tbody=document.getElementById('cv-persona-tbody');
-  if(tbody){
-    if(!roleRows.length){
-      tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:12px">尚無記錄</td></tr>';
-    } else {
-      tbody.innerHTML=roleRows.map(r=>{
-        const rate=r.total?Math.round(r.conv/r.total*100):0;
-        const rateCol=rate>=20?'#4ade80':rate>=10?'#f59e0b':'#f87171';
-        return `<tr style="cursor:pointer" onclick="document.getElementById('cv-f-role').value='${r.id}';renderConversions()">
-          <td><b>${r.name}</b></td>
-          <td style="text-align:right;font-weight:700;color:var(--accent)">${r.total}</td>
-          <td style="text-align:right;color:#38bdf8">${r.lined||'—'}</td>
-          <td style="text-align:right;color:#a78bfa">${r.tged||'—'}</td>
-          <td style="text-align:right;font-weight:700;color:#4ade80">${r.conv||'—'}</td>
-          <td style="text-align:right;font-weight:700;color:${rateCol}">${rate}%</td>
-          <td style="text-align:right;color:#4ade80">${r.rev?'NT$&nbsp;'+r.rev.toLocaleString():'—'}</td>
-        </tr>`;
-      }).join('')
-      + `<tr style="border-top:2px solid var(--border);font-weight:800">
-          <td style="color:var(--text3)">合計</td>
-          <td style="text-align:right;color:var(--accent)">${roleRows.reduce((s,r)=>s+r.total,0)}</td>
-          <td style="text-align:right;color:#38bdf8">${roleRows.reduce((s,r)=>s+r.lined,0)||'—'}</td>
-          <td style="text-align:right;color:#a78bfa">${roleRows.reduce((s,r)=>s+r.tged,0)||'—'}</td>
-          <td style="text-align:right;color:#4ade80">${roleRows.reduce((s,r)=>s+r.conv,0)||'—'}</td>
-          <td style="text-align:right;color:#fbbf24">${all.length?Math.round(roleRows.reduce((s,r)=>s+r.conv,0)/all.length*100):0}%</td>
-          <td style="text-align:right;color:#4ade80">${(()=>{const t=roleRows.reduce((s,r)=>s+r.rev,0);return t?'NT$&nbsp;'+t.toLocaleString():'—'})()} </td>
-        </tr>`;
-    }
-  }
-
-  // 每日漏斗統計表
+  const all=(DB.get('conv_daily')||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const totalInq=all.reduce((s,r)=>s+(+r.inq||0),0);
+  const totalReg=all.reduce((s,r)=>s+(+r.reg||0),0);
+  const totalDep=all.reduce((s,r)=>s+(+r.dep||0),0);
+  const fB=(n,lbl,col)=>`<div style="text-align:center;min-width:90px;padding:8px 14px;background:var(--g3);border-radius:8px;border:1px solid ${col}33"><div style="font-size:1.15rem;font-weight:700;color:${col}">${n}</div><div style="font-size:.62rem;color:var(--text3)">${lbl}</div></div>`;
+  document.getElementById('cv-stats').innerHTML=
+    fB(totalInq,'總詢問','#94a3b8')+
+    fB(totalReg,'總註冊','#34d399')+
+    fB('NT$&nbsp;'+totalDep.toLocaleString(),'總儲值','#4ade80');
   const dailyEl=document.getElementById('cv-daily-stats');
-  if(dailyEl){
-    const dayMap={};
-    base.forEach(c=>{
-      const d=c.date||'未知';
-      if(!dayMap[d]) dayMap[d]={inq:0,join:0,reg:0,dep:0,rev:0};
-      dayMap[d].inq++;
-      if(c.joinDate) dayMap[c.joinDate]=dayMap[c.joinDate]||{inq:0,join:0,reg:0,dep:0,rev:0}, dayMap[c.joinDate].join++;
-      if(c.regDate) dayMap[c.regDate]=dayMap[c.regDate]||{inq:0,join:0,reg:0,dep:0,rev:0}, dayMap[c.regDate].reg++;
-      if(c.depDate){
-        dayMap[c.depDate]=dayMap[c.depDate]||{inq:0,join:0,reg:0,dep:0,rev:0};
-        dayMap[c.depDate].dep++;
-        dayMap[c.depDate].rev+=(+c.revenue||0);
-      }
-    });
-    const days=Object.keys(dayMap).sort((a,b)=>b.localeCompare(a));
-    if(!days.length){ dailyEl.innerHTML='<div style="padding:12px;color:var(--text3);font-size:.82rem">尚無記錄</div>'; }
-    else{
-      dailyEl.innerHTML=`<table style="width:100%;font-size:.82rem;border-collapse:collapse">
-        <thead><tr style="border-bottom:2px solid var(--border)">
-          <th style="text-align:left;padding:6px 10px">日期</th>
-          <th style="text-align:center;padding:6px 8px;color:#94a3b8">💬 詢問</th>
-          <th style="text-align:center;padding:6px 8px;color:#38bdf8">📱 加入</th>
-          <th style="text-align:center;padding:6px 8px;color:#34d399">✅ 註冊</th>
-          <th style="text-align:center;padding:6px 8px;color:#4ade80">💰 儲值</th>
-          <th style="text-align:right;padding:6px 10px;color:#4ade80">儲值金額</th>
-        </tr></thead>
-        <tbody>${days.map(d=>{const r=dayMap[d];return`<tr style="border-bottom:1px solid var(--border2)">
-          <td style="padding:6px 10px;font-weight:600">${d}</td>
-          <td style="text-align:center;padding:6px 8px">${r.inq||'—'}</td>
-          <td style="text-align:center;padding:6px 8px;color:#38bdf8">${r.join||'—'}</td>
-          <td style="text-align:center;padding:6px 8px;color:#34d399">${r.reg||'—'}</td>
-          <td style="text-align:center;padding:6px 8px;color:#4ade80">${r.dep||'—'}</td>
-          <td style="text-align:right;padding:6px 10px;color:#4ade80">${r.rev?'NT$ '+r.rev.toLocaleString():'—'}</td>
-        </tr>`}).join('')}</tbody>
-        <tfoot><tr style="border-top:2px solid var(--border);font-weight:800">
-          <td style="padding:6px 10px;color:var(--text3)">合計</td>
-          <td style="text-align:center;padding:6px 8px">${days.reduce((s,d)=>s+dayMap[d].inq,0)}</td>
-          <td style="text-align:center;padding:6px 8px;color:#38bdf8">${days.reduce((s,d)=>s+dayMap[d].join,0)||'—'}</td>
-          <td style="text-align:center;padding:6px 8px;color:#34d399">${days.reduce((s,d)=>s+dayMap[d].reg,0)||'—'}</td>
-          <td style="text-align:center;padding:6px 8px;color:#4ade80">${days.reduce((s,d)=>s+dayMap[d].dep,0)||'—'}</td>
-          <td style="text-align:right;padding:6px 10px;color:#4ade80">${(()=>{const t=days.reduce((s,d)=>s+dayMap[d].rev,0);return t?'NT$ '+t.toLocaleString():'—'})()} </td>
-        </tr></tfoot>
-      </table>`;
-    }
-  }
-  const box=document.getElementById('cv-table');
-  if(!list.length){ box.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無私訊轉化紀錄，按右上「+ 新增私訊轉化」開始記錄</div>'; return; }
-  // 按日期分組
-  const today=new Date().toISOString().slice(0,10);
-  const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
-  const groups={};
-  list.forEach(c=>{ const d=c.date||'未知日期'; (groups[d]=groups[d]||[]).push(c); });
-  const sortedDates=Object.keys(groups).sort((a,b)=>b.localeCompare(a));
-  const _card=c=>{
-    const col=CONV_COLOR[c.status]||'#94a3b8';
-    const rev=(+c.revenue||0)>0?`<span style="font-size:.78rem;font-weight:700;color:#4ade80;margin-left:auto">💰 NT$ ${(+c.revenue).toLocaleString()}</span>`:'';
-    return `<div style="background:#0d0b0a;border:1px solid var(--border);border-left:3px solid ${col};border-radius:9px;padding:11px 13px">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <span style="font-size:.68rem;font-weight:700;color:${col};background:${col}1e;border:1px solid ${col}55;border-radius:9px;padding:2px 9px">${c.status}</span>
-        <span style="font-weight:700;font-size:.9rem">${c.handle||'(未填帳號)'}</span>
-        <span style="font-size:.7rem;color:var(--text3)">· ${c.platform||''}</span>
-        ${rev}
-      </div>
-      ${c.message?`<div style="font-size:.84rem;margin-top:6px;color:var(--text)">💬 ${c.message}</div>`:''}
-      <div style="font-size:.72rem;color:var(--text3);margin-top:5px;display:flex;gap:10px;flex-wrap:wrap">
-        ${c.match?`<span>🎯 ${c.match}</span>`:''}
-        ${c.leadTo?`<span>➡️ ${c.leadTo}</span>`:''}
-        <span>🎭 ${c.roleName||c.role||''}</span>
-      </div>
-      ${c.note?`<div style="font-size:.7rem;color:var(--text3);margin-top:4px">📝 ${c.note}</div>`:''}
-      ${(c.refPlatform||c.joinDate||c.refCode||c.firstDep||c.depDate)?`<div style="font-size:.7rem;color:var(--text3);margin-top:5px;display:flex;gap:10px;flex-wrap:wrap">
-        ${c.refPlatform?`<span style="color:#fbbf24">🎰 ${c.refPlatform}</span>`:''}
-        ${c.joinDate?`<span>📅 加入 ${c.joinDate}</span>`:''}
-        ${c.depDate?`<span>💳 入金 ${c.depDate}</span>`:''}
-        ${c.firstDep?`<span style="color:#4ade80;font-weight:600">✨ 首儲</span>`:''}
-        ${c.refCode?`<span>🔖 ${c.refCode}</span>`:''}
-      </div>`:''}
-      <div style="display:flex;gap:5px;margin-top:8px">
-        <button class="btn btn-xs btn-outline" onclick="openEditConv('${c.id}')" style="font-size:.66rem">✏ 編輯</button>
-        <button class="btn btn-xs btn-danger" onclick="delConv('${c.id}')" style="font-size:.66rem">✕ 刪除</button>
-      </div>
-    </div>`;
-  };
-  box.innerHTML='<div style="display:flex;flex-direction:column;gap:8px;padding:4px">'+sortedDates.map(d=>{
-    const items=groups[d];
-    const label=d===today?`${d}（今天）`:d===yesterday?`${d}（昨天）`:d;
-    const toLineN=items.filter(c=>c.leadTo&&c.leadTo.includes('LINE：mu_021')).length;
-    const toTGN=items.filter(c=>c.leadTo&&c.leadTo.includes('Telegram：pickhelp_bot')&&!c.leadTo.includes('LINE：mu_021')).length;
-    const dayRev=items.reduce((s,c)=>s+(+c.revenue||0),0);
-    const converted=items.filter(c=>c.status==='已入金(轉化)').length;
-    return `<details style="background:var(--g2);border:1px solid var(--border);border-radius:10px;overflow:hidden">
-      <summary style="cursor:pointer;padding:10px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;list-style:none;user-select:none" onclick="this.parentElement.toggleAttribute('open')">
-        <span style="font-size:.8rem;font-weight:700;color:var(--accent)">📅 ${label}</span>
-        <span style="font-size:.73rem;background:#38bdf822;color:#38bdf8;border:1px solid #38bdf855;border-radius:20px;padding:1px 10px">${items.length} 位私訊</span>
-        ${toLineN?`<span style="font-size:.7rem;color:#60a5fa">📱 LINE ${toLineN} 位</span>`:''}
-        ${toTGN?`<span style="font-size:.7rem;color:#a78bfa">🤖 TG ${toTGN} 位</span>`:''}
-        ${converted?`<span style="font-size:.7rem;color:#4ade80;font-weight:700">✅ 轉化 ${converted} 位${dayRev?' · NT$ '+dayRev.toLocaleString():''}</span>`:''}
-        <span style="margin-left:auto;font-size:.8rem;color:var(--text3)">▾</span>
-      </summary>
-      <div style="display:flex;flex-direction:column;gap:8px;padding:10px 12px 12px">
-        ${items.map(_card).join('')}
-      </div>
-    </details>`;
-  }).join('')+'</div>';
-}
-function _syncConvStatus(forceVal){
-  const lt=document.getElementById('cv-leadto').value;
-  const lineOnly=lt==='LINE：mu_021';
-  const tgOnly=lt==='Telegram：pickhelp_bot';
-  const sel=document.getElementById('cv-status');
-  const prev=forceVal!==undefined?forceVal:sel.value;
-  let h='<option>私訊進來</option>';
-  if(!tgOnly) h+=`<optgroup label="── 📱 LINE 小財神 ──"><option>已回覆導LINE</option><option>已加LINE</option><option>已註冊</option><option>已入金(轉化)</option></optgroup>`;
-  if(!lineOnly) h+=`<optgroup label="── 🤖 TG 小幫手 ──"><option>已回覆導TG</option><option>已入TG機器人</option><option>已註冊</option><option>已入金(轉化)</option></optgroup>`;
-  h+='<option>無回應/流失</option>';
-  sel.innerHTML=h;
-  if([...sel.options].some(o=>o.value===prev)) sel.value=prev;
-  else sel.value=tgOnly?'已回覆導TG':'已回覆導LINE';
+  if(!all.length){dailyEl.innerHTML='<div style="padding:24px;color:var(--text3);font-size:.82rem;text-align:center">尚無記錄，按右上「+ 新增」開始登記</div>';return;}
+  dailyEl.innerHTML=`<table style="width:100%;font-size:.82rem;border-collapse:collapse">
+    <thead><tr style="border-bottom:2px solid var(--border)">
+      <th style="text-align:left;padding:7px 10px">日期</th>
+      <th style="text-align:center;padding:7px 8px;color:#94a3b8">💬 詢問人數</th>
+      <th style="text-align:center;padding:7px 8px;color:#34d399">✅ 註冊人數</th>
+      <th style="text-align:right;padding:7px 10px;color:#4ade80">💰 儲值金額</th>
+      <th style="text-align:center;padding:7px 8px"></th>
+    </tr></thead>
+    <tbody>${all.map(r=>`<tr style="border-bottom:1px solid var(--border2)">
+      <td style="padding:7px 10px;font-weight:600">${r.date}</td>
+      <td style="text-align:center;padding:7px 8px">${r.inq||'—'}</td>
+      <td style="text-align:center;padding:7px 8px;color:#34d399">${r.reg||'—'}</td>
+      <td style="text-align:right;padding:7px 10px;color:#4ade80">${r.dep?'NT$ '+(+r.dep).toLocaleString():'—'}</td>
+      <td style="text-align:center;padding:7px 8px;white-space:nowrap">
+        <button class="btn btn-xs btn-outline" onclick="openEditConv('${r.id}')">編輯</button>
+        <button class="btn btn-xs" style="color:#f87171;background:none;border:1px solid #f8717155;border-radius:5px;cursor:pointer;font-size:.7rem;padding:2px 7px;margin-left:4px" onclick="delConv('${r.id}')">刪</button>
+      </td>
+    </tr>`).join('')}</tbody>
+    <tfoot><tr style="border-top:2px solid var(--border);font-weight:800">
+      <td style="padding:7px 10px;color:var(--text3)">合計</td>
+      <td style="text-align:center;padding:7px 8px">${totalInq||'—'}</td>
+      <td style="text-align:center;padding:7px 8px;color:#34d399">${totalReg||'—'}</td>
+      <td style="text-align:right;padding:7px 10px;color:#4ade80">${totalDep?'NT$ '+totalDep.toLocaleString():'—'}</td>
+      <td></td>
+    </tr></tfoot>
+  </table>`;
 }
 function openAddConv(){
+  document.getElementById('cv-modal-title').textContent='新增每日轉化';
   document.getElementById('cv-id').value='';
-  document.getElementById('cv-modal-title').textContent='新增私訊轉化';
-  _fillConvRoleSelects();
   document.getElementById('cv-date').value=new Date().toISOString().slice(0,10);
-  const r=document.getElementById('cv-role'); if(r) r.value=_convRoleList().some(x=>x.code==='god')?'god':(r.options[0]?.value||'');
-  document.getElementById('cv-platform').value='IG私訊';
-  ['cv-handle','cv-message','cv-match','cv-note','cv-revenue','cv-refcode'].forEach(i=>document.getElementById(i).value='');
-  ['cv-joindate','cv-regdate','cv-depdate'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('cv-refplatform').value='';
-  document.getElementById('cv-firstdep').checked=false;
-  document.getElementById('cv-leadto').value='Telegram：pickhelp_bot';
-  _syncConvStatus('已回覆導TG');
+  document.getElementById('cv-inq').value='';
+  document.getElementById('cv-reg').value='';
+  document.getElementById('cv-dep').value='';
   openModal('modal-conv');
 }
 function openEditConv(id){
-  const c=(DB.get('conversions')||[]).find(x=>x.id===id); if(!c)return;
-  document.getElementById('cv-id').value=c.id;
-  document.getElementById('cv-modal-title').textContent='編輯私訊轉化';
-  _fillConvRoleSelects();
-  document.getElementById('cv-date').value=c.date||'';
-  document.getElementById('cv-role').value=c.role||'god';
-  document.getElementById('cv-platform').value=c.platform||'IG私訊';
-  document.getElementById('cv-handle').value=c.handle||'';
-  document.getElementById('cv-message').value=c.message||'';
-  document.getElementById('cv-match').value=c.match||'';
-  document.getElementById('cv-leadto').value=c.leadTo||'LINE：mu_021';
-  _syncConvStatus(c.status||'私訊進來');
-  document.getElementById('cv-revenue').value=(+c.revenue||0)||'';
-  document.getElementById('cv-note').value=c.note||'';
-  document.getElementById('cv-joindate').value=c.joinDate||'';
-  document.getElementById('cv-regdate').value=c.regDate||'';
-  document.getElementById('cv-refplatform').value=c.refPlatform||'';
-  document.getElementById('cv-refcode').value=c.refCode||'';
-  document.getElementById('cv-depdate').value=c.depDate||'';
-  document.getElementById('cv-firstdep').checked=!!c.firstDep;
+  const r=(DB.get('conv_daily')||[]).find(x=>x.id===id); if(!r)return;
+  document.getElementById('cv-modal-title').textContent='編輯每日轉化';
+  document.getElementById('cv-id').value=r.id;
+  document.getElementById('cv-date').value=r.date||'';
+  document.getElementById('cv-inq').value=r.inq||'';
+  document.getElementById('cv-reg').value=r.reg||'';
+  document.getElementById('cv-dep').value=r.dep||'';
   openModal('modal-conv');
 }
 function saveConv(){
   const id=document.getElementById('cv-id').value;
-  const roleCode=document.getElementById('cv-role').value;
-  const roleName=(_convRoleList().find(r=>r.code===roleCode)||{}).name||roleCode;
+  const date=document.getElementById('cv-date').value;
+  const inq=+document.getElementById('cv-inq').value||0;
+  const reg=+document.getElementById('cv-reg').value||0;
+  const dep=+document.getElementById('cv-dep').value||0;
+  if(!date){toast('請選擇日期','err');return;}
   const now=new Date().toISOString();
-  const data={ date:document.getElementById('cv-date').value, role:roleCode, roleName,
-    platform:document.getElementById('cv-platform').value,
-    handle:document.getElementById('cv-handle').value.trim(),
-    message:document.getElementById('cv-message').value.trim(),
-    match:document.getElementById('cv-match').value.trim(),
-    leadTo:document.getElementById('cv-leadto').value.trim(),
-    status:document.getElementById('cv-status').value,
-    revenue:+document.getElementById('cv-revenue').value||0,
-    note:document.getElementById('cv-note').value.trim(),
-    joinDate:document.getElementById('cv-joindate').value||'',
-    regDate:document.getElementById('cv-regdate').value||'',
-    refPlatform:document.getElementById('cv-refplatform').value,
-    refCode:document.getElementById('cv-refcode').value.trim(),
-    depDate:document.getElementById('cv-depdate').value||'',
-    firstDep:document.getElementById('cv-firstdep').checked,
-    updatedAt:now };
-  const all=DB.get('conversions')||[];
-  if(id){ const c=all.find(x=>x.id===id); if(c) Object.assign(c,data); }
-  else all.push({id:DB.id(),createdAt:now,...data});
-  DB.set('conversions',all); DB.push('conversions').catch(()=>{});
+  const all=DB.get('conv_daily')||[];
+  if(id){ const i=all.findIndex(x=>x.id===id); if(i>=0) all[i]={...all[i],date,inq,reg,dep,updatedAt:now}; }
+  else all.push({id:DB.id(),date,inq,reg,dep,createdAt:now,updatedAt:now});
+  DB.set('conv_daily',all); DB.push('conv_daily').catch(()=>{});
   closeModal('modal-conv'); renderConversions();
-  toast('已儲存私訊轉化'+(data.revenue>0?`（收益 NT$ ${data.revenue.toLocaleString()}）`:''));
+  toast('已儲存');
 }
 function delConv(id){
-  if(!confirm('確定刪除這筆私訊轉化紀錄？'))return;
-  const all=(DB.get('conversions')||[]).filter(x=>x.id!==id);
-  DB.set('conversions',all); DB.push('conversions').catch(()=>{});
+  if(!confirm('確定刪除？'))return;
+  const all=(DB.get('conv_daily')||[]).filter(x=>x.id!==id);
+  DB.set('conv_daily',all); DB.push('conv_daily').catch(()=>{});
   renderConversions(); toast('已刪除');
 }
 
