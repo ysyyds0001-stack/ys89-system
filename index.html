@@ -5418,8 +5418,8 @@ function saveAnonActor(){
   toast('✅ 已儲存')
 }
 
-// ── 帳號類型分頁資料 ──
-const _ACCT_OVERVIEW = {
+// ── 帳號類型分頁資料（預設值，首次載入寫入 localStorage）──
+const _ACCT_DEFAULT = {
   ai: [
     { name:'世足大財神 - 體育代理', cat:'體育', follows:221, note:'導預測平台/小財神' },
     { name:'陳亦強', cat:'棋牌/麻將', follows:30, note:'個人玩家身分' },
@@ -5429,13 +5429,52 @@ const _ACCT_OVERVIEW = {
     { name:'扁扁', cat:'詐騙黑名單法律', follows:74, note:'bio暫時無法放連結' },
     { name:'阿奇', cat:'世足/運彩/體育投注', follows:86, note:'' },
     { name:'kk', cat:'世足/運彩/體育投注', follows:124, note:'threads無法使用' },
-    { name:'蟹蟹觀測站', cat:'世足/運彩/體育投注', follows:32, note:'用哪帳號去置換', hasSub:true },
+    { name:'蟹蟹觀測站', cat:'世足/運彩/體育投注', follows:32, note:'用哪帳號去置換' },
     { name:'世足大財神', cat:'世足/運彩/體育投注', follows:221, note:'' },
     { name:'魚池阿智', cat:'捕魚', follows:null, note:'' },
     { name:'捕魚老司機阿網', cat:'捕魚', follows:95, note:'' },
   ]
 };
 let _actTypeTab = 'ai';
+
+function _getAcctData(){
+  const raw = DB.get('acct_overview');
+  let d = (raw && !Array.isArray(raw) && typeof raw === 'object') ? raw : {};
+  let dirty = false;
+  ['ai','forum'].forEach(tab=>{
+    if(!Array.isArray(d[tab]) || d[tab].length===0){
+      d[tab] = _ACCT_DEFAULT[tab].map(a=>({...a, id:DB.id()}));
+      dirty = true;
+    }
+  });
+  if(dirty) DB.set('acct_overview', d);
+  return d;
+}
+function _escVal(v){ return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;') }
+
+function updateAcctField(tab, id, field, value){
+  const d = _getAcctData();
+  const row = (d[tab]||[]).find(r=>r.id===id); if(!row) return;
+  row[field] = (field==='follows') ? (value===''?null:(parseInt(value)||0)) : value;
+  DB.set('acct_overview', d);
+}
+
+function addAcctRow(tab){
+  const d = _getAcctData();
+  if(!d[tab]) d[tab]=[];
+  d[tab].push({id:DB.id(), name:'', cat:'', follows:null, note:''});
+  DB.set('acct_overview', d);
+  renderActTypeTab();
+  setTimeout(()=>{ const ins=document.querySelectorAll('#act-type-body input[data-f="name"]'); if(ins.length) ins[ins.length-1].focus(); }, 60);
+}
+
+function deleteAcctRow(tab, id){
+  const d = _getAcctData();
+  if(!d[tab]) return;
+  d[tab] = d[tab].filter(r=>r.id!==id);
+  DB.set('acct_overview', d);
+  renderActTypeTab();
+}
 
 function switchActTypeTab(tab){
   _actTypeTab = tab;
@@ -5450,27 +5489,53 @@ function switchActTypeTab(tab){
 
 function renderActTypeTab(){
   const el = document.getElementById('act-type-body'); if(!el) return;
-  const list = _ACCT_OVERVIEW[_actTypeTab] || [];
-  const rows = list.map(a => `<tr style="border-bottom:1px solid var(--border)">
-    <td style="padding:9px 10px">
-      <span style="font-weight:600;font-size:.83rem">${a.name}</span>
-      ${a.hasSub ? `<button onclick="alert('新增帳號功能開發中')" style="margin-left:8px;background:none;border:1px solid var(--accent);color:var(--accent);border-radius:3px;font-size:.62rem;padding:1px 7px;cursor:pointer;opacity:.8">＋ 新增帳號</button>` : ''}
+  const d = _getAcctData();
+  const list = d[_actTypeTab] || [];
+  const IS = 'background:none;border:none;border-bottom:1px dashed rgba(255,255,255,.15);color:var(--text1);font-size:.81rem;padding:2px 0;outline:none;width:100%';
+  const rows = list.map(a=>`<tr style="border-bottom:1px solid var(--border)">
+    <td style="padding:7px 10px;font-weight:600;min-width:120px">
+      <input data-f="name" value="${_escVal(a.name)}" placeholder="帳號名稱"
+        onchange="updateAcctField('${_actTypeTab}','${a.id}','name',this.value)"
+        style="${IS};font-weight:600">
     </td>
-    <td style="padding:9px 10px;color:var(--text2);font-size:.76rem;white-space:nowrap">${a.cat}</td>
-    <td style="padding:9px 10px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums;font-size:.83rem">${a.follows!=null?a.follows:'—'}</td>
-    <td style="padding:9px 10px"><span style="background:#0c2218;color:#4ade80;border-radius:3px;font-size:.66rem;padding:2px 7px;white-space:nowrap">公開</span></td>
-    <td style="padding:9px 10px;font-size:.74rem;color:var(--text2)">${a.note||''}</td>
+    <td style="padding:7px 10px;min-width:80px">
+      <input data-f="cat" value="${_escVal(a.cat)}" placeholder="分類"
+        onchange="updateAcctField('${_actTypeTab}','${a.id}','cat',this.value)"
+        style="${IS};font-size:.74rem;color:var(--text2)">
+    </td>
+    <td style="padding:7px 10px;text-align:center">
+      <input data-f="follows" type="number" value="${_escVal(a.follows??'')}" placeholder="—"
+        onchange="updateAcctField('${_actTypeTab}','${a.id}','follows',this.value)"
+        style="${IS};width:56px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums">
+    </td>
+    <td style="padding:7px 10px;white-space:nowrap">
+      <span style="background:#0c2218;color:#4ade80;border-radius:3px;font-size:.66rem;padding:2px 7px">公開</span>
+    </td>
+    <td style="padding:7px 10px;min-width:100px">
+      <input data-f="note" value="${_escVal(a.note)}" placeholder="備註"
+        onchange="updateAcctField('${_actTypeTab}','${a.id}','note',this.value)"
+        style="${IS};font-size:.74rem;color:var(--text2)">
+    </td>
+    <td style="padding:7px 6px;text-align:center">
+      <button onclick="deleteAcctRow('${_actTypeTab}','${a.id}')" title="刪除"
+        style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:.78rem;opacity:.55;padding:2px 4px">✕</button>
+    </td>
   </tr>`).join('');
   el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
     <thead><tr style="border-bottom:2px solid var(--border)">
-      <th style="padding:8px 10px;text-align:left;font-size:.74rem;color:var(--text2);font-weight:600">帳號</th>
-      <th style="padding:8px 10px;text-align:left;font-size:.74rem;color:var(--text2);font-weight:600">分類</th>
-      <th style="padding:8px 10px;text-align:center;font-size:.74rem;color:var(--text2);font-weight:600">追蹤數</th>
-      <th style="padding:8px 10px;text-align:left;font-size:.74rem;color:var(--text2);font-weight:600">狀態</th>
-      <th style="padding:8px 10px;text-align:left;font-size:.74rem;color:var(--text2);font-weight:600">備註</th>
+      <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">帳號</th>
+      <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">分類</th>
+      <th style="padding:8px 10px;text-align:center;font-size:.72rem;color:var(--text2);font-weight:600">追蹤數</th>
+      <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">狀態</th>
+      <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">備註</th>
+      <th style="width:28px"></th>
     </tr></thead>
     <tbody>${rows}</tbody>
-  </table></div>`;
+  </table></div>
+  <div style="margin-top:10px;padding:0 2px">
+    <button onclick="addAcctRow('${_actTypeTab}')"
+      style="background:none;border:1px dashed var(--accent);color:var(--accent);border-radius:4px;padding:5px 16px;font-size:.78rem;cursor:pointer;opacity:.85">＋ 新增帳號</button>
+  </div>`;
 }
 
 function renderCommunity(){
