@@ -1870,6 +1870,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     </div>
     <div class="fg"><label>詢問人數</label><input id="cv-inq" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
     <div class="fg"><label>註冊人數</label><input id="cv-reg" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
+    <div class="fg"><label>儲值人數</label><input id="cv-dep-count" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
     <div class="fg"><label>儲值金額 NT$</label><input id="cv-dep" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
     <div class="fb" style="margin-top:14px"><button class="btn btn-outline" onclick="closeModal('modal-conv')">取消</button><button class="btn btn-primary" onclick="saveConv()">儲存</button></div>
   </div>
@@ -6910,9 +6911,10 @@ function renderConversions(){
   const roleMap={};
   all.forEach(r=>{
     const k=r.roleName||'未知角色';
-    if(!roleMap[k]) roleMap[k]={inq:0,reg:0,dep:0};
+    if(!roleMap[k]) roleMap[k]={inq:0,reg:0,depCount:0,dep:0};
     roleMap[k].inq+=(+r.inq||0);
     roleMap[k].reg+=(+r.reg||0);
+    roleMap[k].depCount+=(+r.depCount||0);
     roleMap[k].dep+=(+r.dep||0);
   });
   const roleKeys=Object.keys(roleMap);
@@ -6920,6 +6922,7 @@ function renderConversions(){
   roleKeys.forEach((k,i)=>roleColor[k]=_CONV_COLORS[i%_CONV_COLORS.length]);
   const totalInq=roleKeys.reduce((s,k)=>s+roleMap[k].inq,0);
   const totalReg=roleKeys.reduce((s,k)=>s+roleMap[k].reg,0);
+  const totalDepCount=roleKeys.reduce((s,k)=>s+roleMap[k].depCount,0);
   const totalDep=roleKeys.reduce((s,k)=>s+roleMap[k].dep,0);
 
   // ── 角色統計卡（可點擊篩選）──
@@ -6938,6 +6941,8 @@ function renderConversions(){
             <div style="width:1px;background:var(--border2)"></div>
             <div><div style="font-size:2rem;font-weight:900;color:#34d399;line-height:1">${rm.reg||0}</div><div style="font-size:.6rem;color:var(--text3);margin-top:3px">註冊人數</div></div>
             <div style="width:1px;background:var(--border2)"></div>
+            <div><div style="font-size:2rem;font-weight:900;color:#f59e0b;line-height:1">${rm.depCount||0}</div><div style="font-size:.6rem;color:var(--text3);margin-top:3px">儲值人數</div></div>
+            <div style="width:1px;background:var(--border2)"></div>
             <div><div style="font-size:1.1rem;font-weight:800;color:#4ade80;line-height:1.2">${rm.dep?'NT$'+rm.dep.toLocaleString():'0'}</div><div style="font-size:.6rem;color:var(--text3);margin-top:3px">儲值金額</div></div>
           </div>
         </div>`;
@@ -6947,6 +6952,7 @@ function renderConversions(){
       <span style="font-size:.7rem;color:var(--text3)">合計</span>
       <span style="font-size:.9rem;font-weight:700;color:var(--text)">${totalInq}</span><span style="font-size:.65rem;color:var(--text3)">詢問</span>
       <span style="margin-left:6px;font-size:.9rem;font-weight:700;color:#34d399">${totalReg}</span><span style="font-size:.65rem;color:var(--text3)">註冊</span>
+      <span style="margin-left:6px;font-size:.9rem;font-weight:700;color:#f59e0b">${totalDepCount}</span><span style="font-size:.65rem;color:var(--text3)">儲值人數</span>
       <span style="margin-left:6px;font-size:.9rem;font-weight:700;color:#4ade80">${totalDep?'NT$'+totalDep.toLocaleString():'0'}</span><span style="font-size:.65rem;color:var(--text3)">儲值</span>
       ${_convTab?`<button onclick="_convTab='';renderConversions()" style="margin-left:auto;font-size:.7rem;color:var(--text3);background:none;border:1px solid var(--border);border-radius:6px;padding:2px 10px;cursor:pointer">✕ 清除篩選</button>`:''}
     </div>
@@ -6973,6 +6979,7 @@ function renderConversions(){
       ${showRole?`<th style="text-align:left;padding:8px 10px">角色</th>`:''}
       <th style="text-align:center;padding:8px 12px;color:#94a3b8">💬 詢問人數</th>
       <th style="text-align:center;padding:8px 12px;color:#34d399">✅ 註冊人數</th>
+      <th style="text-align:center;padding:8px 12px;color:#f59e0b">💳 儲值人數</th>
       <th style="text-align:right;padding:8px 14px;color:#4ade80">💰 儲值金額</th>
       <th style="width:80px"></th>
     </tr></thead>
@@ -6983,6 +6990,7 @@ function renderConversions(){
         ${showRole?`<td style="padding:9px 10px"><span style="font-weight:700;color:${col};font-size:.82rem">${r.roleName||'—'}</span></td>`:''}
         <td style="text-align:center;padding:9px 12px;font-size:1.05rem;font-weight:700;color:var(--text)">${+r.inq||'—'}</td>
         <td style="text-align:center;padding:9px 12px;font-size:1.05rem;font-weight:700;color:#34d399">${+r.reg||'—'}</td>
+        <td style="text-align:center;padding:9px 12px;font-size:1.05rem;font-weight:700;color:#f59e0b">${+r.depCount||'—'}</td>
         <td style="text-align:right;padding:9px 14px;font-weight:700;color:#4ade80">${+r.dep?'NT$ '+(+r.dep).toLocaleString():'—'}</td>
         <td style="padding:9px 8px;text-align:right;white-space:nowrap">
           <button class="btn btn-xs btn-outline" onclick="openEditConv('${r.id}')">編輯</button>
@@ -6995,6 +7003,7 @@ function renderConversions(){
       ${showRole?`<td></td>`:''}
       <td style="text-align:center;padding:9px 12px;font-size:1.05rem;font-weight:800">${fInq||'—'}</td>
       <td style="text-align:center;padding:9px 12px;font-size:1.05rem;font-weight:800;color:#34d399">${fReg||'—'}</td>
+      <td style="text-align:center;padding:9px 12px;font-size:1.05rem;font-weight:800;color:#f59e0b">${filtered.reduce((s,r)=>s+(+r.depCount||0),0)||'—'}</td>
       <td style="text-align:right;padding:9px 14px;font-weight:800;color:#4ade80">${fDep?'NT$ '+fDep.toLocaleString():'—'}</td>
       <td></td>
     </tr></tfoot>
@@ -7016,6 +7025,7 @@ function openAddConv(){
   _fillConvRoles();
   document.getElementById('cv-inq').value='';
   document.getElementById('cv-reg').value='';
+  document.getElementById('cv-dep-count').value='';
   document.getElementById('cv-dep').value='';
   openModal('modal-conv');
 }
@@ -7027,6 +7037,7 @@ function openEditConv(id){
   _fillConvRoles(r.roleName||'');
   document.getElementById('cv-inq').value=r.inq||'';
   document.getElementById('cv-reg').value=r.reg||'';
+  document.getElementById('cv-dep-count').value=r.depCount||'';
   document.getElementById('cv-dep').value=r.dep||'';
   openModal('modal-conv');
 }
@@ -7036,13 +7047,14 @@ function saveConv(){
   const roleName=document.getElementById('cv-role').value||'';
   const inq=+document.getElementById('cv-inq').value||0;
   const reg=+document.getElementById('cv-reg').value||0;
+  const depCount=+document.getElementById('cv-dep-count').value||0;
   const dep=+document.getElementById('cv-dep').value||0;
   if(!date){toast('請選擇日期','err');return;}
   if(!roleName){toast('請選擇角色','err');return;}
   const now=new Date().toISOString();
   const all=DB.get('conv_daily')||[];
-  if(id){ const i=all.findIndex(x=>x.id===id); if(i>=0) all[i]={...all[i],date,roleName,inq,reg,dep,updatedAt:now}; }
-  else all.push({id:DB.id(),date,roleName,inq,reg,dep,createdAt:now,updatedAt:now});
+  if(id){ const i=all.findIndex(x=>x.id===id); if(i>=0) all[i]={...all[i],date,roleName,inq,reg,depCount,dep,updatedAt:now}; }
+  else all.push({id:DB.id(),date,roleName,inq,reg,depCount,dep,createdAt:now,updatedAt:now});
   DB.set('conv_daily',all); DB.push('conv_daily').catch(()=>{});
   closeModal('modal-conv'); renderConversions();
   toast('已儲存');
