@@ -5421,18 +5421,18 @@ function saveAnonActor(){
 // ── 帳號類型分頁資料（預設值，首次載入寫入 localStorage）──
 const _ACCT_DEFAULT = {
   ai: [
-    { name:'世足大財神 - 體育代理', cat:'體育', follows:221, note:'導預測平台/小財神' },
-    { name:'陳亦強', cat:'棋牌/麻將', follows:30, note:'個人玩家身分' },
-    { name:'AI世界盃足球分析', cat:'棋牌/麻將', follows:0, note:'平台身分' },
+    { name:'世足大財神 - 體育代理', cat:'體育', followsTh:221, followsIg:null, note:'導預測平台/小財神' },
+    { name:'陳亦強', cat:'棋牌/麻將', followsTh:30, followsIg:null, note:'個人玩家身分' },
+    { name:'AI世界盃足球分析', cat:'棋牌/麻將', followsTh:0, followsIg:null, note:'平台身分' },
   ],
   forum: [
-    { name:'扁扁', cat:'詐騙黑名單法律', follows:74, note:'bio暫時無法放連結' },
-    { name:'阿奇', cat:'世足/運彩/體育投注', follows:86, note:'' },
-    { name:'kk', cat:'世足/運彩/體育投注', follows:124, note:'threads無法使用' },
-    { name:'蟹蟹觀測站', cat:'世足/運彩/體育投注', follows:32, note:'用哪帳號去置換' },
-    { name:'世足大財神', cat:'世足/運彩/體育投注', follows:221, note:'' },
-    { name:'魚池阿智', cat:'捕魚', follows:null, note:'' },
-    { name:'捕魚老司機阿網', cat:'捕魚', follows:95, note:'' },
+    { name:'扁扁', cat:'詐騙黑名單法律', followsTh:74, followsIg:null, note:'bio暫時無法放連結' },
+    { name:'阿奇', cat:'世足/運彩/體育投注', followsTh:86, followsIg:null, note:'' },
+    { name:'kk', cat:'世足/運彩/體育投注', followsTh:124, followsIg:null, note:'threads無法使用' },
+    { name:'蟹蟹觀測站', cat:'世足/運彩/體育投注', followsTh:32, followsIg:null, note:'用哪帳號去置換' },
+    { name:'世足大財神', cat:'世足/運彩/體育投注', followsTh:221, followsIg:null, note:'' },
+    { name:'魚池阿智', cat:'捕魚', followsTh:null, followsIg:null, note:'' },
+    { name:'捕魚老司機阿網', cat:'捕魚', followsTh:95, followsIg:null, note:'' },
   ]
 };
 let _actTypeTab = 'ai';
@@ -5445,6 +5445,13 @@ function _getAcctData(){
     if(!Array.isArray(d[tab]) || d[tab].length===0){
       d[tab] = _ACCT_DEFAULT[tab].map(a=>({...a, id:DB.id()}));
       dirty = true;
+    } else {
+      // 遷移舊 follows 欄位 → followsTh
+      d[tab].forEach(row=>{
+        if('follows' in row && !('followsTh' in row)){
+          row.followsTh = row.follows; row.followsIg = null; delete row.follows; dirty = true;
+        }
+      });
     }
   });
   if(dirty) DB.set('acct_overview', d);
@@ -5455,7 +5462,7 @@ function _escVal(v){ return (v==null?'':String(v)).replace(/&/g,'&amp;').replace
 function updateAcctField(tab, id, field, value){
   const d = _getAcctData();
   const row = (d[tab]||[]).find(r=>r.id===id); if(!row) return;
-  row[field] = (field==='follows') ? (value===''?null:(parseInt(value)||0)) : value;
+  row[field] = (['follows','followsIg','followsTh'].includes(field)) ? (value===''?null:(parseInt(value)||0)) : value;
   DB.set('acct_overview', d);
 }
 
@@ -5523,10 +5530,21 @@ function renderActTypeTab(){
           onchange="updateAcctField('${_actTypeTab}','${a.id}','cat',this.value)"
           style="${IS};font-size:.74rem;color:var(--text2)">
       </td>
-      <td style="padding:7px 10px;text-align:center">
-        <input data-f="follows" type="number" value="${_escVal(a.follows??'')}" placeholder="—"
-          onchange="updateAcctField('${_actTypeTab}','${a.id}','follows',this.value)"
-          style="${IS};width:56px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums">
+      <td style="padding:7px 10px">
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="display:flex;align-items:center;gap:5px">
+            <span style="font-size:.6rem;color:var(--text3);min-width:20px">IG</span>
+            <input data-f="followsIg" type="number" value="${_escVal(a.followsIg??'')}" placeholder="—"
+              onchange="updateAcctField('${_actTypeTab}','${a.id}','followsIg',this.value)"
+              style="${IS};width:52px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums">
+          </div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <span style="font-size:.6rem;color:var(--text3);min-width:20px">TH</span>
+            <input data-f="followsTh" type="number" value="${_escVal(a.followsTh??'')}" placeholder="—"
+              onchange="updateAcctField('${_actTypeTab}','${a.id}','followsTh',this.value)"
+              style="${IS};width:52px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums">
+          </div>
+        </div>
       </td>
       <td style="padding:7px 10px;white-space:nowrap">
         <span style="background:#0c2218;color:#4ade80;border-radius:3px;font-size:.66rem;padding:2px 7px">公開</span>
@@ -5547,7 +5565,7 @@ function renderActTypeTab(){
     <thead><tr style="border-bottom:2px solid var(--border)">
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">帳號</th>
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">分類</th>
-      <th style="padding:8px 10px;text-align:center;font-size:.72rem;color:var(--text2);font-weight:600">追蹤數</th>
+      <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">追蹤 IG/TH</th>
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">狀態</th>
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">備註</th>
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">關聯</th>
