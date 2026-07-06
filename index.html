@@ -5459,6 +5459,15 @@ function updateAcctField(tab, id, field, value){
   DB.set('acct_overview', d);
 }
 
+function toggleAcctLink(tab, id){
+  const d = _getAcctData();
+  const row = (d[tab]||[]).find(r=>r.id===id); if(!row) return;
+  row.linked = !row.linked;
+  if(!row.linked) row.linkedTo = '';
+  DB.set('acct_overview', d);
+  renderActTypeTab();
+}
+
 function addAcctRow(tab){
   const d = _getAcctData();
   if(!d[tab]) d[tab]=[];
@@ -5492,35 +5501,48 @@ function renderActTypeTab(){
   const d = _getAcctData();
   const list = d[_actTypeTab] || [];
   const IS = 'background:none;border:none;border-bottom:1px dashed rgba(255,255,255,.15);color:var(--text1);font-size:.81rem;padding:2px 0;outline:none;width:100%';
-  const rows = list.map(a=>`<tr style="border-bottom:1px solid var(--border)">
-    <td style="padding:7px 10px;font-weight:600;min-width:120px">
-      <input data-f="name" value="${_escVal(a.name)}" placeholder="帳號名稱"
-        onchange="updateAcctField('${_actTypeTab}','${a.id}','name',this.value)"
-        style="${IS};font-weight:600">
-    </td>
-    <td style="padding:7px 10px;min-width:80px">
-      <input data-f="cat" value="${_escVal(a.cat)}" placeholder="分類"
-        onchange="updateAcctField('${_actTypeTab}','${a.id}','cat',this.value)"
-        style="${IS};font-size:.74rem;color:var(--text2)">
-    </td>
-    <td style="padding:7px 10px;text-align:center">
-      <input data-f="follows" type="number" value="${_escVal(a.follows??'')}" placeholder="—"
-        onchange="updateAcctField('${_actTypeTab}','${a.id}','follows',this.value)"
-        style="${IS};width:56px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums">
-    </td>
-    <td style="padding:7px 10px;white-space:nowrap">
-      <span style="background:#0c2218;color:#4ade80;border-radius:3px;font-size:.66rem;padding:2px 7px">公開</span>
-    </td>
-    <td style="padding:7px 10px;min-width:100px">
-      <input data-f="note" value="${_escVal(a.note)}" placeholder="備註"
-        onchange="updateAcctField('${_actTypeTab}','${a.id}','note',this.value)"
-        style="${IS};font-size:.74rem;color:var(--text2)">
-    </td>
-    <td style="padding:7px 6px;text-align:center">
-      <button onclick="deleteAcctRow('${_actTypeTab}','${a.id}')" title="刪除"
-        style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:.78rem;opacity:.55;padding:2px 4px">✕</button>
-    </td>
-  </tr>`).join('');
+  const rows = list.map(a=>{
+    const linkCell = a.linked
+      ? `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+           <span style="display:inline-flex;align-items:center;gap:4px;background:#1c1a3a;border:1px solid #6366f1;color:#a5b4fc;border-radius:4px;font-size:.65rem;padding:2px 7px;cursor:pointer;white-space:nowrap"
+             onclick="toggleAcctLink('${_actTypeTab}','${a.id}')">🔗 關聯帳號 ✕</span>
+           <input value="${_escVal(a.linkedTo||'')}" placeholder="綁定帳號名稱"
+             onchange="updateAcctField('${_actTypeTab}','${a.id}','linkedTo',this.value)"
+             style="${IS};font-size:.72rem;color:#a5b4fc;min-width:80px;border-bottom:1px dashed #6366f180">
+         </div>`
+      : `<button onclick="toggleAcctLink('${_actTypeTab}','${a.id}')"
+           style="background:none;border:1px dashed rgba(255,255,255,.2);color:var(--text3);border-radius:4px;font-size:.63rem;padding:2px 8px;cursor:pointer;white-space:nowrap;opacity:.6">關聯帳號</button>`;
+    return `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:7px 10px;font-weight:600;min-width:120px">
+        <input data-f="name" value="${_escVal(a.name)}" placeholder="帳號名稱"
+          onchange="updateAcctField('${_actTypeTab}','${a.id}','name',this.value)"
+          style="${IS};font-weight:600">
+      </td>
+      <td style="padding:7px 10px;min-width:80px">
+        <input data-f="cat" value="${_escVal(a.cat)}" placeholder="分類"
+          onchange="updateAcctField('${_actTypeTab}','${a.id}','cat',this.value)"
+          style="${IS};font-size:.74rem;color:var(--text2)">
+      </td>
+      <td style="padding:7px 10px;text-align:center">
+        <input data-f="follows" type="number" value="${_escVal(a.follows??'')}" placeholder="—"
+          onchange="updateAcctField('${_actTypeTab}','${a.id}','follows',this.value)"
+          style="${IS};width:56px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums">
+      </td>
+      <td style="padding:7px 10px;white-space:nowrap">
+        <span style="background:#0c2218;color:#4ade80;border-radius:3px;font-size:.66rem;padding:2px 7px">公開</span>
+      </td>
+      <td style="padding:7px 10px;min-width:100px">
+        <input data-f="note" value="${_escVal(a.note||'')}" placeholder="備註"
+          onchange="updateAcctField('${_actTypeTab}','${a.id}','note',this.value)"
+          style="${IS};font-size:.74rem;color:var(--text2)">
+      </td>
+      <td style="padding:7px 10px;min-width:140px">${linkCell}</td>
+      <td style="padding:7px 6px;text-align:center">
+        <button onclick="deleteAcctRow('${_actTypeTab}','${a.id}')" title="刪除"
+          style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:.78rem;opacity:.5;padding:2px 4px">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
   el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
     <thead><tr style="border-bottom:2px solid var(--border)">
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">帳號</th>
@@ -5528,13 +5550,14 @@ function renderActTypeTab(){
       <th style="padding:8px 10px;text-align:center;font-size:.72rem;color:var(--text2);font-weight:600">追蹤數</th>
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">狀態</th>
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">備註</th>
+      <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">關聯</th>
       <th style="width:28px"></th>
     </tr></thead>
     <tbody>${rows}</tbody>
   </table></div>
   <div style="margin-top:10px;padding:0 2px">
     <button onclick="addAcctRow('${_actTypeTab}')"
-      style="background:none;border:1px dashed var(--accent);color:var(--accent);border-radius:4px;padding:5px 16px;font-size:.78rem;cursor:pointer;opacity:.85">＋ 關聯帳號</button>
+      style="background:none;border:1px dashed var(--accent);color:var(--accent);border-radius:4px;padding:5px 16px;font-size:.78rem;cursor:pointer;opacity:.85">＋ 新增帳號</button>
   </div>`;
 }
 
