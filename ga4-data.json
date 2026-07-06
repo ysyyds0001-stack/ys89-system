@@ -3,7 +3,7 @@
     {
       "name": "akki",
       "medium": "th_post",
-      "sessions": 5893,
+      "sessions": 5925,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -11,7 +11,7 @@
     {
       "name": "crab",
       "medium": "th_post",
-      "sessions": 1694,
+      "sessions": 1695,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -19,7 +19,7 @@
     {
       "name": "(direct)",
       "medium": "(none)",
-      "sessions": 745,
+      "sessions": 750,
       "cls": "direct",
       "tag": "直接/未知",
       "tcls": "t-direct"
@@ -27,7 +27,7 @@
     {
       "name": "shizu",
       "medium": "th_post",
-      "sessions": 651,
+      "sessions": 660,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -35,7 +35,7 @@
     {
       "name": "line",
       "medium": "referral",
-      "sessions": 557,
+      "sessions": 566,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
@@ -51,7 +51,7 @@
     {
       "name": "uncle",
       "medium": "th_bio",
-      "sessions": 386,
+      "sessions": 390,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -67,7 +67,7 @@
     {
       "name": "god",
       "medium": "th_bio",
-      "sessions": 338,
+      "sessions": 337,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -75,7 +75,7 @@
     {
       "name": "god",
       "medium": "th_post",
-      "sessions": 139,
+      "sessions": 140,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -83,7 +83,7 @@
     {
       "name": "google",
       "medium": "organic",
-      "sessions": 112,
+      "sessions": 115,
       "cls": "organic",
       "tag": "自然搜尋",
       "tcls": "t-direct"
@@ -91,7 +91,7 @@
     {
       "name": "threads",
       "medium": "comment",
-      "sessions": 81,
+      "sessions": 80,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -129,28 +129,12 @@
       "tcls": "t-paid"
     },
     {
-      "name": "(data not available)",
-      "medium": "(data not available)",
-      "sessions": 39,
-      "cls": "other",
-      "tag": "其他",
-      "tcls": "t-direct"
-    },
-    {
       "name": "bing",
       "medium": "organic",
       "sessions": 37,
       "cls": "organic",
       "tag": "自然搜尋",
       "tcls": "t-direct"
-    },
-    {
-      "name": "ditui",
-      "medium": "offline",
-      "sessions": 32,
-      "cls": "offline",
-      "tag": "地推",
-      "tcls": "t-offline"
     },
     {
       "name": "m.facebook.com",
@@ -185,9 +169,17 @@
       "tcls": "t-line"
     },
     {
+      "name": "ditui",
+      "medium": "offline",
+      "sessions": 29,
+      "cls": "offline",
+      "tag": "地推",
+      "tcls": "t-offline"
+    },
+    {
       "name": "(not set)",
       "medium": "(not set)",
-      "sessions": 26,
+      "sessions": 24,
       "cls": "other",
       "tag": "其他",
       "tcls": "t-direct"
@@ -203,7 +195,7 @@
     {
       "name": "ianlin",
       "medium": "th_post",
-      "sessions": 17,
+      "sessions": 19,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -225,20 +217,28 @@
       "tcls": "t-line"
     },
     {
-      "name": "akki",
-      "medium": "th_bio",
-      "sessions": 8,
-      "cls": "army",
-      "tag": "社群水軍",
-      "tcls": "t-army"
+      "name": "(data not available)",
+      "medium": "(data not available)",
+      "sessions": 9,
+      "cls": "other",
+      "tag": "其他",
+      "tcls": "t-direct"
     },
     {
       "name": "ys89_me",
       "medium": "referral",
-      "sessions": 7,
+      "sessions": 9,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
+    },
+    {
+      "name": "akki",
+      "medium": "th_bio",
+      "sessions": 7,
+      "cls": "army",
+      "tag": "社群水軍",
+      "tcls": "t-army"
     },
     {
       "name": "threads",
@@ -257,14 +257,6 @@
       "tcls": "t-army"
     },
     {
-      "name": "l.threads.com",
-      "medium": "referral",
-      "sessions": 5,
-      "cls": "army",
-      "tag": "社群水軍",
-      "tcls": "t-army"
-    },
-    {
       "name": "deckmatt.com",
       "medium": "referral",
       "sessions": 4,
@@ -273,7 +265,23 @@
       "tcls": "t-direct"
     },
     {
+      "name": "fifa_worldcups",
+      "medium": "referral",
+      "sessions": 4,
+      "cls": "other",
+      "tag": "其他",
+      "tcls": "t-direct"
+    },
+    {
       "name": "l.facebook.com",
+      "medium": "referral",
+      "sessions": 4,
+      "cls": "army",
+      "tag": "社群水軍",
+      "tcls": "t-army"
+    },
+    {
+      "name": "l.threads.com",
       "medium": "referral",
       "sessions": 4,
       "cls": "army",
@@ -295,14 +303,6 @@
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
-    },
-    {
-      "name": "fifa_worldcups",
-      "medium": "referral",
-      "sessions": 3,
-      "cls": "other",
-      "tag": "其他",
-      "tcls": "t-direct"
     },
     {
       "name": "god",
@@ -394,6 +394,14 @@
     },
     {
       "name": "ys89-seo-docs.pages.dev",
+      "medium": "referral",
+      "sessions": 2,
+      "cls": "line",
+      "tag": "LINE",
+      "tcls": "t-line"
+    },
+    {
+      "name": "ys89_games",
       "medium": "referral",
       "sessions": 2,
       "cls": "line",
@@ -508,31 +516,31 @@
   "accounts": [
     {
       "name": "akki",
-      "s": 5901,
-      "cta": 1634,
+      "s": 5931,
+      "cta": 1646,
       "warn": false
     },
     {
       "name": "crab",
-      "s": 1759,
+      "s": 1760,
       "cta": 707,
       "warn": false
     },
     {
       "name": "(direct)",
-      "s": 745,
-      "cta": 102,
+      "s": 750,
+      "cta": 103,
       "warn": false
     },
     {
       "name": "shizu",
-      "s": 651,
-      "cta": 210,
+      "s": 660,
+      "cta": 213,
       "warn": false
     },
     {
       "name": "line",
-      "s": 560,
+      "s": 569,
       "cta": 27,
       "warn": false
     },
@@ -545,13 +553,13 @@
     {
       "name": "god",
       "s": 481,
-      "cta": 109,
+      "cta": 108,
       "warn": false
     },
     {
       "name": "uncle",
-      "s": 387,
-      "cta": 135,
+      "s": 391,
+      "cta": 134,
       "warn": false
     },
     {
@@ -562,14 +570,14 @@
     },
     {
       "name": "threads",
-      "s": 150,
+      "s": 149,
       "cta": 14,
       "warn": false
     },
     {
       "name": "google",
-      "s": 112,
-      "cta": 23,
+      "s": 115,
+      "cta": 25,
       "warn": false
     },
     {
@@ -585,12 +593,6 @@
       "warn": false
     },
     {
-      "name": "(data not available)",
-      "s": 39,
-      "cta": 4,
-      "warn": false
-    },
-    {
       "name": "bing",
       "s": 37,
       "cta": 4,
@@ -600,12 +602,6 @@
       "name": "apu",
       "s": 33,
       "cta": 9,
-      "warn": false
-    },
-    {
-      "name": "ditui",
-      "s": 32,
-      "cta": 5,
       "warn": false
     },
     {
@@ -627,9 +623,15 @@
       "warn": false
     },
     {
+      "name": "ditui",
+      "s": 29,
+      "cta": 5,
+      "warn": false
+    },
+    {
       "name": "(not set)",
-      "s": 26,
-      "cta": 15,
+      "s": 24,
+      "cta": 11,
       "warn": false
     },
     {
@@ -640,7 +642,7 @@
     },
     {
       "name": "ianlin",
-      "s": 17,
+      "s": 19,
       "cta": 3,
       "warn": false
     },
@@ -657,19 +659,25 @@
       "warn": false
     },
     {
-      "name": "ys89_me",
-      "s": 7,
+      "name": "(data not available)",
+      "s": 9,
       "cta": 0,
       "warn": false
     },
     {
-      "name": "l.threads.com",
-      "s": 5,
+      "name": "ys89_me",
+      "s": 9,
       "cta": 0,
       "warn": false
     },
     {
       "name": "deckmatt.com",
+      "s": 4,
+      "cta": 0,
+      "warn": false
+    },
+    {
+      "name": "fifa_worldcups",
       "s": 4,
       "cta": 0,
       "warn": false
@@ -681,14 +689,14 @@
       "warn": false
     },
     {
-      "name": "ys89.fun",
+      "name": "l.threads.com",
       "s": 4,
       "cta": 0,
       "warn": false
     },
     {
-      "name": "fifa_worldcups",
-      "s": 3,
+      "name": "ys89.fun",
+      "s": 4,
       "cta": 0,
       "warn": false
     },
@@ -738,6 +746,12 @@
       "name": "ys89-seo-docs.pages.dev",
       "s": 2,
       "cta": 1,
+      "warn": false
+    },
+    {
+      "name": "ys89_games",
+      "s": 2,
+      "cta": 0,
       "warn": false
     },
     {
@@ -804,47 +818,47 @@
   "pages": [
     {
       "t": "2026世界盃直播｜104場看直播完整入口・台灣時間賽程 - YS89球迷站",
-      "v": 6864
+      "v": 6870
     },
     {
       "t": "2026世界盃直播賽程｜104場觀賽入口・台灣時間・世足賽哪裡看一次看懂",
-      "v": 2699
+      "v": 2700
     },
     {
       "t": "2026 世界盃觀賽入口｜104場完整賽程・台灣時間・開賽提醒",
-      "v": 2130
+      "v": 2139
     },
     {
       "t": "2026世足賽直播｜104場線上看｜台灣時間賽程表+免費觀賽入口",
-      "v": 1194
+      "v": 1203
     },
     {
       "t": "2026世足賠率即時｜104場直播投注盤口・滾球同步看｜ys89.biz",
-      "v": 371
+      "v": 366
     },
     {
       "t": "如何觀看 2026 世界盃 104 場直播・3 步驟解鎖教學｜台灣觀賽直播攻略",
-      "v": 297
+      "v": 300
     },
     {
       "t": "2026世足投注攻略・讓分盤・波膽・串關完整教學｜台灣世足運彩攻略站",
-      "v": 266
+      "v": 267
     }
   ],
   "contents": [
     {
       "content": "crab-0611-1",
-      "sessions": 1694,
+      "sessions": 1695,
       "cta": 679
     },
     {
       "content": "shizu-0611-1",
-      "sessions": 651,
-      "cta": 210
+      "sessions": 660,
+      "cta": 213
     },
     {
       "content": "watch_104",
-      "sessions": 505,
+      "sessions": 512,
       "cta": 16
     },
     {
@@ -864,8 +878,8 @@
     },
     {
       "content": "link_in_bio",
-      "sessions": 134,
-      "cta": 40
+      "sessions": 133,
+      "cta": 39
     },
     {
       "content": "god-0611-1",
@@ -874,12 +888,12 @@
     },
     {
       "content": "fifa_site",
-      "sessions": 75,
+      "sessions": 74,
       "cta": 5
     },
     {
       "content": "schedule",
-      "sessions": 40,
+      "sessions": 41,
       "cta": 8
     },
     {
@@ -894,12 +908,12 @@
     },
     {
       "content": "ianlin-0612-1",
-      "sessions": 17,
+      "sessions": 19,
       "cta": 3
     },
     {
       "content": "odds",
-      "sessions": 16,
+      "sessions": 17,
       "cta": 3
     },
     {
@@ -913,13 +927,13 @@
       "cta": 0
     },
     {
-      "content": "prediction",
-      "sessions": 6,
+      "content": "footer_network",
+      "sessions": 10,
       "cta": 0
     },
     {
-      "content": "footer_network",
-      "sessions": 5,
+      "content": "prediction",
+      "sessions": 6,
       "cta": 0
     },
     {
@@ -1001,68 +1015,26 @@
   "contents_3d": [
     {
       "content": "shizu-0611-1",
-      "sessions": 13,
-      "cta": 5
-    },
-    {
-      "content": "crab-0611-1",
-      "sessions": 3,
-      "cta": 1
-    },
-    {
-      "content": "link_in_bio",
-      "sessions": 3,
-      "cta": 2
+      "sessions": 11,
+      "cta": 3
     },
     {
       "content": "watch_104",
-      "sessions": 3,
-      "cta": 0
-    },
-    {
-      "content": "blog",
-      "sessions": 1,
-      "cta": 0
-    },
-    {
-      "content": "odds",
-      "sessions": 1,
-      "cta": 0
-    }
-  ],
-  "contents_7d": [
-    {
-      "content": "shizu-0611-1",
-      "sessions": 27,
-      "cta": 11
-    },
-    {
-      "content": "watch_104",
-      "sessions": 13,
-      "cta": 0
-    },
-    {
-      "content": "crab-0611-1",
       "sessions": 9,
-      "cta": 1
+      "cta": 0
+    },
+    {
+      "content": "footer_network",
+      "sessions": 5,
+      "cta": 0
+    },
+    {
+      "content": "crab-0611-1",
+      "sessions": 3,
+      "cta": 0
     },
     {
       "content": "ianlin-0612-1",
-      "sessions": 5,
-      "cta": 2
-    },
-    {
-      "content": "link_in_bio",
-      "sessions": 4,
-      "cta": 2
-    },
-    {
-      "content": "me_step3_watch",
-      "sessions": 3,
-      "cta": 0
-    },
-    {
-      "content": "apu-0611-1",
       "sessions": 2,
       "cta": 0
     },
@@ -1082,154 +1054,206 @@
       "cta": 0
     }
   ],
+  "contents_7d": [
+    {
+      "content": "shizu-0611-1",
+      "sessions": 31,
+      "cta": 13
+    },
+    {
+      "content": "watch_104",
+      "sessions": 16,
+      "cta": 0
+    },
+    {
+      "content": "ianlin-0612-1",
+      "sessions": 7,
+      "cta": 2
+    },
+    {
+      "content": "crab-0611-1",
+      "sessions": 6,
+      "cta": 1
+    },
+    {
+      "content": "footer_network",
+      "sessions": 5,
+      "cta": 0
+    },
+    {
+      "content": "link_in_bio",
+      "sessions": 4,
+      "cta": 2
+    },
+    {
+      "content": "me_step3_watch",
+      "sessions": 2,
+      "cta": 0
+    },
+    {
+      "content": "odds",
+      "sessions": 2,
+      "cta": 0
+    },
+    {
+      "content": "schedule",
+      "sessions": 2,
+      "cta": 0
+    },
+    {
+      "content": "blog",
+      "sessions": 1,
+      "cta": 0
+    }
+  ],
   "kpis": {
-    "activeUsers": 11261,
-    "sessions": 12212,
-    "eventCount": 49276,
-    "cta": 3085,
-    "conversionRate": 25.26
+    "activeUsers": 11275,
+    "sessions": 12250,
+    "eventCount": 49376,
+    "cta": 3090,
+    "conversionRate": 25.22
   },
   "kpis_3d": {
-    "activeUsers": 138,
-    "sessions": 149,
-    "eventCount": 562,
-    "cta": 42,
-    "conversionRate": 28.19
+    "activeUsers": 132,
+    "sessions": 148,
+    "eventCount": 537,
+    "cta": 35,
+    "conversionRate": 23.65
   },
   "kpis_7d": {
-    "activeUsers": 330,
-    "sessions": 386,
-    "eventCount": 1494,
-    "cta": 110,
-    "conversionRate": 28.5
+    "activeUsers": 336,
+    "sessions": 390,
+    "eventCount": 1495,
+    "cta": 113,
+    "conversionRate": 28.97
   },
   "kpis_prev7d": {
-    "activeUsers": 1175,
-    "sessions": 1283,
-    "eventCount": 5064,
-    "cta": 340,
-    "conversionRate": 26.5
+    "activeUsers": 1099,
+    "sessions": 1200,
+    "eventCount": 4732,
+    "cta": 315,
+    "conversionRate": 26.25
   },
   "kpis_28d": {
-    "activeUsers": 11223,
-    "sessions": 12159,
-    "eventCount": 49113,
-    "cta": 3080,
-    "conversionRate": 25.33
+    "activeUsers": 11179,
+    "sessions": 12121,
+    "eventCount": 48799,
+    "cta": 3081,
+    "conversionRate": 25.42
   },
   "accounts_3d": [
     {
       "name": "akki",
-      "s": 40,
-      "cta": 8
-    },
-    {
-      "name": "(data not available)",
-      "s": 39,
-      "cta": 4
+      "s": 64,
+      "cta": 17
     },
     {
       "name": "(not set)",
-      "s": 23,
-      "cta": 14
+      "s": 21,
+      "cta": 10
     },
     {
       "name": "(direct)",
-      "s": 19,
+      "s": 20,
+      "cta": 1
+    },
+    {
+      "name": "line",
+      "s": 11,
       "cta": 0
     },
     {
       "name": "shizu",
-      "s": 13,
-      "cta": 5
+      "s": 11,
+      "cta": 3
     }
   ],
   "accounts_7d": [
     {
       "name": "akki",
-      "s": 150,
-      "cta": 44
-    },
-    {
-      "name": "(data not available)",
-      "s": 39,
-      "cta": 4
+      "s": 169,
+      "cta": 50
     },
     {
       "name": "(direct)",
-      "s": 39,
-      "cta": 2
+      "s": 47,
+      "cta": 3
     },
     {
       "name": "uncle",
-      "s": 37,
+      "s": 36,
       "cta": 10
     },
     {
       "name": "shizu",
-      "s": 27,
-      "cta": 11
+      "s": 31,
+      "cta": 13
+    },
+    {
+      "name": "god",
+      "s": 28,
+      "cta": 13
     }
   ],
   "accounts_prev7d": [
     {
       "name": "akki",
-      "s": 903,
-      "cta": 263
+      "s": 824,
+      "cta": 245
     },
     {
       "name": "(direct)",
-      "s": 116,
-      "cta": 10
+      "s": 110,
+      "cta": 9
     },
     {
       "name": "god",
-      "s": 80,
-      "cta": 19
+      "s": 78,
+      "cta": 18
     },
     {
       "name": "shizu",
-      "s": 58,
+      "s": 61,
       "cta": 23
     },
     {
-      "name": "line",
-      "s": 37,
-      "cta": 2
+      "name": "uncle",
+      "s": 36,
+      "cta": 10
     }
   ],
   "accounts_28d": [
     {
       "name": "akki",
-      "s": 5870,
-      "cta": 1629
+      "s": 5872,
+      "cta": 1634
     },
     {
       "name": "crab",
-      "s": 1759,
+      "s": 1760,
       "cta": 707
     },
     {
       "name": "(direct)",
-      "s": 739,
-      "cta": 102
+      "s": 727,
+      "cta": 101
     },
     {
       "name": "shizu",
-      "s": 651,
-      "cta": 210
+      "s": 660,
+      "cta": 213
     },
     {
       "name": "line",
-      "s": 559,
+      "s": 568,
       "cta": 27
     }
   ],
   "ranges": {
-    "3d": "2026-07-03~2026-07-05",
-    "7d": "2026-06-29~2026-07-05",
-    "prev7d": "2026-06-22~2026-06-28",
-    "28d": "2026-06-08~2026-07-05"
+    "3d": "2026-07-04~2026-07-06",
+    "7d": "2026-06-30~2026-07-06",
+    "prev7d": "2026-06-23~2026-06-29",
+    "28d": "2026-06-09~2026-07-06"
   },
-  "lastUpdated": "2026-07-05T04:57:27.459251"
+  "lastUpdated": "2026-07-06T05:12:12.644178"
 }
