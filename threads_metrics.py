@@ -12,15 +12,24 @@ import json, urllib.parse, sys
 PORT = 5568
 
 JS_EXTRACT = """() => {
-    // 瀏覽數：唯一含「次瀏覽」的葉節點
-    const viewEl = [...document.querySelectorAll('*')]
-        .find(e => e.children.length === 0 && e.textContent.includes('次瀏覽'));
-    const viewRaw = viewEl ? viewEl.textContent.replace(/[^\\d.萬]/g,'') : '0';
-    const views = viewRaw.includes('萬') ? Math.round(parseFloat(viewRaw)*10000) : (parseInt(viewRaw)||0);
+    // 瀏覽數：頁面上最後一個含「次瀏覽」的葉節點（串文整體瀏覽數，通常在頁首）
+    const viewEls = [...document.querySelectorAll('*')]
+        .filter(e => e.children.length === 0 && e.textContent.includes('次瀏覽'));
+    const viewEl = viewEls[0] || null;
+    const viewRaw = viewEl ? viewEl.textContent.replace(/[^\\d.萬千百]/g,'') : '0';
+    let views = 0;
+    if (viewRaw.includes('萬')) {
+        views = Math.round(parseFloat(viewRaw) * 10000);
+    } else {
+        views = parseInt(viewRaw.replace(/[^\\d]/g,'')) || 0;
+    }
 
-    // 找 action bar：含 讚/回覆/轉發/分享 的最小共同容器
-    const likeLabel = [...document.querySelectorAll('*')]
-        .find(e => e.children.length === 0 && e.textContent.trim() === '讚');
+    // 找「最後一個」action bar：回覆頁面有多個帖，最後一個才是目標貼文
+    // action bar = 同時含 讚/回覆/轉發/分享 的最小容器
+    const allLikeLabels = [...document.querySelectorAll('*')]
+        .filter(e => e.children.length === 0 && e.textContent.trim() === '讚');
+    // 取最後一個 '讚' 找到的 actionBar（最下方的貼文）
+    const likeLabel = allLikeLabels[allLikeLabels.length - 1] || null;
     let actionBar = likeLabel;
     for (let i = 0; i < 10 && actionBar; i++) {
         actionBar = actionBar.parentElement;
