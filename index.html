@@ -5421,9 +5421,9 @@ function saveAnonActor(){
 // ── 帳號類型分頁資料（預設值，首次載入寫入 localStorage）──
 const _ACCT_DEFAULT = {
   ai: [
-    { name:'世足大財神 - 體育代理', cat:'體育', followsTh:221, followsIg:null, note:'導預測平台/小財神' },
-    { name:'陳亦強', cat:'棋牌/麻將', followsTh:30, followsIg:null, note:'個人玩家身分' },
-    { name:'AI世界盃足球分析', cat:'棋牌/麻將', followsTh:0, followsIg:null, note:'平台身分' },
+    { name:'世足大財神 - 體育代理', cat:'體育', followsTh:221, followsIg:null, note:'導預測平台/小財神', landing:'' },
+    { name:'陳亦強', cat:'棋牌/麻將', followsTh:30, followsIg:null, note:'個人玩家身分', landing:'' },
+    { name:'AI世界盃足球分析', cat:'棋牌/麻將', followsTh:0, followsIg:null, note:'平台身分', landing:'' },
   ],
   forum: [
     { name:'扁扁', cat:'詐騙黑名單法律', followsTh:74, followsIg:null, note:'bio暫時無法放連結' },
@@ -5554,6 +5554,11 @@ function renderActTypeTab(){
           onchange="updateAcctField('${_actTypeTab}','${a.id}','note',this.value)"
           style="${IS};font-size:.74rem;color:var(--text2)">
       </td>
+      ${_actTypeTab==='ai' ? `<td style="padding:7px 10px;min-width:120px">
+        <input data-f="landing" value="${_escVal(a.landing||'')}" placeholder="填入落地頁"
+          onchange="updateAcctField('${_actTypeTab}','${a.id}','landing',this.value)"
+          style="${IS};font-size:.74rem;color:#fbbf24">
+      </td>` : ''}
       <td style="padding:7px 10px;min-width:140px">${linkCell}</td>
       <td style="padding:7px 6px;text-align:center">
         <button onclick="deleteAcctRow('${_actTypeTab}','${a.id}')" title="刪除"
@@ -5568,6 +5573,7 @@ function renderActTypeTab(){
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">追蹤 IG/TH</th>
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">狀態</th>
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">備註</th>
+      ${_actTypeTab==='ai' ? '<th style="padding:8px 10px;text-align:left;font-size:.72rem;color:#fbbf24;font-weight:600">導流落地頁</th>' : ''}
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">關聯</th>
       <th style="width:28px"></th>
     </tr></thead>
