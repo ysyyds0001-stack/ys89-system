@@ -5554,10 +5554,15 @@ function renderActTypeTab(){
           onchange="updateAcctField('${_actTypeTab}','${a.id}','note',this.value)"
           style="${IS};font-size:.74rem;color:var(--text2)">
       </td>
-      ${_actTypeTab==='ai' ? `<td style="padding:7px 10px;min-width:120px">
-        <input data-f="landing" value="${_escVal(a.landing||'')}" placeholder="填入落地頁"
-          onchange="updateAcctField('${_actTypeTab}','${a.id}','landing',this.value)"
-          style="${IS};font-size:.74rem;color:#fbbf24">
+      ${_actTypeTab==='ai' ? `<td style="padding:7px 10px;min-width:140px">
+        <div style="display:flex;align-items:center;gap:5px">
+          <input data-f="landing" value="${_escVal(a.landing||'')}" placeholder="貼上連結或頁面名稱"
+            onchange="updateAcctField('${_actTypeTab}','${a.id}','landing',this.value)"
+            style="${IS};font-size:.74rem;color:#fbbf24;flex:1">
+          ${a.landing ? `<a href="${_escVal(a.landing)}" target="_blank" rel="noopener"
+            title="前往落地頁"
+            style="display:inline-flex;align-items:center;justify-content:center;background:#2a2010;border:1px solid #fbbf2460;color:#fbbf24;border-radius:4px;width:22px;height:22px;font-size:.75rem;text-decoration:none;flex-shrink:0;cursor:pointer">↗</a>` : `<span style="width:22px;height:22px;flex-shrink:0"></span>`}
+        </div>
       </td>` : ''}
       <td style="padding:7px 10px;min-width:140px">${linkCell}</td>
       <td style="padding:7px 6px;text-align:center">
