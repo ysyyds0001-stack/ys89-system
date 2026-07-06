@@ -2159,6 +2159,14 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     </div>
     <button class="btn btn-outline" id="actors-inactive-btn" onclick="actorsToggleInactive()" style="font-size:.78rem">👁 顯示停用/停權</button>
   </div>
+  <!-- 帳號類型總覽分頁 -->
+  <div class="card" style="margin-bottom:20px">
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px">
+      <button id="acttab-ai" onclick="switchActTypeTab('ai')" style="background:none;border:none;border-bottom:2px solid var(--accent);color:var(--accent);padding:8px 18px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap">🤖 推AI預測分析號</button>
+      <button id="acttab-forum" onclick="switchActTypeTab('forum')" style="background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);padding:8px 18px;font-size:.82rem;cursor:pointer;white-space:nowrap">📣 推廣論壇號</button>
+    </div>
+    <div id="act-type-body"></div>
+  </div>
   <!-- 各分類區塊由 renderCommunity() 動態產生 -->
   <div id="actors-body"></div>
   <!-- 保留舊元素供內部函式參照（隱藏） -->
@@ -5410,8 +5418,64 @@ function saveAnonActor(){
   toast('✅ 已儲存')
 }
 
+// ── 帳號類型分頁資料 ──
+const _ACCT_OVERVIEW = {
+  ai: [
+    { name:'世足大財神 - 體育代理', cat:'體育', follows:221, note:'導預測平台/小財神' },
+    { name:'陳亦強', cat:'棋牌/麻將', follows:30, note:'個人玩家身分' },
+    { name:'AI世界盃足球分析', cat:'棋牌/麻將', follows:0, note:'平台身分' },
+  ],
+  forum: [
+    { name:'扁扁', cat:'詐騙黑名單法律', follows:74, note:'bio暫時無法放連結' },
+    { name:'阿奇', cat:'世足/運彩/體育投注', follows:86, note:'' },
+    { name:'kk', cat:'世足/運彩/體育投注', follows:124, note:'threads無法使用' },
+    { name:'蟹蟹觀測站', cat:'世足/運彩/體育投注', follows:32, note:'用哪帳號去置換', hasSub:true },
+    { name:'世足大財神', cat:'世足/運彩/體育投注', follows:221, note:'' },
+    { name:'魚池阿智', cat:'捕魚', follows:null, note:'' },
+    { name:'捕魚老司機阿網', cat:'捕魚', follows:95, note:'' },
+  ]
+};
+let _actTypeTab = 'ai';
+
+function switchActTypeTab(tab){
+  _actTypeTab = tab;
+  document.querySelectorAll('[id^="acttab-"]').forEach(b=>{
+    const active = b.id === 'acttab-' + tab;
+    b.style.borderBottom = active ? '2px solid var(--accent)' : '2px solid transparent';
+    b.style.color = active ? 'var(--accent)' : 'var(--text2)';
+    b.style.fontWeight = active ? '600' : '400';
+  });
+  renderActTypeTab();
+}
+
+function renderActTypeTab(){
+  const el = document.getElementById('act-type-body'); if(!el) return;
+  const list = _ACCT_OVERVIEW[_actTypeTab] || [];
+  const rows = list.map(a => `<tr style="border-bottom:1px solid var(--border)">
+    <td style="padding:9px 10px">
+      <span style="font-weight:600;font-size:.83rem">${a.name}</span>
+      ${a.hasSub ? `<button onclick="alert('新增帳號功能開發中')" style="margin-left:8px;background:none;border:1px solid var(--accent);color:var(--accent);border-radius:3px;font-size:.62rem;padding:1px 7px;cursor:pointer;opacity:.8">＋ 新增帳號</button>` : ''}
+    </td>
+    <td style="padding:9px 10px;color:var(--text2);font-size:.76rem;white-space:nowrap">${a.cat}</td>
+    <td style="padding:9px 10px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums;font-size:.83rem">${a.follows!=null?a.follows:'—'}</td>
+    <td style="padding:9px 10px"><span style="background:#0c2218;color:#4ade80;border-radius:3px;font-size:.66rem;padding:2px 7px;white-space:nowrap">公開</span></td>
+    <td style="padding:9px 10px;font-size:.74rem;color:var(--text2)">${a.note||''}</td>
+  </tr>`).join('');
+  el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+    <thead><tr style="border-bottom:2px solid var(--border)">
+      <th style="padding:8px 10px;text-align:left;font-size:.74rem;color:var(--text2);font-weight:600">帳號</th>
+      <th style="padding:8px 10px;text-align:left;font-size:.74rem;color:var(--text2);font-weight:600">分類</th>
+      <th style="padding:8px 10px;text-align:center;font-size:.74rem;color:var(--text2);font-weight:600">追蹤數</th>
+      <th style="padding:8px 10px;text-align:left;font-size:.74rem;color:var(--text2);font-weight:600">狀態</th>
+      <th style="padding:8px 10px;text-align:left;font-size:.74rem;color:var(--text2);font-weight:600">備註</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
 function renderCommunity(){
   const body=document.getElementById('actors-body'); if(!body) return
+  renderActTypeTab();
   // 保留 KPI banner 給內部使用
   try{ renderKpiBanner() }catch(e){}
   window._cmPrompts={}
