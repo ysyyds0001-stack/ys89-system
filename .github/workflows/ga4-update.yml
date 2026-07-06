@@ -32,6 +32,7 @@ jobs:
           echo "$GA4_SA_KEY" > gsc-credentials.json
 
       - name: 📊 拉取 GA4 數據
+        continue-on-error: true
         env:
           GA4_SA_KEY_PATH: ./gsc-credentials.json
         run: |
