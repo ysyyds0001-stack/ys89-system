@@ -467,12 +467,15 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
   <!-- picks168.com 落地頁成效（完整漏斗第二段）-->
   <div class="card" style="border-left:3px solid #a78bfa;margin-bottom:18px">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
       <div>
         <div class="card-title" style="color:#a78bfa">🏁 picks168.com 落地頁成效</div>
         <p class="tm" style="font-size:.74rem">ys89.fun CTA 之後的第二段漏斗 · 信任頁進群追蹤</p>
       </div>
-      <span id="p168RangeLabel" style="font-size:.72rem;color:var(--text2);background:var(--g3);padding:2px 8px;border-radius:10px">—</span>
+      <div style="display:flex;gap:4px;align-items:center;flex-shrink:0">
+        <button id="p168pb7d" onclick="switchP168Period('7d')" style="font-size:.7rem;padding:3px 11px;border-radius:12px;border:1px solid #a78bfa;background:#a78bfa;color:#fff;cursor:pointer;transition:all .15s">近 7 天</button>
+        <button id="p168pb28d" onclick="switchP168Period('28d')" style="font-size:.7rem;padding:3px 11px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s">近 28 天</button>
+      </div>
     </div>
     <div class="g5 ga4-kpis" style="margin-bottom:14px">
       <div class="stat"><div class="stat-label">進站 sessions</div><div class="stat-num" id="p168Sessions">—</div></div>
@@ -480,6 +483,25 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <div class="stat"><div class="stat-label">進群 / 訂閱</div><div class="stat-num" id="p168Sub">—</div></div>
       <div class="stat"><div class="stat-label">CTA 率</div><div class="stat-num" id="p168CtaRate" style="font-size:1.4rem">—</div></div>
       <div class="stat"><div class="stat-label">進群率</div><div class="stat-num" id="p168SubRate" style="font-size:1.4rem">—</div></div>
+    </div>
+    <!-- AI 預測推廣角色成效 -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:.78rem;font-weight:600;color:var(--text2);margin-bottom:8px">🤖 AI 預測推廣角色成效</div>
+      <div class="t-scroll">
+        <table id="p168RoleTable" style="width:100%;border-collapse:collapse;font-size:.8rem">
+          <thead>
+            <tr style="color:var(--text3);font-size:.72rem;border-bottom:1px solid var(--border)">
+              <th style="text-align:left;padding:5px 10px 5px 0;font-weight:500">角色</th>
+              <th style="text-align:right;padding:5px 6px;font-weight:500">進站</th>
+              <th style="text-align:right;padding:5px 6px;font-weight:500">CTA 點擊</th>
+              <th style="text-align:right;padding:5px 6px;font-weight:500">進群</th>
+              <th style="text-align:right;padding:5px 6px;font-weight:500">CTA 率</th>
+              <th style="text-align:right;padding:5px 0 5px 6px;font-weight:500">進群率</th>
+            </tr>
+          </thead>
+          <tbody id="p168RoleBody"></tbody>
+        </table>
+      </div>
     </div>
     <div class="g2">
       <div>
@@ -793,15 +815,43 @@ function renderGA4(d){
   switchGA4Period('7d');
 }
 
+function switchP168Period(p) {
+  const b7  = document.getElementById('p168pb7d');
+  const b28 = document.getElementById('p168pb28d');
+  if (b7 && b28) {
+    const is7 = (p === '7d');
+    b7.style.background  = is7 ? '#a78bfa' : 'transparent';
+    b7.style.color       = is7 ? '#fff' : 'var(--text2)';
+    b7.style.borderColor = is7 ? '#a78bfa' : 'var(--border)';
+    b28.style.background  = !is7 ? '#a78bfa' : 'transparent';
+    b28.style.color       = !is7 ? '#fff' : 'var(--text2)';
+    b28.style.borderColor = !is7 ? '#a78bfa' : 'var(--border)';
+  }
+  if (_ga4Data) renderPicks168(_ga4Data, p);
+}
+
 function renderPicks168(d, period) {
   const p168 = d.picks168;
   if (!p168) return;
 
   const is7d = (period === '7d' || period === '3d');
-  const kpis     = is7d ? (p168.kpis_7d     || p168.kpis_28d) : p168.kpis_28d;
-  const sources  = is7d ? (p168.sources_7d  || p168.sources_28d) : p168.sources_28d;
-  const contents = is7d ? (p168.contents_7d || p168.contents_28d) : p168.contents_28d;
-  const events   = is7d ? (p168.events_7d   || p168.events_28d) : p168.events_28d;
+  const kpis       = is7d ? (p168.kpis_7d       || p168.kpis_28d)       : p168.kpis_28d;
+  const sources    = is7d ? (p168.sources_7d    || p168.sources_28d)    : p168.sources_28d;
+  const contents   = is7d ? (p168.contents_7d   || p168.contents_28d)   : p168.contents_28d;
+  const events     = is7d ? (p168.events_7d     || p168.events_28d)     : p168.events_28d;
+  const convBySrc  = is7d ? p168.conversions_by_source_7d : p168.conversions_by_source_28d;
+
+  // Update tab highlight to match the active period
+  const b7  = document.getElementById('p168pb7d');
+  const b28 = document.getElementById('p168pb28d');
+  if (b7 && b28) {
+    b7.style.background  = is7d ? '#a78bfa' : 'transparent';
+    b7.style.color       = is7d ? '#fff' : 'var(--text2)';
+    b7.style.borderColor = is7d ? '#a78bfa' : 'var(--border)';
+    b28.style.background  = !is7d ? '#a78bfa' : 'transparent';
+    b28.style.color       = !is7d ? '#fff' : 'var(--text2)';
+    b28.style.borderColor = !is7d ? '#a78bfa' : 'var(--border)';
+  }
 
   const ctaEv  = (events||[]).find(e=>e.name==='cta_click');
   const subEv  = (events||[]).find(e=>e.name==='subscribe_click');
@@ -818,7 +868,32 @@ function renderPicks168(d, period) {
   el('p168CtaRate').textContent  = sessN ? (ctaN/sessN*100).toFixed(1)+'%' : '—';
   el('p168SubRate').textContent  = sessN ? (subN/sessN*100).toFixed(1)+'%' : '—';
 
-  if (el('p168RangeLabel')) el('p168RangeLabel').textContent = is7d ? '近 7 天' : '近 28 天';
+  // AI 預測推廣角色成效表
+  const ROLES = [
+    { key: 'god', name: '世足大財神', icon: '⚡' },
+    { key: 'cyq', name: '陳亦強',     icon: '🧠' },
+    { key: 'cc',  name: 'cc（AI世界盃）', icon: '🌐' },
+  ];
+  const ctaArr = (convBySrc?.cta_click || []);
+  const subArr = (convBySrc?.subscribe_click || []);
+  const roleBody = el('p168RoleBody');
+  if (roleBody) {
+    roleBody.innerHTML = ROLES.map(r => {
+      const rSess = (sources||[]).filter(s=>s.source===r.key).reduce((a,s)=>a+s.sessions,0);
+      const rCta  = ctaArr.filter(s=>s.source===r.key).reduce((a,s)=>a+s.count,0);
+      const rSub  = subArr.filter(s=>s.source===r.key).reduce((a,s)=>a+s.count,0);
+      const ctaR  = rSess ? (rCta/rSess*100).toFixed(1)+'%' : '—';
+      const subR  = (rSess && rSub) ? (rSub/rSess*100).toFixed(1)+'%' : '—';
+      return `<tr style="border-bottom:1px solid var(--g3)">
+        <td style="padding:7px 10px 7px 0;font-weight:600;color:var(--text1);white-space:nowrap">${r.icon} ${r.name}</td>
+        <td style="text-align:right;padding:7px 6px;color:var(--text2);font-variant-numeric:tabular-nums">${rSess||'—'}</td>
+        <td style="text-align:right;padding:7px 6px;font-weight:700;color:#a78bfa;font-variant-numeric:tabular-nums">${rCta||'—'}</td>
+        <td style="text-align:right;padding:7px 6px;color:#4ade80;font-variant-numeric:tabular-nums">${rSub||'—'}</td>
+        <td style="text-align:right;padding:7px 6px;color:#a78bfa">${ctaR}</td>
+        <td style="text-align:right;padding:7px 0 7px 6px;color:#4ade80">${subR}</td>
+      </tr>`;
+    }).join('');
+  }
 
   const topSrc = (sources||[]).slice(0,6);
   const maxS   = Math.max(1, ...topSrc.map(s=>s.sessions));
