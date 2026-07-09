@@ -324,12 +324,21 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 
   <!-- 時間區間選擇器 -->
-  <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap" id="ga4PeriodTabs">
+  <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center" id="ga4PeriodTabs">
     <button class="btn btn-xs ga4-pb" data-p="3d"      onclick="switchGA4Period('3d')">近 3 天</button>
     <button class="btn btn-xs ga4-pb active-p" data-p="7d"  onclick="switchGA4Period('7d')">近一週</button>
     <button class="btn btn-xs ga4-pb" data-p="compare" onclick="switchGA4Period('compare')">上週對比 ↕</button>
     <button class="btn btn-xs ga4-pb" data-p="28d"     onclick="switchGA4Period('28d')">近一個月</button>
     <button class="btn btn-xs ga4-pb" data-p="cum"     onclick="switchGA4Period('cum')">累積</button>
+    <button class="btn btn-xs ga4-pb" data-p="custom" id="ga4CustomTab" onclick="switchGA4Period('custom')" style="display:none;border-color:var(--accent2);color:var(--accent2)">自訂 ✦</button>
+  </div>
+  <!-- 自訂日期查詢列 -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <input type="date" id="ga4DateStart" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:3px 8px;font-size:.78rem;outline:none">
+    <span style="color:var(--text3);font-size:.85rem">～</span>
+    <input type="date" id="ga4DateEnd" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:3px 8px;font-size:.78rem;outline:none">
+    <button id="ga4CustomQueryBtn" onclick="fetchCustomGA4()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:4px 16px;font-size:.78rem;cursor:pointer;font-weight:600;transition:opacity .15s">查詢</button>
+    <button id="ga4ResetCustomBtn" onclick="resetCustomGA4()" style="display:none;background:var(--g3);color:var(--text2);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:.78rem;cursor:pointer">← 重設</button>
   </div>
 
   <!-- 上週對比面板 (僅 compare 模式顯示) -->
@@ -815,6 +824,66 @@ function renderGA4(d){
   switchGA4Period('7d');
 }
 
+// ── GA4 自訂日期查詢 ──────────────────────────────────────────
+async function fetchCustomGA4() {
+  const start = document.getElementById('ga4DateStart').value;
+  const end   = document.getElementById('ga4DateEnd').value;
+  if (!start || !end) { alert('請選擇起始與結束日期'); return; }
+  if (start > end)    { alert('起始日期不可晚於結束日期'); return; }
+
+  const btn = document.getElementById('ga4CustomQueryBtn');
+  btn.textContent = '查詢中…';
+  btn.style.opacity = '0.6';
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch(`/api/ga4-custom?start=${start}&end=${end}`);
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || resp.statusText);
+
+    // 注入自訂數據
+    _ga4Data.kpis_custom     = data.kpis;
+    _ga4Data.accounts_custom = data.accounts;
+    _ga4Data.contents_custom = data.contents;
+    _ga4Data.custom_range    = data.range;
+    if (!_ga4Data.ranges)    _ga4Data.ranges = {};
+    _ga4Data.ranges['custom'] = data.range;
+
+    // picks168 自訂數據
+    if (_ga4Data.picks168 && data.picks168) {
+      _ga4Data.picks168.custom = data.picks168;
+    }
+
+    // 顯示自訂 tab 並切換
+    const customTab = document.getElementById('ga4CustomTab');
+    if (customTab) { customTab.style.display = 'inline-block'; customTab.textContent = `自訂：${data.range}`; }
+    document.getElementById('ga4ResetCustomBtn').style.display = 'inline-block';
+
+    switchGA4Period('custom');
+
+  } catch (e) {
+    alert('查詢失敗：' + e.message + '\n\n請確認 dashboard_server.py 已啟動（python dashboard_server.py）');
+  } finally {
+    btn.textContent = '查詢';
+    btn.style.opacity = '1';
+    btn.disabled = false;
+  }
+}
+
+function resetCustomGA4() {
+  _ga4Data.kpis_custom     = undefined;
+  _ga4Data.accounts_custom = undefined;
+  _ga4Data.contents_custom = undefined;
+  _ga4Data.custom_range    = undefined;
+  if (_ga4Data.picks168)   _ga4Data.picks168.custom = undefined;
+  if (_ga4Data.ranges)     delete _ga4Data.ranges['custom'];
+
+  const customTab = document.getElementById('ga4CustomTab');
+  if (customTab) customTab.style.display = 'none';
+  document.getElementById('ga4ResetCustomBtn').style.display = 'none';
+  switchGA4Period('7d');
+}
+
 function switchP168Period(p) {
   const b7  = document.getElementById('p168pb7d');
   const b28 = document.getElementById('p168pb28d');
@@ -834,23 +903,36 @@ function renderPicks168(d, period) {
   const p168 = d.picks168;
   if (!p168) return;
 
-  const is7d = (period === '7d' || period === '3d');
-  const kpis       = is7d ? (p168.kpis_7d       || p168.kpis_28d)       : p168.kpis_28d;
-  const sources    = is7d ? (p168.sources_7d    || p168.sources_28d)    : p168.sources_28d;
-  const contents   = is7d ? (p168.contents_7d   || p168.contents_28d)   : p168.contents_28d;
-  const events     = is7d ? (p168.events_7d     || p168.events_28d)     : p168.events_28d;
-  const convBySrc  = is7d ? p168.conversions_by_source_7d : p168.conversions_by_source_28d;
+  const isCustom = (period === 'custom');
+  const is7d     = !isCustom && (period === '7d' || period === '3d');
 
-  // Update tab highlight to match the active period
+  let kpis, sources, contents, events, convBySrc;
+  if (isCustom && p168.custom) {
+    kpis       = p168.custom.kpis;
+    sources    = p168.custom.sources;
+    contents   = p168.custom.contents;
+    events     = p168.custom.events;
+    convBySrc  = p168.custom.conversions_by_source;
+  } else {
+    kpis       = is7d ? (p168.kpis_7d       || p168.kpis_28d)       : p168.kpis_28d;
+    sources    = is7d ? (p168.sources_7d    || p168.sources_28d)    : p168.sources_28d;
+    contents   = is7d ? (p168.contents_7d   || p168.contents_28d)   : p168.contents_28d;
+    events     = is7d ? (p168.events_7d     || p168.events_28d)     : p168.events_28d;
+    convBySrc  = is7d ? p168.conversions_by_source_7d : p168.conversions_by_source_28d;
+  }
+
+  // Update tab highlight
   const b7  = document.getElementById('p168pb7d');
   const b28 = document.getElementById('p168pb28d');
   if (b7 && b28) {
-    b7.style.background  = is7d ? '#a78bfa' : 'transparent';
-    b7.style.color       = is7d ? '#fff' : 'var(--text2)';
-    b7.style.borderColor = is7d ? '#a78bfa' : 'var(--border)';
-    b28.style.background  = !is7d ? '#a78bfa' : 'transparent';
-    b28.style.color       = !is7d ? '#fff' : 'var(--text2)';
-    b28.style.borderColor = !is7d ? '#a78bfa' : 'var(--border)';
+    const hi7  = is7d && !isCustom;
+    const hi28 = !is7d && !isCustom;
+    b7.style.background  = hi7  ? '#a78bfa' : 'transparent';
+    b7.style.color       = hi7  ? '#fff' : 'var(--text2)';
+    b7.style.borderColor = hi7  ? '#a78bfa' : 'var(--border)';
+    b28.style.background  = hi28 ? '#a78bfa' : 'transparent';
+    b28.style.color       = hi28 ? '#fff' : 'var(--text2)';
+    b28.style.borderColor = hi28 ? '#a78bfa' : 'var(--border)';
   }
 
   const ctaEv  = (events||[]).find(e=>e.name==='cta_click');
@@ -942,10 +1024,11 @@ function switchGA4Period(p) {
   document.getElementById('ga4MainPanel').style.display = 'block';
 
   const PM = {
-    '3d':  { k: d.kpis_3d  || d.kpis, accts: d.accounts_3d  || d.accounts, label: '近 3 天'   },
-    '7d':  { k: d.kpis_7d  || d.kpis, accts: d.accounts_7d  || d.accounts, label: '近 7 天'   },
-    '28d': { k: d.kpis_28d || d.kpis, accts: d.accounts_28d || d.accounts, label: '近 28 天'  },
-    'cum': { k: d.kpis,               accts: d.accounts,                   label: '累積 28 天' },
+    '3d':     { k: d.kpis_3d      || d.kpis, accts: d.accounts_3d      || d.accounts, label: '近 3 天'   },
+    '7d':     { k: d.kpis_7d      || d.kpis, accts: d.accounts_7d      || d.accounts, label: '近 7 天'   },
+    '28d':    { k: d.kpis_28d     || d.kpis, accts: d.accounts_28d     || d.accounts, label: '近 28 天'  },
+    'cum':    { k: d.kpis,                   accts: d.accounts,                        label: '累積 28 天' },
+    'custom': { k: d.kpis_custom,            accts: d.accounts_custom   || [],         label: `自訂：${d.custom_range || '—'}` },
   };
   const pd = PM[p] || PM['7d'];
   const k = pd.k || {}, accts = (pd.accts || []);
@@ -982,8 +1065,9 @@ function switchGA4Period(p) {
   renderInsightsTrend(d.sources||[], accts, k, prevK, prevAccts, pd.label);
 
   // 貼文成效隨區間切換
-  const postData = p==='3d' ? (d.contents_3d||d.contents||[])
-                 : p==='7d' ? (d.contents_7d||d.contents||[])
+  const postData = p==='custom' ? (d.contents_custom||d.contents||[])
+                 : p==='3d'    ? (d.contents_3d||d.contents||[])
+                 : p==='7d'    ? (d.contents_7d||d.contents||[])
                  : (d.contents||[]);
   renderPostTable(postData, pd.label);
 

@@ -2,9 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "http-server",
+      "name": "ys89-dashboard",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8888", "--directory", "C:\\Users\\haoli\\OneDrive\\桌面\\ys社群"],
+      "runtimeArgs": ["C:\\Users\\haoli\\OneDrive\\桌面\\ys社群\\dashboard_server.py", "8888"],
       "port": 8888
     }
   ]

@@ -546,6 +546,90 @@ def fetch_picks168_by_content(client, start_date, end_date):
         return []
 
 # ═══════════════════════════════════════════════════════════════
+# 自訂日期查詢（給 dashboard_server.py 調用）
+# ═══════════════════════════════════════════════════════════════
+
+def fetch_accounts_range_full(client, start_date, end_date):
+    """拉取指定日期範圍的所有帳號成效（不限前 5）"""
+    sess_req = RunReportRequest(
+        property=PROPERTY_FULL,
+        dimensions=[Dimension(name="sessionSource")],
+        metrics=[Metric(name="sessions")],
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+    )
+    sess_resp = client.run_report(sess_req)
+    sessions_by_source = {}
+    for row in sess_resp.rows:
+        source = row.dimension_values[0].value
+        sessions = int(row.metric_values[0].value or 0)
+        sessions_by_source[source] = sessions
+
+    cta_filter = FilterExpression(
+        or_group={
+            "expressions": [
+                FilterExpression(
+                    filter=Filter(field_name="eventName", string_filter={"value": event})
+                )
+                for event in CTA_EVENTS
+            ]
+        }
+    )
+    cta_req = RunReportRequest(
+        property=PROPERTY_FULL,
+        dimensions=[Dimension(name="sessionSource")],
+        metrics=[Metric(name="sessions")],
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        dimension_filter=cta_filter,
+    )
+    cta_resp = client.run_report(cta_req)
+    cta_by_source = {}
+    for row in cta_resp.rows:
+        source = row.dimension_values[0].value
+        cta_by_source[source] = int(row.metric_values[0].value or 0)
+
+    accounts = []
+    for source, s in sessions_by_source.items():
+        cta = cta_by_source.get(source, 0)
+        accounts.append({"name": source, "s": s, "cta": cta})
+
+    return sorted(accounts, key=lambda x: x["s"], reverse=True)
+
+
+def fetch_custom_range_data(client, start_date, end_date):
+    """自訂日期區間的完整 GA4 數據（ys89.fun + picks168）"""
+    print(f"  → ys89 KPI...")
+    kpis = fetch_kpis_range(client, start_date, end_date)
+
+    print(f"  → ys89 帳號...")
+    accounts = fetch_accounts_range_full(client, start_date, end_date)
+
+    print(f"  → ys89 貼文成效...")
+    try:
+        contents = fetch_content_range(client, start_date, end_date)
+    except Exception as e:
+        print(f"    ⚠ contents 失敗：{e}")
+        contents = []
+
+    print(f"  → picks168...")
+    p168 = {
+        "kpis":     fetch_picks168_kpis(client, start_date, end_date),
+        "sources":  fetch_picks168_by_source(client, start_date, end_date),
+        "events":   fetch_picks168_events(client, start_date, end_date),
+        "conversions_by_source": fetch_picks168_conversions_by_source(client, start_date, end_date),
+        "contents": fetch_picks168_by_content(client, start_date, end_date),
+    }
+
+    return {
+        "custom":   True,
+        "range":    f"{start_date}~{end_date}",
+        "kpis":     kpis,
+        "accounts": accounts,
+        "contents": contents,
+        "picks168": p168,
+    }
+
+
+# ═══════════════════════════════════════════════════════════════
 # 主程式
 # ═══════════════════════════════════════════════════════════════
 
