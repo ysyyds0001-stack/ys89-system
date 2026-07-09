@@ -18,9 +18,13 @@ from google.analytics.data_v1beta.types import (
 # 配置
 # ═══════════════════════════════════════════════════════════════
 
-# GA4 Property ID
+# GA4 Property ID — ys89.fun 站群
 PROPERTY_ID = "539393762"
 PROPERTY_FULL = f"properties/{PROPERTY_ID}"
+
+# picks168.com GA4 Property
+PICKS168_ID = "541257936"
+PICKS168_FULL = f"properties/{PICKS168_ID}"
 
 # Service Account JSON 路徑（GitHub Actions 會注入為環境變數）
 SA_JSON_PATH = os.environ.get("GA4_SA_KEY_PATH", "./gsc-credentials.json")
@@ -398,6 +402,150 @@ def fetch_accounts_range(client, start_date, end_date):
     return sorted(accounts, key=lambda x: x["s"], reverse=True)[:5]
 
 # ═══════════════════════════════════════════════════════════════
+# picks168.com 數據拉取
+# ═══════════════════════════════════════════════════════════════
+
+def fetch_picks168_kpis(client, start_date, end_date):
+    """picks168.com 基礎 KPI（users / sessions / events）"""
+    try:
+        req = RunReportRequest(
+            property=PICKS168_FULL,
+            metrics=[
+                Metric(name="activeUsers"),
+                Metric(name="sessions"),
+                Metric(name="eventCount"),
+            ],
+            date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        )
+        resp = client.run_report(req)
+        row = resp.rows[0]
+        return {
+            "users":    int(row.metric_values[0].value or 0),
+            "sessions": int(row.metric_values[1].value or 0),
+            "events":   int(row.metric_values[2].value or 0),
+        }
+    except Exception as e:
+        print(f"   ⚠ picks168 KPI 失敗：{e}")
+        return {"users": 0, "sessions": 0, "events": 0}
+
+def fetch_picks168_by_source(client, start_date, end_date):
+    """picks168.com 按 UTM source + medium 分析流量"""
+    try:
+        req = RunReportRequest(
+            property=PICKS168_FULL,
+            dimensions=[
+                Dimension(name="sessionSource"),
+                Dimension(name="sessionMedium"),
+            ],
+            metrics=[
+                Metric(name="sessions"),
+                Metric(name="activeUsers"),
+            ],
+            date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        )
+        resp = client.run_report(req)
+        rows = []
+        for row in resp.rows:
+            s = int(row.metric_values[0].value or 0)
+            if s == 0:
+                continue
+            rows.append({
+                "source":  row.dimension_values[0].value,
+                "medium":  row.dimension_values[1].value,
+                "sessions": s,
+                "users":   int(row.metric_values[1].value or 0),
+            })
+        return sorted(rows, key=lambda x: x["sessions"], reverse=True)
+    except Exception as e:
+        print(f"   ⚠ picks168 by-source 失敗：{e}")
+        return []
+
+def fetch_picks168_events(client, start_date, end_date):
+    """picks168.com 全部事件清單（含次數），用來確認哪些轉化事件有被追蹤"""
+    try:
+        req = RunReportRequest(
+            property=PICKS168_FULL,
+            dimensions=[Dimension(name="eventName")],
+            metrics=[Metric(name="eventCount")],
+            date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        )
+        resp = client.run_report(req)
+        events = []
+        for row in resp.rows:
+            count = int(row.metric_values[0].value or 0)
+            if count == 0:
+                continue
+            events.append({
+                "name":  row.dimension_values[0].value,
+                "count": count,
+            })
+        return sorted(events, key=lambda x: x["count"], reverse=True)
+    except Exception as e:
+        print(f"   ⚠ picks168 events 失敗：{e}")
+        return []
+
+def fetch_picks168_conversions_by_source(client, start_date, end_date):
+    """picks168 轉化事件（cta_click / subscribe_click）按 UTM source 拆分"""
+    CONV_EVENTS = ["cta_click", "subscribe_click"]
+    result = {}
+    for event in CONV_EVENTS:
+        try:
+            req = RunReportRequest(
+                property=PICKS168_FULL,
+                dimensions=[
+                    Dimension(name="sessionSource"),
+                    Dimension(name="sessionMedium"),
+                ],
+                metrics=[Metric(name="eventCount")],
+                date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+                dimension_filter=FilterExpression(
+                    filter=Filter(field_name="eventName", string_filter={"value": event})
+                ),
+            )
+            resp = client.run_report(req)
+            rows = []
+            for row in resp.rows:
+                count = int(row.metric_values[0].value or 0)
+                if count == 0:
+                    continue
+                rows.append({
+                    "source": row.dimension_values[0].value,
+                    "medium": row.dimension_values[1].value,
+                    "count":  count,
+                })
+            result[event] = sorted(rows, key=lambda x: x["count"], reverse=True)
+        except Exception as e:
+            print(f"   ⚠ picks168 {event} by-source 失敗：{e}")
+            result[event] = []
+    return result
+
+def fetch_picks168_by_content(client, start_date, end_date):
+    """picks168.com 按 utm_content 分析（追蹤哪篇貼文帶來的流量）"""
+    try:
+        req = RunReportRequest(
+            property=PICKS168_FULL,
+            dimensions=[Dimension(name="sessionManualAdContent")],
+            metrics=[Metric(name="sessions"), Metric(name="activeUsers")],
+            date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        )
+        resp = client.run_report(req)
+        rows = []
+        for row in resp.rows:
+            content = row.dimension_values[0].value
+            s = int(row.metric_values[0].value or 0)
+            if not content or content == "(not set)" or s == 0:
+                continue
+            rows.append({
+                "content":  content,
+                "sessions": s,
+                "users":    int(row.metric_values[1].value or 0),
+            })
+        return sorted(rows, key=lambda x: x["sessions"], reverse=True)
+    except Exception as e:
+        print(f"   ⚠ picks168 by-content 失敗：{e}")
+        return []
+
+# ═══════════════════════════════════════════════════════════════
 # 主程式
 # ═══════════════════════════════════════════════════════════════
 
@@ -441,6 +589,22 @@ def main():
                 print(f"   ⚠ {key} 貼文成效失敗：{ex}")
                 period_contents[key] = []
 
+    print("🏪 拉取 picks168.com 數據...")
+    p_start, p_end = get_date_range()
+    picks168_data = {
+        "kpis_28d":    fetch_picks168_kpis(client, p_start, p_end),
+        "kpis_7d":     fetch_picks168_kpis(client, *ranges["7d"]),
+        "kpis_prev7d": fetch_picks168_kpis(client, *ranges["prev7d"]),
+        "sources_28d": fetch_picks168_by_source(client, p_start, p_end),
+        "sources_7d":  fetch_picks168_by_source(client, *ranges["7d"]),
+        "events_28d":   fetch_picks168_events(client, p_start, p_end),
+        "events_7d":    fetch_picks168_events(client, *ranges["7d"]),
+        "conversions_by_source_28d": fetch_picks168_conversions_by_source(client, p_start, p_end),
+        "conversions_by_source_7d":  fetch_picks168_conversions_by_source(client, *ranges["7d"]),
+        "contents_28d": fetch_picks168_by_content(client, p_start, p_end),
+        "contents_7d":  fetch_picks168_by_content(client, *ranges["7d"]),
+    }
+
     # 組合數據
     ga4_data = {
         "sources": sources,
@@ -459,6 +623,7 @@ def main():
         "accounts_prev7d": period_accts["prev7d"],
         "accounts_28d": period_accts["28d"],
         "ranges": {k: f"{v[0]}~{v[1]}" for k, v in ranges.items()},
+        "picks168": picks168_data,
         "lastUpdated": datetime.now().isoformat(),
     }
 
@@ -474,6 +639,9 @@ def main():
     print(f"   - 總活躍使用者：{kpis['activeUsers']}")
     print(f"   - 總工作階段：{kpis['sessions']}")
     print(f"   - CTA 轉換：{kpis['cta']} / {kpis['conversionRate']}%")
+    p = picks168_data["kpis_28d"]
+    print(f"   - picks168 28d sessions：{p['sessions']}，events：{p['events']}")
+    print(f"   - picks168 事件類型：{[e['name'] for e in picks168_data['events_28d'][:5]]}")
 
 if __name__ == "__main__":
     main()

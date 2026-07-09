@@ -1216,5 +1216,1018 @@
     "prev7d": "2026-06-26~2026-07-02",
     "28d": "2026-06-12~2026-07-09"
   },
-  "lastUpdated": "2026-07-09T04:53:52.679883"
+  "picks168": {
+    "kpis_28d": {
+      "users": 1143,
+      "sessions": 1772,
+      "events": 14055
+    },
+    "kpis_7d": {
+      "users": 652,
+      "sessions": 881,
+      "events": 6208
+    },
+    "kpis_prev7d": {
+      "users": 303,
+      "sessions": 485,
+      "events": 4511
+    },
+    "sources_28d": [
+      {
+        "source": "(direct)",
+        "medium": "(none)",
+        "sessions": 718,
+        "users": 543
+      },
+      {
+        "source": "god",
+        "medium": "th_post",
+        "sessions": 258,
+        "users": 250
+      },
+      {
+        "source": "tg_ph",
+        "medium": "bot",
+        "sessions": 162,
+        "users": 113
+      },
+      {
+        "source": "telegram",
+        "medium": "free_group",
+        "sessions": 97,
+        "users": 23
+      },
+      {
+        "source": "accounts.google.com",
+        "medium": "referral",
+        "sessions": 94,
+        "users": 14
+      },
+      {
+        "source": "(not set)",
+        "medium": "(not set)",
+        "sessions": 85,
+        "users": 68
+      },
+      {
+        "source": "pwa",
+        "medium": "(not set)",
+        "sessions": 71,
+        "users": 6
+      },
+      {
+        "source": "google",
+        "medium": "organic",
+        "sessions": 57,
+        "users": 41
+      },
+      {
+        "source": "cc",
+        "medium": "th_post",
+        "sessions": 55,
+        "users": 54
+      },
+      {
+        "source": "(data not available)",
+        "medium": "(data not available)",
+        "sessions": 40,
+        "users": 39
+      },
+      {
+        "source": "cyq",
+        "medium": "th_post",
+        "sessions": 36,
+        "users": 36
+      },
+      {
+        "source": "telegram",
+        "medium": "channel",
+        "sessions": 27,
+        "users": 7
+      },
+      {
+        "source": "telegram",
+        "medium": "vip_channel",
+        "sessions": 26,
+        "users": 10
+      },
+      {
+        "source": "cyq",
+        "medium": "th_comment",
+        "sessions": 19,
+        "users": 18
+      },
+      {
+        "source": "localhost:8930",
+        "medium": "referral",
+        "sessions": 12,
+        "users": 1
+      },
+      {
+        "source": "pickhelp_bot",
+        "medium": "welcome",
+        "sessions": 9,
+        "users": 9
+      },
+      {
+        "source": "tg_ph",
+        "medium": "prematch",
+        "sessions": 8,
+        "users": 5
+      },
+      {
+        "source": "accounts.google.com.tw",
+        "medium": "referral",
+        "sessions": 7,
+        "users": 1
+      },
+      {
+        "source": "ad",
+        "medium": "lp",
+        "sessions": 7,
+        "users": 2
+      },
+      {
+        "source": "adom.adongwang97.workers.dev",
+        "medium": "referral",
+        "sessions": 7,
+        "users": 1
+      },
+      {
+        "source": "trust",
+        "medium": "cta",
+        "sessions": 7,
+        "users": 4
+      },
+      {
+        "source": "cc",
+        "medium": "th_bio",
+        "sessions": 6,
+        "users": 6
+      },
+      {
+        "source": "l.threads.com",
+        "medium": "referral",
+        "sessions": 5,
+        "users": 5
+      },
+      {
+        "source": "ys89-seo-dashboard.pages.dev",
+        "medium": "referral",
+        "sessions": 5,
+        "users": 1
+      },
+      {
+        "source": "m.facebook.com",
+        "medium": "referral",
+        "sessions": 3,
+        "users": 3
+      },
+      {
+        "source": "pwa",
+        "medium": "referral",
+        "sessions": 3,
+        "users": 1
+      },
+      {
+        "source": "chatgpt.com",
+        "medium": "ai-assistant",
+        "sessions": 2,
+        "users": 2
+      },
+      {
+        "source": "picks168_bot",
+        "medium": "welcome",
+        "sessions": 2,
+        "users": 2
+      },
+      {
+        "source": "tgbot",
+        "medium": "intl_promo",
+        "sessions": 2,
+        "users": 1
+      },
+      {
+        "source": "aisearchindex.space",
+        "medium": "referral",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "facebook.com",
+        "medium": "referral",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "fifa_worldcups",
+        "medium": "referral",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "localhost:8911",
+        "medium": "referral",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "pwa",
+        "medium": "",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "pwa",
+        "medium": "(none)",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "rootviewnetworks.com",
+        "medium": "referral",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "xie2",
+        "medium": "th_post",
+        "sessions": 1,
+        "users": 1
+      }
+    ],
+    "sources_7d": [
+      {
+        "source": "(direct)",
+        "medium": "(none)",
+        "sessions": 259,
+        "users": 218
+      },
+      {
+        "source": "god",
+        "medium": "th_post",
+        "sessions": 178,
+        "users": 171
+      },
+      {
+        "source": "telegram",
+        "medium": "free_group",
+        "sessions": 90,
+        "users": 21
+      },
+      {
+        "source": "(not set)",
+        "medium": "(not set)",
+        "sessions": 82,
+        "users": 65
+      },
+      {
+        "source": "tg_ph",
+        "medium": "bot",
+        "sessions": 79,
+        "users": 58
+      },
+      {
+        "source": "(data not available)",
+        "medium": "(data not available)",
+        "sessions": 40,
+        "users": 39
+      },
+      {
+        "source": "cc",
+        "medium": "th_post",
+        "sessions": 39,
+        "users": 38
+      },
+      {
+        "source": "cyq",
+        "medium": "th_post",
+        "sessions": 36,
+        "users": 36
+      },
+      {
+        "source": "google",
+        "medium": "organic",
+        "sessions": 36,
+        "users": 36
+      },
+      {
+        "source": "accounts.google.com",
+        "medium": "referral",
+        "sessions": 22,
+        "users": 5
+      },
+      {
+        "source": "telegram",
+        "medium": "channel",
+        "sessions": 11,
+        "users": 5
+      },
+      {
+        "source": "cyq",
+        "medium": "th_comment",
+        "sessions": 8,
+        "users": 7
+      },
+      {
+        "source": "pickhelp_bot",
+        "medium": "welcome",
+        "sessions": 8,
+        "users": 8
+      },
+      {
+        "source": "pwa",
+        "medium": "(not set)",
+        "sessions": 8,
+        "users": 3
+      },
+      {
+        "source": "adom.adongwang97.workers.dev",
+        "medium": "referral",
+        "sessions": 7,
+        "users": 1
+      },
+      {
+        "source": "l.threads.com",
+        "medium": "referral",
+        "sessions": 5,
+        "users": 5
+      },
+      {
+        "source": "localhost:8930",
+        "medium": "referral",
+        "sessions": 5,
+        "users": 1
+      },
+      {
+        "source": "trust",
+        "medium": "cta",
+        "sessions": 5,
+        "users": 2
+      },
+      {
+        "source": "ys89-seo-dashboard.pages.dev",
+        "medium": "referral",
+        "sessions": 4,
+        "users": 1
+      },
+      {
+        "source": "cc",
+        "medium": "th_bio",
+        "sessions": 3,
+        "users": 3
+      },
+      {
+        "source": "m.facebook.com",
+        "medium": "referral",
+        "sessions": 3,
+        "users": 3
+      },
+      {
+        "source": "picks168_bot",
+        "medium": "welcome",
+        "sessions": 2,
+        "users": 2
+      },
+      {
+        "source": "pwa",
+        "medium": "referral",
+        "sessions": 2,
+        "users": 1
+      },
+      {
+        "source": "telegram",
+        "medium": "vip_channel",
+        "sessions": 2,
+        "users": 1
+      },
+      {
+        "source": "tg_ph",
+        "medium": "prematch",
+        "sessions": 2,
+        "users": 1
+      },
+      {
+        "source": "tgbot",
+        "medium": "intl_promo",
+        "sessions": 2,
+        "users": 1
+      },
+      {
+        "source": "accounts.google.com.tw",
+        "medium": "referral",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "ad",
+        "medium": "lp",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "fifa_worldcups",
+        "medium": "referral",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "pwa",
+        "medium": "",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "xie2",
+        "medium": "th_post",
+        "sessions": 1,
+        "users": 1
+      }
+    ],
+    "events_28d": [
+      {
+        "name": "page_view",
+        "count": 5567
+      },
+      {
+        "name": "user_engagement",
+        "count": 2970
+      },
+      {
+        "name": "session_start",
+        "count": 1766
+      },
+      {
+        "name": "scroll",
+        "count": 1319
+      },
+      {
+        "name": "first_visit",
+        "count": 1130
+      },
+      {
+        "name": "click",
+        "count": 698
+      },
+      {
+        "name": "cta_click",
+        "count": 547
+      },
+      {
+        "name": "subscribe_click",
+        "count": 58
+      }
+    ],
+    "events_7d": [
+      {
+        "name": "page_view",
+        "count": 2459
+      },
+      {
+        "name": "user_engagement",
+        "count": 1138
+      },
+      {
+        "name": "session_start",
+        "count": 868
+      },
+      {
+        "name": "first_visit",
+        "count": 608
+      },
+      {
+        "name": "scroll",
+        "count": 445
+      },
+      {
+        "name": "click",
+        "count": 377
+      },
+      {
+        "name": "cta_click",
+        "count": 300
+      },
+      {
+        "name": "subscribe_click",
+        "count": 13
+      }
+    ],
+    "conversions_by_source_28d": {
+      "cta_click": [
+        {
+          "source": "(direct)",
+          "medium": "(none)",
+          "count": 188
+        },
+        {
+          "source": "god",
+          "medium": "th_post",
+          "count": 119
+        },
+        {
+          "source": "tg_ph",
+          "medium": "bot",
+          "count": 73
+        },
+        {
+          "source": "(not set)",
+          "medium": "(not set)",
+          "count": 28
+        },
+        {
+          "source": "accounts.google.com",
+          "medium": "referral",
+          "count": 26
+        },
+        {
+          "source": "cc",
+          "medium": "th_post",
+          "count": 20
+        },
+        {
+          "source": "pwa",
+          "medium": "(not set)",
+          "count": 19
+        },
+        {
+          "source": "telegram",
+          "medium": "free_group",
+          "count": 12
+        },
+        {
+          "source": "cyq",
+          "medium": "th_post",
+          "count": 11
+        },
+        {
+          "source": "telegram",
+          "medium": "channel",
+          "count": 10
+        },
+        {
+          "source": "cyq",
+          "medium": "th_comment",
+          "count": 8
+        },
+        {
+          "source": "(data not available)",
+          "medium": "(data not available)",
+          "count": 6
+        },
+        {
+          "source": "trust",
+          "medium": "cta",
+          "count": 5
+        },
+        {
+          "source": "chatgpt.com",
+          "medium": "ai-assistant",
+          "count": 4
+        },
+        {
+          "source": "adom.adongwang97.workers.dev",
+          "medium": "referral",
+          "count": 3
+        },
+        {
+          "source": "google",
+          "medium": "organic",
+          "count": 3
+        },
+        {
+          "source": "ad",
+          "medium": "lp",
+          "count": 2
+        },
+        {
+          "source": "cc",
+          "medium": "th_bio",
+          "count": 2
+        },
+        {
+          "source": "pickhelp_bot",
+          "medium": "welcome",
+          "count": 2
+        },
+        {
+          "source": "ys89-seo-dashboard.pages.dev",
+          "medium": "referral",
+          "count": 2
+        },
+        {
+          "source": "accounts.google.com.tw",
+          "medium": "referral",
+          "count": 1
+        },
+        {
+          "source": "l.threads.com",
+          "medium": "referral",
+          "count": 1
+        },
+        {
+          "source": "localhost:8930",
+          "medium": "referral",
+          "count": 1
+        },
+        {
+          "source": "telegram",
+          "medium": "vip_channel",
+          "count": 1
+        }
+      ],
+      "subscribe_click": [
+        {
+          "source": "(direct)",
+          "medium": "(none)",
+          "count": 32
+        },
+        {
+          "source": "google",
+          "medium": "organic",
+          "count": 7
+        },
+        {
+          "source": "telegram",
+          "medium": "free_group",
+          "count": 7
+        },
+        {
+          "source": "tg_ph",
+          "medium": "bot",
+          "count": 5
+        },
+        {
+          "source": "accounts.google.com",
+          "medium": "referral",
+          "count": 2
+        },
+        {
+          "source": "ad",
+          "medium": "lp",
+          "count": 1
+        },
+        {
+          "source": "pwa",
+          "medium": "(not set)",
+          "count": 1
+        },
+        {
+          "source": "telegram",
+          "medium": "channel",
+          "count": 1
+        },
+        {
+          "source": "tgbot",
+          "medium": "intl_promo",
+          "count": 1
+        },
+        {
+          "source": "trust",
+          "medium": "cta",
+          "count": 1
+        }
+      ]
+    },
+    "conversions_by_source_7d": {
+      "cta_click": [
+        {
+          "source": "(direct)",
+          "medium": "(none)",
+          "count": 89
+        },
+        {
+          "source": "god",
+          "medium": "th_post",
+          "count": 82
+        },
+        {
+          "source": "tg_ph",
+          "medium": "bot",
+          "count": 32
+        },
+        {
+          "source": "(not set)",
+          "medium": "(not set)",
+          "count": 28
+        },
+        {
+          "source": "cc",
+          "medium": "th_post",
+          "count": 14
+        },
+        {
+          "source": "telegram",
+          "medium": "free_group",
+          "count": 12
+        },
+        {
+          "source": "cyq",
+          "medium": "th_post",
+          "count": 11
+        },
+        {
+          "source": "(data not available)",
+          "medium": "(data not available)",
+          "count": 6
+        },
+        {
+          "source": "telegram",
+          "medium": "channel",
+          "count": 5
+        },
+        {
+          "source": "trust",
+          "medium": "cta",
+          "count": 5
+        },
+        {
+          "source": "adom.adongwang97.workers.dev",
+          "medium": "referral",
+          "count": 3
+        },
+        {
+          "source": "cc",
+          "medium": "th_bio",
+          "count": 2
+        },
+        {
+          "source": "cyq",
+          "medium": "th_comment",
+          "count": 2
+        },
+        {
+          "source": "pwa",
+          "medium": "(not set)",
+          "count": 2
+        },
+        {
+          "source": "ys89-seo-dashboard.pages.dev",
+          "medium": "referral",
+          "count": 2
+        },
+        {
+          "source": "accounts.google.com",
+          "medium": "referral",
+          "count": 1
+        },
+        {
+          "source": "google",
+          "medium": "organic",
+          "count": 1
+        },
+        {
+          "source": "l.threads.com",
+          "medium": "referral",
+          "count": 1
+        },
+        {
+          "source": "localhost:8930",
+          "medium": "referral",
+          "count": 1
+        },
+        {
+          "source": "pickhelp_bot",
+          "medium": "welcome",
+          "count": 1
+        }
+      ],
+      "subscribe_click": [
+        {
+          "source": "(direct)",
+          "medium": "(none)",
+          "count": 5
+        },
+        {
+          "source": "telegram",
+          "medium": "free_group",
+          "count": 4
+        },
+        {
+          "source": "tg_ph",
+          "medium": "bot",
+          "count": 2
+        },
+        {
+          "source": "tgbot",
+          "medium": "intl_promo",
+          "count": 1
+        },
+        {
+          "source": "trust",
+          "medium": "cta",
+          "count": 1
+        }
+      ]
+    },
+    "contents_28d": [
+      {
+        "content": "god-0702-1",
+        "sessions": 169,
+        "users": 168
+      },
+      {
+        "content": "god-0703-1",
+        "sessions": 63,
+        "users": 62
+      },
+      {
+        "content": "cc-0702-1",
+        "sessions": 20,
+        "users": 20
+      },
+      {
+        "content": "cyq-0701-1",
+        "sessions": 19,
+        "users": 18
+      },
+      {
+        "content": "cyq-0709-3",
+        "sessions": 17,
+        "users": 17
+      },
+      {
+        "content": "god-0701-3",
+        "sessions": 16,
+        "users": 14
+      },
+      {
+        "content": "cyq-0703-1",
+        "sessions": 15,
+        "users": 15
+      },
+      {
+        "content": "cc-0707-1",
+        "sessions": 10,
+        "users": 10
+      },
+      {
+        "content": "cc-0702-2",
+        "sessions": 8,
+        "users": 7
+      },
+      {
+        "content": "cc-0701-5",
+        "sessions": 6,
+        "users": 6
+      },
+      {
+        "content": "god-0706-1",
+        "sessions": 6,
+        "users": 5
+      },
+      {
+        "content": "god-0707-1",
+        "sessions": 5,
+        "users": 5
+      },
+      {
+        "content": "cc-0701-1",
+        "sessions": 4,
+        "users": 4
+      },
+      {
+        "content": "cc-0706-2",
+        "sessions": 4,
+        "users": 4
+      },
+      {
+        "content": "cc-0707-3",
+        "sessions": 4,
+        "users": 4
+      },
+      {
+        "content": "cc-0703-1",
+        "sessions": 3,
+        "users": 3
+      },
+      {
+        "content": "cyq-0709-1",
+        "sessions": 3,
+        "users": 3
+      },
+      {
+        "content": "cc-0708-1",
+        "sessions": 2,
+        "users": 2
+      },
+      {
+        "content": "ai_prediction_cta",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "content": "cyq-0708-1",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "content": "xie2-0706-4",
+        "sessions": 1,
+        "users": 1
+      }
+    ],
+    "contents_7d": [
+      {
+        "content": "god-0702-1",
+        "sessions": 103,
+        "users": 101
+      },
+      {
+        "content": "god-0703-1",
+        "sessions": 63,
+        "users": 62
+      },
+      {
+        "content": "cyq-0709-3",
+        "sessions": 17,
+        "users": 17
+      },
+      {
+        "content": "cyq-0703-1",
+        "sessions": 15,
+        "users": 15
+      },
+      {
+        "content": "cc-0702-1",
+        "sessions": 14,
+        "users": 14
+      },
+      {
+        "content": "cc-0707-1",
+        "sessions": 10,
+        "users": 10
+      },
+      {
+        "content": "cyq-0701-1",
+        "sessions": 8,
+        "users": 7
+      },
+      {
+        "content": "god-0706-1",
+        "sessions": 6,
+        "users": 5
+      },
+      {
+        "content": "god-0707-1",
+        "sessions": 5,
+        "users": 5
+      },
+      {
+        "content": "cc-0706-2",
+        "sessions": 4,
+        "users": 4
+      },
+      {
+        "content": "cc-0707-3",
+        "sessions": 4,
+        "users": 4
+      },
+      {
+        "content": "cc-0701-5",
+        "sessions": 3,
+        "users": 3
+      },
+      {
+        "content": "cc-0703-1",
+        "sessions": 3,
+        "users": 3
+      },
+      {
+        "content": "cyq-0709-1",
+        "sessions": 3,
+        "users": 3
+      },
+      {
+        "content": "cc-0702-2",
+        "sessions": 2,
+        "users": 1
+      },
+      {
+        "content": "cc-0708-1",
+        "sessions": 2,
+        "users": 2
+      },
+      {
+        "content": "ai_prediction_cta",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "content": "cyq-0708-1",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "content": "god-0701-3",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "content": "xie2-0706-4",
+        "sessions": 1,
+        "users": 1
+      }
+    ]
+  },
+  "lastUpdated": "2026-07-09T14:30:45.213022"
 }

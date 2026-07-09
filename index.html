@@ -465,6 +465,34 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
   </div><!-- /ga4MainPanel -->
 
+  <!-- picks168.com 落地頁成效（完整漏斗第二段）-->
+  <div class="card" style="border-left:3px solid #a78bfa;margin-bottom:18px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+      <div>
+        <div class="card-title" style="color:#a78bfa">🏁 picks168.com 落地頁成效</div>
+        <p class="tm" style="font-size:.74rem">ys89.fun CTA 之後的第二段漏斗 · 信任頁進群追蹤</p>
+      </div>
+      <span id="p168RangeLabel" style="font-size:.72rem;color:var(--text2);background:var(--g3);padding:2px 8px;border-radius:10px">—</span>
+    </div>
+    <div class="g5 ga4-kpis" style="margin-bottom:14px">
+      <div class="stat"><div class="stat-label">進站 sessions</div><div class="stat-num" id="p168Sessions">—</div></div>
+      <div class="stat"><div class="stat-label">CTA 點擊</div><div class="stat-num" id="p168Cta">—</div></div>
+      <div class="stat"><div class="stat-label">進群 / 訂閱</div><div class="stat-num" id="p168Sub">—</div></div>
+      <div class="stat"><div class="stat-label">CTA 率</div><div class="stat-num" id="p168CtaRate" style="font-size:1.4rem">—</div></div>
+      <div class="stat"><div class="stat-label">進群率</div><div class="stat-num" id="p168SubRate" style="font-size:1.4rem">—</div></div>
+    </div>
+    <div class="g2">
+      <div>
+        <div style="font-size:.78rem;font-weight:600;color:var(--text2);margin-bottom:8px">流量來源</div>
+        <div id="p168Sources" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div>
+        <div style="font-size:.78rem;font-weight:600;color:var(--text2);margin-bottom:8px">貼文成效（utm_content）</div>
+        <div id="p168Contents" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Meta 廣告區（手填 Ads Manager 真實值，存 DB 同步）-->
   <div class="card" style="border-left:3px solid var(--amber);margin-bottom:18px">
     <div class="card-title" style="color:var(--amber)">📣 Meta 廣告成效</div>
@@ -758,8 +786,61 @@ function renderGA4(d){
   }
   renderMetaAds();
 
+  // picks168 落地頁成效
+  renderPicks168(d, 'cum');
+
   // 最後切到預設區間（近一週）
   switchGA4Period('7d');
+}
+
+function renderPicks168(d, period) {
+  const p168 = d.picks168;
+  if (!p168) return;
+
+  const is7d = (period === '7d' || period === '3d');
+  const kpis     = is7d ? (p168.kpis_7d     || p168.kpis_28d) : p168.kpis_28d;
+  const sources  = is7d ? (p168.sources_7d  || p168.sources_28d) : p168.sources_28d;
+  const contents = is7d ? (p168.contents_7d || p168.contents_28d) : p168.contents_28d;
+  const events   = is7d ? (p168.events_7d   || p168.events_28d) : p168.events_28d;
+
+  const ctaEv  = (events||[]).find(e=>e.name==='cta_click');
+  const subEv  = (events||[]).find(e=>e.name==='subscribe_click');
+  const ctaN   = ctaEv ? ctaEv.count : 0;
+  const subN   = subEv ? subEv.count : 0;
+  const sessN  = (kpis||{}).sessions || 0;
+
+  const el = id => document.getElementById(id);
+  if (!el('p168Sessions')) return;
+
+  el('p168Sessions').textContent = fmt(sessN);
+  el('p168Cta').textContent      = fmt(ctaN);
+  el('p168Sub').textContent      = fmt(subN);
+  el('p168CtaRate').textContent  = sessN ? (ctaN/sessN*100).toFixed(1)+'%' : '—';
+  el('p168SubRate').textContent  = sessN ? (subN/sessN*100).toFixed(1)+'%' : '—';
+
+  if (el('p168RangeLabel')) el('p168RangeLabel').textContent = is7d ? '近 7 天' : '近 28 天';
+
+  const topSrc = (sources||[]).slice(0,6);
+  const maxS   = Math.max(1, ...topSrc.map(s=>s.sessions));
+  el('p168Sources').innerHTML = topSrc.map(s=>`
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="width:80px;font-size:.75rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.source}/${s.medium}">${s.source}</span>
+      <div style="flex:1;height:6px;background:var(--g3);border-radius:3px;overflow:hidden">
+        <div style="height:100%;width:${(s.sessions/maxS*100).toFixed(1)}%;background:#a78bfa;border-radius:3px"></div>
+      </div>
+      <span style="font-size:.75rem;font-weight:700;color:#a78bfa;width:32px;text-align:right">${s.sessions}</span>
+    </div>`).join('');
+
+  const topC = (contents||[]).slice(0,6);
+  const maxC = Math.max(1, ...topC.map(c=>c.sessions));
+  el('p168Contents').innerHTML = topC.map(c=>`
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="width:80px;font-size:.75rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.content}</span>
+      <div style="flex:1;height:6px;background:var(--g3);border-radius:3px;overflow:hidden">
+        <div style="height:100%;width:${(c.sessions/maxC*100).toFixed(1)}%;background:#4ade80;border-radius:3px"></div>
+      </div>
+      <span style="font-size:.75rem;font-weight:700;color:#4ade80;width:32px;text-align:right">${c.sessions}</span>
+    </div>`).join('');
 }
 
 // ── GA4 區間切換 ──────────────────────────────────────────────────
@@ -833,6 +914,9 @@ function switchGA4Period(p) {
 
   // 曝光度面板
   renderExposurePanel(d, p);
+
+  // picks168 落地頁成效隨區間切換
+  renderPicks168(d, p);
 }
 
 function renderExposurePanel(d, period) {
