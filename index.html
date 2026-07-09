@@ -971,9 +971,9 @@ function renderExposurePanel(d, period) {
     const m = a.platformMetrics?.Threads;
     if (m && (m.views || m.likes || m.reposts)) {
       g.recorded++;
-      g.views   += (m.views   || 0);
-      g.likes   += (m.likes   || 0);
-      g.reposts += (m.reposts || 0);
+      g.views   += +(m.views)   || 0;
+      g.likes   += +(m.likes)   || 0;
+      g.reposts += +(m.reposts) || 0;
     }
   });
 
