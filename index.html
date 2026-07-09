@@ -3149,6 +3149,11 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
         <span class="badge b-warn" style="cursor:pointer" onclick="cpInline('YS89這個娛樂城世足賠率還不錯 有人用嗎')">ys89賠率</span>
       </div>
     </div>
+    <div class="fg" style="background:#120d1a;border:1px solid #a78bfa40;border-radius:7px;padding:10px 12px">
+      <label style="color:#a78bfa">🤖 picks168 信任頁 URL <span style="color:var(--text3);font-size:.7rem">選填 · AI 預測推廣角色才填</span></label>
+      <input id="cm-picks-url" placeholder="https://picks168.com/trust/chenyiqiang/" oninput="">
+      <div style="font-size:.67rem;color:var(--text3);margin-top:4px">填後 UTM 產生器選此角色 → 自動帶入此落地頁，連結打到 picks168 GA4（非 ys89.fun）。</div>
+    </div>
     <div class="fg"><label>狀態</label>
       <select id="cm-status"><option>活躍</option><option>人設建立中</option><option>暫停</option></select>
     </div>
@@ -5015,7 +5020,7 @@ function openAddCommunityModal(){
   document.getElementById('cm-id').value=''
   document.getElementById('cm-modal-title').textContent='新增水軍號'
   document.getElementById('cm-save-btn').textContent='儲存帳號'
-  ;['cm-name','cm-handle','cm-role','cm-direction','cm-persona','cm-prompt','cm-week-tasks','cm-code','cm-proxy'].forEach(i=>document.getElementById(i).value='')
+  ;['cm-name','cm-handle','cm-role','cm-direction','cm-persona','cm-prompt','cm-week-tasks','cm-code','cm-proxy','cm-picks-url'].forEach(i=>document.getElementById(i).value='')
   cmCodeManual=false; const cn=document.getElementById('cm-code-note'); if(cn) cn.textContent=''
   document.getElementById('cm-followers').value='0'
   document.getElementById('cm-group').value='A'
@@ -5097,6 +5102,7 @@ function openEditCommunity(id){
   document.getElementById('cm-prompt').value=a.prompt||''
   document.getElementById('cm-week-tasks').value=a.weekTasks||''
   document.getElementById('cm-status').value=a.status||'人設建立中'
+  document.getElementById('cm-picks-url').value=a.picksUrl||''
   openModal('modal-community')
 }
 
@@ -5115,7 +5121,8 @@ function saveCommunity(){
     persona:document.getElementById('cm-persona').value,
     prompt:document.getElementById('cm-prompt').value,
     weekTasks:document.getElementById('cm-week-tasks').value,
-    status:document.getElementById('cm-status').value
+    status:document.getElementById('cm-status').value,
+    picksUrl:document.getElementById('cm-picks-url').value.trim()
   }
   const currentCmCode=id?((DB.get('community')||[]).find(x=>x.id===id)?.code||''):''
   if(_codeExists(obj.code,id,'community',currentCmCode)){toast('⚠ UTM code「'+obj.code+'」已被其他角色使用，請改用其他代碼','err');return}
@@ -7327,9 +7334,19 @@ function utmGen(){
       else { const t=roleType(commCode(p)); auto=t==='seeding'?'匿名':t==='fb'?'fb':'炒群'; }
       us.value=auto; utmUsageChange();
     }
+    // 若角色有設 picks168 URL → 自動切換落地頁
+    const pu=p.raw&&p.raw.picksUrl;
+    const landSel=document.getElementById('u-landing');
+    const landCustom=document.getElementById('u-landing-custom');
+    if(pu && landSel){
+      const match=Array.from(landSel.options).find(o=>o.value===pu);
+      if(match){ landSel.value=pu; landCustom.style.display='none'; }
+      else { landSel.value='__custom__'; landCustom.value=pu; landCustom.style.display='block'; }
+    }
   }
   const url=utmBuildUrl(p);
-  out.innerHTML=url.replace(/utm_source=([^&]*)/,'utm_source=<b style="color:var(--accent2)">$1</b>').replace(/utm_medium=([^&]*)/,'utm_medium=<b style="color:var(--accent2)">$1</b>').replace(/utm_content=([^&]*)/,'utm_content=<b style="color:#4ade80">$1</b>');
+  const isPicks=url.includes('picks168.com');
+  out.innerHTML=(isPicks?'<span style="display:inline-block;background:#a78bfa22;border:1px solid #a78bfa60;border-radius:4px;font-size:.67rem;color:#a78bfa;padding:1px 7px;margin-bottom:6px">🤖 GA4：picks168 追蹤</span><br>':'')+url.replace(/utm_source=([^&]*)/,'utm_source=<b style="color:var(--accent2)">$1</b>').replace(/utm_medium=([^&]*)/,'utm_medium=<b style="color:var(--accent2)">$1</b>').replace(/utm_content=([^&]*)/,'utm_content=<b style="color:#4ade80">$1</b>');
   document.getElementById('u-copy-btn').setAttribute('data-cp',url);
   const box=document.getElementById('u-agent-box');
   if(p.proxy){ box.style.display='block'; const a=`https://ys89.bet/?proxy=${p.proxy}`; document.getElementById('u-agent').textContent=a; document.getElementById('u-agent-btn').setAttribute('data-cp',a); }
