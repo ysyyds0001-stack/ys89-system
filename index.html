@@ -353,38 +353,24 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <div class="stat"><div class="stat-label">登記人數</div><div class="stat-num">—</div></div>
     </div>
 
-    <!-- 路線一：社群 → YS89.fun -->
-    <div class="card" style="border-left:3px solid #C44A2A;margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-        <div>
-          <div class="card-title" style="margin-bottom:2px">🎯 路線一：社群 → YS89.fun</div>
-          <p class="tm" style="font-size:.73rem">水軍發文（Threads 曝光）→ 論壇進站 → CTA | 點列展開每篇貼文</p>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <input type="date" id="ms-r1-start" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
-          <span style="font-size:.8rem;color:var(--text3)">～</span>
-          <input type="date" id="ms-r1-end" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
-          <button onclick="refreshMsRoute1()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:4px 14px;font-size:.76rem;cursor:pointer;font-weight:600">查詢</button>
-        </div>
-      </div>
-      <div id="ms-route1"><p class="tm" style="font-size:.78rem;color:var(--text3)">設定日期後按查詢</p></div>
+    <!-- ② 路線效率對比 -->
+    <div class="card" id="ms-route-summary" style="border-left:3px solid #6366f1;margin-bottom:14px">
+      <p class="tm" style="font-size:.78rem;padding:8px 0">資料同步中...</p>
     </div>
 
-    <!-- 路線二：社群 → picks168.com -->
-    <div class="card" style="border-left:3px solid #a78bfa;margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-        <div>
-          <div class="card-title" style="margin-bottom:2px;color:#a78bfa">🏁 路線二：社群 → picks168.com</div>
-          <p class="tm" style="font-size:.73rem">水軍發文（Threads 曝光）→ 信任頁進站 → VIP外連 | 點列展開每篇貼文</p>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <input type="date" id="ms-r2-start" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
-          <span style="font-size:.8rem;color:var(--text3)">～</span>
-          <input type="date" id="ms-r2-end" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
-          <button onclick="refreshMsRoute2()" style="background:#a78bfa;color:#fff;border:none;border-radius:6px;padding:4px 14px;font-size:.76rem;cursor:pointer;font-weight:600">查詢</button>
-        </div>
-      </div>
-      <div id="ms-route2"><p class="tm" style="font-size:.78rem;color:var(--text3)">設定日期後按查詢</p></div>
+    <!-- ③ 角色成效排行 -->
+    <div class="card" id="ms-persona-ranking" style="border-left:3px solid #f59e0b;margin-bottom:14px">
+      <p class="tm" style="font-size:.78rem;padding:8px 0">資料同步中...</p>
+    </div>
+
+    <!-- ④ 爆款貼文 UTM Top 10 -->
+    <div class="card" id="ms-top-posts" style="border-left:3px solid #22c55e;margin-bottom:14px">
+      <p class="tm" style="font-size:.78rem;padding:8px 0">資料同步中...</p>
+    </div>
+
+    <!-- ⑤ 每日趨勢 -->
+    <div class="card" id="ms-crossover" style="border-left:3px solid #60a5fa;margin-bottom:14px">
+      <p class="tm" style="font-size:.78rem;padding:8px 0">資料同步中...</p>
     </div>
 
     <!-- 完整漏斗 -->
@@ -9924,78 +9910,178 @@ function renderMsRoutePersonas(elId, posts, site) {
   }).join('');
 }
 
-function _buildRoutePostsFromLocal(start, end, isPicks168) {
-  const ta = DB.get('thread_activities') || [];
-  const sessMap = {};
-  if (!isPicks168) {
-    for (const c of (_ga4Data?.contents_7d || [])) sessMap[c.content] = Number(c.sessions || 0);
-  } else {
-    for (const c of (_ga4Data?.picks168?.contents_7d || [])) sessMap[c.content] = Number(c.sessions || 0);
-  }
-  return ta
-    .filter(r => r.date && r.date >= start && r.date <= end && r.status !== '略過')
-    .filter(r => {
-      const isP = (r.landingUrl || '').includes('picks168.com');
-      return isPicks168 ? isP : !isP;
-    })
-    .map(r => {
-      const m = r.platformMetrics?.Threads || {};
-      return {
-        date: r.date,
-        personaName: r.personaName || (r.utmContent || '').split('-')[0] || '?',
-        utmContent: r.utmContent,
-        impressions: Number(m.views || 0),
-        likes: Number(m.likes || 0),
-        note: r.notes || r.note || r.topic || '',
-        postUrl: r.url || r.shortLink || '',
-        ga4Sessions: (r.utmContent && r.utmContent in sessMap) ? sessMap[r.utmContent] : null,
-        ga4Outbound: null
-      };
-    });
-}
-
-function refreshMsRoute1() {
-  const start = document.getElementById('ms-r1-start')?.value;
-  const end   = document.getElementById('ms-r1-end')?.value;
-  if (!start || !end) return;
-  const posts = _buildRoutePostsFromLocal(start, end, false);
-  renderMsRoutePersonas('ms-route1', posts, 'ys89');
-}
-
-async function refreshMsRoute2() {
-  const start = document.getElementById('ms-r2-start')?.value;
-  const end   = document.getElementById('ms-r2-end')?.value;
-  if (!start || !end) return;
-  const el = document.getElementById('ms-route2');
+function renderMsRouteEfficiency(r1, r2) {
+  const el = document.getElementById('ms-route-summary');
   if (!el) return;
+  const sum = (arr, key) => (arr||[]).reduce((s,p) => s + Number(p[key]||0), 0);
+  const r1p = r1?.personas || [], r2p = r2?.personas || [];
+  const r1Imp = sum(r1p,'impressions'), r1Sess = sum(r1p,'forumSessions');
+  const r2Imp = sum(r2p,'impressions'), r2Sess = sum(r2p,'forumSessions'), r2Out = sum(r2p,'forumOutbound');
+  const pct = (a,b) => b>0 ? (a/b*100).toFixed(2)+'%' : '—';
+  const fmt = n => n>=10000 ? (n/10000).toFixed(1)+'萬' : n.toLocaleString();
+  const sync = r2?.lastSync ? new Date(r2.lastSync).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:6px">
+      <div class="card-title" style="margin:0">⚡ 路線效率對比</div>
+      <div style="font-size:.68rem;color:var(--text3)">資料同步：${sync}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="border-left:3px solid #C44A2A;padding:10px 14px;background:var(--g2);border-radius:6px">
+        <div style="font-size:.75rem;font-weight:700;color:#C44A2A;margin-bottom:10px">🎯 路線一 → YS89.fun</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;font-variant-numeric:tabular-nums">${fmt(r1Imp)}</div><div style="font-size:.67rem;color:var(--text3)">Threads 曝光</div></div>
+          <div style="color:var(--text3)">→</div>
+          <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;color:#C44A2A;font-variant-numeric:tabular-nums">${r1Sess.toLocaleString()}</div><div style="font-size:.67rem;color:var(--text3)">論壇進站</div></div>
+          <div style="margin-left:auto;text-align:right"><div style="font-size:1rem;font-weight:700;color:var(--amber)">${pct(r1Sess,r1Imp)}</div><div style="font-size:.67rem;color:var(--text3)">曝光→進站</div></div>
+        </div>
+      </div>
+      <div style="border-left:3px solid #a78bfa;padding:10px 14px;background:var(--g2);border-radius:6px">
+        <div style="font-size:.75rem;font-weight:700;color:#a78bfa;margin-bottom:10px">🏁 路線二 → picks168.com</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;font-variant-numeric:tabular-nums">${fmt(r2Imp)}</div><div style="font-size:.67rem;color:var(--text3)">Threads 曝光</div></div>
+          <div style="color:var(--text3)">→</div>
+          <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;color:#a78bfa;font-variant-numeric:tabular-nums">${r2Sess.toLocaleString()}</div><div style="font-size:.67rem;color:var(--text3)">picks168 進站</div></div>
+          <div style="color:var(--text3)">→</div>
+          <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;color:#22c55e;font-variant-numeric:tabular-nums">${r2Out.toLocaleString()}</div><div style="font-size:.67rem;color:var(--text3)">VIP 外連</div></div>
+          <div style="margin-left:auto;text-align:right">
+            <div style="font-size:.82rem;font-weight:700;color:var(--amber)">${pct(r2Sess,r2Imp)} <span style="font-size:.67rem;font-weight:400;color:var(--text3)">曝→站</span></div>
+            <div style="font-size:.82rem;font-weight:700;color:#22c55e">${pct(r2Out,r2Sess)} <span style="font-size:.67rem;font-weight:400;color:var(--text3)">站→外</span></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
 
-  // 先從本地分類並渲染（Threads 曝光即時顯示）
-  const localPosts = _buildRoutePostsFromLocal(start, end, true);
-  if (!localPosts.length) {
-    el.innerHTML = '<p class="tm" style="font-size:.78rem">此區間無 picks168 路線貼文（發文記錄未設落地頁為 picks168.com）</p>';
+function renderMsPersonaRanking(r1, r2) {
+  const el = document.getElementById('ms-persona-ranking');
+  if (!el) return;
+  const personas = (r2?.personas || [])
+    .filter(p => p.impressions > 0 || p.forumSessions > 0)
+    .sort((a,b) => (b.forumSessions||0)-(a.forumSessions||0) || (b.impressions||0)-(a.impressions||0));
+  if (!personas.length) {
+    el.innerHTML = '<div class="card-title">🏆 角色成效排行</div><p class="tm" style="font-size:.78rem">無資料</p>';
     return;
   }
-  renderMsRoutePersonas('ms-route2', localPosts, 'picks168');
+  const maxSess = personas[0]?.forumSessions || 1;
+  const medals = ['🥇','🥈','🥉'];
+  const fmt = n => n>=10000 ? (n/10000).toFixed(1)+'萬' : n.toLocaleString();
+  el.innerHTML = `
+    <div class="card-title" style="margin-bottom:12px">🏆 角色成效排行
+      <span style="font-size:.7rem;color:var(--text3);font-weight:400;margin-left:6px">路線二 picks168 · 依進站數排序</span>
+    </div>
+    <div class="t-scroll">
+      <table style="width:100%;border-collapse:collapse;font-size:.8rem">
+        <thead><tr style="border-bottom:1px solid var(--border);color:var(--text3);font-size:.7rem">
+          <th style="padding:5px 8px;text-align:left;font-weight:500">角色</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500">篇</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500;color:var(--amber)">曝光</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500">讚</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500">留言</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500;color:#a78bfa">進站</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500;color:#22c55e">VIP外連</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500;color:var(--accent)">進站率</th>
+        </tr></thead>
+        <tbody>
+          ${personas.map((p,i) => {
+            const bar = maxSess>0 ? Math.round((p.forumSessions||0)/maxSess*100) : 0;
+            const rate = p.impressions>0 ? (((p.forumSessions||0)/p.impressions)*100).toFixed(2)+'%' : '—';
+            return `<tr style="border-bottom:1px solid var(--g3)">
+              <td style="padding:6px 8px;font-weight:600">${medals[i]||''} ${p.name||p.persona}</td>
+              <td style="padding:6px 8px;text-align:right;color:var(--text3)">${p.posts||0}</td>
+              <td style="padding:6px 8px;text-align:right;color:var(--amber);font-variant-numeric:tabular-nums">${fmt(p.impressions||0)}</td>
+              <td style="padding:6px 8px;text-align:right;color:var(--text3)">${(p.likes||0).toLocaleString()}</td>
+              <td style="padding:6px 8px;text-align:right;color:var(--text3)">${p.comments||0}</td>
+              <td style="padding:6px 8px;text-align:right;font-weight:700;color:#a78bfa">
+                <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px">
+                  <div style="width:40px;background:var(--g3);border-radius:3px;height:5px;overflow:hidden"><div style="width:${bar}%;height:100%;background:#a78bfa;border-radius:3px"></div></div>
+                  ${p.forumSessions||0}
+                </div>
+              </td>
+              <td style="padding:6px 8px;text-align:right;font-weight:700;color:#22c55e">${p.forumOutbound||0}</td>
+              <td style="padding:6px 8px;text-align:right;font-size:.74rem;color:var(--accent)">${rate}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
 
-  // 背景補抓「實際進 picks168 數字」（ga4Sessions + VIP外連）
-  try {
-    const data = await fetchSeoApi('picks168', start, end);
-    const sessMap = {}, outMap = {};
-    for (const p of (data.posts || [])) {
-      if (p.utmContent) {
-        sessMap[p.utmContent] = Number(p.ga4Sessions || 0);
-        outMap[p.utmContent] = Number(p.ga4Outbound || 0);
-      }
-    }
-    const enriched = localPosts.map(p => ({
-      ...p,
-      ga4Sessions: p.utmContent in sessMap ? sessMap[p.utmContent] : p.ga4Sessions,
-      ga4Outbound: p.utmContent in outMap  ? outMap[p.utmContent]  : null
-    }));
-    renderMsRoutePersonas('ms-route2', enriched, 'picks168');
-  } catch(e) {
-    // 保留本地版本，只是沒有進站數字
+function renderMsTopPosts(r2) {
+  const el = document.getElementById('ms-top-posts');
+  if (!el) return;
+  const codes = (r2?.agentCodes || []).filter(c => c.sessions > 0).slice(0, 12);
+  const nameMap = r2?.codeToName || {};
+  if (!codes.length) {
+    el.innerHTML = '<div class="card-title">⭐ 本期爆款 UTM Top 12</div><p class="tm" style="font-size:.78rem">無資料</p>';
+    return;
   }
+  const max = codes[0]?.sessions || 1;
+  el.innerHTML = `
+    <div class="card-title" style="margin-bottom:10px">⭐ 本期爆款 UTM Top 12
+      <span style="font-size:.7rem;color:var(--text3);font-weight:400;margin-left:6px">picks168 進站最高・下週可複製</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      ${codes.map((c,i) => {
+        const name = nameMap[c.code] || c.code.split('-')[0] || '?';
+        const pct = Math.round(c.sessions/max*100);
+        return `<div style="display:flex;align-items:center;gap:8px;padding:4px 2px">
+          <div style="width:18px;font-size:.7rem;color:var(--text3);text-align:right;flex-shrink:0">${i+1}</div>
+          <div style="width:64px;font-size:.75rem;color:var(--text2);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</div>
+          <div style="flex:1;background:var(--g3);border-radius:4px;overflow:hidden;height:20px">
+            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#a78bfa,#818cf8);border-radius:4px;display:flex;align-items:center;padding:0 8px">
+              <span style="font-size:.68rem;color:#fff;white-space:nowrap;font-weight:700">${c.sessions}</span>
+            </div>
+          </div>
+          ${c.outbound>0 ? `<div style="font-size:.7rem;color:#22c55e;flex-shrink:0;min-width:52px;text-align:right">外連 ${c.outbound}</div>` : '<div style="min-width:52px"></div>'}
+          <div style="font-size:.66rem;color:var(--text3);flex-shrink:0;width:80px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${c.code}">${c.code}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderMsCrossover(r2) {
+  const el = document.getElementById('ms-crossover');
+  if (!el) return;
+  const data = (r2?.crossover || []).filter(d => d.date);
+  if (!data.length) {
+    el.innerHTML = '<div class="card-title">📈 每日趨勢：曝光 vs 品牌搜尋</div><p class="tm" style="font-size:.78rem">無資料</p>';
+    return;
+  }
+  const maxImp   = Math.max(...data.map(d => d.postImpr||0), 1);
+  const maxBrand = Math.max(...data.map(d => d.brandClicks||0), 1);
+  const W=600, H=130, pL=8, pR=8, pT=12, pB=26, iW=W-pL-pR, iH=H-pT-pB;
+  const n=data.length, step=iW/n, bW=Math.max(2,Math.floor(step)-3);
+  const x = i => pL + i*step + step/2;
+  const yImp   = v => pT + iH - iH*(v||0)/maxImp;
+  const yBrand = v => pT + iH - iH*(v||0)/maxBrand;
+  const bars = data.map((d,i) =>
+    `<rect x="${(x(i)-bW/2).toFixed(1)}" y="${yImp(d.postImpr).toFixed(1)}" width="${bW}" height="${(iH-yImp(d.postImpr)+pT).toFixed(1)}" fill="#a78bfa" opacity="0.55" rx="2"/>`
+  ).join('');
+  const line = data.map((d,i) => `${i===0?'M':'L'}${x(i).toFixed(1)},${yBrand(d.brandClicks).toFixed(1)}`).join(' ');
+  const dots = data.map((d,i) =>
+    `<circle cx="${x(i).toFixed(1)}" cy="${yBrand(d.brandClicks).toFixed(1)}" r="3" fill="#22c55e"><title>${d.date}: 品牌搜尋 ${d.brandClicks}</title></circle>`
+  ).join('');
+  const skip = Math.ceil(n/8);
+  const lbls = data.map((d,i) => i%skip===0||i===n-1
+    ? `<text x="${x(i).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="9" fill="var(--text3)">${d.date.slice(5)}</text>` : ''
+  ).join('');
+  const totImp = data.reduce((s,d)=>s+(d.postImpr||0),0);
+  const totBrand = data.reduce((s,d)=>s+(d.brandClicks||0),0);
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px">
+      <div class="card-title" style="margin:0">📈 每日趨勢：曝光 vs 品牌搜尋</div>
+      <div style="display:flex;gap:14px;font-size:.72rem;color:var(--text2)">
+        <span><span style="display:inline-block;width:10px;height:8px;background:#a78bfa;border-radius:2px;opacity:.6;vertical-align:middle;margin-right:4px"></span>貼文曝光 ${totImp>=10000?(totImp/10000).toFixed(1)+'萬':totImp.toLocaleString()}</span>
+        <span><span style="display:inline-block;width:10px;height:3px;background:#22c55e;border-radius:2px;vertical-align:middle;margin-right:4px"></span>品牌搜尋 ${totBrand} 次</span>
+      </div>
+    </div>
+    <p style="font-size:.67rem;color:var(--text3);margin-bottom:8px">貼文曝光（紫柱）vs picks168 品牌關鍵字搜尋次數（綠線）· 看社群是否帶動品牌認知累積</p>
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+      <line x1="${pL}" y1="${pT+iH}" x2="${W-pR}" y2="${pT+iH}" stroke="var(--border)" stroke-width="1"/>
+      ${bars}
+      <path d="${line}" stroke="#22c55e" stroke-width="2" fill="none" stroke-linejoin="round"/>
+      ${dots}${lbls}
+    </svg>`;
 }
 
 function renderMsFunnel(ga4Data, start, end) {
@@ -10077,9 +10163,7 @@ function renderMsNotes() {
   } else { el.innerHTML=''; }
 }
 
-let _msRoutesInitialized = false;
-
-function renderMeetingSummary(ga4Data) {
+async function renderMeetingSummary(ga4Data) {
   if(!ga4Data) return;
   const {start,end}=getMsSummaryDates();
   if(!start||!end) return;
@@ -10087,28 +10171,29 @@ function renderMeetingSummary(ga4Data) {
   const prevEnd=new Date(start); prevEnd.setDate(prevEnd.getDate()-1);
   const prevStart=new Date(prevEnd); prevStart.setDate(prevStart.getDate()-(days-1));
   const f=d=>d.toISOString().slice(0,10);
+
   renderMsKpiRow(ga4Data,start,end,f(prevStart),f(prevEnd));
-
-  if (!_msRoutesInitialized) {
-    _msRoutesInitialized = true;
-    const r1s = document.getElementById('ms-r1-start');
-    const r1e = document.getElementById('ms-r1-end');
-    const r2s = document.getElementById('ms-r2-start');
-    const r2e = document.getElementById('ms-r2-end');
-    if (r1s && !r1s.value) r1s.value = start;
-    if (r1e && !r1e.value) r1e.value = end;
-    if (r2s && !r2s.value) {
-      const r2End = new Date(); r2End.setDate(r2End.getDate()-1);
-      const r2Start = new Date(r2End); r2Start.setDate(r2Start.getDate()-27);
-      r2s.value = f(r2Start);
-      r2e.value = f(r2End);
-    }
-    refreshMsRoute1();
-    refreshMsRoute2();
-  }
-
   renderMsFunnel(ga4Data,start,end);
   renderMsNotes();
+
+  const loading = '<p class="tm" style="font-size:.78rem;padding:8px 0">資料同步中...</p>';
+  ['ms-route-summary','ms-persona-ranking','ms-top-posts','ms-crossover']
+    .forEach(id => { const e=document.getElementById(id); if(e) e.innerHTML=loading; });
+
+  try {
+    const [r1, r2] = await Promise.all([
+      fetchSeoApi(null, start, end),
+      fetchSeoApi('picks168', start, end)
+    ]);
+    renderMsRouteEfficiency(r1, r2);
+    renderMsPersonaRanking(r1, r2);
+    renderMsTopPosts(r2);
+    renderMsCrossover(r2);
+  } catch(e) {
+    const err = `<p class="tm" style="font-size:.78rem;color:#ef4444;padding:8px 0">⚠ 資料載入失敗：${e.message}</p>`;
+    ['ms-route-summary','ms-persona-ranking','ms-top-posts','ms-crossover']
+      .forEach(id => { const el=document.getElementById(id); if(el) el.innerHTML=err; });
+  }
 }
 
 // ===== REMOVED: 快照對比 (replaced by 成效總結) =====
