@@ -10038,12 +10038,14 @@ function renderMsPersonaRanking(r1, r2) {
           <th style="padding:5px 8px;text-align:right;font-weight:500;color:#C44A2A" title="路線一→YS89.fun 進站（社群UTM追蹤）">YS89入口</th>
           <th style="padding:5px 8px;text-align:right;font-weight:500;color:#a78bfa" title="路線二→picks168 進站（社群UTM追蹤）">picks168入口</th>
           <th style="padding:5px 8px;text-align:right;font-weight:500;color:#22c55e" title="從picks168信任頁點擊前往VIP頁的次數">VIP外連</th>
-          <th style="padding:5px 8px;text-align:right;font-weight:500;color:var(--accent)">進站率</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500;color:#a78bfa" title="picks168進站 ÷ 曝光">進站率</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500;color:#22c55e" title="VIP外連 ÷ 曝光（更深層轉換）">VIP率</th>
         </tr></thead>
         <tbody>
           ${personas.map((p, i) => {
             const bar = maxSess > 0 ? Math.round((p.forumSessions||0)/maxSess*100) : 0;
-            const rate = p.impressions > 0 ? (((p.forumSessions||0)/p.impressions)*100).toFixed(2)+'%' : '—';
+            const rate    = p.impressions > 0 ? (((p.forumSessions||0)/p.impressions)*100).toFixed(2)+'%' : '—';
+            const vipRate = p.impressions > 0 && (p.forumOutbound||0) > 0 ? (((p.forumOutbound||0)/p.impressions)*100).toFixed(2)+'%' : '—';
             const pName = p.name || p.persona || '?';
             const ys89Sess = r1Map[pName] || 0;
             const ddId = 'ms-prdd-' + pName.replace(/[^a-z0-9]/gi, '_');
@@ -10088,10 +10090,11 @@ function renderMsPersonaRanking(r1, r2) {
                 </div>
               </td>
               <td style="padding:6px 8px;text-align:right;font-weight:700;color:#22c55e">${p.forumOutbound||0}</td>
-              <td style="padding:6px 8px;text-align:right;font-size:.74rem;color:var(--accent)">${rate}</td>
+              <td style="padding:6px 8px;text-align:right;font-size:.74rem;color:#a78bfa">${rate}</td>
+              <td style="padding:6px 8px;text-align:right;font-size:.74rem;color:#22c55e">${vipRate}</td>
             </tr>
             <tr id="${ddId}" style="display:none">
-              <td colspan="9" style="padding:0 0 10px 28px;background:var(--g2)">
+              <td colspan="10" style="padding:0 0 10px 28px;background:var(--g2)">
                 <div style="font-size:.7rem;color:var(--text3);padding:8px 0 4px">📄 ${pName} · 此期間貼文明細（picks168 進站排序）</div>
                 <div class="t-scroll">
                   <table style="width:100%;border-collapse:collapse;font-size:.78rem">
