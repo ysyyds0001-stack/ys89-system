@@ -9999,7 +9999,7 @@ function saveMeetingNotes() {
   const idx=notes.findIndex(n=>n.weekKey===end);
   if(idx>=0) notes[idx]=entry; else notes.unshift(entry);
   DB.set('meeting_notes',notes);
-  showToast('本週開會記錄已儲存');
+  toast('本週開會記錄已儲存');
   renderMsNotes();
 }
 
