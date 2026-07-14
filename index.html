@@ -344,6 +344,25 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <!-- ===== 成效總結面板 ===== -->
   <div id="ms-panel" style="margin-bottom:18px">
 
+    <!-- 開會日期選擇器 -->
+    <div style="background:var(--g2);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div style="font-size:.75rem;font-weight:700;color:var(--text2);flex-shrink:0">📅 開會對比區間</div>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span style="font-size:.7rem;font-weight:700;color:var(--accent);background:var(--accent)22;border-radius:4px;padding:2px 6px">本期</span>
+        <input type="date" id="ms-cur-start" style="border:1px solid var(--border);background:var(--g3);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
+        <span style="font-size:.8rem;color:var(--text3)">～</span>
+        <input type="date" id="ms-cur-end" style="border:1px solid var(--border);background:var(--g3);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span style="font-size:.7rem;font-weight:700;color:var(--text3);background:var(--g3);border-radius:4px;padding:2px 6px">對比</span>
+        <input type="date" id="ms-cmp-start" style="border:1px solid var(--border);background:var(--g3);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
+        <span style="font-size:.8rem;color:var(--text3)">～</span>
+        <input type="date" id="ms-cmp-end" style="border:1px solid var(--border);background:var(--g3);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
+      </div>
+      <button onclick="triggerMsRefresh()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:5px 18px;font-size:.76rem;cursor:pointer;font-weight:700;flex-shrink:0">更新報告</button>
+      <div id="ms-date-hint" style="font-size:.68rem;color:var(--text3);margin-left:auto"></div>
+    </div>
+
     <!-- 5 KPI 總覽 -->
     <div class="g5 ga4-kpis" id="ms-kpi-row" style="margin-bottom:16px">
       <div class="stat"><div class="stat-label">Threads 曝光</div><div class="stat-num">—</div></div>
@@ -10163,17 +10182,48 @@ function renderMsNotes() {
   } else { el.innerHTML=''; }
 }
 
-async function renderMeetingSummary(ga4Data) {
-  if(!ga4Data) return;
-  const {start,end}=getMsSummaryDates();
-  if(!start||!end) return;
-  const days=Math.ceil((new Date(end)-new Date(start))/86400000)+1;
-  const prevEnd=new Date(start); prevEnd.setDate(prevEnd.getDate()-1);
-  const prevStart=new Date(prevEnd); prevStart.setDate(prevStart.getDate()-(days-1));
-  const f=d=>d.toISOString().slice(0,10);
+function _msInitDates() {
+  const f = d => d.toISOString().slice(0,10);
+  const cs = document.getElementById('ms-cur-start');
+  if (!cs || cs.value) return; // already set
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const curStart  = new Date(yesterday); curStart.setDate(curStart.getDate()-6);
+  const cmpEnd    = new Date(curStart);  cmpEnd.setDate(cmpEnd.getDate()-1);
+  const cmpStart  = new Date(cmpEnd);    cmpStart.setDate(cmpStart.getDate()-6);
+  document.getElementById('ms-cur-start').value = f(curStart);
+  document.getElementById('ms-cur-end').value   = f(yesterday);
+  document.getElementById('ms-cmp-start').value = f(cmpStart);
+  document.getElementById('ms-cmp-end').value   = f(cmpEnd);
+}
 
-  renderMsKpiRow(ga4Data,start,end,f(prevStart),f(prevEnd));
-  renderMsFunnel(ga4Data,start,end);
+function _msDates() {
+  return {
+    start:     document.getElementById('ms-cur-start')?.value || '',
+    end:       document.getElementById('ms-cur-end')?.value   || '',
+    prevStart: document.getElementById('ms-cmp-start')?.value || '',
+    prevEnd:   document.getElementById('ms-cmp-end')?.value   || ''
+  };
+}
+
+function triggerMsRefresh() {
+  if (typeof _ga4Data !== 'undefined' && _ga4Data) renderMeetingSummary(_ga4Data);
+}
+
+async function renderMeetingSummary(ga4Data) {
+  if (!ga4Data) return;
+  _msInitDates();
+  const { start, end, prevStart, prevEnd } = _msDates();
+  if (!start || !end) return;
+
+  // Show date hint
+  const hint = document.getElementById('ms-date-hint');
+  if (hint) {
+    const days = Math.ceil((new Date(end)-new Date(start))/86400000)+1;
+    hint.textContent = `本期 ${days} 天${prevStart ? '・對比 ' + prevStart + ' ～ ' + prevEnd : ''}`;
+  }
+
+  renderMsKpiRow(ga4Data, start, end, prevStart, prevEnd);
+  renderMsFunnel(ga4Data, start, end);
   renderMsNotes();
 
   const loading = '<p class="tm" style="font-size:.78rem;padding:8px 0">資料同步中...</p>';
