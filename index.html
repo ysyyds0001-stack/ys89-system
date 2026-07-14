@@ -298,7 +298,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-sep"></div>
   <div class="nav-tab" onclick="nav(this,'community')">👤 角色</div>
   <div class="nav-sep"></div>
-  <div class="nav-tab" onclick="nav(this,'ga4')">📊 GA4 成效</div>
+  <div class="nav-tab" onclick="nav(this,'ga4')">📊 成效總結</div>
   <div class="nav-tab" onclick="nav(this,'tracker')">📈 發文追蹤</div>
   <div class="nav-tab" onclick="nav(this,'articles')">📚 文章庫</div>
   <div class="nav-sep"></div>
@@ -317,8 +317,8 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 <div id="pg-ga4" class="page">
   <div class="fb" style="margin-bottom:12px">
     <div>
-      <h2 style="font-size:1.2rem;font-weight:700">📊 GA4 成效報表</h2>
-      <p class="tm" style="margin-top:3px">世足前鋒站群 · 社群水軍 / 地推 / 廣告 流量與轉換分析</p>
+      <h2 style="font-size:1.2rem;font-weight:700">📊 成效總結</h2>
+      <p class="tm" style="margin-top:3px">Threads 曝光 · GA4 進站 · picks168 直達 · 私訊詢問 · 登記 — 開會一頁看完</p>
       <p class="tm" style="font-size:.75rem;margin-top:6px" id="ga4Range">資料區間：近 7 天 · 測量 ID：G-THDJFGXCZ7</p>
     </div>
   </div>
@@ -340,6 +340,65 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <button id="ga4CustomQueryBtn" onclick="fetchCustomGA4()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:4px 16px;font-size:.78rem;cursor:pointer;font-weight:600;transition:opacity .15s">查詢</button>
     <button id="ga4ResetCustomBtn" onclick="resetCustomGA4()" style="display:none;background:var(--g3);color:var(--text2);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:.78rem;cursor:pointer">← 重設</button>
   </div>
+
+  <!-- ===== 成效總結面板 ===== -->
+  <div id="ms-panel" style="margin-bottom:18px">
+
+    <!-- 5 KPI 總覽 -->
+    <div class="g5 ga4-kpis" id="ms-kpi-row" style="margin-bottom:16px">
+      <div class="stat"><div class="stat-label">Threads 曝光</div><div class="stat-num">—</div></div>
+      <div class="stat"><div class="stat-label">YS89 進站</div><div class="stat-num">—</div></div>
+      <div class="stat"><div class="stat-label">picks168 直達</div><div class="stat-num">—</div></div>
+      <div class="stat"><div class="stat-label">私訊詢問</div><div class="stat-num">—</div></div>
+      <div class="stat"><div class="stat-label">登記人數</div><div class="stat-num">—</div></div>
+    </div>
+
+    <!-- Threads 曝光排名 + 可點擊展開貼文明細 -->
+    <div class="card" style="border-left:3px solid var(--amber);margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="card-title" style="margin-bottom:0">📡 Threads 曝光排名</div>
+        <span style="font-size:.72rem;color:var(--text3)">點列展開貼文明細</span>
+      </div>
+      <div id="ms-threads-ranking"><p class="tm" style="font-size:.78rem">載入中...</p></div>
+    </div>
+
+    <!-- GA4 引流 by persona + 可點擊展開 UTM 貼文 -->
+    <div class="card" style="border-left:3px solid #60a5fa;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="card-title" style="margin-bottom:0">🌐 各角色引流成效</div>
+        <span style="font-size:.72rem;color:var(--text3)">點列展開個別貼文</span>
+      </div>
+      <div id="ms-ga4-accounts"><p class="tm" style="font-size:.78rem">載入中...</p></div>
+    </div>
+
+    <!-- 完整漏斗 -->
+    <div class="card" style="border-left:3px solid #22c55e;margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:10px">📊 完整轉換漏斗</div>
+      <div id="ms-funnel"></div>
+    </div>
+
+    <!-- 開會記錄 -->
+    <div class="card" style="border-left:3px solid #818cf8;margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:10px;color:#818cf8">📋 開會記錄</div>
+      <div id="ms-last-notes"></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+        <div>
+          <div style="font-size:.72rem;color:#22c55e;font-weight:600;margin-bottom:4px">🟢 這週做得好的</div>
+          <textarea id="mn-good" rows="3" placeholder="例：akki 互動率提升、神貼文爆量..." style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:6px 8px;font-size:.77rem;outline:none;resize:vertical;box-sizing:border-box;line-height:1.5"></textarea>
+        </div>
+        <div>
+          <div style="font-size:.72rem;color:#ef4444;font-weight:600;margin-bottom:4px">🔴 這週做得不好的</div>
+          <textarea id="mn-bad" rows="3" placeholder="例：god 角色停更三天、轉換率下滑..." style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:6px 8px;font-size:.77rem;outline:none;resize:vertical;box-sizing:border-box;line-height:1.5"></textarea>
+        </div>
+        <div>
+          <div style="font-size:.72rem;color:var(--accent);font-weight:600;margin-bottom:4px">🔧 下週要改善的</div>
+          <textarea id="mn-improve" rows="3" placeholder="例：kk 每天至少一則、換新版 picks168 連結..." style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:6px 8px;font-size:.77rem;outline:none;resize:vertical;box-sizing:border-box;line-height:1.5"></textarea>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="font-size:.78rem;padding:5px 18px" onclick="saveMeetingNotes()">💾 儲存本週記錄</button>
+    </div>
+
+  </div><!-- /ms-panel -->
 
   <!-- 上週對比面板 (僅 compare 模式顯示) -->
   <div id="ga4ComparePanel" style="display:none;margin-bottom:18px">
@@ -682,66 +741,8 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     </div>
   </div>
 
-  <!-- ===== 開會記錄 & 快照對比 ===== -->
-  <div style="margin-top:8px;padding-top:20px;border-top:2px solid var(--border)">
-    <div class="fb" style="margin-bottom:14px">
-      <div>
-        <div style="font-size:1rem;font-weight:700">📋 開會記錄 &amp; 週報對比</div>
-        <p class="tm" style="font-size:.74rem;margin-top:3px">開會前存快照記錄這週數字，附上好/壞原因與改善計畫，下次開會直接比對變化</p>
-      </div>
-    </div>
-
-    <!-- 存本週快照 -->
-    <div class="card" style="margin-bottom:14px">
-      <div class="card-title" style="font-size:.85rem;margin-bottom:12px">📸 存本週快照</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px">
-        <div>
-          <div style="font-size:.72rem;color:var(--text3);margin-bottom:3px">資料區間</div>
-          <div style="display:flex;gap:6px;align-items:center">
-            <input type="date" id="snap-start" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:4px 8px;font-size:.78rem;outline:none">
-            <span style="color:var(--text3);font-size:.85rem">～</span>
-            <input type="date" id="snap-end" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:4px 8px;font-size:.78rem;outline:none">
-          </div>
-        </div>
-        <div style="flex:1;min-width:160px">
-          <div style="font-size:.72rem;color:var(--text3);margin-bottom:3px">會議標籤</div>
-          <input type="text" id="snap-label" placeholder="例：7/14 週會 · 世足第三週" style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:4px 10px;font-size:.78rem;outline:none;box-sizing:border-box">
-        </div>
-        <button id="snap-save-btn" class="btn btn-primary" onclick="saveSnapshot()" style="font-size:.78rem;padding:5px 18px;white-space:nowrap">💾 存快照</button>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px">
-        <div>
-          <div style="font-size:.72rem;color:#22c55e;font-weight:600;margin-bottom:4px">🟢 這週做得好的</div>
-          <textarea id="snap-good" rows="3" placeholder="例：akki 互動率提升、神貼文爆量..." style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:6px 8px;font-size:.77rem;outline:none;resize:vertical;box-sizing:border-box;line-height:1.5"></textarea>
-        </div>
-        <div>
-          <div style="font-size:.72rem;color:#ef4444;font-weight:600;margin-bottom:4px">🔴 這週做得不好的</div>
-          <textarea id="snap-bad" rows="3" placeholder="例：god 角色停更三天、轉換率下滑..." style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:6px 8px;font-size:.77rem;outline:none;resize:vertical;box-sizing:border-box;line-height:1.5"></textarea>
-        </div>
-        <div>
-          <div style="font-size:.72rem;color:var(--accent);font-weight:600;margin-bottom:4px">🔧 下週要改善的</div>
-          <textarea id="snap-improve" rows="3" placeholder="例：kk 每天至少一則、把 picks168 連結換成新版..." style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:6px 8px;font-size:.77rem;outline:none;resize:vertical;box-sizing:border-box;line-height:1.5"></textarea>
-        </div>
-      </div>
-      <p class="tm" style="font-size:.7rem;opacity:.65">需要 dashboard_server.py 執行中才能抓 GA4 數據（未執行時仍會存 Threads / conv 數據）</p>
-    </div>
-
-    <!-- 快照列表 -->
-    <div id="snap-list" style="margin-bottom:14px">
-      <p class="tm" style="font-size:.78rem;color:var(--text3)">尚無快照，先存一份。</p>
-    </div>
-
-    <!-- 對比面板 -->
-    <div id="snap-compare" style="display:none;margin-bottom:14px">
-      <div class="card" style="border-left:3px solid var(--accent)">
-        <div class="card-title" style="margin-bottom:14px">📊 對比結果</div>
-        <div id="snap-compare-inner"></div>
-      </div>
-    </div>
-  </div>
-
   <div style="text-align:center;color:var(--text3);font-size:.75rem;padding:12px;border-top:1px solid var(--border)">
-    📊 GA4 成效報表 · 資料源：Google Analytics 4（每日自動更新）<br>
+    📊 成效總結 · GA4 每日自動更新 · Threads / 詢問 / 登記 從本地資料庫讀取<br>
     <span style="margin-top:6px;display:block" id="ga4Updated">⚙️ 載入中...</span>
   </div>
 </div>
@@ -1134,6 +1135,9 @@ function switchGA4Period(p) {
 
   // picks168 落地頁成效隨區間切換
   renderPicks168(d, p);
+
+  // 成效總結
+  renderMeetingSummary(d);
 }
 
 function renderExposurePanel(d, period) {
@@ -4581,7 +4585,6 @@ function nav(el,page){
   else if(page==='ga4'){ if(_ga4Data) renderGA4(_ga4Data); }
   else if(page==='utm'){ utmInit() }
   else if(page==='fortune'){ fpInit() }
-  else if(page==='ga4'){ renderSnapshotList() }
   else renders[page]&&renders[page]()
 }
 function openModal(id){document.getElementById(id).classList.add('show')}
@@ -9746,9 +9749,299 @@ function fpLoadPrediction(date) {
   toast(`📅 已載入 ${date} 預測`);
 }
 
-// ===== 快照對比 =====
-let _snapA = null, _snapB = null;
+// ===== 成效總結 =====
+function getMsSummaryDates() {
+  const mode = document.querySelector('.ga4-pb.active-p')?.dataset.p || '7d';
+  if (mode === 'custom') {
+    return { start: document.getElementById('ga4DateStart').value||'', end: document.getElementById('ga4DateEnd').value||'' };
+  }
+  const days = mode==='3d'?3:mode==='28d'?28:7;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const yesterday = new Date(now); yesterday.setDate(yesterday.getDate()-1);
+  const start = new Date(yesterday); start.setDate(start.getDate()-(days-1));
+  const f = d=>d.toISOString().slice(0,10);
+  return { start:f(start), end:f(yesterday) };
+}
 
+function msToggleDrilldown(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = el.style.display==='none'?'block':'none';
+}
+
+function renderMsKpiRow(ga4Data, start, end, prevStart, prevEnd) {
+  const ta=DB.get('thread_activities')||[], cd=DB.get('conv_daily')||[];
+  let curViews=0,prevViews=0,curInq=0,prevInq=0,curReg=0,prevReg=0;
+  for(const r of ta){
+    if(r.status==='略過') continue;
+    const v=Number(r.platformMetrics?.Threads?.views||0);
+    if(r.date>=start&&r.date<=end) curViews+=v;
+    if(r.date>=prevStart&&r.date<=prevEnd) prevViews+=v;
+  }
+  for(const r of cd){
+    if(r.date>=start&&r.date<=end){curInq+=Number(r.inq||0);curReg+=Number(r.reg||0);}
+    if(r.date>=prevStart&&r.date<=prevEnd){prevInq+=Number(r.inq||0);prevReg+=Number(r.reg||0);}
+  }
+  const k=ga4Data?.kpis_7d||ga4Data?.kpis||{};
+  const kp=ga4Data?.kpis_prev7d||{};
+  const p168k=ga4Data?.picks168?.kpis_7d||ga4Data?.picks168?.kpis_28d||{};
+  const p168kp=ga4Data?.picks168?.kpis_prev7d||{};
+  const kpis=[
+    {label:'Threads 曝光', cur:curViews,        prev:prevViews,       note:'Threads 確認瀏覽'},
+    {label:'YS89 進站',    cur:k.sessions,       prev:kp.sessions,     note:'GA4 sessions'},
+    {label:'picks168 直達',cur:p168k.sessions,   prev:p168kp.sessions, note:'GA4 sessions'},
+    {label:'私訊詢問',     cur:curInq,           prev:prevInq,         note:'conv_daily inq'},
+    {label:'登記人數',     cur:curReg,           prev:prevReg,         note:'conv_daily reg'}
+  ];
+  document.getElementById('ms-kpi-row').innerHTML=kpis.map(kpi=>{
+    const cur=Number(kpi.cur||0),prev=Number(kpi.prev||0);
+    const delta=prev?((cur-prev)/prev*100).toFixed(0):null;
+    const dHtml=delta!==null
+      ?`<span style="font-size:.65rem;font-weight:700;color:${Number(delta)>=0?'#22c55e':'#ef4444'};margin-left:4px">${Number(delta)>=0?'▲':'▼'}${Math.abs(delta)}%</span>`:'';
+    return `<div class="stat">
+      <div class="stat-label">${kpi.label}</div>
+      <div class="stat-num">${cur.toLocaleString()}${dHtml}</div>
+      <div style="font-size:.66rem;color:var(--text3);margin-top:2px">${kpi.note}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderMsThreadsRanking(ga4Data, start, end) {
+  const ta=DB.get('thread_activities')||[];
+  const contentsMap={};
+  (ga4Data?.contents_7d||ga4Data?.contents||[]).forEach(c=>{contentsMap[c.content]={sessions:c.sessions||0,cta:c.cta||0};});
+  const personaMap={};
+  for(const r of ta){
+    if(r.status==='略過'||!r.date||r.date<start||r.date>end) continue;
+    const name=r.personaName||(r.utmContent||'').split('-')[0]||'?';
+    if(!personaMap[name]) personaMap[name]={views:0,likes:0,posts:[]};
+    const m=r.platformMetrics?.Threads||{};
+    personaMap[name].views+=Number(m.views||0);
+    personaMap[name].likes+=Number(m.likes||0);
+    personaMap[name].posts.push(r);
+  }
+  const sorted=Object.entries(personaMap).sort((a,b)=>b[1].views-a[1].views);
+  if(!sorted.length){
+    document.getElementById('ms-threads-ranking').innerHTML='<p class="tm" style="font-size:.78rem">本期無 Threads 數據</p>';
+    return;
+  }
+  const maxViews=sorted[0][1].views||1;
+  document.getElementById('ms-threads-ranking').innerHTML=sorted.map(([name,data])=>{
+    const pct=(data.views/maxViews*100).toFixed(1);
+    const ddId='ms-tdd-'+name;
+    const posts=data.posts.slice().sort((a,b)=>Number(b.platformMetrics?.Threads?.views||0)-Number(a.platformMetrics?.Threads?.views||0));
+    const ddRows=posts.map(p=>{
+      const m=p.platformMetrics?.Threads||{};
+      const ga4=p.utmContent?(contentsMap[p.utmContent]||{}):{};
+      const title=p.notes||p.utmContent||'—';
+      return `<tr>
+        <td style="padding:5px 8px;font-size:.74rem;color:var(--text3);white-space:nowrap">${p.date||'—'}</td>
+        <td style="padding:5px 8px;font-size:.78rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${title}">${title}</td>
+        <td style="padding:5px 8px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent)">${Number(m.views||0).toLocaleString()}</td>
+        <td style="padding:5px 8px;text-align:right;font-size:.77rem">${m.likes||0}</td>
+        <td style="padding:5px 8px;text-align:right;font-size:.77rem">${m.replies||0}</td>
+        <td style="padding:5px 8px;font-size:.72rem;color:var(--text3)">${p.utmContent||'—'}</td>
+        <td style="padding:5px 8px;text-align:right;font-size:.77rem;color:#60a5fa;font-variant-numeric:tabular-nums">${ga4.sessions||'—'}</td>
+        <td style="padding:5px 8px;text-align:right;font-size:.77rem;color:#a78bfa">${ga4.cta||'—'}</td>
+      </tr>`;
+    }).join('');
+    return `<div style="margin-bottom:4px">
+      <div onclick="msToggleDrilldown('${ddId}')" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:7px 4px;border-radius:6px;transition:background .12s" onmouseover="this.style.background='var(--g2)'" onmouseout="this.style.background='transparent'">
+        <div style="width:60px;font-size:.8rem;text-align:right;color:var(--text2);flex-shrink:0">${pName(name)}</div>
+        <div style="flex:1;background:var(--g3);border-radius:4px;overflow:hidden;height:22px">
+          <div style="height:100%;width:${pct}%;background:var(--amber);border-radius:4px;display:flex;align-items:center;padding:0 8px">
+            <span style="font-size:.7rem;color:#fff;white-space:nowrap;font-weight:600">${data.views>=1000?(data.views/1000).toFixed(1)+'K':data.views}</span>
+          </div>
+        </div>
+        <div style="font-size:.77rem;color:var(--text2);min-width:50px;text-align:right;flex-shrink:0">${data.views.toLocaleString()}</div>
+        <div style="font-size:.7rem;color:var(--text3);flex-shrink:0">▾</div>
+      </div>
+      <div id="${ddId}" style="display:none;margin:4px 0 10px 74px">
+        <div class="t-scroll">
+          <table style="width:100%;border-collapse:collapse;font-size:.78rem">
+            <thead><tr style="border-bottom:1px solid var(--border);color:var(--text3);font-size:.72rem">
+              <th style="padding:4px 8px;text-align:left;font-weight:500">日期</th>
+              <th style="padding:4px 8px;text-align:left;font-weight:500">文案摘要</th>
+              <th style="padding:4px 8px;text-align:right;font-weight:500">瀏覽</th>
+              <th style="padding:4px 8px;text-align:right;font-weight:500">讚</th>
+              <th style="padding:4px 8px;text-align:right;font-weight:500">回覆</th>
+              <th style="padding:4px 8px;text-align:left;font-weight:500">UTM</th>
+              <th style="padding:4px 8px;text-align:right;font-weight:500;color:#60a5fa">YS89進站</th>
+              <th style="padding:4px 8px;text-align:right;font-weight:500;color:#a78bfa">CTA</th>
+            </tr></thead>
+            <tbody>${ddRows||'<tr><td colspan="8" style="padding:10px;color:var(--text3);font-size:.78rem">無貼文記錄</td></tr>'}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMsGA4Accounts(ga4Data, start, end) {
+  const accounts=ga4Data?.accounts_7d||ga4Data?.accounts||[];
+  const p168Map={};
+  (ga4Data?.picks168?.sources_7d||ga4Data?.picks168?.sources||[]).forEach(a=>{p168Map[a.name||a.account]=a;});
+  const contents=ga4Data?.contents_7d||ga4Data?.contents||[];
+  const ta=DB.get('thread_activities')||[];
+  const threadMap={};
+  for(const r of ta){
+    if(r.utmContent&&!threadMap[r.utmContent]){
+      const m=r.platformMetrics?.Threads||{};
+      threadMap[r.utmContent]={views:Number(m.views||0),likes:Number(m.likes||0),date:r.date,notes:r.notes};
+    }
+  }
+  if(!accounts.length){
+    document.getElementById('ms-ga4-accounts').innerHTML='<p class="tm" style="font-size:.78rem">無 GA4 帳號數據</p>';
+    return;
+  }
+  const maxSess=Math.max(1,...accounts.map(a=>a.s||a.sessions||0));
+  document.getElementById('ms-ga4-accounts').innerHTML=accounts.slice(0,12).map(a=>{
+    const name=a.name||a.account||'?';
+    const ys89s=a.s||a.sessions||0, ys89cta=a.cta||0;
+    const p168=p168Map[name]||{}, p168s=p168.s||p168.sessions||0;
+    const ddId='ms-gadd-'+name;
+    const personaPosts=contents.filter(c=>(c.content||'').toLowerCase().startsWith(name.toLowerCase()+'-'))
+                               .sort((a,b)=>(b.sessions||0)-(a.sessions||0));
+    const ddRows=personaPosts.map(c=>{
+      const th=threadMap[c.content]||{};
+      return `<tr>
+        <td style="padding:5px 8px;font-size:.72rem;color:var(--text3);white-space:nowrap">${th.date||'—'}</td>
+        <td style="padding:5px 8px;font-size:.77rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${th.notes||''}">${th.notes||c.content}</td>
+        <td style="padding:5px 8px;font-size:.72rem;color:var(--text3)">${c.content}</td>
+        <td style="padding:5px 8px;text-align:right;font-weight:700;color:#60a5fa;font-variant-numeric:tabular-nums">${(c.sessions||0).toLocaleString()}</td>
+        <td style="padding:5px 8px;text-align:right;font-size:.77rem;color:#a78bfa">${c.cta||0}</td>
+        <td style="padding:5px 8px;text-align:right;font-size:.77rem;font-variant-numeric:tabular-nums">${th.views?th.views.toLocaleString():'—'}</td>
+      </tr>`;
+    }).join('');
+    return `<div style="margin-bottom:4px">
+      <div onclick="msToggleDrilldown('${ddId}')" style="cursor:pointer;display:flex;align-items:center;gap:8px;padding:7px 4px;border-radius:6px;transition:background .12s" onmouseover="this.style.background='var(--g2)'" onmouseout="this.style.background='transparent'">
+        <div style="width:60px;font-size:.8rem;text-align:right;color:var(--text2);flex-shrink:0">${pName(name)}</div>
+        <div style="flex:1;background:var(--g3);border-radius:4px;overflow:hidden;height:22px">
+          <div style="height:100%;width:${(ys89s/maxSess*100).toFixed(1)}%;background:#60a5fa;border-radius:4px;display:flex;align-items:center;padding:0 8px">
+            <span style="font-size:.7rem;color:#fff;white-space:nowrap;font-weight:600">${ys89s}</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;font-size:.77rem;flex-shrink:0">
+          <span style="color:#60a5fa">YS89 <b>${ys89s}</b></span>
+          ${p168s?`<span style="color:#a78bfa">P168 <b>${p168s}</b></span>`:''}
+          <span style="color:var(--text3)">CTA ${ys89cta}</span>
+        </div>
+        <div style="font-size:.7rem;color:var(--text3);flex-shrink:0">▾</div>
+      </div>
+      <div id="${ddId}" style="display:none;margin:4px 0 10px 72px">
+        ${personaPosts.length?`<div class="t-scroll">
+          <table style="width:100%;border-collapse:collapse;font-size:.78rem">
+            <thead><tr style="border-bottom:1px solid var(--border);color:var(--text3);font-size:.72rem">
+              <th style="padding:4px 8px;text-align:left;font-weight:500">日期</th>
+              <th style="padding:4px 8px;text-align:left;font-weight:500">文案摘要</th>
+              <th style="padding:4px 8px;text-align:left;font-weight:500">UTM</th>
+              <th style="padding:4px 8px;text-align:right;font-weight:500;color:#60a5fa">YS89進站</th>
+              <th style="padding:4px 8px;text-align:right;font-weight:500;color:#a78bfa">CTA</th>
+              <th style="padding:4px 8px;text-align:right;font-weight:500">Threads瀏覽</th>
+            </tr></thead>
+            <tbody>${ddRows}</tbody>
+          </table>
+        </div>`:'<p class="tm" style="font-size:.77rem;padding:8px">此角色無 UTM 貼文數據</p>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMsFunnel(ga4Data, start, end) {
+  const ta=DB.get('thread_activities')||[], cd=DB.get('conv_daily')||[];
+  let threadsViews=0, inq=0, reg=0;
+  for(const r of ta){
+    if(r.status==='略過'||!r.date||r.date<start||r.date>end) continue;
+    threadsViews+=Number(r.platformMetrics?.Threads?.views||0);
+  }
+  for(const r of cd){
+    if(!r.date||r.date<start||r.date>end) continue;
+    inq+=Number(r.inq||0); reg+=Number(r.reg||0);
+  }
+  const k=ga4Data?.kpis_7d||ga4Data?.kpis||{};
+  const p168k=ga4Data?.picks168?.kpis_7d||ga4Data?.picks168?.kpis_28d||{};
+  const ys89s=k.sessions||0, p168s=p168k.sessions||0, cta=k.cta||0;
+  const steps=[
+    {label:'Threads 曝光', val:threadsViews, color:'#f59e0b', note:'Threads 確認瀏覽數'},
+    {label:'YS89 進站',    val:ys89s,         color:'#C44A2A', note:'GA4 sessions'},
+    {label:'picks168 直達',val:p168s,         color:'#a78bfa', note:'GA4 sessions'},
+    {label:'CTA 點擊',     val:cta,           color:'#60a5fa', note:'YS89 CTA 事件'},
+    {label:'私訊詢問',     val:inq,           color:'#818cf8', note:'conv_daily inq'},
+    {label:'登記人數',     val:reg,           color:'#22c55e', note:'conv_daily reg'}
+  ];
+  const maxVal=Math.max(1,threadsViews,ys89s);
+  document.getElementById('ms-funnel').innerHTML=steps.map((s,i)=>{
+    const pct=Math.max(1.5,(s.val/maxVal*100));
+    const prev=steps[i-1];
+    const rate=i>0&&prev.val>0?(s.val/prev.val*100).toFixed(1)+'%':'';
+    return `${i>0?`<div style="text-align:center;font-size:.68rem;color:var(--text3);padding:1px 0 2px">▼ ${rate}</div>`:''}
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:78px;font-size:.78rem;text-align:right;color:var(--text2);flex-shrink:0;line-height:1.2">${s.label}</div>
+      <div style="flex:1;background:var(--g3);border-radius:6px;overflow:hidden;height:26px">
+        <div style="height:100%;width:${pct}%;background:${s.color};border-radius:6px;display:flex;align-items:center;padding:0 10px">
+          <span style="font-size:.78rem;color:#fff;white-space:nowrap;font-weight:600;font-variant-numeric:tabular-nums">${s.val.toLocaleString()}</span>
+        </div>
+      </div>
+      <div style="font-size:.7rem;color:var(--text3);min-width:55px;flex-shrink:0">${s.note}</div>
+    </div>`;
+  }).join('');
+}
+
+function saveMeetingNotes() {
+  const {end}=getMsSummaryDates();
+  const notes=DB.get('meeting_notes')||[];
+  const entry={
+    weekKey:end, savedAt:new Date().toISOString(),
+    good:   (document.getElementById('mn-good')?.value   ||'').trim(),
+    bad:    (document.getElementById('mn-bad')?.value    ||'').trim(),
+    improve:(document.getElementById('mn-improve')?.value||'').trim()
+  };
+  const idx=notes.findIndex(n=>n.weekKey===end);
+  if(idx>=0) notes[idx]=entry; else notes.unshift(entry);
+  DB.set('meeting_notes',notes);
+  showToast('本週開會記錄已儲存');
+  renderMsNotes();
+}
+
+function renderMsNotes() {
+  const {end}=getMsSummaryDates();
+  const notes=DB.get('meeting_notes')||[];
+  const current=notes.find(n=>n.weekKey===end);
+  const lastEntry=notes.find(n=>n.weekKey<end);
+  if(current){
+    const g=document.getElementById('mn-good'),b=document.getElementById('mn-bad'),imp=document.getElementById('mn-improve');
+    if(g) g.value=current.good||'';
+    if(b) b.value=current.bad||'';
+    if(imp) imp.value=current.improve||'';
+  }
+  const el=document.getElementById('ms-last-notes');
+  if(!el) return;
+  if(lastEntry){
+    el.innerHTML=`<div style="background:var(--g2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.78rem">
+      <div style="font-weight:600;margin-bottom:6px;color:var(--text3);font-size:.72rem">📌 上次記錄（${lastEntry.weekKey}）</div>
+      ${lastEntry.good    ?`<div style="margin-bottom:4px"><span style="color:#22c55e;font-weight:600">🟢 </span>${lastEntry.good}</div>`:''}
+      ${lastEntry.bad     ?`<div style="margin-bottom:4px"><span style="color:#ef4444;font-weight:600">🔴 </span>${lastEntry.bad}</div>`:''}
+      ${lastEntry.improve ?`<div><span style="color:var(--accent);font-weight:600">🔧 </span>${lastEntry.improve}</div>`:''}
+    </div>`;
+  } else { el.innerHTML=''; }
+}
+
+function renderMeetingSummary(ga4Data) {
+  if(!ga4Data) return;
+  const {start,end}=getMsSummaryDates();
+  if(!start||!end) return;
+  const days=Math.ceil((new Date(end)-new Date(start))/86400000)+1;
+  const prevEnd=new Date(start); prevEnd.setDate(prevEnd.getDate()-1);
+  const prevStart=new Date(prevEnd); prevStart.setDate(prevStart.getDate()-(days-1));
+  const f=d=>d.toISOString().slice(0,10);
+  renderMsKpiRow(ga4Data,start,end,f(prevStart),f(prevEnd));
+  renderMsThreadsRanking(ga4Data,start,end);
+  renderMsGA4Accounts(ga4Data,start,end);
+  renderMsFunnel(ga4Data,start,end);
+  renderMsNotes();
+}
+
+// ===== REMOVED: 快照對比 (replaced by 成效總結) =====
 async function saveSnapshot() {
   const start = document.getElementById('snap-start').value;
   const end   = document.getElementById('snap-end').value;
