@@ -946,7 +946,7 @@ async function fetchCustomGA4() {
     switchGA4Period('custom');
 
   } catch (e) {
-    alert('查詢失敗：' + e.message + '\n\n請確認 dashboard_server.py 已啟動（python dashboard_server.py）');
+    toast('GA4 查詢失敗（需啟動 dashboard_server.py）', 'err');
   } finally {
     btn.textContent = '查詢';
     btn.style.opacity = '1';
@@ -10334,11 +10334,11 @@ function _msDates() {
 let _msLastR1 = null, _msLastR2 = null, _msPeriod = { start:'', end:'' };
 
 function triggerMsRefresh() {
-  if (typeof _ga4Data !== 'undefined' && _ga4Data) renderMeetingSummary(_ga4Data);
+  const ga4 = (typeof _ga4Data !== 'undefined') ? _ga4Data : null;
+  renderMeetingSummary(ga4);
 }
 
 async function renderMeetingSummary(ga4Data) {
-  if (!ga4Data) return;
   _msInitDates();
   const { start, end, prevStart, prevEnd } = _msDates();
   if (!start || !end) return;
