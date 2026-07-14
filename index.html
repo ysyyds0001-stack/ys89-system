@@ -9924,19 +9924,42 @@ function renderMsRoutePersonas(elId, posts, site) {
   }).join('');
 }
 
-async function refreshMsRoute1() {
+function _buildRoutePostsFromLocal(start, end, isPicks168) {
+  const ta = DB.get('thread_activities') || [];
+  const sessMap = {};
+  if (!isPicks168) {
+    for (const c of (_ga4Data?.contents_7d || [])) sessMap[c.content] = Number(c.sessions || 0);
+  } else {
+    for (const c of (_ga4Data?.picks168?.contents_7d || [])) sessMap[c.content] = Number(c.sessions || 0);
+  }
+  return ta
+    .filter(r => r.date && r.date >= start && r.date <= end && r.status !== '略過')
+    .filter(r => {
+      const isP = (r.landingUrl || '').includes('picks168.com');
+      return isPicks168 ? isP : !isP;
+    })
+    .map(r => {
+      const m = r.platformMetrics?.Threads || {};
+      return {
+        date: r.date,
+        personaName: r.personaName || (r.utmContent || '').split('-')[0] || '?',
+        utmContent: r.utmContent,
+        impressions: Number(m.views || 0),
+        likes: Number(m.likes || 0),
+        note: r.notes || r.note || r.topic || '',
+        postUrl: r.url || r.shortLink || '',
+        ga4Sessions: (r.utmContent && r.utmContent in sessMap) ? sessMap[r.utmContent] : null,
+        ga4Outbound: null
+      };
+    });
+}
+
+function refreshMsRoute1() {
   const start = document.getElementById('ms-r1-start')?.value;
   const end   = document.getElementById('ms-r1-end')?.value;
   if (!start || !end) return;
-  const el = document.getElementById('ms-route1');
-  if (!el) return;
-  el.innerHTML = '<p class="tm" style="font-size:.78rem">抓取中...</p>';
-  try {
-    const data = await fetchSeoApi(null, start, end);
-    renderMsRoutePersonas('ms-route1', data.posts, 'ys89');
-  } catch(e) {
-    el.innerHTML = `<p class="tm" style="font-size:.78rem;color:#ef4444">⚠ 抓取失敗：${e.message}（需要網路連線）</p>`;
-  }
+  const posts = _buildRoutePostsFromLocal(start, end, false);
+  renderMsRoutePersonas('ms-route1', posts, 'ys89');
 }
 
 async function refreshMsRoute2() {
@@ -9945,12 +9968,33 @@ async function refreshMsRoute2() {
   if (!start || !end) return;
   const el = document.getElementById('ms-route2');
   if (!el) return;
-  el.innerHTML = '<p class="tm" style="font-size:.78rem">抓取中...</p>';
+
+  // 先從本地分類並渲染（Threads 曝光即時顯示）
+  const localPosts = _buildRoutePostsFromLocal(start, end, true);
+  if (!localPosts.length) {
+    el.innerHTML = '<p class="tm" style="font-size:.78rem">此區間無 picks168 路線貼文（發文記錄未設落地頁為 picks168.com）</p>';
+    return;
+  }
+  renderMsRoutePersonas('ms-route2', localPosts, 'picks168');
+
+  // 背景補抓「實際進 picks168 數字」（ga4Sessions + VIP外連）
   try {
     const data = await fetchSeoApi('picks168', start, end);
-    renderMsRoutePersonas('ms-route2', data.posts, 'picks168');
+    const sessMap = {}, outMap = {};
+    for (const p of (data.posts || [])) {
+      if (p.utmContent) {
+        sessMap[p.utmContent] = Number(p.ga4Sessions || 0);
+        outMap[p.utmContent] = Number(p.ga4Outbound || 0);
+      }
+    }
+    const enriched = localPosts.map(p => ({
+      ...p,
+      ga4Sessions: p.utmContent in sessMap ? sessMap[p.utmContent] : p.ga4Sessions,
+      ga4Outbound: p.utmContent in outMap  ? outMap[p.utmContent]  : null
+    }));
+    renderMsRoutePersonas('ms-route2', enriched, 'picks168');
   } catch(e) {
-    el.innerHTML = `<p class="tm" style="font-size:.78rem;color:#ef4444">⚠ 抓取失敗：${e.message}（需要網路連線）</p>`;
+    // 保留本地版本，只是沒有進站數字
   }
 }
 
