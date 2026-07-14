@@ -10264,6 +10264,16 @@ function saveMeetingReport() {
     .filter(r => r.date >= start && r.date <= end && r.status !== '略過')
     .reduce((s,r) => s + Number(r.platformMetrics?.Threads?.views||0), 0);
 
+  // GA4 全渠道數字（需要 _ga4Data）
+  let ys89Sessions = 0, ys89CTA = 0, picks168Sessions = 0, picks168CTA = 0;
+  if (typeof _ga4Data !== 'undefined' && _ga4Data) {
+    const d = _ga4Data;
+    ys89Sessions    = Number(d.kpis_7d?.sessions || d.sessions || 0);
+    ys89CTA         = Number(d.kpis_7d?.cta      || d.cta      || 0);
+    picks168Sessions= Number(d.picks168?.kpis_7d?.sessions || 0);
+    picks168CTA     = Number(d.picks168?.kpis_7d?.cta      || 0);
+  }
+
   const r2p = _msLastR2.personas || [];
   const sortedP = [...r2p].sort((a,b) => Number(b.forumSessions||0) - Number(a.forumSessions||0));
   const topPersonas = sortedP.slice(0,3).map(p => ({
@@ -10272,10 +10282,7 @@ function saveMeetingReport() {
     outbound: Number(p.forumOutbound||0),
     impressions: Number(p.impressions||0)
   }));
-  const r2Sessions  = r2p.reduce((s,p) => s + Number(p.forumSessions||0), 0);
-  const r2Outbound  = r2p.reduce((s,p) => s + Number(p.forumOutbound||0), 0);
-  const r2Impr      = r2p.reduce((s,p) => s + Number(p.impressions||0), 0);
-  const topCodes    = (_msLastR2.agentCodes||[]).slice(0,3).map(c => ({
+  const topCodes = (_msLastR2.agentCodes||[]).slice(0,3).map(c => ({
     code: c.code || c.utmContent || '?',
     sessions: Number(c.sessions||0),
     outbound: Number(c.outboundClicks||c.forumOutbound||0)
@@ -10285,7 +10292,7 @@ function saveMeetingReport() {
     id: `${start}_${end}`,
     savedAt: new Date().toISOString(),
     period: { start, end },
-    kpis: { threads, r2Sessions, r2Outbound, r2Impr },
+    kpis: { threads, ys89Sessions, ys89CTA, picks168Sessions, picks168CTA },
     topPersonas,
     topCodes
   };
@@ -10293,7 +10300,6 @@ function saveMeetingReport() {
   const reports = DB.get('meeting_reports') || [];
   const idx = reports.findIndex(r => r.period?.start === start && r.period?.end === end);
   if (idx >= 0) reports[idx] = report; else reports.push(report);
-  // Keep last 10 snapshots
   if (reports.length > 10) reports.splice(0, reports.length - 10);
   DB.set('meeting_reports', reports);
   DB.push('meeting_reports').catch(() => {});
@@ -10307,8 +10313,8 @@ function renderMsReportComparison() {
   const reports = DB.get('meeting_reports') || [];
   if (reports.length === 0) { el.innerHTML = ''; return; }
 
-  const fmt  = n => Number(n||0).toLocaleString();
-  const pct  = (a,b) => b > 0 ? Math.round((a-b)/b*100) : null;
+  const fmt   = n => Number(n||0).toLocaleString();
+  const pct   = (a,b) => b > 0 ? Math.round((a-b)/b*100) : null;
   const badge = v => v === null ? '' :
     v > 0 ? `<span style="color:#22c55e;font-size:.72rem">▲${v}%</span>` :
     v < 0 ? `<span style="color:#ef4444;font-size:.72rem">▼${Math.abs(v)}%</span>` :
@@ -10316,9 +10322,16 @@ function renderMsReportComparison() {
 
   if (reports.length === 1) {
     const r = reports[0];
+    const k = r.kpis || {};
     el.innerHTML = `<div class="card" style="border-left:3px solid #818cf8;margin-bottom:14px">
-      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px">📋 已儲存報告：${r.period?.start} ～ ${r.period?.end}</div>
-      <div style="font-size:.78rem;color:var(--text2)">下次開會更新數據後，點「💾 儲存快照」即可自動對比</div>
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:4px">📋 上次開會快照：${r.period?.start} ～ ${r.period?.end}</div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap;margin:8px 0">
+        <span style="font-size:.75rem">Threads <b>${fmt(k.threads)}</b></span>
+        <span style="font-size:.75rem">YS89 <b>${fmt(k.ys89Sessions)}</b>${k.ys89CTA ? `<span style="color:var(--text3)"> CTA ${k.ys89CTA}</span>`:''}</span>
+        <span style="font-size:.75rem">picks168 <b>${fmt(k.picks168Sessions)}</b>${k.picks168CTA ? `<span style="color:var(--text3)"> CTA ${k.picks168CTA}</span>`:''}</span>
+      </div>
+      ${r.insights?.length ? `<div style="font-size:.72rem;color:var(--text3)">${r.insights.map(i=>'・'+i).join('<br>')}</div>` : ''}
+      <div style="font-size:.7rem;color:var(--text3);margin-top:6px">下次開會更新數據後，點「💾 儲存快照」即可自動對比</div>
     </div>`;
     return;
   }
@@ -10327,22 +10340,34 @@ function renderMsReportComparison() {
   const curr = reports[reports.length - 1];
   const p = prev.kpis || {}, c = curr.kpis || {};
 
-  // Auto text summary
-  const lines = [];
-  const threadPct = pct(c.threads, p.threads);
-  if (threadPct !== null) lines.push(`Threads 曝光 ${threadPct > 0 ? '成長' : '下滑'} ${Math.abs(threadPct)}%（${fmt(p.threads)} → ${fmt(c.threads)}）`);
-  const sessPct = pct(c.r2Sessions, p.r2Sessions);
-  if (sessPct !== null) lines.push(`picks168 進站 ${sessPct > 0 ? '增加' : '減少'} ${Math.abs(sessPct)}%（${fmt(p.r2Sessions)} → ${fmt(c.r2Sessions)}）`);
-  const outPct = pct(c.r2Outbound, p.r2Outbound);
-  if (outPct !== null) lines.push(`VIP 外連 ${outPct > 0 ? '增加' : '減少'} ${Math.abs(outPct)}%（${fmt(p.r2Outbound)} → ${fmt(c.r2Outbound)}）`);
-  if (curr.topPersonas?.[0]) lines.push(`本期最強角色：${curr.topPersonas[0].name}（${fmt(curr.topPersonas[0].sessions)} 進站・${curr.topPersonas[0].impressions > 0 ? (curr.topPersonas[0].sessions/curr.topPersonas[0].impressions*100).toFixed(2)+'% 進站率' : '—'}）`);
-  if (curr.topCodes?.[0]) lines.push(`本期爆款貼文：${curr.topCodes[0].code}（${fmt(curr.topCodes[0].sessions)} 進站${curr.topCodes[0].outbound > 0 ? '・' + fmt(curr.topCodes[0].outbound) + ' VIP外連' : ''}）`);
+  // 優先用 GA4 全渠道數字，無則退回 r2 UTM 數字
+  const pYs89 = p.ys89Sessions || p.r2Sessions || 0;
+  const cYs89 = c.ys89Sessions || c.r2Sessions || 0;
+  const pP168 = p.picks168Sessions || 0;
+  const cP168 = c.picks168Sessions || 0;
 
   const rows = [
-    ['Threads 曝光', p.threads, c.threads],
-    ['picks168 進站', p.r2Sessions, c.r2Sessions],
-    ['VIP 外連', p.r2Outbound, c.r2Outbound]
+    ['Threads 曝光',  p.threads, c.threads],
+    ['YS89 進站',     pYs89,     cYs89],
+    ['picks168 進站', pP168,     cP168],
   ];
+
+  const lines = [];
+  const tPct = pct(c.threads, p.threads);
+  if (tPct !== null) lines.push(`Threads 曝光 ${tPct>=0?'成長':'下滑'} ${Math.abs(tPct)}%（${fmt(p.threads)} → ${fmt(c.threads)}）`);
+  const yPct = pct(cYs89, pYs89);
+  if (yPct !== null) lines.push(`YS89 進站 ${yPct>=0?'增加':'減少'} ${Math.abs(yPct)}%（${fmt(pYs89)} → ${fmt(cYs89)}）`);
+  const kPct = pct(cP168, pP168);
+  if (kPct !== null) lines.push(`picks168 進站 ${kPct>=0?'增加':'減少'} ${Math.abs(kPct)}%（${fmt(pP168)} → ${fmt(cP168)}）`);
+  if (curr.topPersonas?.[0]) {
+    const tp = curr.topPersonas[0];
+    const pp = prev.topPersonas?.[0];
+    lines.push(`本期最強角色：${tp.name}（${fmt(tp.sessions)} 進站${pp ? `，上期 ${pp.name} ${fmt(pp.sessions)} 進站` : ''}）`);
+  }
+  if (curr.topCodes?.[0]) {
+    const tc = curr.topCodes[0];
+    lines.push(`本期爆款：${tc.code}（${fmt(tc.sessions)} 進站${tc.outbound > 0 ? `・${fmt(tc.outbound)} CTA` : ''}）`);
+  }
 
   el.innerHTML = `<div class="card" style="border-left:3px solid #818cf8;margin-bottom:14px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
@@ -10352,8 +10377,8 @@ function renderMsReportComparison() {
     <table style="width:100%;font-size:.75rem;border-collapse:collapse;margin-bottom:12px">
       <thead><tr>
         <th style="text-align:left;padding:4px 6px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border)">指標</th>
-        <th style="text-align:right;padding:4px 6px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border)">上次</th>
-        <th style="text-align:right;padding:4px 6px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border)">本次</th>
+        <th style="text-align:right;padding:4px 6px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border)">上次（${prev.period?.start}）</th>
+        <th style="text-align:right;padding:4px 6px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border)">本次（${curr.period?.start}）</th>
         <th style="text-align:right;padding:4px 6px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border)">變化</th>
       </tr></thead>
       <tbody>${rows.map(([label,a,b]) => `<tr>
@@ -10363,11 +10388,15 @@ function renderMsReportComparison() {
         <td style="padding:5px 6px;text-align:right;border-bottom:1px solid var(--border)">${badge(pct(b,a))}</td>
       </tr>`).join('')}</tbody>
     </table>
-    <div style="background:var(--g2);border-radius:6px;padding:10px 12px">
-      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;font-weight:600">📌 自動摘要</div>
+    <div style="background:var(--g2);border-radius:6px;padding:10px 12px;margin-bottom:8px">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;font-weight:600">📌 本次重點摘要</div>
       ${lines.map(l => `<div style="font-size:.75rem;padding:2px 0;color:var(--text1)">・${l}</div>`).join('')}
     </div>
-    <div style="text-align:right;margin-top:8px">
+    ${curr.insights?.length ? `<div style="background:var(--g2);border-radius:6px;padding:10px 12px;margin-bottom:8px">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;font-weight:600">💡 本次開會洞察</div>
+      ${curr.insights.map(i => `<div style="font-size:.75rem;padding:2px 0;color:var(--text1)">・${i}</div>`).join('')}
+    </div>` : ''}
+    <div style="text-align:right">
       <button onclick="deleteMsReport('${curr.id}')" style="font-size:.65rem;background:none;border:none;color:var(--text3);cursor:pointer;text-decoration:underline">刪除本次快照</button>
     </div>
   </div>`;
