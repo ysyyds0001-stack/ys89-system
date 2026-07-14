@@ -9945,7 +9945,10 @@ function renderMsRouteEfficiency(r1, r2) {
   const sync = r2?.lastSync ? new Date(r2.lastSync).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
   el.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:6px">
-      <div class="card-title" style="margin:0">⚡ 路線效率對比</div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div class="card-title" style="margin:0">⚡ 路線效率對比</div>
+        <div style="font-size:.7rem;color:var(--text3);background:var(--g3);padding:2px 8px;border-radius:4px">${_msPeriod.start} ～ ${_msPeriod.end}</div>
+      </div>
       <div style="font-size:.68rem;color:var(--text3)">資料同步：${sync}</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -9985,12 +9988,31 @@ function renderMsPersonaRanking(r1, r2) {
     el.innerHTML = '<div class="card-title">🏆 角色成效排行</div><p class="tm" style="font-size:.78rem">無資料</p>';
     return;
   }
+
+  // YS89 sessions lookup from r1
+  const r1Map = {};
+  (r1?.personas || []).forEach(p => { r1Map[p.name||p.persona] = Number(p.forumSessions||0); });
+
+  // Post title/note lookup from local thread_activities
+  const ta = DB.get('thread_activities') || [];
+  const codeToTitle = {}, codeToDate = {};
+  ta.forEach(r => {
+    if (r.utmContent) {
+      codeToTitle[r.utmContent] = r.note || r.title || '';
+      codeToDate[r.utmContent]  = r.date || '';
+    }
+  });
+
+  const codeToName = r2?.codeToName || {};
   const maxSess = personas[0]?.forumSessions || 1;
   const medals = ['🥇','🥈','🥉'];
-  const fmt = n => n>=10000 ? (n/10000).toFixed(1)+'萬' : n.toLocaleString();
+  const fmt = n => n >= 10000 ? (n/10000).toFixed(1)+'萬' : n.toLocaleString();
+
   el.innerHTML = `
-    <div class="card-title" style="margin-bottom:12px">🏆 角色成效排行
-      <span style="font-size:.7rem;color:var(--text3);font-weight:400;margin-left:6px">路線二 picks168 · 依進站數排序</span>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <div class="card-title" style="margin:0">🏆 角色成效排行</div>
+      <div style="font-size:.7rem;color:var(--text3);background:var(--g3);padding:2px 8px;border-radius:4px">${_msPeriod.start} ～ ${_msPeriod.end}</div>
+      <span style="font-size:.7rem;color:var(--text3);font-weight:400">點角色名稱可展開貼文明細</span>
     </div>
     <div class="t-scroll">
       <table style="width:100%;border-collapse:collapse;font-size:.8rem">
@@ -10000,20 +10022,44 @@ function renderMsPersonaRanking(r1, r2) {
           <th style="padding:5px 8px;text-align:right;font-weight:500;color:var(--amber)">曝光</th>
           <th style="padding:5px 8px;text-align:right;font-weight:500">讚</th>
           <th style="padding:5px 8px;text-align:right;font-weight:500">留言</th>
-          <th style="padding:5px 8px;text-align:right;font-weight:500;color:#a78bfa">進站</th>
-          <th style="padding:5px 8px;text-align:right;font-weight:500;color:#22c55e">VIP外連</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500;color:#C44A2A" title="路線一→YS89.fun 進站（社群UTM追蹤）">YS89入口</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500;color:#a78bfa" title="路線二→picks168 進站（社群UTM追蹤）">picks168入口</th>
+          <th style="padding:5px 8px;text-align:right;font-weight:500;color:#22c55e" title="從picks168信任頁點擊前往VIP頁的次數">VIP外連</th>
           <th style="padding:5px 8px;text-align:right;font-weight:500;color:var(--accent)">進站率</th>
         </tr></thead>
         <tbody>
-          ${personas.map((p,i) => {
-            const bar = maxSess>0 ? Math.round((p.forumSessions||0)/maxSess*100) : 0;
-            const rate = p.impressions>0 ? (((p.forumSessions||0)/p.impressions)*100).toFixed(2)+'%' : '—';
-            return `<tr style="border-bottom:1px solid var(--g3)">
-              <td style="padding:6px 8px;font-weight:600">${medals[i]||''} ${p.name||p.persona}</td>
+          ${personas.map((p, i) => {
+            const bar = maxSess > 0 ? Math.round((p.forumSessions||0)/maxSess*100) : 0;
+            const rate = p.impressions > 0 ? (((p.forumSessions||0)/p.impressions)*100).toFixed(2)+'%' : '—';
+            const pName = p.name || p.persona || '?';
+            const ys89Sess = r1Map[pName] || 0;
+            const ddId = 'ms-prdd-' + pName.replace(/[^a-z0-9]/gi, '_');
+
+            // Individual posts for this persona filtered from agentCodes
+            const personaCodes = (r2?.agentCodes || []).filter(c => {
+              const mapped = codeToName[c.code] || c.code.split('-')[0] || '';
+              return mapped === pName || mapped.includes(pName) || pName.includes(mapped);
+            }).sort((a,b) => b.sessions - a.sessions);
+
+            const drillRows = personaCodes.length ? personaCodes.map(c => {
+              const title = codeToTitle[c.code] || '（無文案描述）';
+              const dateStr = codeToDate[c.code] || '—';
+              return `<tr style="border-bottom:1px solid var(--g3)">
+                <td style="padding:4px 8px;font-size:.72rem;color:var(--text3);white-space:nowrap">${dateStr}</td>
+                <td style="padding:4px 8px;font-size:.72rem;font-family:monospace;color:var(--text3);white-space:nowrap">${c.code}</td>
+                <td style="padding:4px 8px;font-size:.75rem;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${title}">${title}</td>
+                <td style="padding:4px 8px;text-align:right;font-weight:700;color:#a78bfa">${c.sessions}</td>
+                <td style="padding:4px 8px;text-align:right;font-weight:700;color:#22c55e">${c.outbound > 0 ? c.outbound : '<span style="color:var(--text3)">—</span>'}</td>
+              </tr>`;
+            }).join('') : `<tr><td colspan="5" style="padding:10px 8px;color:var(--text3);font-size:.75rem">此區間無 UTM 追蹤貼文（或文案記錄未填）</td></tr>`;
+
+            return `<tr style="border-bottom:1px solid var(--g3);cursor:pointer" onclick="msToggleDrilldown('${ddId}')" title="點擊展開貼文明細">
+              <td style="padding:6px 8px;font-weight:600">${medals[i]||'  '} ${pName} <span style="font-size:.68rem;color:var(--text3)">▾</span></td>
               <td style="padding:6px 8px;text-align:right;color:var(--text3)">${p.posts||0}</td>
               <td style="padding:6px 8px;text-align:right;color:var(--amber);font-variant-numeric:tabular-nums">${fmt(p.impressions||0)}</td>
               <td style="padding:6px 8px;text-align:right;color:var(--text3)">${(p.likes||0).toLocaleString()}</td>
               <td style="padding:6px 8px;text-align:right;color:var(--text3)">${p.comments||0}</td>
+              <td style="padding:6px 8px;text-align:right;font-weight:700;color:#C44A2A">${ys89Sess > 0 ? ys89Sess : '<span style="color:var(--text3)">—</span>'}</td>
               <td style="padding:6px 8px;text-align:right;font-weight:700;color:#a78bfa">
                 <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px">
                   <div style="width:40px;background:var(--g3);border-radius:3px;height:5px;overflow:hidden"><div style="width:${bar}%;height:100%;background:#a78bfa;border-radius:3px"></div></div>
@@ -10022,10 +10068,30 @@ function renderMsPersonaRanking(r1, r2) {
               </td>
               <td style="padding:6px 8px;text-align:right;font-weight:700;color:#22c55e">${p.forumOutbound||0}</td>
               <td style="padding:6px 8px;text-align:right;font-size:.74rem;color:var(--accent)">${rate}</td>
+            </tr>
+            <tr id="${ddId}" style="display:none">
+              <td colspan="9" style="padding:0 0 10px 28px;background:var(--g2)">
+                <div style="font-size:.7rem;color:var(--text3);padding:8px 0 4px">📄 ${pName} · 此期間貼文明細（picks168 進站排序）</div>
+                <div class="t-scroll">
+                  <table style="width:100%;border-collapse:collapse;font-size:.78rem">
+                    <thead><tr style="border-bottom:1px solid var(--border);color:var(--text3);font-size:.68rem">
+                      <th style="padding:3px 8px;text-align:left;font-weight:500">發文日</th>
+                      <th style="padding:3px 8px;text-align:left;font-weight:500">UTM 代號</th>
+                      <th style="padding:3px 8px;text-align:left;font-weight:500">文案描述</th>
+                      <th style="padding:3px 8px;text-align:right;font-weight:500;color:#a78bfa">picks168 進站</th>
+                      <th style="padding:3px 8px;text-align:right;font-weight:500;color:#22c55e">VIP外連</th>
+                    </tr></thead>
+                    <tbody>${drillRows}</tbody>
+                  </table>
+                </div>
+              </td>
             </tr>`;
           }).join('')}
         </tbody>
       </table>
+    </div>
+    <div style="font-size:.67rem;color:var(--text3);margin-top:8px;padding:0 4px">
+      ℹ️ YS89入口 / picks168入口 = 社群 UTM 追蹤的進站（非 GA4 全渠道）・VIP外連 = 從信任頁點擊前往 VIP 申請頁次數
     </div>`;
 }
 
@@ -10038,25 +10104,47 @@ function renderMsTopPosts(r2) {
     el.innerHTML = '<div class="card-title">⭐ 本期爆款 UTM Top 12</div><p class="tm" style="font-size:.78rem">無資料</p>';
     return;
   }
+
+  // Post title lookup from local thread_activities
+  const ta = DB.get('thread_activities') || [];
+  const codeToMeta = {};
+  ta.forEach(r => {
+    if (r.utmContent) codeToMeta[r.utmContent] = { title: r.note || r.title || '', date: r.date || '' };
+  });
+
   const max = codes[0]?.sessions || 1;
   el.innerHTML = `
-    <div class="card-title" style="margin-bottom:10px">⭐ 本期爆款 UTM Top 12
-      <span style="font-size:.7rem;color:var(--text3);font-weight:400;margin-left:6px">picks168 進站最高・下週可複製</span>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+      <div class="card-title" style="margin:0">⭐ 本期爆款 UTM Top 12</div>
+      <div style="font-size:.7rem;color:var(--text3);background:var(--g3);padding:2px 8px;border-radius:4px">${_msPeriod.start} ～ ${_msPeriod.end}</div>
+      <span style="font-size:.7rem;color:var(--text3);font-weight:400">picks168 進站最高・下週可複製</span>
     </div>
-    <div style="display:flex;flex-direction:column;gap:4px">
-      ${codes.map((c,i) => {
-        const name = nameMap[c.code] || c.code.split('-')[0] || '?';
+    <div style="font-size:.67rem;color:var(--text3);margin-bottom:10px;padding:5px 6px;background:var(--g2);border-radius:5px">
+      📌 <b>VIP外連</b>＝訪客進入 picks168 信任頁後，點擊「前往 VIP 申請」的次數（越高代表貼文轉換力越強）
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      ${codes.map((c, i) => {
+        const personaName = nameMap[c.code] || c.code.split('-')[0] || '?';
+        const meta = codeToMeta[c.code] || {};
+        const title = meta.title || '';
+        const dateStr = meta.date ? meta.date.slice(5) : '';
         const pct = Math.round(c.sessions/max*100);
-        return `<div style="display:flex;align-items:center;gap:8px;padding:4px 2px">
-          <div style="width:18px;font-size:.7rem;color:var(--text3);text-align:right;flex-shrink:0">${i+1}</div>
-          <div style="width:64px;font-size:.75rem;color:var(--text2);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</div>
-          <div style="flex:1;background:var(--g3);border-radius:4px;overflow:hidden;height:20px">
-            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#a78bfa,#818cf8);border-radius:4px;display:flex;align-items:center;padding:0 8px">
-              <span style="font-size:.68rem;color:#fff;white-space:nowrap;font-weight:700">${c.sessions}</span>
+        const isTop3 = i < 3;
+        return `<div style="padding:5px 4px;border-radius:6px;transition:background .12s" onmouseover="this.style.background='var(--g2)'" onmouseout="this.style.background='transparent'">
+          <div style="display:flex;align-items:center;gap:7px">
+            <div style="width:18px;font-size:.7rem;color:${isTop3?'var(--amber)':'var(--text3)'};text-align:right;flex-shrink:0;font-weight:${isTop3?'700':'400'}">${i+1}</div>
+            <div style="width:52px;font-size:.76rem;font-weight:700;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${isTop3?'var(--text)':'var(--text2)'}">${personaName}</div>
+            <div style="flex:1;background:var(--g3);border-radius:4px;overflow:hidden;height:20px">
+              <div style="height:100%;width:${pct}%;background:${isTop3?'linear-gradient(90deg,#a78bfa,#818cf8)':'#6366f1'};border-radius:4px;display:flex;align-items:center;padding:0 7px;opacity:${isTop3?'1':'0.75'}">
+                <span style="font-size:.68rem;color:#fff;white-space:nowrap;font-weight:700">${c.sessions} 進站</span>
+              </div>
             </div>
+            ${c.outbound > 0
+              ? `<div style="font-size:.7rem;color:#22c55e;flex-shrink:0;white-space:nowrap;font-weight:700">VIP外連 ${c.outbound}</div>`
+              : '<div></div>'}
+            <div style="font-size:.65rem;color:var(--text3);flex-shrink:0;font-family:monospace;white-space:nowrap">${dateStr ? dateStr+' · ' : ''}${c.code}</div>
           </div>
-          ${c.outbound>0 ? `<div style="font-size:.7rem;color:#22c55e;flex-shrink:0;min-width:52px;text-align:right">外連 ${c.outbound}</div>` : '<div style="min-width:52px"></div>'}
-          <div style="font-size:.66rem;color:var(--text3);flex-shrink:0;width:80px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${c.code}">${c.code}</div>
+          ${title ? `<div style="padding:1px 26px 0 77px;font-size:.68rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${title}">└ ${title}</div>` : ''}
         </div>`;
       }).join('')}
     </div>`;
@@ -10092,7 +10180,10 @@ function renderMsCrossover(r2) {
   const totBrand = data.reduce((s,d)=>s+(d.brandClicks||0),0);
   el.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px">
-      <div class="card-title" style="margin:0">📈 每日趨勢：曝光 vs 品牌搜尋</div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div class="card-title" style="margin:0">📈 每日趨勢：曝光 vs 品牌搜尋</div>
+        <div style="font-size:.7rem;color:var(--text3);background:var(--g3);padding:2px 8px;border-radius:4px">${_msPeriod.start} ～ ${_msPeriod.end}</div>
+      </div>
       <div style="display:flex;gap:14px;font-size:.72rem;color:var(--text2)">
         <span><span style="display:inline-block;width:10px;height:8px;background:#a78bfa;border-radius:2px;opacity:.6;vertical-align:middle;margin-right:4px"></span>貼文曝光 ${totImp>=10000?(totImp/10000).toFixed(1)+'萬':totImp.toLocaleString()}</span>
         <span><span style="display:inline-block;width:10px;height:3px;background:#22c55e;border-radius:2px;vertical-align:middle;margin-right:4px"></span>品牌搜尋 ${totBrand} 次</span>
@@ -10209,7 +10300,7 @@ function _msDates() {
   };
 }
 
-let _msLastR1 = null, _msLastR2 = null;
+let _msLastR1 = null, _msLastR2 = null, _msPeriod = { start:'', end:'' };
 
 function triggerMsRefresh() {
   if (typeof _ga4Data !== 'undefined' && _ga4Data) renderMeetingSummary(_ga4Data);
@@ -10228,6 +10319,7 @@ async function renderMeetingSummary(ga4Data) {
     hint.textContent = `本期 ${days} 天${prevStart ? '・對比 ' + prevStart + ' ～ ' + prevEnd : ''}`;
   }
 
+  _msPeriod = { start, end };
   renderMsKpiRow(ga4Data, start, end, prevStart, prevEnd);
   renderMsFunnel(ga4Data, start, end);
   renderMsNotes();
