@@ -1,0 +1,7 @@
+name = "ys89-ga4-worker"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# 部署後設定 Secrets（不要放在這裡）：
+# wrangler secret put GA4_SA_EMAIL
+# wrangler secret put GA4_SA_KEY

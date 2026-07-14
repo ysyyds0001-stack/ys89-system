@@ -910,12 +910,12 @@ function renderGA4(d){
 
 // ── GA4 自訂日期查詢 ──────────────────────────────────────────
 const _isGithubPages = location.hostname.includes('github.io');
+// GitHub Pages 上改呼叫 CF Worker；本機仍走 Python server
+const _ga4CustomUrl = _isGithubPages
+  ? 'https://ys89-ga4-worker.ysyyds0001.workers.dev/api/ga4-custom'
+  : '/api/ga4-custom';
 
 async function fetchCustomGA4() {
-  if (_isGithubPages) {
-    toast('GA4 自訂查詢需在本機開啟（localhost），GitHub Pages 僅支援預設區間', 'err');
-    return;
-  }
   const start = document.getElementById('ga4DateStart').value;
   const end   = document.getElementById('ga4DateEnd').value;
   if (!start || !end) { toast('請選擇起始與結束日期', 'err'); return; }
@@ -927,7 +927,7 @@ async function fetchCustomGA4() {
   btn.disabled = true;
 
   try {
-    const resp = await fetch(`/api/ga4-custom?start=${start}&end=${end}`);
+    const resp = await fetch(`${_ga4CustomUrl}?start=${start}&end=${end}`);
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || resp.statusText);
 
@@ -952,7 +952,7 @@ async function fetchCustomGA4() {
     switchGA4Period('custom');
 
   } catch (e) {
-    toast('GA4 查詢失敗（需啟動 dashboard_server.py）', 'err');
+    toast(_isGithubPages ? `GA4 查詢失敗：${e.message}` : 'GA4 查詢失敗（需啟動 dashboard_server.py）', 'err');
   } finally {
     btn.textContent = '查詢';
     btn.style.opacity = '1';
