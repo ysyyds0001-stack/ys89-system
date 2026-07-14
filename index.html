@@ -909,11 +909,17 @@ function renderGA4(d){
 }
 
 // ── GA4 自訂日期查詢 ──────────────────────────────────────────
+const _isGithubPages = location.hostname.includes('github.io');
+
 async function fetchCustomGA4() {
+  if (_isGithubPages) {
+    toast('GA4 自訂查詢需在本機開啟（localhost），GitHub Pages 僅支援預設區間', 'err');
+    return;
+  }
   const start = document.getElementById('ga4DateStart').value;
   const end   = document.getElementById('ga4DateEnd').value;
-  if (!start || !end) { alert('請選擇起始與結束日期'); return; }
-  if (start > end)    { alert('起始日期不可晚於結束日期'); return; }
+  if (!start || !end) { toast('請選擇起始與結束日期', 'err'); return; }
+  if (start > end)    { toast('起始日期不可晚於結束日期', 'err'); return; }
 
   const btn = document.getElementById('ga4CustomQueryBtn');
   btn.textContent = '查詢中…';
