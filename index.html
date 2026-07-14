@@ -299,7 +299,6 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'community')">👤 角色</div>
   <div class="nav-sep"></div>
   <div class="nav-tab" onclick="nav(this,'ga4')">📊 GA4 成效</div>
-  <div class="nav-tab" onclick="nav(this,'snapshot')">📸 快照對比</div>
   <div class="nav-tab" onclick="nav(this,'tracker')">📈 發文追蹤</div>
   <div class="nav-tab" onclick="nav(this,'articles')">📚 文章庫</div>
   <div class="nav-sep"></div>
@@ -680,6 +679,64 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div style="margin-top:16px">
       <div style="font-size:.8rem;font-weight:600;color:var(--text2);margin-bottom:8px">歷史週報</div>
       <div id="proxy-history"></div>
+    </div>
+  </div>
+
+  <!-- ===== 開會記錄 & 快照對比 ===== -->
+  <div style="margin-top:8px;padding-top:20px;border-top:2px solid var(--border)">
+    <div class="fb" style="margin-bottom:14px">
+      <div>
+        <div style="font-size:1rem;font-weight:700">📋 開會記錄 &amp; 週報對比</div>
+        <p class="tm" style="font-size:.74rem;margin-top:3px">開會前存快照記錄這週數字，附上好/壞原因與改善計畫，下次開會直接比對變化</p>
+      </div>
+    </div>
+
+    <!-- 存本週快照 -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title" style="font-size:.85rem;margin-bottom:12px">📸 存本週快照</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px">
+        <div>
+          <div style="font-size:.72rem;color:var(--text3);margin-bottom:3px">資料區間</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="date" id="snap-start" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:4px 8px;font-size:.78rem;outline:none">
+            <span style="color:var(--text3);font-size:.85rem">～</span>
+            <input type="date" id="snap-end" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:4px 8px;font-size:.78rem;outline:none">
+          </div>
+        </div>
+        <div style="flex:1;min-width:160px">
+          <div style="font-size:.72rem;color:var(--text3);margin-bottom:3px">會議標籤</div>
+          <input type="text" id="snap-label" placeholder="例：7/14 週會 · 世足第三週" style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:4px 10px;font-size:.78rem;outline:none;box-sizing:border-box">
+        </div>
+        <button id="snap-save-btn" class="btn btn-primary" onclick="saveSnapshot()" style="font-size:.78rem;padding:5px 18px;white-space:nowrap">💾 存快照</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px">
+        <div>
+          <div style="font-size:.72rem;color:#22c55e;font-weight:600;margin-bottom:4px">🟢 這週做得好的</div>
+          <textarea id="snap-good" rows="3" placeholder="例：akki 互動率提升、神貼文爆量..." style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:6px 8px;font-size:.77rem;outline:none;resize:vertical;box-sizing:border-box;line-height:1.5"></textarea>
+        </div>
+        <div>
+          <div style="font-size:.72rem;color:#ef4444;font-weight:600;margin-bottom:4px">🔴 這週做得不好的</div>
+          <textarea id="snap-bad" rows="3" placeholder="例：god 角色停更三天、轉換率下滑..." style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:6px 8px;font-size:.77rem;outline:none;resize:vertical;box-sizing:border-box;line-height:1.5"></textarea>
+        </div>
+        <div>
+          <div style="font-size:.72rem;color:var(--accent);font-weight:600;margin-bottom:4px">🔧 下週要改善的</div>
+          <textarea id="snap-improve" rows="3" placeholder="例：kk 每天至少一則、把 picks168 連結換成新版..." style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:6px 8px;font-size:.77rem;outline:none;resize:vertical;box-sizing:border-box;line-height:1.5"></textarea>
+        </div>
+      </div>
+      <p class="tm" style="font-size:.7rem;opacity:.65">需要 dashboard_server.py 執行中才能抓 GA4 數據（未執行時仍會存 Threads / conv 數據）</p>
+    </div>
+
+    <!-- 快照列表 -->
+    <div id="snap-list" style="margin-bottom:14px">
+      <p class="tm" style="font-size:.78rem;color:var(--text3)">尚無快照，先存一份。</p>
+    </div>
+
+    <!-- 對比面板 -->
+    <div id="snap-compare" style="display:none;margin-bottom:14px">
+      <div class="card" style="border-left:3px solid var(--accent)">
+        <div class="card-title" style="margin-bottom:14px">📊 對比結果</div>
+        <div id="snap-compare-inner"></div>
+      </div>
     </div>
   </div>
 
@@ -2357,47 +2414,6 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
 <!-- pg-personas 已合併到 pg-community (角色分頁) -->
 <div id="pg-personas" class="page" style="display:none"><select id="filter-dir" style="display:none"></select></div>
 
-<!-- ===== PAGE: 快照對比 ===== -->
-<div id="pg-snapshot" class="page">
-  <div class="fb" style="margin-bottom:4px">
-    <div>
-      <h2 style="font-size:1.2rem;font-weight:700">📸 快照對比</h2>
-      <p class="tm" style="margin-top:3px">每次開會前存一份快照，下次直接比對數字變化</p>
-    </div>
-  </div>
-
-  <!-- 存新快照 -->
-  <div class="card" style="margin-bottom:16px">
-    <div class="card-title" style="margin-bottom:12px">存新快照</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
-      <input type="date" id="snap-start" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:4px 8px;font-size:.78rem;outline:none">
-      <span style="color:var(--text3)">～</span>
-      <input type="date" id="snap-end" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:4px 8px;font-size:.78rem;outline:none">
-      <input type="text" id="snap-label" placeholder="會議標籤（例：世足後第一週）" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:4px 10px;font-size:.78rem;outline:none;width:200px">
-      <button id="snap-save-btn" class="btn btn-primary" onclick="saveSnapshot()" style="font-size:.78rem;padding:4px 16px">💾 存快照</button>
-    </div>
-    <p class="tm" style="font-size:.72rem">需要 dashboard_server.py 在執行中才能抓 GA4 數據</p>
-  </div>
-
-  <!-- 快照列表 -->
-  <div class="card" style="margin-bottom:16px">
-    <div class="fb" style="margin-bottom:12px">
-      <div class="card-title">已存快照</div>
-      <span class="tm" style="font-size:.72rem">點「選 A / 選 B」選兩份快照進行對比</span>
-    </div>
-    <div id="snap-list">
-      <p class="tm" style="font-size:.78rem;color:var(--text3)">尚無快照，先存一份。</p>
-    </div>
-  </div>
-
-  <!-- 對比面板 -->
-  <div id="snap-compare" style="display:none">
-    <div class="card" style="border-left:3px solid var(--accent);margin-bottom:16px">
-      <div class="card-title" style="margin-bottom:14px">📊 對比結果</div>
-      <div id="snap-compare-inner"></div>
-    </div>
-  </div>
-</div>
 
 <!-- ===== PAGE: 發文追蹤 ===== -->
 <div id="pg-tracker" class="page">
@@ -4565,7 +4581,7 @@ function nav(el,page){
   else if(page==='ga4'){ if(_ga4Data) renderGA4(_ga4Data); }
   else if(page==='utm'){ utmInit() }
   else if(page==='fortune'){ fpInit() }
-  else if(page==='snapshot'){ onSnapshotPageEnter() }
+  else if(page==='ga4'){ renderSnapshotList() }
   else renders[page]&&renders[page]()
 }
 function openModal(id){document.getElementById(id).classList.add('show')}
@@ -9744,7 +9760,6 @@ async function saveSnapshot() {
   btn.disabled = true; btn.textContent = '存取中…';
 
   try {
-    // GA4（需要 dashboard_server.py 執行中；5 秒超時）
     let ga4 = {};
     try {
       const ctrl = new AbortController();
@@ -9754,7 +9769,6 @@ async function saveSnapshot() {
       if (r.ok) ga4 = await r.json();
     } catch(e) { console.warn('GA4 fetch 失敗，快照只含 Threads/conv 數據', e.message); }
 
-    // thread_activities
     const ta = DB.get('thread_activities') || [];
     const threads = { posts:0, views:0, likes:0, replies:0, reposts:0, shares:0 };
     const byPersona = {};
@@ -9775,7 +9789,6 @@ async function saveSnapshot() {
       byPersona[n].replies += Number(m.replies||0);
     }
 
-    // conv_daily
     const cd = DB.get('conv_daily') || [];
     const conv = {};
     for (const r of cd) {
@@ -9788,6 +9801,9 @@ async function saveSnapshot() {
       conv[n].depCount += Number(r.depCount||0);
     }
 
+    const existSnaps = DB.get('meeting_snapshots') || [];
+    const existing = existSnaps.find(s => s.id === 'snap_' + start.replace(/-/g,'') + '_' + end.replace(/-/g,''));
+
     const snap = {
       id: 'snap_' + start.replace(/-/g,'') + '_' + end.replace(/-/g,''),
       label, period: { start, end },
@@ -9798,16 +9814,23 @@ async function saveSnapshot() {
         accounts: ga4.accounts       || [],
         p168src:  ga4.picks168?.sources || []
       },
-      threads, byPersona, conv
+      threads, byPersona, conv,
+      notes: {
+        good:    document.getElementById('snap-good').value.trim()    || (existing?.notes?.good    || ''),
+        bad:     document.getElementById('snap-bad').value.trim()     || (existing?.notes?.bad     || ''),
+        improve: document.getElementById('snap-improve').value.trim() || (existing?.notes?.improve || '')
+      }
     };
 
-    // 同 id 覆蓋（同一區間重存）
-    const snaps = DB.get('meeting_snapshots') || [];
+    const snaps = existSnaps;
     const idx = snaps.findIndex(s => s.id === snap.id);
     if (idx >= 0) snaps[idx] = snap; else snaps.push(snap);
     DB.set('meeting_snapshots', snaps);
 
     showToast('快照「' + label + '」已儲存');
+    document.getElementById('snap-good').value = '';
+    document.getElementById('snap-bad').value = '';
+    document.getElementById('snap-improve').value = '';
     renderSnapshotList();
   } catch(e) {
     alert('失敗：' + e.message);
@@ -9819,27 +9842,49 @@ async function saveSnapshot() {
 function renderSnapshotList() {
   const snaps = (DB.get('meeting_snapshots') || []).slice().reverse();
   const el = document.getElementById('snap-list');
+  if (!el) return;
   if (!snaps.length) {
     el.innerHTML = '<p class="tm" style="font-size:.78rem;color:var(--text3)">尚無快照，先存一份。</p>';
     return;
   }
   el.innerHTML = snaps.map(s => {
     const isA = _snapA?.id === s.id, isB = _snapB?.id === s.id;
-    const tag = isA ? '<span style="background:var(--accent);color:#fff;font-size:.7rem;padding:1px 7px;border-radius:4px;margin-left:6px">A</span>'
-               : isB ? '<span style="background:var(--amber);color:#fff;font-size:.7rem;padding:1px 7px;border-radius:4px;margin-left:6px">B</span>'
+    const tag = isA ? '<span style="background:var(--accent);color:#fff;font-size:.68rem;padding:1px 7px;border-radius:4px;margin-left:6px">A</span>'
+               : isB ? '<span style="background:var(--amber);color:#fff;font-size:.68rem;padding:1px 7px;border-radius:4px;margin-left:6px">B</span>'
                : '';
-    const t = s.threads || {};
+    const t  = s.threads   || {};
     const ys = s.ga4?.ys89 || {};
     const p  = s.ga4?.p168 || {};
+    const n  = s.notes     || {};
+    const hasNotes = n.good || n.bad || n.improve;
+    const noteHtml = hasNotes ? `
+      <div style="margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${n.good    ? `<div><div style="font-size:.68rem;color:#22c55e;font-weight:600;margin-bottom:3px">🟢 好的</div><div style="font-size:.77rem;color:var(--text2);line-height:1.5;white-space:pre-wrap">${n.good}</div></div>` : ''}
+        ${n.bad     ? `<div><div style="font-size:.68rem;color:#ef4444;font-weight:600;margin-bottom:3px">🔴 不好的</div><div style="font-size:.77rem;color:var(--text2);line-height:1.5;white-space:pre-wrap">${n.bad}</div></div>` : ''}
+        ${n.improve ? `<div><div style="font-size:.68rem;color:var(--accent);font-weight:600;margin-bottom:3px">🔧 改善</div><div style="font-size:.77rem;color:var(--text2);line-height:1.5;white-space:pre-wrap">${n.improve}</div></div>` : ''}
+      </div>` : '';
+    const editHtml = `
+      <div id="snap-edit-${s.id}" style="display:none;margin-top:10px;border-top:1px solid var(--border);padding-top:10px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">
+          <div><div style="font-size:.7rem;color:#22c55e;font-weight:600;margin-bottom:3px">🟢 好的</div>
+            <textarea rows="3" id="sn-good-${s.id}" style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:5px 7px;font-size:.76rem;resize:vertical;box-sizing:border-box">${n.good||''}</textarea></div>
+          <div><div style="font-size:.7rem;color:#ef4444;font-weight:600;margin-bottom:3px">🔴 不好的</div>
+            <textarea rows="3" id="sn-bad-${s.id}" style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:5px 7px;font-size:.76rem;resize:vertical;box-sizing:border-box">${n.bad||''}</textarea></div>
+          <div><div style="font-size:.7rem;color:var(--accent);font-weight:600;margin-bottom:3px">🔧 改善</div>
+            <textarea rows="3" id="sn-imp-${s.id}" style="width:100%;border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:5px 7px;font-size:.76rem;resize:vertical;box-sizing:border-box">${n.improve||''}</textarea></div>
+        </div>
+        <button class="btn btn-primary btn-xs" onclick="saveSnapNotes('${s.id}')">💾 儲存備忘</button>
+      </div>`;
     return `<div style="border:1px solid var(--border);border-radius:8px;padding:11px 14px;margin-bottom:8px;${isA?'border-color:var(--accent)':isB?'border-color:var(--amber)':''}">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px">
         <div>
           <span style="font-size:.85rem;font-weight:600">${s.label}</span>${tag}
           <span class="tm" style="font-size:.72rem;margin-left:8px">${s.period.start} ～ ${s.period.end}</span>
         </div>
-        <div style="display:flex;gap:6px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn btn-xs" onclick="selectSnap('${s.id}','A')" style="${isA?'background:var(--accent);color:#fff;border-color:var(--accent)':''}">選 A</button>
           <button class="btn btn-xs" onclick="selectSnap('${s.id}','B')" style="${isB?'background:var(--amber);color:#fff;border-color:var(--amber)':''}">選 B</button>
+          <button class="btn btn-xs" onclick="toggleSnapEdit('${s.id}')">✏️ 備忘</button>
           <button class="btn btn-xs" onclick="deleteSnap('${s.id}')" style="color:var(--text3)">刪除</button>
         </div>
       </div>
@@ -9851,8 +9896,29 @@ function renderSnapshotList() {
         <span>P168 <b>${p.sessions||'—'}</b></span>
         ${ys.cta!=null?`<span>CTA <b>${ys.cta}</b> (${ys.conversionRate||0}%)</span>`:''}
       </div>
+      ${noteHtml}
+      ${editHtml}
     </div>`;
   }).join('');
+}
+
+function toggleSnapEdit(id) {
+  const el = document.getElementById('snap-edit-' + id);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveSnapNotes(id) {
+  const snaps = DB.get('meeting_snapshots') || [];
+  const idx = snaps.findIndex(s => s.id === id);
+  if (idx < 0) return;
+  snaps[idx].notes = {
+    good:    document.getElementById('sn-good-' + id)?.value.trim() || '',
+    bad:     document.getElementById('sn-bad-'  + id)?.value.trim() || '',
+    improve: document.getElementById('sn-imp-'  + id)?.value.trim() || ''
+  };
+  DB.set('meeting_snapshots', snaps);
+  showToast('備忘已儲存');
+  renderSnapshotList();
 }
 
 function selectSnap(id, slot) {
@@ -9872,12 +9938,13 @@ function deleteSnap(id) {
   if (_snapA?.id === id) _snapA = null;
   if (_snapB?.id === id) _snapB = null;
   renderSnapshotList();
-  if (!_snapA || !_snapB) document.getElementById('snap-compare').style.display = 'none';
+  if (!_snapA || !_snapB) { const c = document.getElementById('snap-compare'); if(c) c.style.display='none'; }
 }
 
 function renderComparison() {
   if (!_snapA || !_snapB) return;
   const el = document.getElementById('snap-compare');
+  if (!el) return;
   el.style.display = 'block';
 
   const fmtD = (a, b) => {
@@ -9902,21 +9969,31 @@ function renderComparison() {
   const tA = _snapA.threads||{}, tB = _snapB.threads||{};
   const gA = _snapA.ga4?.ys89||{}, gB = _snapB.ga4?.ys89||{};
   const pA = _snapA.ga4?.p168||{}, pB = _snapB.ga4?.p168||{};
-
-  // conv 加總
   const convTotal = (snap, key) => Object.values(snap.conv||{}).reduce((s,v)=>s+Number(v[key]||0),0);
 
+  const notesBlock = (snap, color) => {
+    const n = snap.notes || {};
+    if (!n.good && !n.bad && !n.improve) return '<span style="color:var(--text3);font-size:.78rem">（無備忘）</span>';
+    return [
+      n.good    ? `<div style="font-size:.77rem;margin-bottom:4px"><span style="color:#22c55e;font-weight:600">🟢 好的：</span>${n.good}</div>` : '',
+      n.bad     ? `<div style="font-size:.77rem;margin-bottom:4px"><span style="color:#ef4444;font-weight:600">🔴 不好的：</span>${n.bad}</div>` : '',
+      n.improve ? `<div style="font-size:.77rem"><span style="color:var(--accent);font-weight:600">🔧 改善：</span>${n.improve}</div>` : ''
+    ].join('');
+  };
+
   document.getElementById('snap-compare-inner').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
       <div style="background:var(--g2);border-radius:8px;padding:10px 14px;border:1px solid var(--accent)">
-        <div style="font-size:.7rem;letter-spacing:.08em;color:var(--accent);text-transform:uppercase;margin-bottom:2px">A</div>
-        <div style="font-weight:700">${_snapA.label}</div>
-        <div class="tm" style="font-size:.72rem">${_snapA.period.start} ～ ${_snapA.period.end}</div>
+        <div style="font-size:.7rem;letter-spacing:.08em;color:var(--accent);font-weight:600;margin-bottom:2px">A</div>
+        <div style="font-weight:700;margin-bottom:2px">${_snapA.label}</div>
+        <div class="tm" style="font-size:.72rem;margin-bottom:8px">${_snapA.period.start} ～ ${_snapA.period.end}</div>
+        ${notesBlock(_snapA,'var(--accent)')}
       </div>
       <div style="background:var(--g2);border-radius:8px;padding:10px 14px;border:1px solid var(--amber)">
-        <div style="font-size:.7rem;letter-spacing:.08em;color:var(--amber);text-transform:uppercase;margin-bottom:2px">B</div>
-        <div style="font-weight:700">${_snapB.label}</div>
-        <div class="tm" style="font-size:.72rem">${_snapB.period.start} ～ ${_snapB.period.end}</div>
+        <div style="font-size:.7rem;letter-spacing:.08em;color:var(--amber);font-weight:600;margin-bottom:2px">B</div>
+        <div style="font-weight:700;margin-bottom:2px">${_snapB.label}</div>
+        <div class="tm" style="font-size:.72rem;margin-bottom:8px">${_snapB.period.start} ～ ${_snapB.period.end}</div>
+        ${notesBlock(_snapB,'var(--amber)')}
       </div>
     </div>
     <div class="t-scroll">
@@ -9926,7 +10003,7 @@ function renderComparison() {
           <th style="padding:7px 10px;text-align:left;font-weight:500">指標</th>
           <th style="padding:7px 10px;text-align:right;font-weight:500">A</th>
           <th style="padding:7px 10px;text-align:right;font-weight:500">B</th>
-          <th style="padding:7px 10px;text-align:right;font-weight:500">變化</th>
+          <th style="padding:7px 10px;text-align:right;font-weight:500">變化 (B−A)</th>
         </tr>
       </thead>
       <tbody style="font-size:.82rem">
@@ -9951,10 +10028,6 @@ function renderComparison() {
     </table>
     </div>`;
 }
-
-// 進入快照頁時自動載入列表
-document.addEventListener('DOMContentLoaded', () => {});
-function onSnapshotPageEnter() { renderSnapshotList(); }
 
 // ===== INIT =====
 (async()=>{
