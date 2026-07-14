@@ -353,12 +353,6 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
         <span style="font-size:.8rem;color:var(--text3)">～</span>
         <input type="date" id="ms-cur-end" style="border:1px solid var(--border);background:var(--g3);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
       </div>
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <span style="font-size:.7rem;font-weight:700;color:var(--text3);background:var(--g3);border-radius:4px;padding:2px 6px">對比</span>
-        <input type="date" id="ms-cmp-start" style="border:1px solid var(--border);background:var(--g3);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
-        <span style="font-size:.8rem;color:var(--text3)">～</span>
-        <input type="date" id="ms-cmp-end" style="border:1px solid var(--border);background:var(--g3);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
-      </div>
       <button onclick="triggerMsRefresh()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:5px 18px;font-size:.76rem;cursor:pointer;font-weight:700;flex-shrink:0">更新報告</button>
       <button onclick="saveMeetingReport()" style="background:var(--g3);color:var(--text2);border:1px solid var(--border);border-radius:6px;padding:5px 14px;font-size:.76rem;cursor:pointer;flex-shrink:0">💾 儲存快照</button>
       <div id="ms-date-hint" style="font-size:.68rem;color:var(--text3);margin-left:auto"></div>
@@ -366,6 +360,11 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
     <!-- 開會對比報告 -->
     <div id="ms-report-comparison" style="margin-bottom:14px"></div>
+
+    <!-- 關鍵發現（依本期日期生成） -->
+    <div class="card" id="ms-insights" style="border-left:3px solid var(--accent2);margin-bottom:14px">
+      <p class="tm" style="font-size:.78rem;padding:8px 0">點「更新報告」後顯示關鍵發現</p>
+    </div>
 
     <!-- 5 KPI 總覽 -->
     <div class="g5 ga4-kpis" id="ms-kpi-row" style="margin-bottom:16px">
@@ -381,7 +380,12 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <p class="tm" style="font-size:.78rem;padding:8px 0">資料同步中...</p>
     </div>
 
-    <!-- ③ 角色成效排行 -->
+    <!-- ③ 流量來源 -->
+    <div class="card" id="ms-sources" style="border-left:3px solid #C44A2A;margin-bottom:14px">
+      <p class="tm" style="font-size:.78rem;padding:8px 0">資料同步中...</p>
+    </div>
+
+    <!-- ④ 角色成效排行 -->
     <div class="card" id="ms-persona-ranking" style="border-left:3px solid #f59e0b;margin-bottom:14px">
       <p class="tm" style="font-size:.78rem;padding:8px 0">資料同步中...</p>
     </div>
@@ -9815,16 +9819,14 @@ function renderMsKpiRow(ga4Data, start, end, prevStart, prevEnd) {
     if(r.date>=start&&r.date<=end){curInq+=Number(r.inq||0);curReg+=Number(r.reg||0);}
     if(r.date>=prevStart&&r.date<=prevEnd){prevInq+=Number(r.inq||0);prevReg+=Number(r.reg||0);}
   }
-  const k=ga4Data?.kpis_7d||ga4Data?.kpis||{};
-  const kp=ga4Data?.kpis_prev7d||{};
-  const p168k=ga4Data?.picks168?.kpis_7d||ga4Data?.picks168?.kpis_28d||{};
-  const p168kp=ga4Data?.picks168?.kpis_prev7d||{};
+  const k=ga4Data?.kpis_custom||ga4Data?.kpis_7d||ga4Data?.kpis||{};
+  const p168k=ga4Data?.picks168?.custom?.kpis||ga4Data?.picks168?.kpis_7d||ga4Data?.picks168?.kpis_28d||{};
   const kpis=[
-    {label:'Threads 曝光', cur:curViews,        prev:prevViews,       note:'Threads 確認瀏覽'},
-    {label:'YS89 進站',    cur:k.sessions,       prev:kp.sessions,     note:'GA4 sessions'},
-    {label:'picks168 直達',cur:p168k.sessions,   prev:p168kp.sessions, note:'GA4 sessions'},
-    {label:'私訊詢問',     cur:curInq,           prev:prevInq,         note:'conv_daily inq'},
-    {label:'登記人數',     cur:curReg,           prev:prevReg,         note:'conv_daily reg'}
+    {label:'Threads 曝光', cur:curViews,      prev:prevViews, note:'Threads 確認瀏覽'},
+    {label:'YS89 進站',    cur:k.sessions,    prev:null,      note:'GA4 sessions'},
+    {label:'picks168 直達',cur:p168k.sessions,prev:null,      note:'GA4 sessions'},
+    {label:'私訊詢問',     cur:curInq,        prev:prevInq,   note:'conv_daily inq'},
+    {label:'登記人數',     cur:curReg,        prev:prevReg,   note:'conv_daily reg'}
   ];
   document.getElementById('ms-kpi-row').innerHTML=kpis.map(kpi=>{
     const cur=Number(kpi.cur||0),prev=Number(kpi.prev||0);
@@ -10246,8 +10248,8 @@ function renderMsFunnel(ga4Data, start, end) {
     if(!r.date||r.date<start||r.date>end) continue;
     inq+=Number(r.inq||0); reg+=Number(r.reg||0);
   }
-  const k=ga4Data?.kpis_7d||ga4Data?.kpis||{};
-  const p168k=ga4Data?.picks168?.kpis_7d||ga4Data?.picks168?.kpis_28d||{};
+  const k=ga4Data?.kpis_custom||ga4Data?.kpis_7d||ga4Data?.kpis||{};
+  const p168k=ga4Data?.picks168?.custom?.kpis||ga4Data?.picks168?.kpis_7d||ga4Data?.picks168?.kpis_28d||{};
   const ys89s=k.sessions||0, p168s=p168k.sessions||0, cta=k.cta||0;
   const steps=[
     {label:'Threads 曝光', val:threadsViews, color:'#f59e0b', note:'Threads 確認瀏覽數'},
@@ -10273,6 +10275,126 @@ function renderMsFunnel(ga4Data, start, end) {
       <div style="font-size:.7rem;color:var(--text3);min-width:55px;flex-shrink:0">${s.note}</div>
     </div>`;
   }).join('');
+}
+
+function renderMsInsights() {
+  const el = document.getElementById('ms-insights');
+  if (!el) return;
+  const lk = _msLiveKpis;
+  if (!lk) {
+    el.innerHTML = '<p class="tm" style="font-size:.78rem;padding:8px 0">點「更新報告」後顯示關鍵發現</p>';
+    return;
+  }
+  const reports = DB.get('meeting_reports') || [];
+  const base = _msBaseId ? reports.find(r => r.id === _msBaseId) : null;
+  const bk = base?.kpis || null;
+  const f = n => Number(n||0).toLocaleString();
+  const chgHtml = (cur, prev) => {
+    if (!prev || prev === 0) return '';
+    const p = ((cur - prev) / prev * 100).toFixed(0);
+    return Number(p) >= 0
+      ? ` ↑ <b style="color:#22c55e">+${p}%</b>`
+      : ` ↓ <b style="color:#ef4444">${p}%</b>`;
+  };
+  const cards = [];
+  const period = _msPeriod?.start ? `${_msPeriod.start}～${_msPeriod.end}` : '本期';
+
+  // ① 本次 vs 基準
+  if (bk) {
+    const sessChg = Number(((lk.ys89Sessions - bk.ys89Sessions) / Math.max(1, bk.ys89Sessions) * 100).toFixed(0));
+    const tip = sessChg < -10 ? '流量下滑，確認近期發文量與發文頻率是否減少。'
+              : sessChg > 20  ? '流量明顯成長，觀察轉換率是否跟上。'
+              : '流量穩定，可重心放在提升轉換率。';
+    cards.push(insightCard(
+      `📈 ${period} vs 基準（${base.period?.start}）`,
+      `Threads 曝光 <b>${f(lk.threads)}</b>${chgHtml(lk.threads, bk.threads)}<br>
+       YS89 進站 <b>${f(lk.ys89Sessions)}</b>${chgHtml(lk.ys89Sessions, bk.ys89Sessions)}<br>
+       picks168 直達 <b>${f(lk.picks168Sessions)}</b>${chgHtml(lk.picks168Sessions, bk.picks168Sessions)}<br>
+       <span style="color:var(--text3);font-size:.72rem;margin-top:4px;display:block">💡 ${tip}</span>`
+    ));
+  } else {
+    cards.push(insightCard('ℹ️ 設定基準快照',
+      `從上方快照庫選一筆作為對比基準，即可看到本次 vs 基準的趨勢分析。<br>
+       <span style="color:var(--text3);font-size:.72rem">目前 Threads 曝光：<b>${f(lk.threads)}</b></span>`));
+  }
+
+  // ② 轉換漏斗效率
+  if (lk.threads > 0 && (lk.ys89Sessions > 0 || lk.picks168Sessions > 0)) {
+    const r1Rate = (lk.ys89Sessions / lk.threads * 100).toFixed(3);
+    const r2Rate = (lk.picks168Sessions / lk.threads * 100).toFixed(3);
+    cards.push(insightCard(
+      '🎯 本期曝光轉換率',
+      `Threads→YS89.fun：<b style="color:#C44A2A">${r1Rate}%</b><br>
+       Threads→picks168：<b style="color:#a78bfa">${r2Rate}%</b><br>
+       <span style="color:var(--text3);font-size:.72rem">💡 曝光 ${f(lk.threads)} → 進站 ${f(lk.ys89Sessions + lk.picks168Sessions)} · 每萬曝光帶 ${Math.round((lk.ys89Sessions + lk.picks168Sessions) / Math.max(1, lk.threads) * 10000)} 進站</span>`
+    ));
+  }
+
+  // ③ YS89 CTA 轉換
+  if (lk.ys89Sessions > 0) {
+    const ctaRate = lk.ys89Sessions > 0 ? (lk.ys89CTA / lk.ys89Sessions * 100).toFixed(1) : '0';
+    if (lk.ys89CTA > 0) {
+      const tip = Number(ctaRate) < 5  ? '轉換率偏低，CTA 按鈕或連結需檢查。'
+                : Number(ctaRate) > 20 ? '轉換率優秀，記下這期的發文風格！'
+                : '轉換率正常，持續觀察。';
+      cards.push(insightCard('✅ YS89 CTA 轉換率',
+        `進站 <b>${f(lk.ys89Sessions)}</b> → CTA <b>${f(lk.ys89CTA)}</b> = <b style="color:#22c55e">${ctaRate}%</b>${chgHtml(lk.ys89CTA, bk?.ys89CTA)}<br>
+         <span style="color:var(--text3);font-size:.72rem">💡 ${tip}</span>`));
+    } else if (lk.ys89Sessions > 100) {
+      cards.push(insightCard('⚠️ CTA 全為 0',
+        `進站 <b>${f(lk.ys89Sessions)}</b> 人，但 CTA = 0。<br>
+         <span style="color:var(--text3);font-size:.72rem">💡 確認 GA4 是否追蹤 CTA 事件，或連結是否正常。</span>`));
+    }
+  }
+
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <div style="font-weight:700;font-size:.82rem;color:var(--accent2)">🔍 關鍵發現</div>
+      <div style="font-size:.7rem;color:var(--text3);background:var(--g3);padding:2px 8px;border-radius:4px">${period}</div>
+    </div>
+    <div class="g2">${cards.join('')}</div>`;
+}
+
+function renderMsSources(ga4Data) {
+  const el = document.getElementById('ms-sources');
+  if (!el) return;
+  const accts = ga4Data?.accounts_custom || [];
+  if (!accts.length) {
+    el.innerHTML = '<p class="tm" style="font-size:.78rem;padding:8px 0">點「更新報告」後載入本期流量來源</p>';
+    return;
+  }
+  const total = accts.reduce((s, a) => s + (a.s || 0), 0);
+  const maxS  = Math.max(1, ...accts.map(a => a.s || 0));
+  const f = n => Number(n||0).toLocaleString();
+  const period = _msPeriod?.start ? `${_msPeriod.start}～${_msPeriod.end}` : '';
+
+  const rows = accts.slice(0, 15).map(a => {
+    const pct  = ((a.s || 0) / maxS * 100).toFixed(1);
+    const conv = a.s > 0 && a.cta > 0
+      ? `<span style="font-size:.65rem;color:#22c55e;min-width:36px;text-align:right">${(a.cta/a.s*100).toFixed(1)}%</span>`
+      : `<span style="min-width:36px"></span>`;
+    return `<div style="display:grid;grid-template-columns:110px 1fr 48px 40px;align-items:center;gap:6px">
+      <span style="font-size:.75rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${a.name}">${pLabel(a.name)}</span>
+      <div style="height:8px;background:var(--g3);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:#C44A2A;border-radius:4px"></div>
+      </div>
+      <span style="font-size:.75rem;color:var(--text2);text-align:right;font-variant-numeric:tabular-nums">${f(a.s)}</span>
+      ${conv}
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div class="card-title" style="margin:0">📡 流量來源分析</div>
+        ${period ? `<div style="font-size:.7rem;color:var(--text3);background:var(--g3);padding:2px 8px;border-radius:4px">${period}</div>` : ''}
+      </div>
+      <div style="font-size:.72rem;color:var(--text2);background:var(--g3);padding:3px 10px;border-radius:6px">
+        加總 <b style="color:var(--accent)">${f(total)}</b> sessions
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">${rows}</div>
+    ${accts.length > 15 ? `<div style="font-size:.67rem;color:var(--text3);margin-top:6px;text-align:right">顯示前 15 筆，共 ${accts.length} 個來源</div>` : ''}`;
 }
 
 function saveMeetingNotes() {
@@ -10317,50 +10439,95 @@ function renderMsNotes() {
 function _msInitDates() {
   const f = d => d.toISOString().slice(0,10);
   const cs = document.getElementById('ms-cur-start');
-  if (!cs || cs.value) return; // already set
+  if (!cs || cs.value) return;
   const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
   const curStart  = new Date(yesterday); curStart.setDate(curStart.getDate()-6);
-  const cmpEnd    = new Date(curStart);  cmpEnd.setDate(cmpEnd.getDate()-1);
-  const cmpStart  = new Date(cmpEnd);    cmpStart.setDate(cmpStart.getDate()-6);
   document.getElementById('ms-cur-start').value = f(curStart);
   document.getElementById('ms-cur-end').value   = f(yesterday);
-  document.getElementById('ms-cmp-start').value = f(cmpStart);
-  document.getElementById('ms-cmp-end').value   = f(cmpEnd);
 }
 
 function _msDates() {
   return {
-    start:     document.getElementById('ms-cur-start')?.value || '',
-    end:       document.getElementById('ms-cur-end')?.value   || '',
-    prevStart: document.getElementById('ms-cmp-start')?.value || '',
-    prevEnd:   document.getElementById('ms-cmp-end')?.value   || ''
+    start: document.getElementById('ms-cur-start')?.value || '',
+    end:   document.getElementById('ms-cur-end')?.value   || '',
   };
 }
 
-let _msLastR1 = null, _msLastR2 = null, _msPeriod = { start:'', end:'' };
+let _msLastR1 = null, _msLastR2 = null, _msPeriod = { start:'', end:'' }, _msLiveKpis = null;
 
-function triggerMsRefresh() {
-  const ga4 = (typeof _ga4Data !== 'undefined') ? _ga4Data : null;
-  renderMeetingSummary(ga4);
+async function triggerMsRefresh() {
+  const btn = document.querySelector('button[onclick="triggerMsRefresh()"]');
+  if (btn) { btn.textContent = '載入中…'; btn.disabled = true; }
+
+  const start = document.getElementById('ms-cur-start')?.value;
+  const end   = document.getElementById('ms-cur-end')?.value;
+
+  if (start && end) {
+    try {
+      const resp = await fetch(`${_ga4CustomUrl}?start=${start}&end=${end}`);
+      if (resp.ok) {
+        const data = await resp.json();
+        if (!data.error) {
+          if (typeof _ga4Data === 'undefined' || !_ga4Data) window._ga4Data = {};
+          _ga4Data.kpis_custom     = data.kpis;
+          _ga4Data.accounts_custom = data.accounts;
+          _ga4Data.contents_custom = data.contents;
+          _ga4Data.custom_range    = data.range;
+          if (!_ga4Data.ranges) _ga4Data.ranges = {};
+          _ga4Data.ranges['custom'] = data.range;
+          if (data.picks168) {
+            if (!_ga4Data.picks168) _ga4Data.picks168 = {};
+            _ga4Data.picks168.custom = data.picks168;
+          }
+        }
+      }
+    } catch(e) { console.warn('[ms] GA4 query failed:', e.message); }
+  }
+
+  await renderMeetingSummary((typeof _ga4Data !== 'undefined') ? _ga4Data : null);
+  if (btn) { btn.textContent = '更新報告'; btn.disabled = false; }
 }
 
 async function renderMeetingSummary(ga4Data) {
   _msInitDates();
-  const { start, end, prevStart, prevEnd } = _msDates();
+  const { start, end } = _msDates();
   if (!start || !end) return;
 
   // Show date hint
   const hint = document.getElementById('ms-date-hint');
   if (hint) {
     const days = Math.ceil((new Date(end)-new Date(start))/86400000)+1;
-    hint.textContent = `本期 ${days} 天${prevStart ? '・對比 ' + prevStart + ' ～ ' + prevEnd : ''}`;
+    hint.textContent = `本期 ${days} 天`;
   }
 
   _msPeriod = { start, end };
-  renderMsKpiRow(ga4Data, start, end, prevStart, prevEnd);
+  renderMsKpiRow(ga4Data, start, end, '', '');
   renderMsFunnel(ga4Data, start, end);
   renderMsNotes();
+
+  // Compute live KPIs for instant snapshot comparison
+  const ta = DB.get('thread_activities') || [];
+  const liveThreads = ta
+    .filter(r => r.date >= start && r.date <= end && r.status !== '略過')
+    .reduce((s,r) => s + Number(r.platformMetrics?.Threads?.views||0), 0);
+  const kc   = ga4Data?.kpis_custom || {};
+  const p168c = ga4Data?.picks168?.custom || {};
+  const p168ck = p168c.kpis || {};
+  const p168conv = p168c.conversions_by_source || {};
+  _msLiveKpis = {
+    threads:          liveThreads,
+    ys89Sessions:     Number(kc.sessions    || 0),
+    ys89CTA:          Number(kc.cta         || 0),
+    picks168Sessions: Number(p168ck.sessions || 0),
+    picks168CTA:      Number(
+      (p168conv.cta_click       || []).reduce((s,r)=>s+(r.count||0),0) +
+      (p168conv.subscribe_click || []).reduce((s,r)=>s+(r.count||0),0)
+    ),
+  };
+
   renderMsReportComparison();
+  renderMsInsights();
+  renderMsSources(ga4Data);
 
   const loading = '<p class="tm" style="font-size:.78rem;padding:8px 0">資料同步中...</p>';
   ['ms-route-summary','ms-persona-ranking','ms-top-posts','ms-crossover']
@@ -10393,14 +10560,26 @@ function saveMeetingReport() {
     .filter(r => r.date >= start && r.date <= end && r.status !== '略過')
     .reduce((s,r) => s + Number(r.platformMetrics?.Threads?.views||0), 0);
 
-  // GA4 全渠道數字（需要 _ga4Data）
+  // GA4 全渠道數字 — 優先用 kpis_custom（由更新報告自動查詢的區間數字）
   let ys89Sessions = 0, ys89CTA = 0, picks168Sessions = 0, picks168CTA = 0;
-  if (typeof _ga4Data !== 'undefined' && _ga4Data) {
+  if (_msLiveKpis) {
+    // Already computed from current GA4 custom range query
+    ys89Sessions     = _msLiveKpis.ys89Sessions;
+    ys89CTA          = _msLiveKpis.ys89CTA;
+    picks168Sessions = _msLiveKpis.picks168Sessions;
+    picks168CTA      = _msLiveKpis.picks168CTA;
+  } else if (typeof _ga4Data !== 'undefined' && _ga4Data) {
     const d = _ga4Data;
-    ys89Sessions    = Number(d.kpis_7d?.sessions || d.sessions || 0);
-    ys89CTA         = Number(d.kpis_7d?.cta      || d.cta      || 0);
-    picks168Sessions= Number(d.picks168?.kpis_7d?.sessions || 0);
-    picks168CTA     = Number(d.picks168?.kpis_7d?.cta      || 0);
+    const kc = d.kpis_custom || {};
+    const p168c = d.picks168?.custom || {};
+    ys89Sessions     = Number(kc.sessions || d.kpis_7d?.sessions || d.sessions || 0);
+    ys89CTA          = Number(kc.cta      || d.kpis_7d?.cta      || d.cta      || 0);
+    picks168Sessions = Number(p168c.kpis?.sessions || d.picks168?.kpis_7d?.sessions || 0);
+    const p168conv   = p168c.conversions_by_source || {};
+    picks168CTA      = Number(
+      (p168conv.cta_click       || []).reduce((s,r)=>s+(r.count||0),0) +
+      (p168conv.subscribe_click || []).reduce((s,r)=>s+(r.count||0),0)
+    );
   }
 
   const r2p = _msLastR2.personas || [];
@@ -10441,6 +10620,7 @@ let _msBaseId = null; // 用戶選定的對比基準快照 ID
 function msSetBase(id) {
   _msBaseId = id;
   renderMsReportComparison();
+  renderMsInsights();
 }
 
 function renderMsReportComparison() {
@@ -10458,22 +10638,20 @@ function renderMsReportComparison() {
 
   // 時間序排列：最新在前
   const sorted = [...reports].sort((a,b) => (a.savedAt > b.savedAt ? -1 : 1));
-  const newest = sorted[0];
 
-  // 預設基準：倒數第二筆
+  // 預設基準：最近一筆快照
   if (!_msBaseId || !reports.find(r => r.id === _msBaseId)) {
-    _msBaseId = sorted.length >= 2 ? sorted[1].id : null;
+    _msBaseId = sorted.length > 0 ? sorted[0].id : null;
   }
   const base = _msBaseId ? reports.find(r => r.id === _msBaseId) : null;
 
   // ── 快照列表 chips ──────────────────────────────────────────
   const chips = sorted.map(r => {
-    const isNewest = r.id === newest.id;
-    const isBase   = r.id === _msBaseId;
-    const borderC  = isNewest ? '#22c55e' : isBase ? '#818cf8' : 'var(--border)';
-    const bgC      = isNewest ? 'rgba(34,197,94,.1)' : isBase ? 'rgba(129,140,248,.15)' : 'transparent';
-    const textC    = isNewest ? '#22c55e' : isBase ? '#818cf8' : 'var(--text2)';
-    const label    = isNewest ? '最新 📌' : isBase ? '⬅ 對比中' : '點擊對比';
+    const isBase = r.id === _msBaseId;
+    const borderC = isBase ? '#818cf8' : 'var(--border)';
+    const bgC     = isBase ? 'rgba(129,140,248,.15)' : 'transparent';
+    const textC   = isBase ? '#818cf8' : 'var(--text2)';
+    const label   = isBase ? '⬅ 對比中' : '點擊對比';
     return `<div onclick="msSetBase('${r.id}')" style="cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid ${borderC};background:${bgC};color:${textC};font-size:.71rem;min-width:100px">
       <div style="font-weight:700;margin-bottom:2px">${r.period?.start}<br>～ ${r.period?.end}</div>
       <div style="color:var(--text3);font-size:.65rem">YS89 ${fmt(r.kpis?.ys89Sessions)} · p168 ${fmt(r.kpis?.picks168Sessions)}</div>
@@ -10484,27 +10662,28 @@ function renderMsReportComparison() {
     </div>`;
   }).join('');
 
-  // ── 對比表格 ────────────────────────────────────────────────
+  // ── 對比表格：即時數字 vs 選定快照 ──────────────────────────
   let tableHtml = '';
-  if (newest && base && newest.id !== base.id) {
-    const c = newest.kpis || {}, p = base.kpis || {};
+  if (_msLiveKpis && base) {
+    const c = _msLiveKpis, p = base.kpis || {};
+    const livePeriod = _msPeriod?.start ? `${_msPeriod.start}～${_msPeriod.end}` : '本次';
     const rows = [
-      ['Threads 曝光',  p.threads||0,        c.threads||0],
-      ['YS89 進站',     p.ys89Sessions||0,   c.ys89Sessions||0],
-      ['YS89 CTA',     p.ys89CTA||0,         c.ys89CTA||0],
+      ['Threads 曝光',  p.threads||0,         c.threads||0],
+      ['YS89 進站',     p.ys89Sessions||0,    c.ys89Sessions||0],
+      ['YS89 CTA',     p.ys89CTA||0,          c.ys89CTA||0],
       ['picks168 直達', p.picks168Sessions||0, c.picks168Sessions||0],
-      ['picks168 CTA', p.picks168CTA||0,     c.picks168CTA||0],
+      ['picks168 CTA', p.picks168CTA||0,      c.picks168CTA||0],
     ];
     tableHtml = `
     <div style="font-size:.72rem;color:var(--text3);margin:10px 0 6px">
-      對比：<b style="color:#818cf8">${base.period?.start}～${base.period?.end}</b>
-      ➜ <b style="color:#22c55e">${newest.period?.start}～${newest.period?.end}</b>
+      基準：<b style="color:#818cf8">${base.period?.start}～${base.period?.end}</b>
+      ➜ 本次：<b style="color:#22c55e">${livePeriod}</b>
     </div>
     <table style="width:100%;font-size:.76rem;border-collapse:collapse">
       <thead><tr>
         <th style="text-align:left;padding:5px 6px;border-bottom:1px solid var(--border);color:var(--text3);font-weight:500">指標</th>
         <th style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--border);color:#818cf8;font-weight:500">基準<br><span style="font-size:.63rem">${base.period?.start}</span></th>
-        <th style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--border);color:#22c55e;font-weight:500">最新<br><span style="font-size:.63rem">${newest.period?.start}</span></th>
+        <th style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--border);color:#22c55e;font-weight:500">本次<br><span style="font-size:.63rem">（即時）</span></th>
         <th style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--border);color:var(--text3);font-weight:500">變化</th>
       </tr></thead>
       <tbody>${rows.map(([label,a,b]) => `<tr>
@@ -10514,13 +10693,15 @@ function renderMsReportComparison() {
         <td style="padding:6px 6px;text-align:right;border-bottom:1px solid var(--border)">${arrow(pct(b,a))}</td>
       </tr>`).join('')}</tbody>
     </table>`;
-  } else if (newest && !base) {
+  } else if (!_msLiveKpis) {
+    tableHtml = `<div style="font-size:.72rem;color:var(--text3);margin-top:8px">點「更新報告」載入本期數據後即可對比</div>`;
+  } else if (!base) {
     tableHtml = `<div style="font-size:.72rem;color:var(--text3);margin-top:8px">點選上方任一快照作為對比基準</div>`;
   }
 
   el.innerHTML = `<div class="card" style="border-left:3px solid #818cf8;margin-bottom:14px">
     <div style="font-weight:700;font-size:.82rem;margin-bottom:6px">📋 開會快照庫
-      <span style="font-weight:400;font-size:.7rem;color:var(--text3);margin-left:6px">點任一快照設為對比基準</span>
+      <span style="font-weight:400;font-size:.7rem;color:var(--text3);margin-left:6px">選一筆快照為基準 → 對比本次即時數字</span>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">${chips}</div>
     ${tableHtml}
