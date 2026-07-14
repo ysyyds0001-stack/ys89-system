@@ -10003,7 +10003,8 @@ function renderMsPersonaRanking(r1, r2) {
     const ex = codeMeta[r.utmContent];
     const rawTitle = r.urlTitle || '';
     // Prefer topic over generic handle titles like "@handle · threads.com"
-    const cleanTitle = r.topic || (rawTitle.startsWith('@') || rawTitle.startsWith('[Thread]') ? '' : rawTitle) || r.note || rawTitle || '';
+    const isGenericTitle = rawTitle.startsWith('@') || rawTitle.startsWith('[Thread]');
+    const cleanTitle = r.topic || (isGenericTitle ? '' : rawTitle) || r.note || '';
     const newUrl = r.url || '';
     // Don't overwrite a good entry with an empty one
     if (!ex || newUrl || cleanTitle) {
