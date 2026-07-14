@@ -7588,7 +7588,9 @@ function utmGen(){
       else { const t=roleType(commCode(p)); auto=t==='seeding'?'匿名':t==='fb'?'fb':'炒群'; }
       us.value=auto; utmUsageChange();
     }
-    // 若角色有設 picks168 URL → 自動切換落地頁
+  }
+  // 若角色有設 picks168 URL → 每次都確保落地頁正確（不限首次）
+  {
     const pu=p.raw&&p.raw.picksUrl;
     const landSel=document.getElementById('u-landing');
     const landCustom=document.getElementById('u-landing-custom');
