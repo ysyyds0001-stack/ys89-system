@@ -10436,105 +10436,101 @@ function saveMeetingReport() {
   renderMsReportComparison();
 }
 
+let _msBaseId = null; // 用戶選定的對比基準快照 ID
+
+function msSetBase(id) {
+  _msBaseId = id;
+  renderMsReportComparison();
+}
+
 function renderMsReportComparison() {
   const el = document.getElementById('ms-report-comparison');
   if (!el) return;
   const reports = DB.get('meeting_reports') || [];
   if (reports.length === 0) { el.innerHTML = ''; return; }
 
-  const fmt   = n => Number(n||0).toLocaleString();
-  const pct   = (a,b) => b > 0 ? Math.round((a-b)/b*100) : null;
-  const badge = v => v === null ? '' :
-    v > 0 ? `<span style="color:#22c55e;font-size:.72rem">▲${v}%</span>` :
-    v < 0 ? `<span style="color:#ef4444;font-size:.72rem">▼${Math.abs(v)}%</span>` :
-             `<span style="color:var(--text3);font-size:.72rem">─</span>`;
+  const fmt  = n => Number(n||0).toLocaleString();
+  const pct  = (a,b) => b > 0 ? Math.round((a-b)/b*100) : null;
+  const arrow = v => v === null ? '<span style="color:var(--text3)">—</span>' :
+    v > 0 ? `<span style="color:#22c55e;font-weight:700">▲${v}%</span>` :
+    v < 0 ? `<span style="color:#ef4444;font-weight:700">▼${Math.abs(v)}%</span>` :
+             '<span style="color:var(--text3)">─</span>';
 
-  if (reports.length === 1) {
-    const r = reports[0];
-    const k = r.kpis || {};
-    el.innerHTML = `<div class="card" style="border-left:3px solid #818cf8;margin-bottom:14px">
-      <div style="font-size:.72rem;color:var(--text3);margin-bottom:4px">📋 上次開會快照：${r.period?.start} ～ ${r.period?.end}</div>
-      <div style="display:flex;gap:18px;flex-wrap:wrap;margin:8px 0">
-        <span style="font-size:.75rem">Threads <b>${fmt(k.threads)}</b></span>
-        <span style="font-size:.75rem">YS89 <b>${fmt(k.ys89Sessions)}</b>${k.ys89CTA ? `<span style="color:var(--text3)"> CTA ${k.ys89CTA}</span>`:''}</span>
-        <span style="font-size:.75rem">picks168 <b>${fmt(k.picks168Sessions)}</b>${k.picks168CTA ? `<span style="color:var(--text3)"> CTA ${k.picks168CTA}</span>`:''}</span>
+  // 時間序排列：最新在前
+  const sorted = [...reports].sort((a,b) => (a.savedAt > b.savedAt ? -1 : 1));
+  const newest = sorted[0];
+
+  // 預設基準：倒數第二筆
+  if (!_msBaseId || !reports.find(r => r.id === _msBaseId)) {
+    _msBaseId = sorted.length >= 2 ? sorted[1].id : null;
+  }
+  const base = _msBaseId ? reports.find(r => r.id === _msBaseId) : null;
+
+  // ── 快照列表 chips ──────────────────────────────────────────
+  const chips = sorted.map(r => {
+    const isNewest = r.id === newest.id;
+    const isBase   = r.id === _msBaseId;
+    const borderC  = isNewest ? '#22c55e' : isBase ? '#818cf8' : 'var(--border)';
+    const bgC      = isNewest ? 'rgba(34,197,94,.1)' : isBase ? 'rgba(129,140,248,.15)' : 'transparent';
+    const textC    = isNewest ? '#22c55e' : isBase ? '#818cf8' : 'var(--text2)';
+    const label    = isNewest ? '最新 📌' : isBase ? '⬅ 對比中' : '點擊對比';
+    return `<div onclick="msSetBase('${r.id}')" style="cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid ${borderC};background:${bgC};color:${textC};font-size:.71rem;min-width:100px">
+      <div style="font-weight:700;margin-bottom:2px">${r.period?.start}<br>～ ${r.period?.end}</div>
+      <div style="color:var(--text3);font-size:.65rem">YS89 ${fmt(r.kpis?.ys89Sessions)} · p168 ${fmt(r.kpis?.picks168Sessions)}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+        <span style="font-size:.63rem;color:${textC}">${label}</span>
+        <button onclick="event.stopPropagation();deleteMsReport('${r.id}')" style="font-size:.6rem;background:none;border:none;color:var(--text3);cursor:pointer;padding:0" title="刪除">🗑</button>
       </div>
-      ${r.insights?.length ? `<div style="font-size:.72rem;color:var(--text3)">${r.insights.map(i=>'・'+i).join('<br>')}</div>` : ''}
-      <div style="font-size:.7rem;color:var(--text3);margin-top:6px">下次開會更新數據後，點「💾 儲存快照」即可自動對比</div>
     </div>`;
-    return;
-  }
+  }).join('');
 
-  const prev = reports[reports.length - 2];
-  const curr = reports[reports.length - 1];
-  const p = prev.kpis || {}, c = curr.kpis || {};
-
-  // 優先用 GA4 全渠道數字，無則退回 r2 UTM 數字
-  const pYs89 = p.ys89Sessions || p.r2Sessions || 0;
-  const cYs89 = c.ys89Sessions || c.r2Sessions || 0;
-  const pP168 = p.picks168Sessions || 0;
-  const cP168 = c.picks168Sessions || 0;
-
-  const rows = [
-    ['Threads 曝光',  p.threads, c.threads],
-    ['YS89 進站',     pYs89,     cYs89],
-    ['picks168 進站', pP168,     cP168],
-  ];
-
-  const lines = [];
-  const tPct = pct(c.threads, p.threads);
-  if (tPct !== null) lines.push(`Threads 曝光 ${tPct>=0?'成長':'下滑'} ${Math.abs(tPct)}%（${fmt(p.threads)} → ${fmt(c.threads)}）`);
-  const yPct = pct(cYs89, pYs89);
-  if (yPct !== null) lines.push(`YS89 進站 ${yPct>=0?'增加':'減少'} ${Math.abs(yPct)}%（${fmt(pYs89)} → ${fmt(cYs89)}）`);
-  const kPct = pct(cP168, pP168);
-  if (kPct !== null) lines.push(`picks168 進站 ${kPct>=0?'增加':'減少'} ${Math.abs(kPct)}%（${fmt(pP168)} → ${fmt(cP168)}）`);
-  if (curr.topPersonas?.[0]) {
-    const tp = curr.topPersonas[0];
-    const pp = prev.topPersonas?.[0];
-    lines.push(`本期最強角色：${tp.name}（${fmt(tp.sessions)} 進站${pp ? `，上期 ${pp.name} ${fmt(pp.sessions)} 進站` : ''}）`);
-  }
-  if (curr.topCodes?.[0]) {
-    const tc = curr.topCodes[0];
-    lines.push(`本期爆款：${tc.code}（${fmt(tc.sessions)} 進站${tc.outbound > 0 ? `・${fmt(tc.outbound)} CTA` : ''}）`);
+  // ── 對比表格 ────────────────────────────────────────────────
+  let tableHtml = '';
+  if (newest && base && newest.id !== base.id) {
+    const c = newest.kpis || {}, p = base.kpis || {};
+    const rows = [
+      ['Threads 曝光',  p.threads||0,        c.threads||0],
+      ['YS89 進站',     p.ys89Sessions||0,   c.ys89Sessions||0],
+      ['YS89 CTA',     p.ys89CTA||0,         c.ys89CTA||0],
+      ['picks168 直達', p.picks168Sessions||0, c.picks168Sessions||0],
+      ['picks168 CTA', p.picks168CTA||0,     c.picks168CTA||0],
+    ];
+    tableHtml = `
+    <div style="font-size:.72rem;color:var(--text3);margin:10px 0 6px">
+      對比：<b style="color:#818cf8">${base.period?.start}～${base.period?.end}</b>
+      ➜ <b style="color:#22c55e">${newest.period?.start}～${newest.period?.end}</b>
+    </div>
+    <table style="width:100%;font-size:.76rem;border-collapse:collapse">
+      <thead><tr>
+        <th style="text-align:left;padding:5px 6px;border-bottom:1px solid var(--border);color:var(--text3);font-weight:500">指標</th>
+        <th style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--border);color:#818cf8;font-weight:500">基準<br><span style="font-size:.63rem">${base.period?.start}</span></th>
+        <th style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--border);color:#22c55e;font-weight:500">最新<br><span style="font-size:.63rem">${newest.period?.start}</span></th>
+        <th style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--border);color:var(--text3);font-weight:500">變化</th>
+      </tr></thead>
+      <tbody>${rows.map(([label,a,b]) => `<tr>
+        <td style="padding:6px 6px;border-bottom:1px solid var(--border)">${label}</td>
+        <td style="padding:6px 6px;text-align:right;border-bottom:1px solid var(--border);color:var(--text2);font-variant-numeric:tabular-nums">${fmt(a)}</td>
+        <td style="padding:6px 6px;text-align:right;border-bottom:1px solid var(--border);font-weight:700;font-variant-numeric:tabular-nums">${fmt(b)}</td>
+        <td style="padding:6px 6px;text-align:right;border-bottom:1px solid var(--border)">${arrow(pct(b,a))}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  } else if (newest && !base) {
+    tableHtml = `<div style="font-size:.72rem;color:var(--text3);margin-top:8px">點選上方任一快照作為對比基準</div>`;
   }
 
   el.innerHTML = `<div class="card" style="border-left:3px solid #818cf8;margin-bottom:14px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
-      <div style="font-weight:700;font-size:.82rem">📊 開會報告對比</div>
-      <div style="font-size:.7rem;color:var(--text3)">${prev.period?.start}～${prev.period?.end} vs ${curr.period?.start}～${curr.period?.end}</div>
+    <div style="font-weight:700;font-size:.82rem;margin-bottom:6px">📋 開會快照庫
+      <span style="font-weight:400;font-size:.7rem;color:var(--text3);margin-left:6px">點任一快照設為對比基準</span>
     </div>
-    <table style="width:100%;font-size:.75rem;border-collapse:collapse;margin-bottom:12px">
-      <thead><tr>
-        <th style="text-align:left;padding:4px 6px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border)">指標</th>
-        <th style="text-align:right;padding:4px 6px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border)">上次（${prev.period?.start}）</th>
-        <th style="text-align:right;padding:4px 6px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border)">本次（${curr.period?.start}）</th>
-        <th style="text-align:right;padding:4px 6px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border)">變化</th>
-      </tr></thead>
-      <tbody>${rows.map(([label,a,b]) => `<tr>
-        <td style="padding:5px 6px;border-bottom:1px solid var(--border)">${label}</td>
-        <td style="padding:5px 6px;text-align:right;border-bottom:1px solid var(--border);color:var(--text2)">${fmt(a)}</td>
-        <td style="padding:5px 6px;text-align:right;border-bottom:1px solid var(--border);font-weight:700">${fmt(b)}</td>
-        <td style="padding:5px 6px;text-align:right;border-bottom:1px solid var(--border)">${badge(pct(b,a))}</td>
-      </tr>`).join('')}</tbody>
-    </table>
-    <div style="background:var(--g2);border-radius:6px;padding:10px 12px;margin-bottom:8px">
-      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;font-weight:600">📌 本次重點摘要</div>
-      ${lines.map(l => `<div style="font-size:.75rem;padding:2px 0;color:var(--text1)">・${l}</div>`).join('')}
-    </div>
-    ${curr.insights?.length ? `<div style="background:var(--g2);border-radius:6px;padding:10px 12px;margin-bottom:8px">
-      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;font-weight:600">💡 本次開會洞察</div>
-      ${curr.insights.map(i => `<div style="font-size:.75rem;padding:2px 0;color:var(--text1)">・${i}</div>`).join('')}
-    </div>` : ''}
-    <div style="text-align:right">
-      <button onclick="deleteMsReport('${curr.id}')" style="font-size:.65rem;background:none;border:none;color:var(--text3);cursor:pointer;text-decoration:underline">刪除本次快照</button>
-    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">${chips}</div>
+    ${tableHtml}
   </div>`;
 }
 
 function deleteMsReport(id) {
-  const reports = DB.get('meeting_reports') || [];
-  const filtered = reports.filter(r => r.id !== id);
-  DB.set('meeting_reports', filtered);
+  if (_msBaseId === id) _msBaseId = null;
+  const reports = (DB.get('meeting_reports') || []).filter(r => r.id !== id);
+  DB.set('meeting_reports', reports);
   DB.push('meeting_reports').catch(() => {});
   renderMsReportComparison();
   toast('快照已刪除');
