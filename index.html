@@ -353,22 +353,38 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <div class="stat"><div class="stat-label">登記人數</div><div class="stat-num">—</div></div>
     </div>
 
-    <!-- Threads 曝光排名 + 可點擊展開貼文明細 -->
-    <div class="card" style="border-left:3px solid var(--amber);margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div class="card-title" style="margin-bottom:0">📡 Threads 曝光排名</div>
-        <span style="font-size:.72rem;color:var(--text3)">點列展開貼文明細</span>
+    <!-- 路線一：社群 → YS89.fun -->
+    <div class="card" style="border-left:3px solid #C44A2A;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        <div>
+          <div class="card-title" style="margin-bottom:2px">🎯 路線一：社群 → YS89.fun</div>
+          <p class="tm" style="font-size:.73rem">水軍發文（Threads 曝光）→ 論壇進站 → CTA | 點列展開每篇貼文</p>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <input type="date" id="ms-r1-start" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
+          <span style="font-size:.8rem;color:var(--text3)">～</span>
+          <input type="date" id="ms-r1-end" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
+          <button onclick="refreshMsRoute1()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:4px 14px;font-size:.76rem;cursor:pointer;font-weight:600">查詢</button>
+        </div>
       </div>
-      <div id="ms-threads-ranking"><p class="tm" style="font-size:.78rem">載入中...</p></div>
+      <div id="ms-route1"><p class="tm" style="font-size:.78rem;color:var(--text3)">設定日期後按查詢</p></div>
     </div>
 
-    <!-- GA4 引流 by persona + 可點擊展開 UTM 貼文 -->
-    <div class="card" style="border-left:3px solid #60a5fa;margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div class="card-title" style="margin-bottom:0">🌐 各角色引流成效</div>
-        <span style="font-size:.72rem;color:var(--text3)">點列展開個別貼文</span>
+    <!-- 路線二：社群 → picks168.com -->
+    <div class="card" style="border-left:3px solid #a78bfa;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        <div>
+          <div class="card-title" style="margin-bottom:2px;color:#a78bfa">🏁 路線二：社群 → picks168.com</div>
+          <p class="tm" style="font-size:.73rem">水軍發文（Threads 曝光）→ 信任頁進站 → VIP外連 | 點列展開每篇貼文</p>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <input type="date" id="ms-r2-start" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
+          <span style="font-size:.8rem;color:var(--text3)">～</span>
+          <input type="date" id="ms-r2-end" style="border:1px solid var(--border);background:var(--g2);color:var(--text);border-radius:6px;padding:3px 7px;font-size:.76rem;outline:none">
+          <button onclick="refreshMsRoute2()" style="background:#a78bfa;color:#fff;border:none;border-radius:6px;padding:4px 14px;font-size:.76rem;cursor:pointer;font-weight:600">查詢</button>
+        </div>
       </div>
-      <div id="ms-ga4-accounts"><p class="tm" style="font-size:.78rem">載入中...</p></div>
+      <div id="ms-route2"><p class="tm" style="font-size:.78rem;color:var(--text3)">設定日期後按查詢</p></div>
     </div>
 
     <!-- 完整漏斗 -->
@@ -9806,145 +9822,136 @@ function renderMsKpiRow(ga4Data, start, end, prevStart, prevEnd) {
   }).join('');
 }
 
-function renderMsThreadsRanking(ga4Data, start, end) {
-  const ta=DB.get('thread_activities')||[];
-  const contentsMap={};
-  (ga4Data?.contents_7d||ga4Data?.contents||[]).forEach(c=>{contentsMap[c.content]={sessions:c.sessions||0,cta:c.cta||0};});
-  const personaMap={};
-  for(const r of ta){
-    if(r.status==='略過'||!r.date||r.date<start||r.date>end) continue;
-    const name=r.personaName||(r.utmContent||'').split('-')[0]||'?';
-    if(!personaMap[name]) personaMap[name]={views:0,likes:0,posts:[]};
-    const m=r.platformMetrics?.Threads||{};
-    personaMap[name].views+=Number(m.views||0);
-    personaMap[name].likes+=Number(m.likes||0);
-    personaMap[name].posts.push(r);
-  }
-  const sorted=Object.entries(personaMap).sort((a,b)=>b[1].views-a[1].views);
-  if(!sorted.length){
-    document.getElementById('ms-threads-ranking').innerHTML='<p class="tm" style="font-size:.78rem">本期無 Threads 數據</p>';
+const SEO_API = 'https://ys89-seo-dashboard.pages.dev/api/social';
+
+async function fetchSeoApi(site, start, end) {
+  const url = site
+    ? `${SEO_API}?site=${site}&start=${start}&end=${end}`
+    : `${SEO_API}?start=${start}&end=${end}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+function renderMsRoutePersonas(elId, posts, site) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (!posts || !posts.length) {
+    el.innerHTML = '<p class="tm" style="font-size:.78rem">此區間無貼文資料</p>';
     return;
   }
-  const maxViews=sorted[0][1].views||1;
-  document.getElementById('ms-threads-ranking').innerHTML=sorted.map(([name,data])=>{
-    const pct=(data.views/maxViews*100).toFixed(1);
-    const ddId='ms-tdd-'+name;
-    const posts=data.posts.slice().sort((a,b)=>Number(b.platformMetrics?.Threads?.views||0)-Number(a.platformMetrics?.Threads?.views||0));
-    const ddRows=posts.map(p=>{
-      const m=p.platformMetrics?.Threads||{};
-      const ga4=p.utmContent?(contentsMap[p.utmContent]||{}):{};
-      const title=p.notes||p.utmContent||'—';
-      return `<tr>
+  const isPicks = site === 'picks168';
+  const barColor = isPicks ? '#a78bfa' : '#C44A2A';
+  const sessLabel = isPicks ? '信任頁進站' : '論壇進站';
+  const outLabel  = isPicks ? 'VIP外連' : null;
+
+  // Group by persona
+  const pMap = {};
+  for (const p of posts) {
+    const name = p.personaName || p.persona || '?';
+    if (!pMap[name]) pMap[name] = { impressions:0, sessions:0, outbound:0, posts:[] };
+    pMap[name].impressions += Number(p.impressions || 0);
+    pMap[name].sessions   += Number(p.ga4Sessions  || 0);
+    pMap[name].outbound   += Number(p.ga4Outbound  || 0);
+    pMap[name].posts.push(p);
+  }
+
+  const sorted = Object.entries(pMap).sort((a, b) => b[1].impressions - a[1].impressions);
+  const maxImp = sorted[0]?.[1].impressions || 1;
+
+  el.innerHTML = sorted.map(([name, data]) => {
+    const pct = (data.impressions / maxImp * 100).toFixed(1);
+    const ddId = 'ms-rdd-' + (isPicks?'p':'y') + '-' + name.replace(/[^a-z0-9]/gi, '');
+    const postsSorted = data.posts.slice().sort((a, b) =>
+      (Number(b.ga4Sessions||0) - Number(a.ga4Sessions||0)) || (Number(b.impressions||0) - Number(a.impressions||0))
+    );
+    const sessHdr = `<th style="padding:4px 8px;text-align:right;font-weight:500;color:${barColor}">${sessLabel}</th>`;
+    const outHdr  = outLabel ? `<th style="padding:4px 8px;text-align:right;font-weight:500;color:#22c55e">${outLabel}</th>` : '';
+    const ddRows = postsSorted.map(p => {
+      const sess = p.ga4Sessions != null
+        ? `<b style="color:${barColor}">${p.ga4Sessions}</b>`
+        : '<span style="color:var(--text3)">—</span>';
+      const out = (p.ga4Outbound != null && p.ga4Outbound > 0)
+        ? `<b style="color:#22c55e">${p.ga4Outbound}</b>`
+        : '<span style="color:var(--text3)">—</span>';
+      const desc = p.note || '（無描述）';
+      const url  = p.postUrl && p.postUrl.startsWith('http') ? p.postUrl : '';
+      return `<tr style="cursor:${url?'pointer':'default'}" onclick="${url?`window.open('${url}','_blank')`:''}">
         <td style="padding:5px 8px;font-size:.74rem;color:var(--text3);white-space:nowrap">${p.date||'—'}</td>
-        <td style="padding:5px 8px;font-size:.78rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${title}">${title}</td>
-        <td style="padding:5px 8px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent)">${Number(m.views||0).toLocaleString()}</td>
-        <td style="padding:5px 8px;text-align:right;font-size:.77rem">${m.likes||0}</td>
-        <td style="padding:5px 8px;text-align:right;font-size:.77rem">${m.replies||0}</td>
-        <td style="padding:5px 8px;font-size:.72rem;color:var(--text3)">${p.utmContent||'—'}</td>
-        <td style="padding:5px 8px;text-align:right;font-size:.77rem;color:#60a5fa;font-variant-numeric:tabular-nums">${ga4.sessions||'—'}</td>
-        <td style="padding:5px 8px;text-align:right;font-size:.77rem;color:#a78bfa">${ga4.cta||'—'}</td>
+        <td style="padding:5px 8px;font-size:.78rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${desc}">${desc}</td>
+        <td style="padding:5px 8px;font-size:.72rem;color:var(--text3);white-space:nowrap">${p.utmContent||'—'}</td>
+        <td style="padding:5px 8px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:var(--amber)">${Number(p.impressions||0).toLocaleString()}</td>
+        <td style="padding:5px 8px;text-align:right;font-size:.77rem">${p.likes||0} 讚</td>
+        <td style="padding:5px 8px;text-align:right">${sess}</td>
+        ${outLabel?`<td style="padding:5px 8px;text-align:right">${out}</td>`:''}
       </tr>`;
     }).join('');
+
+    const sessTag  = data.sessions  ? `<span style="color:${barColor}"> 進站 <b>${data.sessions}</b></span>` : '';
+    const outTag   = data.outbound  ? `<span style="color:#22c55e;font-size:.72rem"> VIP外連 <b>${data.outbound}</b></span>` : '';
+
     return `<div style="margin-bottom:4px">
-      <div onclick="msToggleDrilldown('${ddId}')" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:7px 4px;border-radius:6px;transition:background .12s" onmouseover="this.style.background='var(--g2)'" onmouseout="this.style.background='transparent'">
-        <div style="width:60px;font-size:.8rem;text-align:right;color:var(--text2);flex-shrink:0">${pName(name)}</div>
-        <div style="flex:1;background:var(--g3);border-radius:4px;overflow:hidden;height:22px">
-          <div style="height:100%;width:${pct}%;background:var(--amber);border-radius:4px;display:flex;align-items:center;padding:0 8px">
-            <span style="font-size:.7rem;color:#fff;white-space:nowrap;font-weight:600">${data.views>=1000?(data.views/1000).toFixed(1)+'K':data.views}</span>
+      <div onclick="msToggleDrilldown('${ddId}')" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 4px;border-radius:6px;transition:background .12s" onmouseover="this.style.background='var(--g2)'" onmouseout="this.style.background='transparent'">
+        <div style="width:72px;font-size:.8rem;text-align:right;color:var(--text);flex-shrink:0;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</div>
+        <div style="flex:1;background:var(--g3);border-radius:4px;overflow:hidden;height:24px">
+          <div style="height:100%;width:${pct}%;background:${barColor};border-radius:4px;opacity:.85;display:flex;align-items:center;padding:0 8px">
+            <span style="font-size:.7rem;color:#fff;white-space:nowrap;font-weight:700">${data.impressions>=10000?(data.impressions/10000).toFixed(1)+'萬':data.impressions.toLocaleString()}</span>
           </div>
         </div>
-        <div style="font-size:.77rem;color:var(--text2);min-width:50px;text-align:right;flex-shrink:0">${data.views.toLocaleString()}</div>
+        <div style="display:flex;gap:6px;font-size:.76rem;flex-shrink:0;align-items:center">
+          <span style="color:var(--text3)">曝 <b style="color:var(--text)">${data.impressions.toLocaleString()}</b></span>
+          ${sessTag}${outTag}
+        </div>
         <div style="font-size:.7rem;color:var(--text3);flex-shrink:0">▾</div>
       </div>
-      <div id="${ddId}" style="display:none;margin:4px 0 10px 74px">
+      <div id="${ddId}" style="display:none;margin:2px 0 12px 84px">
         <div class="t-scroll">
           <table style="width:100%;border-collapse:collapse;font-size:.78rem">
             <thead><tr style="border-bottom:1px solid var(--border);color:var(--text3);font-size:.72rem">
               <th style="padding:4px 8px;text-align:left;font-weight:500">日期</th>
-              <th style="padding:4px 8px;text-align:left;font-weight:500">文案摘要</th>
-              <th style="padding:4px 8px;text-align:right;font-weight:500">瀏覽</th>
-              <th style="padding:4px 8px;text-align:right;font-weight:500">讚</th>
-              <th style="padding:4px 8px;text-align:right;font-weight:500">回覆</th>
+              <th style="padding:4px 8px;text-align:left;font-weight:500">文案描述</th>
               <th style="padding:4px 8px;text-align:left;font-weight:500">UTM</th>
-              <th style="padding:4px 8px;text-align:right;font-weight:500;color:#60a5fa">YS89進站</th>
-              <th style="padding:4px 8px;text-align:right;font-weight:500;color:#a78bfa">CTA</th>
+              <th style="padding:4px 8px;text-align:right;font-weight:500;color:var(--amber)">Threads曝光</th>
+              <th style="padding:4px 8px;text-align:right;font-weight:500;color:var(--text3)">讚</th>
+              ${sessHdr}${outHdr}
             </tr></thead>
-            <tbody>${ddRows||'<tr><td colspan="8" style="padding:10px;color:var(--text3);font-size:.78rem">無貼文記錄</td></tr>'}</tbody>
+            <tbody>${ddRows||'<tr><td colspan="7" style="padding:10px;color:var(--text3);font-size:.78rem">無貼文記錄</td></tr>'}</tbody>
           </table>
         </div>
+        <p style="font-size:.68rem;color:var(--text3);margin-top:4px;padding-left:4px">有超連結的列可點擊開啟原始貼文</p>
       </div>
     </div>`;
   }).join('');
 }
 
-function renderMsGA4Accounts(ga4Data, start, end) {
-  const accounts=ga4Data?.accounts_7d||ga4Data?.accounts||[];
-  const p168Map={};
-  (ga4Data?.picks168?.sources_7d||ga4Data?.picks168?.sources||[]).forEach(a=>{p168Map[a.name||a.account]=a;});
-  const contents=ga4Data?.contents_7d||ga4Data?.contents||[];
-  const ta=DB.get('thread_activities')||[];
-  const threadMap={};
-  for(const r of ta){
-    if(r.utmContent&&!threadMap[r.utmContent]){
-      const m=r.platformMetrics?.Threads||{};
-      threadMap[r.utmContent]={views:Number(m.views||0),likes:Number(m.likes||0),date:r.date,notes:r.notes};
-    }
+async function refreshMsRoute1() {
+  const start = document.getElementById('ms-r1-start')?.value;
+  const end   = document.getElementById('ms-r1-end')?.value;
+  if (!start || !end) return;
+  const el = document.getElementById('ms-route1');
+  if (!el) return;
+  el.innerHTML = '<p class="tm" style="font-size:.78rem">抓取中...</p>';
+  try {
+    const data = await fetchSeoApi(null, start, end);
+    renderMsRoutePersonas('ms-route1', data.posts, 'ys89');
+  } catch(e) {
+    el.innerHTML = `<p class="tm" style="font-size:.78rem;color:#ef4444">⚠ 抓取失敗：${e.message}（需要網路連線）</p>`;
   }
-  if(!accounts.length){
-    document.getElementById('ms-ga4-accounts').innerHTML='<p class="tm" style="font-size:.78rem">無 GA4 帳號數據</p>';
-    return;
+}
+
+async function refreshMsRoute2() {
+  const start = document.getElementById('ms-r2-start')?.value;
+  const end   = document.getElementById('ms-r2-end')?.value;
+  if (!start || !end) return;
+  const el = document.getElementById('ms-route2');
+  if (!el) return;
+  el.innerHTML = '<p class="tm" style="font-size:.78rem">抓取中...</p>';
+  try {
+    const data = await fetchSeoApi('picks168', start, end);
+    renderMsRoutePersonas('ms-route2', data.posts, 'picks168');
+  } catch(e) {
+    el.innerHTML = `<p class="tm" style="font-size:.78rem;color:#ef4444">⚠ 抓取失敗：${e.message}（需要網路連線）</p>`;
   }
-  const maxSess=Math.max(1,...accounts.map(a=>a.s||a.sessions||0));
-  document.getElementById('ms-ga4-accounts').innerHTML=accounts.slice(0,12).map(a=>{
-    const name=a.name||a.account||'?';
-    const ys89s=a.s||a.sessions||0, ys89cta=a.cta||0;
-    const p168=p168Map[name]||{}, p168s=p168.s||p168.sessions||0;
-    const ddId='ms-gadd-'+name;
-    const personaPosts=contents.filter(c=>(c.content||'').toLowerCase().startsWith(name.toLowerCase()+'-'))
-                               .sort((a,b)=>(b.sessions||0)-(a.sessions||0));
-    const ddRows=personaPosts.map(c=>{
-      const th=threadMap[c.content]||{};
-      return `<tr>
-        <td style="padding:5px 8px;font-size:.72rem;color:var(--text3);white-space:nowrap">${th.date||'—'}</td>
-        <td style="padding:5px 8px;font-size:.77rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${th.notes||''}">${th.notes||c.content}</td>
-        <td style="padding:5px 8px;font-size:.72rem;color:var(--text3)">${c.content}</td>
-        <td style="padding:5px 8px;text-align:right;font-weight:700;color:#60a5fa;font-variant-numeric:tabular-nums">${(c.sessions||0).toLocaleString()}</td>
-        <td style="padding:5px 8px;text-align:right;font-size:.77rem;color:#a78bfa">${c.cta||0}</td>
-        <td style="padding:5px 8px;text-align:right;font-size:.77rem;font-variant-numeric:tabular-nums">${th.views?th.views.toLocaleString():'—'}</td>
-      </tr>`;
-    }).join('');
-    return `<div style="margin-bottom:4px">
-      <div onclick="msToggleDrilldown('${ddId}')" style="cursor:pointer;display:flex;align-items:center;gap:8px;padding:7px 4px;border-radius:6px;transition:background .12s" onmouseover="this.style.background='var(--g2)'" onmouseout="this.style.background='transparent'">
-        <div style="width:60px;font-size:.8rem;text-align:right;color:var(--text2);flex-shrink:0">${pName(name)}</div>
-        <div style="flex:1;background:var(--g3);border-radius:4px;overflow:hidden;height:22px">
-          <div style="height:100%;width:${(ys89s/maxSess*100).toFixed(1)}%;background:#60a5fa;border-radius:4px;display:flex;align-items:center;padding:0 8px">
-            <span style="font-size:.7rem;color:#fff;white-space:nowrap;font-weight:600">${ys89s}</span>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;font-size:.77rem;flex-shrink:0">
-          <span style="color:#60a5fa">YS89 <b>${ys89s}</b></span>
-          ${p168s?`<span style="color:#a78bfa">P168 <b>${p168s}</b></span>`:''}
-          <span style="color:var(--text3)">CTA ${ys89cta}</span>
-        </div>
-        <div style="font-size:.7rem;color:var(--text3);flex-shrink:0">▾</div>
-      </div>
-      <div id="${ddId}" style="display:none;margin:4px 0 10px 72px">
-        ${personaPosts.length?`<div class="t-scroll">
-          <table style="width:100%;border-collapse:collapse;font-size:.78rem">
-            <thead><tr style="border-bottom:1px solid var(--border);color:var(--text3);font-size:.72rem">
-              <th style="padding:4px 8px;text-align:left;font-weight:500">日期</th>
-              <th style="padding:4px 8px;text-align:left;font-weight:500">文案摘要</th>
-              <th style="padding:4px 8px;text-align:left;font-weight:500">UTM</th>
-              <th style="padding:4px 8px;text-align:right;font-weight:500;color:#60a5fa">YS89進站</th>
-              <th style="padding:4px 8px;text-align:right;font-weight:500;color:#a78bfa">CTA</th>
-              <th style="padding:4px 8px;text-align:right;font-weight:500">Threads瀏覽</th>
-            </tr></thead>
-            <tbody>${ddRows}</tbody>
-          </table>
-        </div>`:'<p class="tm" style="font-size:.77rem;padding:8px">此角色無 UTM 貼文數據</p>'}
-      </div>
-    </div>`;
-  }).join('');
 }
 
 function renderMsFunnel(ga4Data, start, end) {
@@ -10026,6 +10033,8 @@ function renderMsNotes() {
   } else { el.innerHTML=''; }
 }
 
+let _msRoutesInitialized = false;
+
 function renderMeetingSummary(ga4Data) {
   if(!ga4Data) return;
   const {start,end}=getMsSummaryDates();
@@ -10035,8 +10044,25 @@ function renderMeetingSummary(ga4Data) {
   const prevStart=new Date(prevEnd); prevStart.setDate(prevStart.getDate()-(days-1));
   const f=d=>d.toISOString().slice(0,10);
   renderMsKpiRow(ga4Data,start,end,f(prevStart),f(prevEnd));
-  renderMsThreadsRanking(ga4Data,start,end);
-  renderMsGA4Accounts(ga4Data,start,end);
+
+  if (!_msRoutesInitialized) {
+    _msRoutesInitialized = true;
+    const r1s = document.getElementById('ms-r1-start');
+    const r1e = document.getElementById('ms-r1-end');
+    const r2s = document.getElementById('ms-r2-start');
+    const r2e = document.getElementById('ms-r2-end');
+    if (r1s && !r1s.value) r1s.value = start;
+    if (r1e && !r1e.value) r1e.value = end;
+    if (r2s && !r2s.value) {
+      const r2End = new Date(); r2End.setDate(r2End.getDate()-1);
+      const r2Start = new Date(r2End); r2Start.setDate(r2Start.getDate()-27);
+      r2s.value = f(r2Start);
+      r2e.value = f(r2End);
+    }
+    refreshMsRoute1();
+    refreshMsRoute2();
+  }
+
   renderMsFunnel(ga4Data,start,end);
   renderMsNotes();
 }
