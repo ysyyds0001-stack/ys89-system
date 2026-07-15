@@ -93,6 +93,11 @@
       syncSidebarActive(pageId)
       closeQuickJump()
 
+      // 觸發儀表板渲染（dashboard 不在 nav() 的 renders map 中）
+      if (pageId === 'dashboard' && typeof renderDashboard === 'function') {
+        renderDashboard()
+      }
+
       // 手機：點選後關閉 drawer
       if (window.innerWidth <= 768) closeMobileSidebar()
     }
@@ -379,6 +384,11 @@
     _currentPage = getInitialPage()
     syncSidebarActive(_currentPage)
     updateTopbarTitle(_currentPage)
+
+    // 若初始頁面是儀表板，觸發渲染
+    if (_currentPage === 'dashboard' && typeof renderDashboard === 'function') {
+      renderDashboard()
+    }
 
     // 舊 nav 加上 legacy class（讓 CSS 隱藏）
     var oldNav = document.querySelector('nav:not(#app-topbar)')

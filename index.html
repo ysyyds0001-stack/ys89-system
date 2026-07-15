@@ -283,6 +283,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 .ty{color:#fbbf24}
 </style>
 <link rel="stylesheet" href="assets/css/app-shell.css">
+<link rel="stylesheet" href="assets/css/dashboard.css">
 </head>
 <body>
 
@@ -306,11 +307,14 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
   <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口</div>
   <div class="nav-sep"></div>
-  <div class="nav-tab" onclick="nav(this,'todo')">📋 今日待辦</div>
+  <!-- 今日待辦已從側欄移除（pg-todo 與資料完整保留，可恢復） -->
   <div class="nav-tab" onclick="nav(this,'guide')">📖 使用說明</div>
 </nav>
 
 <div id="toast"></div>
+
+<!-- ===== PAGE: 儀表板（預設首頁）===== -->
+<div id="pg-dashboard" class="page active"></div>
 
 <!-- ===== PAGE: GA4 成效 ===== -->
 <div id="pg-ga4" class="page">
@@ -2216,7 +2220,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
 </div>
 
 <!-- ===== PAGE: 使用說明 ===== -->
-<div id="pg-multipost" class="page active">
+<div id="pg-multipost" class="page">
   <div class="fb" style="margin-bottom:14px">
     <div>
       <h2 style="font-size:1.2rem;font-weight:700">📡 多平台發文</h2>
@@ -11083,6 +11087,8 @@ function renderComparison() {
 })()
 </script>
 <script src="assets/js/navigation-config.js"></script>
+<script src="assets/js/dashboard-adapter.js"></script>
+<script src="assets/js/dashboard.js"></script>
 <script src="assets/js/app-shell.js"></script>
 </body>
 </html>

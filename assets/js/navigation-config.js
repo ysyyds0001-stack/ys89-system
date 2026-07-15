@@ -7,14 +7,14 @@ const NAV_CONFIG = {
       id: 'workbench',
       label: '工作台',
       items: [
-        { id: 'multipost',     label: '多平台發文',   icon: '📡', page: 'multipost',     keywords: ['發文','多平台','post'] },
-        { id: 'todo',          label: '今日待辦',     icon: '📋', page: 'todo',          keywords: ['待辦','任務','todo'] }
+        { id: 'dashboard',     label: '儀表板',       icon: '📊', page: 'dashboard',     keywords: ['儀表板','dashboard','總覽','kpi'] }
       ]
     },
     {
       id: 'publishing',
       label: '發布管理',
       items: [
+        { id: 'multipost',     label: '多平台發文',   icon: '📡', page: 'multipost',     keywords: ['發文','多平台','post'] },
         { id: 'threadtracker', label: '社群炒群',     icon: '🔥', page: 'threadtracker', keywords: ['炒群','社群','threads','ig','fb'] },
         { id: 'channel',       label: '匿名社群',     icon: '📝', page: 'channel',       keywords: ['匿名','頻道','anon'] },
         { id: 'channelfb',     label: 'Facebook社團', icon: '📘', page: 'channelfb',     keywords: ['fb','facebook','社團'] },
