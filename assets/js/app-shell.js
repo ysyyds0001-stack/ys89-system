@@ -213,6 +213,11 @@
 
     document.body.classList.toggle('mode-owner', _mode === 'owner')
 
+    // 切換模式時若在儀表板頁面，重新渲染以顯示報告 header
+    if (_currentPage === 'dashboard' && typeof renderDashboard === 'function') {
+      renderDashboard()
+    }
+
     if (typeof toast === 'function') {
       toast('切換模式：' + modeItem.label)
     }

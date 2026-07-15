@@ -1,0 +1,417 @@
+/* ============================================================
+   YS89 業主報告模式 — owner-report.css
+   所有樣式均限定 body.mode-owner 作用域
+   不影響操盤手（operator）模式任何樣式
+   ============================================================ */
+
+/* ---- 15 個報告色板變數 ---- */
+body.mode-owner {
+  --report-bg:             #F4F0E8;
+  --report-surface:        #FFFCF6;
+  --report-surface-muted:  #EFE9DE;
+  --report-text:           #302B27;
+  --report-text-secondary: #746C64;
+  --report-border:         #D9D0C4;
+  --report-primary:        #A74632;
+  --report-primary-soft:   #F2E0DA;
+  --report-secondary:      #355C52;
+  --report-secondary-soft: #DDE8E3;
+  --report-navy:           #3F5060;
+  --report-gold:           #A78345;
+  --report-positive:       #426B57;
+  --report-negative:       #A74A3F;
+  --report-warning:        #A87932;
+}
+
+/* ---- 整體背景 ---- */
+body.mode-owner {
+  background: var(--report-bg) !important;
+}
+
+/* ---- Topbar 業主化 ---- */
+body.mode-owner #app-topbar {
+  background: var(--report-surface) !important;
+  border-bottom: 1px solid var(--report-border) !important;
+  box-shadow: 0 1px 3px rgba(48,43,39,.06) !important;
+}
+body.mode-owner #app-topbar .tb-brand,
+body.mode-owner #app-topbar .tb-brand span,
+body.mode-owner #app-topbar .tb-page-title {
+  color: var(--report-text) !important;
+}
+body.mode-owner #app-topbar .tb-toggle,
+body.mode-owner #app-topbar .tb-mode-btn {
+  color: var(--report-text) !important;
+  border-color: var(--report-border) !important;
+}
+body.mode-owner #app-topbar .tb-mode-btn:hover {
+  background: var(--report-primary-soft) !important;
+  color: var(--report-primary) !important;
+}
+
+/* ---- 側欄業主化 ---- */
+body.mode-owner #app-sidebar {
+  background: var(--report-surface) !important;
+  border-right: 1px solid var(--report-border) !important;
+}
+body.mode-owner .sidebar-group-label { color: var(--report-text-secondary) !important; }
+body.mode-owner .sidebar-item        { color: var(--report-text) !important; }
+body.mode-owner .sidebar-item:hover  {
+  background: var(--report-primary-soft) !important;
+  color: var(--report-primary) !important;
+}
+body.mode-owner .sidebar-item.active {
+  background: var(--report-primary-soft) !important;
+  color: var(--report-primary) !important;
+  border-left-color: var(--report-primary) !important;
+}
+
+/* ---- 篩選列（業主模式隱藏） ---- */
+body.mode-owner #db-filter-bar { display: none !important; }
+
+/* ---- 報告 Header ---- */
+#db-report-header {
+  background: var(--report-surface);
+  border-bottom: 2px solid var(--report-border);
+  padding: 24px 32px 20px;
+}
+.db-rh-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.db-rh-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--report-text);
+  letter-spacing: .02em;
+  margin-bottom: 6px;
+}
+.db-rh-period {
+  font-size: .8rem;
+  color: var(--report-text-secondary);
+  margin-bottom: 3px;
+}
+.db-rh-project {
+  font-size: .76rem;
+  color: var(--report-text-secondary);
+}
+.db-rh-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+.db-rh-updated,
+.db-rh-completeness {
+  font-size: .75rem;
+  color: var(--report-text-secondary);
+  margin-bottom: 6px;
+}
+.db-rh-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+.db-rh-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--report-border);
+  border-radius: 6px;
+  background: var(--report-surface);
+  color: var(--report-text);
+  font-size: .75rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.12s, color 0.12s;
+}
+.db-rh-btn:hover { border-color: var(--report-primary); color: var(--report-primary); }
+
+/* ---- 主內容區業主化 ---- */
+body.mode-owner #db-content {
+  background: var(--report-bg);
+  padding: 28px 32px 64px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Section 標題業主化 */
+body.mode-owner .db-sec { margin-bottom: 32px; }
+body.mode-owner .db-sec-title {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--report-text);
+  text-transform: none;
+  letter-spacing: 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--report-primary);
+  display: block;
+  margin-bottom: 18px;
+}
+body.mode-owner .db-sec-title::after { display: none; }
+
+/* ---- Section 閱讀順序（業主） ---- */
+body.mode-owner #db-sec-kpi      { order: 1; }
+body.mode-owner #db-sec-funnel   { order: 2; }
+body.mode-owner #db-sec-platform { order: 3; }
+body.mode-owner #db-sec-content  { order: 4; }
+body.mode-owner #db-sec-findings { order: 5; }
+body.mode-owner #db-sec-optlog   { order: 6; }
+body.mode-owner #db-sec-alerts   { order: 7; }
+body.mode-owner #db-sec-sources  { order: 8; }
+body.mode-owner #db-sec-trend    { order: 9; }
+body.mode-owner #db-sec-today    { order: 10; }
+
+/* ---- KPI 卡片業主化 ---- */
+body.mode-owner .db-kpi-card {
+  background: var(--report-surface);
+  border: 1px solid var(--report-border);
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(48,43,39,.06);
+  padding: 18px 20px;
+  cursor: default;
+  transition: box-shadow 0.15s;
+}
+body.mode-owner .db-kpi-card:hover { box-shadow: 0 3px 10px rgba(48,43,39,.1); transform: none; }
+body.mode-owner .db-kpi-card::before  { height: 3px; background: var(--report-primary); opacity: .9; }
+body.mode-owner .db-kpi-card.kc-ok::before   { background: var(--report-secondary); }
+body.mode-owner .db-kpi-card.kc-warn::before { background: var(--report-warning); }
+body.mode-owner .db-kpi-card.kc-na::before   { background: var(--report-border); opacity: 1; }
+
+body.mode-owner .db-kpi-label {
+  font-size: .73rem;
+  color: var(--report-text-secondary);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 6px;
+}
+body.mode-owner .db-kpi-val            { font-size: 2rem; color: var(--report-text); }
+body.mode-owner .db-kpi-val.kv-ok      { color: var(--report-positive); }
+body.mode-owner .db-kpi-val.kv-warn    { color: var(--report-warning); }
+body.mode-owner .db-kpi-val.kv-na      { color: var(--report-text-secondary); font-size: .9rem; font-weight: 400; }
+body.mode-owner .db-kpi-sub            { font-size: .7rem; color: var(--report-text-secondary); }
+
+/* KPI 期變動標籤（僅業主模式顯示） */
+.db-kpi-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: .71rem;
+  font-weight: 600;
+  margin: 4px 0 3px;
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+.db-kpi-delta.delta-up   { color: var(--report-positive); background: var(--report-secondary-soft); }
+.db-kpi-delta.delta-down { color: var(--report-negative); background: var(--report-primary-soft); }
+.db-kpi-delta.delta-flat { color: var(--report-text-secondary); background: var(--report-surface-muted); }
+body:not(.mode-owner) .db-kpi-delta { display: none !important; }
+
+/* ---- 趨勢圖業主化 ---- */
+body.mode-owner .db-chart-card {
+  background: var(--report-surface);
+  border: 1px solid var(--report-border);
+  box-shadow: 0 1px 3px rgba(48,43,39,.05);
+}
+body.mode-owner .db-chart-title {
+  color: var(--report-text-secondary);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: .78rem;
+}
+body.mode-owner .db-bar     { background: var(--report-primary); opacity: .75; }
+body.mode-owner .db-bar-alt { background: var(--report-secondary); opacity: .75; }
+body.mode-owner .db-bar-lbl { color: var(--report-text-secondary); }
+body.mode-owner .db-chart-na { border-color: var(--report-border); color: var(--report-text-secondary); }
+
+/* ---- 排行卡片業主化 ---- */
+body.mode-owner .db-rank-card {
+  background: var(--report-surface);
+  border: 1px solid var(--report-border);
+  box-shadow: 0 1px 3px rgba(48,43,39,.05);
+}
+body.mode-owner .db-rank-title { color: var(--report-text-secondary); text-transform: none; letter-spacing: 0; }
+body.mode-owner .db-rank-item  { border-bottom-color: var(--report-border); }
+body.mode-owner .db-rank-num   { color: var(--report-text-secondary); }
+body.mode-owner .db-rank-name  { color: var(--report-text); }
+body.mode-owner .db-rank-bar   { background: var(--report-border); }
+body.mode-owner .db-rank-fill  { background: var(--report-primary); opacity: .8; }
+body.mode-owner .db-rank-val   { color: var(--report-text); }
+body.mode-owner .db-rank-na    { color: var(--report-text-secondary); }
+
+/* 前 3 名金銀銅標記 */
+body.mode-owner .db-rank-num-1 { color: var(--report-gold) !important; font-weight: 700; }
+body.mode-owner .db-rank-num-2 { color: var(--report-text-secondary) !important; font-weight: 600; }
+body.mode-owner .db-rank-num-3 { color: var(--report-text-secondary) !important; font-weight: 500; }
+
+/* ---- 最佳 / 待優化內容業主化 ---- */
+body.mode-owner .db-content-card {
+  background: var(--report-surface);
+  border: 1px solid var(--report-border);
+  box-shadow: 0 1px 3px rgba(48,43,39,.05);
+}
+body.mode-owner .db-content-title  { color: var(--report-text-secondary); text-transform: none; letter-spacing: 0; }
+body.mode-owner .db-content-item   { border-bottom-color: var(--report-border); }
+body.mode-owner .db-content-rank   { color: var(--report-primary); }
+body.mode-owner .db-content-name   { color: var(--report-text); }
+body.mode-owner .db-content-meta   { color: var(--report-text-secondary); }
+body.mode-owner .db-content-metric { color: var(--report-text); }
+body.mode-owner .db-content-na     { color: var(--report-text-secondary); }
+
+/* ---- 轉換漏斗業主化 ---- */
+body.mode-owner .db-funnel-stages { max-width: 720px; }
+body.mode-owner .db-funnel-stage {
+  background: var(--report-surface);
+  border-color: var(--report-border);
+  box-shadow: 0 1px 3px rgba(48,43,39,.05);
+}
+body.mode-owner .db-funnel-stage:not(:last-child)::after { color: var(--report-border); }
+body.mode-owner .db-funnel-name  { color: var(--report-text-secondary); }
+body.mode-owner .db-funnel-bar   { background: var(--report-border); }
+body.mode-owner .db-funnel-fill  { background: var(--report-primary); opacity: .8; }
+body.mode-owner .db-funnel-count { color: var(--report-text); }
+body.mode-owner .db-funnel-na    { color: var(--report-text-secondary); background: var(--report-surface-muted); border-color: var(--report-border); }
+body.mode-owner .db-funnel-hint  { color: var(--report-text-secondary); }
+
+/* ---- 資料提醒業主化 ---- */
+body.mode-owner .db-alert           { background: var(--report-surface); border-color: var(--report-border); }
+body.mode-owner .db-alert:hover     { border-color: var(--report-primary); }
+body.mode-owner .db-alert-text      { color: var(--report-text-secondary); }
+body.mode-owner .db-alert-text strong { color: var(--report-text); }
+body.mode-owner .db-alert-action    { color: var(--report-primary); }
+body.mode-owner .db-alert.al-warn   { border-color: rgba(167,65,50,.3); }
+body.mode-owner .db-alert-empty     { color: var(--report-text-secondary); }
+
+/* ---- 優化紀錄業主化（表格） ---- */
+body.mode-owner .tbl { background: var(--report-surface); }
+body.mode-owner .tbl thead tr { background: var(--report-surface-muted); }
+body.mode-owner .tbl th,
+body.mode-owner .tbl td {
+  color: var(--report-text);
+  border-color: var(--report-border);
+  height: 42px;
+  padding: 0 14px;
+}
+body.mode-owner .tbl td:last-child,
+body.mode-owner .tbl th:last-child { text-align: left; }
+body.mode-owner .tbl tr:hover td   { background: var(--report-surface-muted); }
+body.mode-owner .db-optlog-empty   { color: var(--report-text-secondary); }
+body.mode-owner .db-optlog-hint    { color: var(--report-text-secondary); }
+
+/* ---- 關鍵發現面板（業主限定） ---- */
+.db-key-findings { display: none; }
+body.mode-owner .db-key-findings {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.db-kf-col {
+  background: var(--report-surface);
+  border: 1px solid var(--report-border);
+  border-left-width: 3px;
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(48,43,39,.05);
+}
+.db-kf-col-success { border-left-color: var(--report-secondary) !important; }
+.db-kf-col-issue   { border-left-color: var(--report-primary)   !important; }
+.db-kf-col-action  { border-left-color: var(--report-navy)      !important; }
+
+.db-kf-col-title {
+  font-size: .82rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.db-kf-col-success .db-kf-col-title { color: var(--report-secondary); }
+.db-kf-col-issue   .db-kf-col-title { color: var(--report-primary); }
+.db-kf-col-action  .db-kf-col-title { color: var(--report-navy); }
+
+.db-kf-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--report-border);
+  font-size: .8rem;
+  color: var(--report-text-secondary);
+  line-height: 1.55;
+}
+.db-kf-item:last-child { border-bottom: none; }
+
+/* ---- 資料完整度 Footer（業主限定） ---- */
+.db-data-sources { display: none; }
+body.mode-owner .db-data-sources {
+  display: block;
+  background: var(--report-surface);
+  border: 1px solid var(--report-border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(48,43,39,.05);
+}
+.db-ds-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.db-ds-item    { font-size: .78rem; }
+.db-ds-source  { font-weight: 600; color: var(--report-text); margin-bottom: 3px; }
+.db-ds-status  { color: var(--report-text-secondary); }
+.db-ds-ok   { color: var(--report-positive) !important; font-weight: 600; }
+.db-ds-warn { color: var(--report-warning)  !important; font-weight: 600; }
+.db-ds-na   { color: var(--report-text-secondary) !important; }
+
+/* ---- 列印樣式 ---- */
+@media print {
+  #app-sidebar,
+  #app-topbar,
+  #db-filter-bar,
+  .db-operator-only,
+  .db-quick-actions,
+  .db-rh-actions,
+  .db-alert-action,
+  .db-qa-btn { display: none !important; }
+
+  body, body.mode-owner { background: #fff !important; }
+
+  #db-report-header {
+    background: #fff !important;
+    border-bottom: 1px solid #ccc !important;
+    padding: 20px 0 16px;
+  }
+  #db-content,
+  body.mode-owner #db-content { padding: 16px 0 !important; background: #fff !important; }
+
+  .db-kpi-card, .db-chart-card, .db-rank-card,
+  .db-content-card, .db-funnel-stage, .db-kf-col,
+  .db-data-sources, .db-alert {
+    background: #fff !important;
+    border-color: #ccc !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+  .db-kpi-row { grid-template-columns: repeat(3, 1fr) !important; }
+  .db-sec-title { border-bottom-color: #999 !important; }
+}
+
+/* ---- 響應式 ---- */
+/* 1920px+: 6 KPI 同一行 */
+@media (min-width: 1920px) {
+  body.mode-owner .db-kpi-row { grid-template-columns: repeat(6, 1fr); }
+}
+/* 1024–1440px: 3 列 KPI；圖表單欄 */
+@media (max-width: 1440px) and (min-width: 1025px) {
+  body.mode-owner .db-kpi-row { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 1024px) {
+  body.mode-owner .db-kpi-row    { grid-template-columns: repeat(3, 1fr); }
+  body.mode-owner .db-trend-row,
+  body.mode-owner .db-table-row,
+  body.mode-owner .db-content-row { grid-template-columns: 1fr; }
+  body.mode-owner .db-key-findings { grid-template-columns: 1fr 1fr; }
+  body.mode-owner .db-ds-grid { grid-template-columns: 1fr 1fr; }
+}
+/* 768px: 單欄 */
+@media (max-width: 768px) {
+  body.mode-owner .db-kpi-row       { grid-template-columns: repeat(2, 1fr); }
+  body.mode-owner #db-content       { padding: 16px 16px 48px; }
+  body.mode-owner .db-key-findings  { grid-template-columns: 1fr; }
+  body.mode-owner .db-ds-grid       { grid-template-columns: 1fr; }
+  body.mode-owner .db-rh-inner      { flex-direction: column; }
+  body.mode-owner .db-rh-right      { text-align: left; }
+  body.mode-owner .db-rh-actions    { justify-content: flex-start; }
+  #db-report-header                 { padding: 18px 20px 14px; }
+}

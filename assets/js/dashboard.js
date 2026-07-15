@@ -38,13 +38,38 @@
     var seen={}; return arr.filter(function(v){ if(seen[v]) return false; seen[v]=true; return true })
   }
 
+  /* ---- 上期日期範圍（同長度往前移） ---- */
+  function getPrevDateRange(rangeKey, dates) {
+    var s = new Date(dates.start + 'T00:00:00')
+    var e = new Date(dates.end   + 'T00:00:00')
+    var days = Math.round((e - s) / 86400000) + 1
+    var pe = new Date(s); pe.setDate(pe.getDate() - 1)
+    var ps = new Date(pe); ps.setDate(ps.getDate() - days + 1)
+    return { start: ps.toISOString().slice(0,10), end: pe.toISOString().slice(0,10) }
+  }
+
+  /* ---- 期間變動（▲▼—） ---- */
+  function delta(cur, prev) {
+    if (cur == null || prev == null) return null
+    if (prev === 0) return cur > 0 ? { dir:'up', pct:null } : null
+    var p = Math.round((cur - prev) / Math.abs(prev) * 100)
+    return { dir: p > 0 ? 'up' : p < 0 ? 'down' : 'flat', pct: p }
+  }
+  function deltaTag(d) {
+    if (!d) return ''
+    if (d.dir === 'up')   return '<div class="db-kpi-delta delta-up">▲ '   + (d.pct!=null ? d.pct+'%' : '') + '</div>'
+    if (d.dir === 'down') return '<div class="db-kpi-delta delta-down">▼ ' + (d.pct!=null ? Math.abs(d.pct)+'%' : '') + '</div>'
+    return '<div class="db-kpi-delta delta-flat">— 持平</div>'
+  }
+
   /* ---- 主渲染 ---- */
   function render() {
     var el = document.getElementById('pg-dashboard')
     if (!el) return
 
-    var dates = DashboardAdapter.getDateRange(_f.range, _f.customStart, _f.customEnd)
-    var now   = todayStr()
+    var dates     = DashboardAdapter.getDateRange(_f.range, _f.customStart, _f.customEnd)
+    var prevDates = getPrevDateRange(_f.range, dates)
+    var now       = todayStr()
 
     var ta   = DashboardAdapter.threadActivities()
     var pos  = DashboardAdapter.posts()
@@ -56,22 +81,35 @@
     var cpF   = DashboardAdapter.filterByDate(cp,   dates.start, dates.end)
     var convF = DashboardAdapter.filterByDate(conv, dates.start, dates.end)
 
+    var taPrev   = DashboardAdapter.filterByDate(ta,   prevDates.start, prevDates.end)
+    var posPrev  = DashboardAdapter.filterByDate(pos,  prevDates.start, prevDates.end)
+    var cpPrev   = DashboardAdapter.filterByDate(cp,   prevDates.start, prevDates.end)
+    var convPrev = DashboardAdapter.filterByDate(conv, prevDates.start, prevDates.end)
+
     if (_f.platform !== 'all') taF = taF.filter(function(a){ return (a.platform||'')===_f.platform })
     if (_f.persona  !== 'all') taF = taF.filter(function(a){ return (a.persona ||'')===_f.persona  })
 
     var personaList = uniq(ta.map(function(a){ return a.persona||'' }).filter(Boolean))
 
+    var taNoDel   = taF.filter(function(a){ return (a.notes||'').indexOf('貼文已刪除')===-1 })
+    var taWithMet = taNoDel.filter(DashboardAdapter.hasMetrics).length
+    var taTotal   = taNoDel.length
+    var taMiss    = taTotal - taWithMet
+
     el.innerHTML =
+      buildOwnerReportHeader(dates, taWithMet, taTotal) +
       buildFilterBar(dates, personaList) +
       '<div id="db-content">' +
-      buildKPISection(taF, posF, cpF, convF) +
+      buildKPISection(taF, posF, cpF, convF, taPrev, posPrev, cpPrev, convPrev) +
       buildTodaySection(ta, now) +
       buildTrendSection(ta, dates) +
       buildPlatformPersonaSection(taF) +
       buildTopContentSection(taF) +
       buildFunnelSection(taF, convF) +
+      buildKeyFindingsSection(taF, convF, taMiss) +
       buildOptLogSection() +
       buildAlertsSection(ta) +
+      buildDataSourcesSection(taF, convF, taWithMet, taTotal) +
       '</div>'
   }
 
@@ -107,7 +145,7 @@
   }
 
   /* ---- KPI 卡片 ---- */
-  function buildKPISection(taF, posF, cpF, convF) {
+  function buildKPISection(taF, posF, cpF, convF, taPrev, posPrev, cpPrev, convPrev) {
     var pubTotal = taF.length + posF.length + cpF.length
 
     var taNoDel = taF.filter(function(a){ return (a.notes||'').indexOf('貼文已刪除')===-1 })
@@ -129,19 +167,31 @@
     var taTotal   = taNoDel.length
     var complete  = taTotal > 0 ? Math.round(taWithMet / taTotal * 100) : null
 
-    function card(label, valStr, sub, cardCls, valCls, link) {
+    // 上期數據（供業主報告 ▲▼— 顯示）
+    var prevPub   = (taPrev||[]).length + (posPrev||[]).length + (cpPrev||[]).length
+    var prevInter = 0
+    ;(taPrev||[]).forEach(function(a){
+      var m = DashboardAdapter.getMetrics(a)
+      prevInter += (m.likes||0)+(m.cmts||0)+(m.shares||0)
+    })
+    var prevConv = 0
+    ;(convPrev||[]).forEach(function(c){ prevConv += +(c.inq||0)+(c.reg||0)+(c.dep||0) })
+
+    function card(label, valStr, sub, cardCls, valCls, link, dHtml) {
       return '<div class="db-kpi-card '+(cardCls||'')+'" onclick="AppShell.navPage(\''+link+'\')">'
            + '<div class="db-kpi-label">'+label+'</div>'
            + '<div class="db-kpi-val '+(valCls||'')+'">'+valStr+'</div>'
+           + (dHtml||'')
            + '<div class="db-kpi-sub">'+sub+'</div>'
            + '</div>'
     }
 
-    return '<div class="db-sec"><div class="db-sec-title">核心指標</div><div class="db-kpi-row">'
+    return '<div class="db-sec" id="db-sec-kpi"><div class="db-sec-title">核心指標</div><div class="db-kpi-row">'
       + card('本期發布數',
           pubTotal > 0 ? fmtNum(pubTotal) : '0',
           'Threads '+taF.length+' · 追蹤 '+posF.length+' · 匿名 '+cpF.length,
-          pubTotal > 0 ? '' : 'kc-na', pubTotal > 0 ? '' : 'kv-na', 'threadtracker')
+          pubTotal > 0 ? '' : 'kc-na', pubTotal > 0 ? '' : 'kv-na', 'threadtracker',
+          deltaTag(delta(pubTotal, prevPub)))
       + card('待補成效',
           fmtNum(taMiss.length),
           '待填的 Threads 貼文數',
@@ -150,7 +200,8 @@
       + card('總互動',
           hasInterData ? fmtNum(totalInter) : '尚未串接',
           hasInterData ? '讚＋留言＋轉發（Threads）' : '區間無 Threads 成效資料',
-          hasInterData ? '' : 'kc-na', hasInterData ? '' : 'kv-na', 'threadtracker')
+          hasInterData ? '' : 'kc-na', hasInterData ? '' : 'kv-na', 'threadtracker',
+          hasInterData ? deltaTag(delta(totalInter, prevInter)) : '')
       + card('連結點擊',
           '尚未串接',
           '需串接 GA4 或短連結 API',
@@ -158,7 +209,8 @@
       + card('完成轉換',
           hasConvData ? fmtNum(totalConv) : '—',
           hasConvData ? '詢問＋登記＋儲值' : '尚未串接或無資料',
-          hasConvData ? '' : 'kc-na', hasConvData ? '' : 'kv-na', 'conv')
+          hasConvData ? '' : 'kc-na', hasConvData ? '' : 'kv-na', 'conv',
+          hasConvData ? deltaTag(delta(totalConv, prevConv)) : '')
       + card('資料完整率',
           fmtPct(complete),
           taTotal > 0 ? (taWithMet+' / '+taTotal+' 則已填成效') : '無 Threads 發布記錄',
@@ -181,7 +233,7 @@
            + '<div class="dt-lbl">'+lbl+(hint?'<br><span style="font-size:.6rem">'+hint+'</span>':'')+'</div></div>'
     }
 
-    return '<div class="db-sec db-operator-only">'
+    return '<div class="db-sec db-operator-only" id="db-sec-today">'
       + '<div class="db-sec-title">今日概況</div>'
       + '<div class="db-quick-actions">'
       + '<button class="db-qa-btn" onclick="AppShell.navPage(\'threadtracker\')">🔥 社群炒群</button>'
@@ -234,7 +286,7 @@
       }).join('') + '</div>'
     }
 
-    return '<div class="db-sec"><div class="db-sec-title">成效趨勢</div>'
+    return '<div class="db-sec" id="db-sec-trend"><div class="db-sec-title">成效趨勢</div>'
       + '<div class="db-trend-row">'
       + '<div class="db-chart-card"><div class="db-chart-title">每日發布數（Threads）</div>'
       + (hasPub ? bars(pubVals,false) : '<div class="db-chart-na">此區間無發布資料</div>')
@@ -247,7 +299,7 @@
 
   /* ---- 平台與角色表現（同一個 section，兩欄） ---- */
   function buildPlatformPersonaSection(taF) {
-    return '<div class="db-sec"><div class="db-sec-title">平台與角色表現</div>'
+    return '<div class="db-sec" id="db-sec-platform"><div class="db-sec-title">平台與角色表現</div>'
          + '<div class="db-table-row">'
          + rankCard(taF, function(a){ return a.platform||'未知' }, '平台發布量 · 互動')
          + rankCard(taF, function(a){ return a.persona ||'未知' }, '角色排行（互動）')
@@ -309,7 +361,7 @@
            + '</div>'
     }
 
-    return '<div class="db-sec"><div class="db-sec-title">最佳與待優化內容</div>'
+    return '<div class="db-sec" id="db-sec-content"><div class="db-sec-title">最佳與待優化內容</div>'
       + '<div class="db-content-row">'
       + '<div class="db-content-card"><div class="db-content-title">⭐ 最佳內容（互動最高）</div>'
       + (best.length ? best.map(function(x,i){ return contentItem(x,i,false) }).join('')
@@ -343,7 +395,7 @@
     ]
     var maxVal = stages.reduce(function(m,s){ return Math.max(m, s.na||s.val==null?0:s.val) },0) || 1
 
-    var h = '<div class="db-sec"><div class="db-sec-title">轉換漏斗</div><div class="db-funnel-stages">'
+    var h = '<div class="db-sec" id="db-sec-funnel"><div class="db-sec-title">轉換漏斗</div><div class="db-funnel-stages">'
     stages.forEach(function(s){
       var bw = (s.na||s.val==null) ? 0 : Math.max(4, Math.round(s.val/maxVal*100))
       h += '<div class="db-funnel-stage">'
@@ -361,7 +413,7 @@
   /* ---- 優化紀錄 (owner only) ---- */
   function buildOptLogSection() {
     var log = DashboardAdapter.optLog()
-    var h = '<div class="db-sec db-owner-only"><div class="db-sec-title">優化紀錄</div>'
+    var h = '<div class="db-sec db-owner-only" id="db-sec-optlog"><div class="db-sec-title">優化紀錄</div>'
     if (!log.length) {
       h += '<div class="db-optlog-empty"><div class="db-optlog-icon">📋</div>'
          + '<div>尚無優化紀錄</div>'
@@ -412,7 +464,7 @@
       text:'<strong>連結點擊數</strong>尚未串接（需 GA4 Worker 或短連結 API）',
       action:'→ 成效總結', link:'ga4' })
 
-    var h = '<div class="db-sec"><div class="db-sec-title">資料提醒</div><div class="db-alerts-list">'
+    var h = '<div class="db-sec" id="db-sec-alerts"><div class="db-sec-title">資料提醒</div><div class="db-alerts-list">'
     if (!alerts.length) {
       h += '<div class="db-alert-empty">✅ 目前無資料異常提醒</div>'
     } else {
@@ -425,6 +477,114 @@
       })
     }
     return h + '</div></div>'
+  }
+
+  /* ---- 報告 Header（業主模式） ---- */
+  function buildOwnerReportHeader(dates, taWithMet, taTotal) {
+    var now = new Date()
+    var updated = (now.getMonth()+1) + '/' + now.getDate()
+                + ' ' + String(now.getHours()).padStart(2,'0')
+                + ':' + String(now.getMinutes()).padStart(2,'0')
+    var pct    = taTotal > 0 ? Math.round(taWithMet / taTotal * 100) : null
+    var pctStr = pct != null ? pct + '%' : '—'
+    var pctCls = pct == null ? 'db-ds-na' : pct >= 80 ? 'db-ds-ok' : pct < 50 ? 'db-ds-warn' : ''
+
+    return '<div id="db-report-header" class="db-owner-only">'
+      + '<div class="db-rh-inner">'
+      + '<div class="db-rh-left">'
+      + '<div class="db-rh-title">YS89 行銷成效報告</div>'
+      + '<div class="db-rh-period">報告期間：' + dates.start + ' ⋯ ' + dates.end + '</div>'
+      + '<div class="db-rh-project">專案：YS89 夜色娛樂城社群行銷</div>'
+      + '</div>'
+      + '<div class="db-rh-right">'
+      + '<div class="db-rh-updated">最後更新：' + updated + '</div>'
+      + '<div class="db-rh-completeness">資料完整度：<span class="' + pctCls + '">' + pctStr + '</span></div>'
+      + '<div class="db-rh-actions">'
+      + '<button class="db-rh-btn" onclick="window.print()">列印報告</button>'
+      + '</div>'
+      + '</div>'
+      + '</div>'
+      + '</div>'
+  }
+
+  /* ---- 關鍵發現（業主模式） ---- */
+  function buildKeyFindingsSection(taF, convF, missingCount) {
+    var pubTotal = taF.length
+    var totalInter = 0, hasInterData = false
+    taF.forEach(function(a){
+      var m = DashboardAdapter.getMetrics(a)
+      if (m.likes!=null || m.cmts!=null) {
+        hasInterData = true
+        totalInter += (m.likes||0)+(m.cmts||0)+(m.shares||0)
+      }
+    })
+    var totalConv = 0, hasConvData = convF.length > 0
+    convF.forEach(function(c){ totalConv += +(c.inq||0)+(c.reg||0)+(c.dep||0) })
+
+    var successes = []
+    if (pubTotal > 0)                      successes.push('本期共發布 ' + pubTotal + ' 則社群內容')
+    if (hasInterData && totalInter > 0)    successes.push('Threads 累計互動 ' + fmtNum(totalInter) + '（讚＋留言＋轉發）')
+    if (hasConvData  && totalConv  > 0)   successes.push('完成轉換 ' + fmtNum(totalConv) + ' 次（詢問＋登記＋儲值）')
+    if (!successes.length)                 successes.push('本期尚無可量化成果，請補充成效資料')
+
+    var issues = []
+    if (missingCount > 0)    issues.push(missingCount + ' 則貼文尚未填入成效資料，影響完整率')
+    if (!hasInterData)       issues.push('本期無 Threads 互動資料，無法評估曝光效益')
+    if (!hasConvData)        issues.push('轉化紀錄尚未建立，漏斗下半段無法追蹤')
+    if (!issues.length)      issues.push('本期無明顯問題')
+
+    var actions = []
+    if (missingCount > 0)    actions.push('補完 ' + missingCount + ' 則貼文成效後重新評估')
+    actions.push('串接 GA4 Worker 以取得連結點擊與進站數據')
+    if (!hasConvData)        actions.push('於轉化區建立每日詢問、登記、儲值紀錄')
+
+    function col(title, cls, items) {
+      var h = '<div class="db-kf-col ' + cls + '">'
+        + '<div class="db-kf-col-title">' + title + '</div>'
+      items.slice(0,3).forEach(function(txt){
+        h += '<div class="db-kf-item">' + esc(txt) + '</div>'
+      })
+      return h + '</div>'
+    }
+
+    return '<div class="db-sec db-owner-only" id="db-sec-findings">'
+      + '<div class="db-sec-title">關鍵發現</div>'
+      + '<div class="db-key-findings">'
+      + col('本期成果', 'db-kf-col-success', successes)
+      + col('本期問題與原因', 'db-kf-col-issue', issues)
+      + col('下一期優化行動', 'db-kf-col-action', actions)
+      + '</div></div>'
+  }
+
+  /* ---- 資料來源與完整度（業主模式） ---- */
+  function buildDataSourcesSection(taF, convF, taWithMet, taTotal) {
+    var pct = taTotal > 0 ? Math.round(taWithMet / taTotal * 100) : null
+    var hasConv = convF.length > 0
+
+    function dsItem(name, status, cls) {
+      return '<div class="db-ds-item">'
+        + '<div class="db-ds-source">' + esc(name) + '</div>'
+        + '<div class="db-ds-status ' + cls + '">' + esc(status) + '</div>'
+        + '</div>'
+    }
+
+    var taStatus = taTotal > 0
+      ? (taF.length + ' 則（本期） · 成效 ' + taWithMet + '/' + taTotal
+         + (pct!=null ? ' (' + pct + '%)' : ''))
+      : '本期無記錄'
+    var taCls = pct==null ? 'db-ds-na' : pct>=80 ? 'db-ds-ok' : pct<50 ? 'db-ds-warn' : ''
+
+    return '<div class="db-sec db-owner-only" id="db-sec-sources">'
+      + '<div class="db-sec-title">資料來源與完整度</div>'
+      + '<div class="db-data-sources">'
+      + '<div class="db-ds-grid">'
+      + dsItem('Threads 炒群記錄',  taStatus,               taCls)
+      + dsItem('GA4 連結追蹤',     '尚未串接（需 GA4 Worker）', 'db-ds-na')
+      + dsItem('轉化紀錄（conv_daily）', hasConv ? (convF.length + ' 筆（本期）') : '尚未建立', hasConv ? 'db-ds-ok' : 'db-ds-na')
+      + dsItem('picks168 後台',    '尚未串接',               'db-ds-na')
+      + dsItem('發文追蹤（posts）',   '已讀取',               'db-ds-ok')
+      + dsItem('匿名社群（channel_posts）', '已讀取',          'db-ds-ok')
+      + '</div></div></div>'
   }
 
 })()
