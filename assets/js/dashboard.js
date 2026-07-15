@@ -501,6 +501,7 @@
       + '<div class="db-rh-completeness">資料完整度：<span class="' + pctCls + '">' + pctStr + '</span></div>'
       + '<div class="db-rh-actions">'
       + '<button class="db-rh-btn" onclick="window.print()">列印報告</button>'
+      + '<button class="db-rh-btn" onclick="window.print()">匯出 PDF</button>'
       + '</div>'
       + '</div>'
       + '</div>'
@@ -522,21 +523,21 @@
     convF.forEach(function(c){ totalConv += +(c.inq||0)+(c.reg||0)+(c.dep||0) })
 
     var successes = []
-    if (pubTotal > 0)                      successes.push('本期共發布 ' + pubTotal + ' 則社群內容')
-    if (hasInterData && totalInter > 0)    successes.push('Threads 累計互動 ' + fmtNum(totalInter) + '（讚＋留言＋轉發）')
-    if (hasConvData  && totalConv  > 0)   successes.push('完成轉換 ' + fmtNum(totalConv) + ' 次（詢問＋登記＋儲值）')
-    if (!successes.length)                 successes.push('本期尚無可量化成果，請補充成效資料')
+    if (pubTotal > 0)                      successes.push('本期內容發布量達 ' + pubTotal + ' 則')
+    if (hasInterData && totalInter > 0)    successes.push('社群互動量達 ' + fmtNum(totalInter)+'（含讚、留言與轉發）')
+    if (hasConvData  && totalConv  > 0)   successes.push('轉換完成 ' + fmtNum(totalConv) + ' 次')
+    if (!successes.length)                 successes.push('本期成效資料不足，建議補充以利後續分析')
 
     var issues = []
-    if (missingCount > 0)    issues.push(missingCount + ' 則貼文尚未填入成效資料，影響完整率')
-    if (!hasInterData)       issues.push('本期無 Threads 互動資料，無法評估曝光效益')
-    if (!hasConvData)        issues.push('轉化紀錄尚未建立，漏斗下半段無法追蹤')
-    if (!issues.length)      issues.push('本期無明顯問題')
+    if (missingCount > 0)    issues.push(missingCount + ' 則內容成效待補充，影響分析完整度')
+    if (!hasInterData)       issues.push('本期社群互動資料不足，建議補充以利成效評估')
+    if (!hasConvData)        issues.push('轉換追蹤資料不完整，漏斗分析受限')
+    if (!issues.length)      issues.push('本期運營指標正常，持續優化中')
 
     var actions = []
-    if (missingCount > 0)    actions.push('補完 ' + missingCount + ' 則貼文成效後重新評估')
-    actions.push('串接 GA4 Worker 以取得連結點擊與進站數據')
-    if (!hasConvData)        actions.push('於轉化區建立每日詢問、登記、儲值紀錄')
+    if (missingCount > 0)    actions.push('補齊 ' + missingCount + ' 則內容成效資料後重新分析')
+    actions.push('建議串接流量數據工具以取得完整進站資訊')
+    if (!hasConvData)        actions.push('建議建立定期轉換追蹤記錄以完整漏斗數據')
 
     function col(title, cls, items) {
       var h = '<div class="db-kf-col ' + cls + '">'

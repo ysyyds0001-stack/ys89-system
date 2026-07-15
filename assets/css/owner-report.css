@@ -152,17 +152,21 @@ body.mode-owner .db-sec-title {
 }
 body.mode-owner .db-sec-title::after { display: none; }
 
-/* ---- Section 閱讀順序（業主） ---- */
+/* ---- Section 閱讀順序（業主）
+   1 核心KPI  2 成效趨勢  3 轉換漏斗  4 平台/角色  5 高成效內容
+   6 關鍵發現  7 優化紀錄  8 資料完整度
+   技術提醒與今日概況在業主模式一律隱藏
+   ---- */
 body.mode-owner #db-sec-kpi      { order: 1; }
-body.mode-owner #db-sec-funnel   { order: 2; }
-body.mode-owner #db-sec-platform { order: 3; }
-body.mode-owner #db-sec-content  { order: 4; }
-body.mode-owner #db-sec-findings { order: 5; }
-body.mode-owner #db-sec-optlog   { order: 6; }
-body.mode-owner #db-sec-alerts   { order: 7; }
+body.mode-owner #db-sec-trend    { order: 2; }
+body.mode-owner #db-sec-funnel   { order: 3; }
+body.mode-owner #db-sec-platform { order: 4; }
+body.mode-owner #db-sec-content  { order: 5; }
+body.mode-owner #db-sec-findings { order: 6; }
+body.mode-owner #db-sec-optlog   { order: 7; }
 body.mode-owner #db-sec-sources  { order: 8; }
-body.mode-owner #db-sec-trend    { order: 9; }
-body.mode-owner #db-sec-today    { order: 10; }
+body.mode-owner #db-sec-alerts   { display: none !important; }
+body.mode-owner #db-sec-today    { display: none !important; }
 
 /* ---- KPI 卡片業主化 ---- */
 body.mode-owner .db-kpi-card {
@@ -181,7 +185,7 @@ body.mode-owner .db-kpi-card.kc-warn::before { background: var(--report-warning)
 body.mode-owner .db-kpi-card.kc-na::before   { background: var(--report-border); opacity: 1; }
 
 body.mode-owner .db-kpi-label {
-  font-size: .73rem;
+  font-size: .82rem;
   color: var(--report-text-secondary);
   text-transform: none;
   letter-spacing: 0;
@@ -268,12 +272,13 @@ body.mode-owner .db-funnel-stage {
   box-shadow: 0 1px 3px rgba(48,43,39,.05);
 }
 body.mode-owner .db-funnel-stage:not(:last-child)::after { color: var(--report-border); }
+body.mode-owner .db-funnel-icon  { display: none; }
 body.mode-owner .db-funnel-name  { color: var(--report-text-secondary); }
 body.mode-owner .db-funnel-bar   { background: var(--report-border); }
 body.mode-owner .db-funnel-fill  { background: var(--report-primary); opacity: .8; }
 body.mode-owner .db-funnel-count { color: var(--report-text); }
 body.mode-owner .db-funnel-na    { color: var(--report-text-secondary); background: var(--report-surface-muted); border-color: var(--report-border); }
-body.mode-owner .db-funnel-hint  { color: var(--report-text-secondary); }
+body.mode-owner .db-funnel-hint  { display: none; }
 
 /* ---- 資料提醒業主化 ---- */
 body.mode-owner .db-alert           { background: var(--report-surface); border-color: var(--report-border); }
