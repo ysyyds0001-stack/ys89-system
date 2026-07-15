@@ -282,10 +282,11 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 .tr{color:#f87171}
 .ty{color:#fbbf24}
 </style>
+<link rel="stylesheet" href="assets/css/app-shell.css">
 </head>
 <body>
 
-<nav>
+<nav class="legacy-navigation">
   <div class="nav-brand">YS89<span>發文管理系統</span></div>
   <div id="sync-status" style="font-size:.72rem;color:var(--accent);margin-left:8px;opacity:.8"></div>
   <div class="nav-sep"></div>
@@ -7962,7 +7963,7 @@ function renderThreadTracker(){
     </div>`
   }
 
-  // 填充角色下拉（世足角色 + 社群水軍號全部）
+  // 填充角色下拉
   const personaSel = document.getElementById('tt-filter-persona')
   if(personaSel && personaSel.options.length <= 1){
     const allForFilter=[...(DB.get('personas')||[]),...(DB.get('community')||[])]
@@ -7973,7 +7974,7 @@ function renderThreadTracker(){
   }
 
   let list = (DB.get('thread_activities')||[]).slice().reverse()
-  // 導向網站篩選選項（依站台彙整，顯示篇數）
+  // 導向網站篩選選項
   const landSel=document.getElementById('tt-filter-landing')
   if(landSel){
     const counts={}; list.forEach(a=>{ const s=_siteOf(a.landingUrl); if(s) counts[s]=(counts[s]||0)+1 })
@@ -7996,102 +7997,111 @@ function renderThreadTracker(){
     return
   }
 
-  // 分組：今日 + 近期
-  const todayItems = list.filter(a=>a.date===today)
-  const pastItems  = list.filter(a=>a.date!==today)
+  // 按日期分組（降序）
+  const WD = ['日','一','二','三','四','五','六']
+  const byDate = {}
+  list.forEach(a => { const d=a.date||'未知日期'; if(!byDate[d])byDate[d]=[]; byDate[d].push(a) })
 
-  // 共用：算策略色 / 平台 / 分平台成效摘要
-  const ttMeta = a => {
-    const sc = TT_STRATEGY_COLOR[a.strategy]||'#8A7D74'
-    const plats = a.platforms || ['Threads']
-    const pm = a.platformMetrics || {}
-    const mvHas = v => v!=null && v!==0 && v!=='' && v!=='0'
-    const hasMetrics = Object.values(pm).some(m=>Object.values(m||{}).some(mvHas))
-    const metricsSummary = hasMetrics
-      ? plats.map(p=>{
-          const m=pm[p]||{}; const col=TM_PLATFORM_COLORS[p]||'#8A7D74'
-          const vals=Object.values(m).filter(mvHas)
-          if(!vals.length)return''
-          const keys={Threads:['❤','💬','🔁','📤','👁','➕'],IG:['❤','💬','🔖','📤','👁','📺'],FB:['👍','💬','🔁','👁']}[p]||[]
-          const summary=Object.entries(m).filter(([,v])=>mvHas(v)).map(([,v],i)=>`${keys[i]||''}${v}`).join(' ')
-          return `<div style="font-size:.68rem;color:${col};white-space:nowrap"><b>${p}</b> ${summary}</div>`
-        }).filter(Boolean).join('')
-      : (a.notes
-          ? `<div style="font-size:.73rem;color:var(--text2);line-height:1.5">📝 ${escHtml(a.notes)}</div>`
-          : `<span style="font-size:.73rem;color:#f87171">待記錄</span>`)
-    return {sc, plats, metricsSummary}
+  // 數字格式輔助
+  const dash = () => `<span style="color:var(--text3);font-family:ui-monospace,monospace">—</span>`
+  const numFmt = (v, forceDash) => {
+    if(forceDash || v===null || v===undefined || v==='') return dash()
+    const n = Number(v)
+    if(isNaN(n)) return dash()
+    if(n===0) return `<span style="color:var(--text3);font-family:ui-monospace,monospace">0</span>`
+    const s = n.toLocaleString('zh-TW')
+    return n>=1000
+      ? `<span style="color:var(--accent);font-weight:700;font-family:ui-monospace,monospace">${s}</span>`
+      : `<span style="font-family:ui-monospace,monospace;color:var(--text)">${s}</span>`
+  }
+  const thStyle = `padding:5px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);background:var(--bg2);border-bottom:1px solid var(--border);white-space:nowrap`
+
+  // 備注欄 badge + 文字
+  const noteHtml = a => {
+    const nt=a.notes||'', st=a.status||''
+    const parts=[]
+    if(nt==='貼文已刪除') parts.push('<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(220,38,38,.1);color:#dc2626;border:1px solid rgba(220,38,38,.25)">已刪</span>')
+    else if(nt==='無法顯示瀏覽') parts.push('<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(232,106,26,.1);color:#e86a1a;border:1px solid rgba(232,106,26,.25)">無法顯示瀏覽</span>')
+    else if(nt==='UTM產生器建立') parts.push('<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:var(--bg2);color:var(--text3);border:1px solid var(--border)">UTM建立</span>')
+    else if(/AI預測/i.test(nt)) parts.push('<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(124,58,237,.08);color:#7c3aed;border:1px solid rgba(124,58,237,.2)">AI預測</span>')
+    else if(nt) parts.push(`<span style="font-size:10px;color:var(--text3)">${escHtml(nt)}</span>`)
+    if(st==='待記錄'&&nt!=='UTM產生器建立') parts.push('<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:var(--bg2);color:var(--text3);border:1px solid var(--border);margin-left:3px">待記錄</span>')
+    return parts.join(' ')
   }
 
-  const renderRow = a => {
-    const {sc, plats, metricsSummary} = ttMeta(a)
-    return `<tr>
-      <td style="white-space:nowrap">${a.date}</td>
-      <td><span class="badge b-green">${a.personaName||'—'}</span></td>
-      <td>
-        ${plats.map(p=>`<span style="font-size:.68rem;padding:1px 6px;border-radius:8px;background:${TM_PLATFORM_COLORS[p]}20;color:${TM_PLATFORM_COLORS[p]};margin-right:2px">${p}</span>`).join('')}
-      </td>
-      <td><span style="color:${sc};font-size:.78rem;font-weight:600">${a.strategy||'—'}</span></td>
-      <td style="max-width:230px">
-        <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.topic||'—'}</div>
-        ${a.landingUrl?`<div style="font-size:.66rem;color:#a78bfa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="導向網站：${escAttr(a.landingUrl)}${a.landingVerified?'（已用短連結查證實際落地）':''}">🎯 ${_siteOf(a.landingUrl)||a.landingUrl}${a.landingVerified?' <span style="color:#4ade80">✓查證</span>':''}</div>`:''}
-        ${a.urlTitle?`<div style="font-size:.66rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escAttr(a.urlTitle)}">📄 ${a.urlTitle}</div>`:''}
-        ${a.utmContent?`<div style="font-family:monospace;font-size:.62rem;color:#4ade80;white-space:nowrap" title="UTM 追蹤碼">🏷 ${a.utmContent}</div>`:''}
-      </td>
-      <td style="white-space:nowrap;text-align:center">
-        ${a.url ? `<a href="${escAttr(a.url)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px" title="貼文連結">🔗</a>` : ''}
-        ${a.shortLink ? `<a href="${escAttr(a.shortLink)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px;color:#fbbf24" title="短連結">🔗短</a>` : ''}
-        <button class="btn btn-xs btn-outline" onclick="openSetThreadUrl('${a.id}')" style="font-size:.65rem">${a.url?'✏':'＋'}</button>
-      </td>
-      <td style="text-align:left">${metricsSummary}</td>
-      <td style="max-width:90px">
-        <div contenteditable="true"
-             style="min-height:1em;border:1px solid transparent;border-radius:4px;padding:2px 4px;font-size:.72rem;color:var(--text2);word-break:break-all"
-             onfocus="this.style.borderColor='var(--border)'"
-             onblur="saveTTNote('${a.id}',this.innerText.trim());this.style.borderColor='transparent'"
-             >${escHtml(a.notes||'')}</div>
-      </td>
-      <td class="flex" style="gap:4px">
-        <button class="btn btn-xs btn-primary" onclick="openThreadMetrics('${a.id}')">📊</button>
-        <button class="btn btn-xs btn-outline" onclick="openEditThreadActivity('${a.id}')">✏</button>
-        <button class="btn btn-xs btn-danger" onclick="delThreadActivity('${a.id}')">✕</button>
+  // 桌機：單一 row
+  const renderNewRow = a => {
+    const m = a.platformMetrics?.Threads || {}
+    const nt = a.notes||''
+    const isDel = nt==='貼文已刪除'
+    const isUtmGen = nt==='UTM產生器建立'
+    const isNoView = nt==='無法顯示瀏覽'
+    const views = m.views
+    const likes = m.likes
+    const replies = m.replies ?? m.comments
+    let rowStyle = 'border-bottom:1px solid var(--border)'
+    if(isDel) rowStyle += ';border-left:3px solid #dc2626;background:rgba(220,38,38,.04)'
+    else if(isNoView) rowStyle += ';border-left:3px solid #e86a1a'
+    else if(isUtmGen) rowStyle += ';opacity:.5'
+    const anHtml = a.url
+      ? `<a href="${escAttr(a.url)}" target="_blank" style="font-size:12px;font-weight:600;color:#a78bfa;text-decoration:none">${escHtml(a.personaName||'—')}</a>`
+      : `<span style="font-size:12px;font-weight:600;color:#a78bfa">${escHtml(a.personaName||'—')}</span>`
+    const slHtml = a.shortLink
+      ? `<a href="${escAttr(a.shortLink)}" target="_blank" style="display:block;font-size:10px;color:#2563eb;text-decoration:none;font-family:ui-monospace,monospace;opacity:.8;margin-top:2px">${a.shortLink.replace(/^https?:\/\//,'')}</a>`
+      : ''
+    return `<tr style="${rowStyle}">
+      <td style="padding:8px 10px;vertical-align:middle">${anHtml}${slHtml}</td>
+      <td style="padding:8px 10px;vertical-align:middle"><span style="font-size:10px;font-family:ui-monospace,monospace;color:#e86a1a">${escHtml(a.utmContent||'—')}</span></td>
+      <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(isDel?null:views)}</td>
+      <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(likes)}</td>
+      <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(replies)}</td>
+      <td style="padding:8px 10px;vertical-align:middle">${noteHtml(a)}</td>
+      <td style="padding:8px 10px;vertical-align:middle;white-space:nowrap;text-align:right">
+        ${a.url?`<a href="${escAttr(a.url)}" target="_blank" class="btn btn-xs btn-copy" title="原帖">🔗</a> `:''}
+        ${a.shortLink?`<a href="${escAttr(a.shortLink)}" target="_blank" class="btn btn-xs btn-copy" style="color:#fbbf24" title="短連結">短</a> `:''}
+        <button class="btn btn-xs btn-outline" onclick="openSetThreadUrl('${escAttr(a.id)}')" style="font-size:.65rem" title="設定貼文連結">${a.url?'✏':'＋'}</button>
+        <button class="btn btn-xs btn-primary" onclick="openThreadMetrics('${escAttr(a.id)}')" title="記錄成效">📊</button>
+        <button class="btn btn-xs btn-outline" onclick="openEditThreadActivity('${escAttr(a.id)}')" title="編輯">✏</button>
+        <button class="btn btn-xs btn-danger" onclick="delThreadActivity('${escAttr(a.id)}')" title="刪除">✕</button>
       </td>
     </tr>`
   }
 
-  // 手機：下拉展開卡
-  const renderCard = a => {
-    const {sc, plats, metricsSummary} = ttMeta(a)
+  // 手機：展開卡
+  const renderNewCard = a => {
+    const m = a.platformMetrics?.Threads || {}
+    const nt = a.notes||''
+    const isDel = nt==='貼文已刪除'
+    const views = m.views, likes = m.likes, replies = m.replies ?? m.comments
     return `<div class="po-card">
       <div class="po-head" onclick="poToggle(this)">
         <span class="po-chev">▸</span>
         <span style="font-size:.72rem;color:var(--text3);white-space:nowrap;flex-shrink:0">${(a.date||'').slice(5)}</span>
-        <span class="badge b-green" style="flex-shrink:0">${a.personaName||'—'}</span>
-        <span style="color:${sc};font-size:.7rem;font-weight:700;flex-shrink:0">${a.strategy||''}</span>
-        <span class="po-topic">${a.topic||'—'}</span>
+        <span style="font-size:12px;font-weight:600;color:#a78bfa;flex-shrink:0">${escHtml(a.personaName||'—')}</span>
+        <span style="font-size:10px;font-family:ui-monospace,monospace;color:#e86a1a;overflow:hidden;text-overflow:ellipsis">${escHtml(a.utmContent||'')}</span>
       </div>
       <div class="po-body">
-        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">
-          ${plats.map(p=>`<span style="font-size:.68rem;padding:2px 8px;border-radius:8px;background:${TM_PLATFORM_COLORS[p]}20;color:${TM_PLATFORM_COLORS[p]}">${p}</span>`).join('')}
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;text-align:center">
+          <div><div style="font-size:9px;color:var(--text3);margin-bottom:2px">曝光</div>${isDel?dash():numFmt(views)}</div>
+          <div><div style="font-size:9px;color:var(--text3);margin-bottom:2px">讚</div>${numFmt(likes)}</div>
+          <div><div style="font-size:9px;color:var(--text3);margin-bottom:2px">留言</div>${numFmt(replies)}</div>
         </div>
-        <div style="margin-bottom:10px">${metricsSummary}</div>
-        ${a.landingUrl?`<div style="font-size:.72rem;color:#a78bfa;margin-bottom:6px">🎯 導向：${a.landingUrl}${a.landingVerified?' <span style="color:#4ade80">✓已查證</span>':''}</div>`:''}
-        ${a.urlTitle?`<div style="font-size:.74rem;color:var(--text2);margin-bottom:6px">📄 ${a.urlTitle}</div>`:''}
-        ${a.utmContent?`<div style="font-family:monospace;font-size:.7rem;color:#4ade80;margin-bottom:8px">🏷 ${a.utmContent}</div>`:''}
-        ${a.notes?`<div style="font-size:.73rem;color:var(--text2);background:var(--bg2);border-radius:6px;padding:5px 8px;margin-bottom:8px">📝 ${escHtml(a.notes)}</div>`:''}
+        ${noteHtml(a)?`<div style="margin-bottom:8px">${noteHtml(a)}</div>`:''}
+        ${a.shortLink?`<div style="margin-bottom:8px"><a href="${escAttr(a.shortLink)}" target="_blank" style="font-size:10px;color:#2563eb;font-family:ui-monospace,monospace">${a.shortLink.replace(/^https?:\/\//,'')}</a></div>`:''}
         ${a.strategy==='回覆'?`
         <div style="margin-bottom:8px;padding:8px;background:var(--g3);border-radius:6px;border:1px solid #60a5fa30">
-          <div style="font-size:.65rem;color:#60a5fa;font-weight:700;margin-bottom:5px">↩ 回覆連結（貼入角色回覆的貼文 URL）</div>
+          <div style="font-size:.65rem;color:#60a5fa;font-weight:700;margin-bottom:5px">↩ 回覆連結</div>
           <div style="display:flex;gap:5px;align-items:center">
             <input id="rurl-${a.id}" value="${escAttr(a.replyUrl||'')}" placeholder="https://www.threads.com/@xxx/post/..."
               style="flex:1;font-size:.68rem;padding:4px 7px;border-radius:5px;border:1px solid var(--border2);background:var(--g4);color:var(--text);min-width:0">
             <button class="btn btn-xs btn-primary" onclick="saveTTReplyUrl('${a.id}',document.getElementById('rurl-${a.id}').value.trim())">存</button>
-            ${a.replyUrl?`<a href="${escAttr(a.replyUrl)}" target="_blank" class="btn btn-xs btn-copy" title="開啟回覆連結">↗</a>`:''}
+            ${a.replyUrl?`<a href="${escAttr(a.replyUrl)}" target="_blank" class="btn btn-xs btn-copy">↗</a>`:''}
           </div>
-          ${a.replyUrl?`<div style="font-size:.62rem;color:#4ade80;margin-top:3px">✅ 已設定，自動讀取時會讀此連結</div>`:`<div style="font-size:.62rem;color:#f87171;margin-top:3px">⚠ 尚未設定，自動讀取將無法取得正確瀏覽數</div>`}
+          ${a.replyUrl?`<div style="font-size:.62rem;color:#4ade80;margin-top:3px">✅ 已設定</div>`:`<div style="font-size:.62rem;color:#f87171;margin-top:3px">⚠ 未設定，自動讀取將無法取得正確瀏覽數</div>`}
         </div>`:''}
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${a.url ? `<a href="${escAttr(a.url)}" target="_blank" class="btn btn-xs btn-copy">🔗 查看原帖</a>` : ''}
-          ${a.shortLink ? `<a href="${escAttr(a.shortLink)}" target="_blank" class="btn btn-xs btn-copy" style="color:#fbbf24">🔗 短連結</a>` : ''}
+          ${a.url?`<a href="${escAttr(a.url)}" target="_blank" class="btn btn-xs btn-copy">🔗 查看</a>`:''}
+          ${a.shortLink?`<a href="${escAttr(a.shortLink)}" target="_blank" class="btn btn-xs btn-copy" style="color:#fbbf24">短連結</a>`:''}
           <button class="btn btn-xs btn-outline" onclick="openSetThreadUrl('${a.id}')">${a.url?'✏ 連結':'＋連結'}</button>
           <button class="btn btn-xs btn-primary" onclick="openThreadMetrics('${a.id}')">📊 記錄成效</button>
           <button class="btn btn-xs btn-outline" onclick="openEditThreadActivity('${a.id}')">✏ 編輯</button>
@@ -8101,21 +8111,59 @@ function renderThreadTracker(){
     </div>`
   }
 
-  const tableHead = `<table><thead><tr>
-    <th>日期</th><th>角色</th><th>平台</th><th>策略</th><th>主題</th><th>連結</th><th>分平台成效</th><th>備註</th><th>操作</th>
-  </tr></thead>`
-  const sectTitle = (txt,col)=>`<div style="font-size:.82rem;font-weight:700;color:${col};margin:16px 0 8px">${txt}</div>`
+  // 日期區塊（桌機）
+  const renderDayBlock = (date, rows) => {
+    const dt = new Date(date+'T12:00:00')
+    const [,mm,dd] = date.split('-')
+    const label = `${mm}/${dd} (${WD[dt.getDay()]})`
+    let tvw=0, tlk=0, tcm=0
+    rows.forEach(a=>{
+      const m=a.platformMetrics?.Threads||{}
+      if((a.notes||'')!=='貼文已刪除') tvw += +(m.views)||0
+      tlk += +(m.likes)||0
+      tcm += +(m.replies??m.comments??0)||0
+    })
+    return `<div style="margin-bottom:14px;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#1a1d25;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-size:14px;font-weight:800;color:#f1f5f9;font-variant-numeric:tabular-nums;letter-spacing:-.01em">${label}</span>
+          <span style="font-size:11px;color:#64748b">${rows.length} 則</span>
+        </div>
+        <div style="display:flex;gap:14px">
+          <span style="font-size:11px;color:#64748b">曝光 <b style="color:#f1f5f9;font-family:ui-monospace,monospace">${tvw.toLocaleString('zh-TW')}</b></span>
+          <span style="font-size:11px;color:#64748b">讚 <b style="color:#f1f5f9;font-family:ui-monospace,monospace">${tlk}</b></span>
+          <span style="font-size:11px;color:#64748b">留言 <b style="color:#f1f5f9;font-family:ui-monospace,monospace">${tcm}</b></span>
+        </div>
+      </div>
+      <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+        <thead><tr>
+          <th style="${thStyle};text-align:left">帳號</th>
+          <th style="${thStyle};text-align:left">UTM 代碼</th>
+          <th style="${thStyle};text-align:right">曝光</th>
+          <th style="${thStyle};text-align:right">讚</th>
+          <th style="${thStyle};text-align:right">留言</th>
+          <th style="${thStyle};text-align:left">備注</th>
+          <th style="${thStyle};text-align:right">操作</th>
+        </tr></thead>
+        <tbody>${rows.map(renderNewRow).join('')}</tbody>
+      </table></div>
+    </div>`
+  }
 
-  // 桌機：表格
-  let desk = '<div class="posts-desk" style="overflow-x:auto">'
-  if(todayItems.length) desk += sectTitle(`📅 今日（${today}）— ${todayItems.length} 筆`,'var(--accent)').replace('margin:16px 0 8px','margin-bottom:8px') + tableHead + `<tbody>${todayItems.map(renderRow).join('')}</tbody></table>`
-  if(pastItems.length) desk += sectTitle(`📋 近期記錄 — 共 ${pastItems.length} 筆`,'var(--text3)') + tableHead + `<tbody>${pastItems.map(renderRow).join('')}</tbody></table>`
+  const sorted = Object.entries(byDate).sort(([a],[b])=>b>a?1:-1)
+
+  // 桌機：日期分組表格
+  let desk = '<div class="posts-desk">'
+  sorted.forEach(([d,rows]) => { desk += renderDayBlock(d, rows) })
   desk += '</div>'
 
-  // 手機：展開卡
+  // 手機：日期分組卡片
   let mob = '<div class="posts-mob">'
-  if(todayItems.length) mob += sectTitle(`📅 今日（${today}）— ${todayItems.length} 筆`,'var(--accent)').replace('margin:16px 0 8px','margin-bottom:8px') + todayItems.map(renderCard).join('')
-  if(pastItems.length) mob += sectTitle(`📋 近期記錄 — 共 ${pastItems.length} 筆`,'var(--text3)') + pastItems.map(renderCard).join('')
+  sorted.forEach(([d,rows]) => {
+    const dt=new Date(d+'T12:00:00'), [,mm,dd]=d.split('-')
+    mob += `<div style="font-size:.82rem;font-weight:700;color:var(--text3);margin:12px 0 6px;padding-left:4px">${mm}/${dd} (${WD[dt.getDay()]}) · ${rows.length} 則</div>`
+    mob += rows.map(renderNewCard).join('')
+  })
   mob += '</div>'
 
   wrap.innerHTML = desk + mob
@@ -11036,5 +11084,7 @@ function renderComparison() {
   initData().then(()=>{ try{renderPersonas();}catch(e){} utmFillLanding(); })
 })()
 </script>
+<script src="assets/js/navigation-config.js"></script>
+<script src="assets/js/app-shell.js"></script>
 </body>
 </html>
