@@ -120,27 +120,10 @@
 
   /* ---- Topbar HTML ---- */
   function buildTopbarHTML() {
-    var projLabel = (_project === 'ys89') ? 'YS89 夜色' : '財神預測'
-    var projIcon  = (_project === 'ys89') ? '🌙' : '⚽'
-    var modeItem  = NAV_CONFIG.modes.find(function(m){ return m.id === _mode }) || NAV_CONFIG.modes[0]
-
-    var projItems = NAV_CONFIG.projects.map(function(p) {
-      return '<div class="tb-project-item' + (p.id === _project ? ' active' : '') + '"'
-           + ' data-proj="' + p.id + '">'
-           + '<span class="tb-project-item-icon">' + p.icon + '</span>' + p.label
-           + '</div>'
-    }).join('')
+    var modeItem = NAV_CONFIG.modes.find(function(m){ return m.id === _mode }) || NAV_CONFIG.modes[0]
 
     return '<button class="tb-toggle" id="app-tb-toggle" title="展開/收合側欄 (Shift+\\\\)">☰</button>'
          + '<div class="tb-brand">YS89<span>發文管理系統</span></div>'
-         + '<div class="tb-project-switcher" id="app-tb-project">'
-         +   '<div class="tb-project-btn" id="app-tb-projbtn">'
-         +     '<span class="tb-project-icon">' + projIcon + '</span>'
-         +     '<span id="app-tb-projlabel">' + projLabel + '</span>'
-         +     '<span class="tb-project-caret">▾</span>'
-         +   '</div>'
-         +   '<div class="tb-project-dropdown">' + projItems + '</div>'
-         + '</div>'
          + '<div class="tb-page-title" id="app-tb-pagetitle"></div>'
          + '<button class="tb-mode-btn" id="app-tb-mode">'
          +   '<span id="app-tb-modeicon">' + modeItem.icon + '</span>'
@@ -367,28 +350,8 @@
 
   /* ---- 綁定 Topbar 事件 ---- */
   function bindTopbar() {
-    // 側欄切換
     document.getElementById('app-tb-toggle').addEventListener('click', toggleSidebar)
-
-    // 模式切換
     document.getElementById('app-tb-mode').addEventListener('click', switchMode)
-
-    // 專案切換 — 開關 dropdown
-    document.getElementById('app-tb-projbtn').addEventListener('click', function(e) {
-      e.stopPropagation()
-      document.getElementById('app-tb-project').classList.toggle('open')
-    })
-
-    // 選擇專案
-    document.querySelector('.tb-project-dropdown').addEventListener('click', function(e) {
-      var item = e.target.closest('.tb-project-item')
-      if (item) switchProject(item.dataset.proj)
-    })
-
-    // 點擊其他地方關閉 dropdown
-    document.addEventListener('click', function() { closeProjectDropdown() })
-
-    // Quick jump input 監聽
     document.getElementById('app-qj-input').addEventListener('input', function() {
       renderQuickJumpResults(this.value)
       _qjSelected = 0

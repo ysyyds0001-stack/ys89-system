@@ -26,7 +26,6 @@ const NAV_CONFIG = {
       label: '內容資產',
       items: [
         { id: 'articles',      label: '文章庫',       icon: '📚', page: 'articles',      keywords: ['文章','article'] },
-        { id: 'cast',          label: '劇本',         icon: '🎬', page: 'cast',          keywords: ['劇本','腳本','cast'] },
         { id: 'community',     label: '角色管理',     icon: '👤', page: 'community',     keywords: ['角色','persona','帳號'] }
       ]
     },
@@ -56,11 +55,7 @@ const NAV_CONFIG = {
     }
   ],
 
-  /* 專案切換 — 本階段只建立框架，不過濾任何資料 */
-  projects: [
-    { id: 'ys89',    label: 'YS89 夜色', icon: '🌙', default: true },
-    { id: 'fortune', label: '財神預測',  icon: '⚽',  page: 'fortune' }
-  ],
+  projects: [],
 
   /* 模式切換 — 本階段只顯示狀態標記，不改變功能 */
   modes: [
