@@ -23,9 +23,15 @@ body.mode-owner {
   --report-warning:        #A87932;
 }
 
-/* ---- 整體背景 ---- */
+/* ---- 整體背景與文字色 ---- */
 body.mode-owner {
   background: var(--report-bg) !important;
+  color: var(--report-text) !important;
+}
+
+/* 隱藏深色暈光遮罩（body::before 是 fixed 全畫面橙紅漸層） */
+body.mode-owner::before {
+  display: none !important;
 }
 
 /* ---- Topbar 業主化 ---- */
