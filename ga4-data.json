@@ -3,7 +3,7 @@
     {
       "name": "akki",
       "medium": "th_post",
-      "sessions": 1527,
+      "sessions": 1386,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -11,7 +11,7 @@
     {
       "name": "(direct)",
       "medium": "(none)",
-      "sessions": 360,
+      "sessions": 370,
       "cls": "direct",
       "tag": "直接/未知",
       "tcls": "t-direct"
@@ -19,7 +19,7 @@
     {
       "name": "god",
       "medium": "th_bio",
-      "sessions": 171,
+      "sessions": 190,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -27,7 +27,7 @@
     {
       "name": "shizu",
       "medium": "th_post",
-      "sessions": 143,
+      "sessions": 152,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
@@ -43,10 +43,18 @@
     {
       "name": "line",
       "medium": "referral",
-      "sessions": 79,
+      "sessions": 74,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
+    },
+    {
+      "name": "(not set)",
+      "medium": "(not set)",
+      "sessions": 42,
+      "cls": "other",
+      "tag": "其他",
+      "tcls": "t-direct"
     },
     {
       "name": "google",
@@ -59,30 +67,22 @@
     {
       "name": "crab",
       "medium": "th_post",
-      "sessions": 34,
+      "sessions": 31,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
     },
     {
-      "name": "tw.search.yahoo.com",
-      "medium": "referral",
-      "sessions": 13,
-      "cls": "other",
-      "tag": "其他",
-      "tcls": "t-direct"
-    },
-    {
       "name": "bing",
       "medium": "organic",
-      "sessions": 12,
+      "sessions": 11,
       "cls": "organic",
       "tag": "自然搜尋",
       "tcls": "t-direct"
     },
     {
-      "name": "(not set)",
-      "medium": "(not set)",
+      "name": "tw.search.yahoo.com",
+      "medium": "referral",
       "sessions": 11,
       "cls": "other",
       "tag": "其他",
@@ -97,6 +97,22 @@
       "tcls": "t-army"
     },
     {
+      "name": "fifa_worldcups",
+      "medium": "referral",
+      "sessions": 8,
+      "cls": "other",
+      "tag": "其他",
+      "tcls": "t-direct"
+    },
+    {
+      "name": "m.facebook.com",
+      "medium": "referral",
+      "sessions": 8,
+      "cls": "army",
+      "tag": "社群水軍",
+      "tcls": "t-army"
+    },
+    {
       "name": "ys89.me",
       "medium": "cta",
       "sessions": 8,
@@ -105,20 +121,12 @@
       "tcls": "t-line"
     },
     {
-      "name": "m.facebook.com",
+      "name": "ys89_games/",
       "medium": "referral",
       "sessions": 7,
-      "cls": "army",
-      "tag": "社群水軍",
-      "tcls": "t-army"
-    },
-    {
-      "name": "fifa_worldcups",
-      "medium": "referral",
-      "sessions": 6,
-      "cls": "other",
-      "tag": "其他",
-      "tcls": "t-direct"
+      "cls": "line",
+      "tag": "LINE",
+      "tcls": "t-line"
     },
     {
       "name": "ys89-seo-dashboard-wc.pages.dev",
@@ -129,25 +137,9 @@
       "tcls": "t-line"
     },
     {
-      "name": "ys89_games/",
-      "medium": "referral",
-      "sessions": 6,
-      "cls": "line",
-      "tag": "LINE",
-      "tcls": "t-line"
-    },
-    {
-      "name": "god",
-      "medium": "th_post",
-      "sessions": 5,
-      "cls": "army",
-      "tag": "社群水軍",
-      "tcls": "t-army"
-    },
-    {
       "name": "ys89_games",
       "medium": "referral",
-      "sessions": 4,
+      "sessions": 6,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
@@ -217,20 +209,20 @@
       "tcls": "t-army"
     },
     {
+      "name": "god",
+      "medium": "th_post",
+      "sessions": 2,
+      "cls": "army",
+      "tag": "社群水軍",
+      "tcls": "t-army"
+    },
+    {
       "name": "ys89_info",
       "medium": "referral",
       "sessions": 2,
       "cls": "line",
       "tag": "LINE",
       "tcls": "t-line"
-    },
-    {
-      "name": "aicrawler.store",
-      "medium": "referral",
-      "sessions": 1,
-      "cls": "other",
-      "tag": "其他",
-      "tcls": "t-direct"
     },
     {
       "name": "crab",
@@ -257,7 +249,23 @@
       "tcls": "t-direct"
     },
     {
+      "name": "ditui",
+      "medium": "offline",
+      "sessions": 1,
+      "cls": "offline",
+      "tag": "地推",
+      "tcls": "t-offline"
+    },
+    {
       "name": "facebook.com",
+      "medium": "referral",
+      "sessions": 1,
+      "cls": "army",
+      "tag": "社群水軍",
+      "tcls": "t-army"
+    },
+    {
+      "name": "l.instagram.com",
       "medium": "referral",
       "sessions": 1,
       "cls": "army",
@@ -300,38 +308,44 @@
   "accounts": [
     {
       "name": "akki",
-      "s": 1530,
-      "cta": 452,
+      "s": 1389,
+      "cta": 422,
       "warn": false
     },
     {
       "name": "(direct)",
-      "s": 360,
-      "cta": 24,
+      "s": 370,
+      "cta": 22,
       "warn": false
     },
     {
       "name": "god",
-      "s": 177,
-      "cta": 58,
+      "s": 194,
+      "cta": 62,
       "warn": false
     },
     {
       "name": "shizu",
-      "s": 143,
-      "cta": 49,
+      "s": 152,
+      "cta": 53,
       "warn": false
     },
     {
       "name": "uncle",
       "s": 97,
-      "cta": 24,
+      "cta": 23,
       "warn": false
     },
     {
       "name": "line",
-      "s": 79,
+      "s": 74,
       "cta": 2,
+      "warn": false
+    },
+    {
+      "name": "(not set)",
+      "s": 42,
+      "cta": 26,
       "warn": false
     },
     {
@@ -342,26 +356,20 @@
     },
     {
       "name": "crab",
-      "s": 36,
+      "s": 33,
       "cta": 4,
       "warn": false
     },
     {
-      "name": "tw.search.yahoo.com",
-      "s": 13,
-      "cta": 3,
-      "warn": false
-    },
-    {
       "name": "bing",
-      "s": 12,
-      "cta": 3,
+      "s": 11,
+      "cta": 2,
       "warn": false
     },
     {
-      "name": "(not set)",
+      "name": "tw.search.yahoo.com",
       "s": 11,
-      "cta": 5,
+      "cta": 1,
       "warn": false
     },
     {
@@ -371,21 +379,27 @@
       "warn": false
     },
     {
+      "name": "fifa_worldcups",
+      "s": 8,
+      "cta": 1,
+      "warn": false
+    },
+    {
+      "name": "m.facebook.com",
+      "s": 8,
+      "cta": 1,
+      "warn": false
+    },
+    {
       "name": "ys89.me",
       "s": 8,
       "cta": 0,
       "warn": false
     },
     {
-      "name": "m.facebook.com",
+      "name": "ys89_games/",
       "s": 7,
-      "cta": 1,
-      "warn": false
-    },
-    {
-      "name": "fifa_worldcups",
-      "s": 6,
-      "cta": 1,
+      "cta": 0,
       "warn": false
     },
     {
@@ -395,14 +409,8 @@
       "warn": false
     },
     {
-      "name": "ys89_games/",
-      "s": 6,
-      "cta": 0,
-      "warn": false
-    },
-    {
       "name": "ys89_games",
-      "s": 4,
+      "s": 6,
       "cta": 0,
       "warn": false
     },
@@ -449,13 +457,13 @@
       "warn": false
     },
     {
-      "name": "aicrawler.store",
+      "name": "deckmatt.com",
       "s": 1,
       "cta": 0,
       "warn": false
     },
     {
-      "name": "deckmatt.com",
+      "name": "ditui",
       "s": 1,
       "cta": 0,
       "warn": false
@@ -464,6 +472,12 @@
       "name": "facebook.com",
       "s": 1,
       "cta": 0,
+      "warn": false
+    },
+    {
+      "name": "l.instagram.com",
+      "s": 1,
+      "cta": 1,
       "warn": false
     },
     {
@@ -494,62 +508,62 @@
   "pages": [
     {
       "t": "2026世界盃直播｜104場看直播完整入口・台灣時間賽程 - YS89球迷站",
-      "v": 1831
+      "v": 1668
     },
     {
       "t": "2026世足賽直播｜104場線上看｜台灣時間賽程表+免費觀賽入口",
-      "v": 264
-    },
-    {
-      "t": "2026 世界盃觀賽入口｜104場完整賽程・台灣時間・開賽提醒",
-      "v": 158
+      "v": 279
     },
     {
       "t": "2026世足賠率即時｜104場直播投注盤口・滾球同步看｜ys89.biz",
-      "v": 146
+      "v": 167
+    },
+    {
+      "t": "2026 世界盃觀賽入口｜104場完整賽程・台灣時間・開賽提醒",
+      "v": 157
     },
     {
       "t": "2026世足投注攻略・讓分盤・波膽・串關完整教學｜台灣世足運彩攻略站",
-      "v": 119
+      "v": 115
     },
     {
       "t": "2026世界盃賽程・分組・賠率・冠軍預測｜台灣最完整世界盃資訊站",
-      "v": 96
+      "v": 92
     },
     {
       "t": "如何觀看 2026 世界盃 104 場直播・3 步驟解鎖教學｜台灣觀賽直播攻略",
-      "v": 53
+      "v": 58
     }
   ],
   "contents": [
     {
       "content": "shizu-0611-1",
-      "sessions": 143,
-      "cta": 49
+      "sessions": 152,
+      "cta": 53
     },
     {
       "content": "watch_104",
-      "sessions": 61,
+      "sessions": 57,
       "cta": 1
     },
     {
       "content": "god-0612-1",
-      "sessions": 60,
-      "cta": 16
+      "sessions": 55,
+      "cta": 12
     },
     {
       "content": "crab-0611-1",
-      "sessions": 34,
+      "sessions": 31,
       "cta": 4
     },
     {
       "content": "footer_network",
-      "sessions": 21,
+      "sessions": 26,
       "cta": 2
     },
     {
       "content": "schedule",
-      "sessions": 17,
+      "sessions": 16,
       "cta": 1
     },
     {
@@ -601,8 +615,18 @@
   "contents_3d": [
     {
       "content": "shizu-0611-1",
+      "sessions": 17,
+      "cta": 5
+    },
+    {
+      "content": "footer_network",
       "sessions": 5,
-      "cta": 1
+      "cta": 0
+    },
+    {
+      "content": "watch_104",
+      "sessions": 4,
+      "cta": 0
     },
     {
       "content": "crab-0611-1",
@@ -613,118 +637,123 @@
   "contents_7d": [
     {
       "content": "shizu-0611-1",
-      "sessions": 15,
-      "cta": 2
-    },
-    {
-      "content": "crab-0611-1",
-      "sessions": 3,
-      "cta": 0
+      "sessions": 29,
+      "cta": 7
     },
     {
       "content": "footer_network",
-      "sessions": 3,
+      "sessions": 7,
+      "cta": 0
+    },
+    {
+      "content": "crab-0611-1",
+      "sessions": 4,
+      "cta": 0
+    },
+    {
+      "content": "watch_104",
+      "sessions": 4,
       "cta": 0
     }
   ],
   "kpis": {
-    "activeUsers": 2293,
-    "sessions": 2561,
-    "eventCount": 10040,
-    "cta": 660,
-    "conversionRate": 25.77
+    "activeUsers": 2216,
+    "sessions": 2458,
+    "eventCount": 9733,
+    "cta": 650,
+    "conversionRate": 26.44
   },
   "kpis_3d": {
-    "activeUsers": 83,
-    "sessions": 89,
-    "eventCount": 382,
-    "cta": 8,
-    "conversionRate": 8.99
+    "activeUsers": 163,
+    "sessions": 167,
+    "eventCount": 661,
+    "cta": 48,
+    "conversionRate": 28.74
   },
   "kpis_7d": {
-    "activeUsers": 230,
-    "sessions": 240,
-    "eventCount": 967,
-    "cta": 35,
-    "conversionRate": 14.58
+    "activeUsers": 324,
+    "sessions": 337,
+    "eventCount": 1369,
+    "cta": 76,
+    "conversionRate": 22.55
   },
   "kpis_prev7d": {
-    "activeUsers": 351,
-    "sessions": 384,
-    "eventCount": 1559,
-    "cta": 116,
-    "conversionRate": 30.21
+    "activeUsers": 336,
+    "sessions": 355,
+    "eventCount": 1453,
+    "cta": 103,
+    "conversionRate": 29.01
   },
   "kpis_28d": {
-    "activeUsers": 2085,
-    "sessions": 2323,
-    "eventCount": 9200,
-    "cta": 607,
-    "conversionRate": 26.13
+    "activeUsers": 2092,
+    "sessions": 2306,
+    "eventCount": 9139,
+    "cta": 611,
+    "conversionRate": 26.5
   },
   "accounts_3d": [
     {
-      "name": "(direct)",
-      "s": 67,
-      "cta": 0
+      "name": "akki",
+      "s": 59,
+      "cta": 10
     },
     {
       "name": "(not set)",
-      "s": 11,
-      "cta": 5
-    },
-    {
-      "name": "akki",
-      "s": 8,
-      "cta": 2
-    },
-    {
-      "name": "shizu",
-      "s": 5,
-      "cta": 1
+      "s": 42,
+      "cta": 26
     },
     {
       "name": "god",
-      "s": 4,
+      "s": 32,
+      "cta": 10
+    },
+    {
+      "name": "(direct)",
+      "s": 30,
       "cta": 1
+    },
+    {
+      "name": "shizu",
+      "s": 17,
+      "cta": 5
     }
   ],
   "accounts_7d": [
     {
       "name": "(direct)",
-      "s": 145,
-      "cta": 2
+      "s": 127,
+      "cta": 3
     },
     {
       "name": "akki",
-      "s": 48,
-      "cta": 20
+      "s": 99,
+      "cta": 29
     },
     {
       "name": "god",
-      "s": 20,
-      "cta": 7
-    },
-    {
-      "name": "shizu",
-      "s": 15,
-      "cta": 2
+      "s": 47,
+      "cta": 15
     },
     {
       "name": "(not set)",
-      "s": 11,
-      "cta": 5
+      "s": 42,
+      "cta": 26
+    },
+    {
+      "name": "shizu",
+      "s": 29,
+      "cta": 7
     }
   ],
   "accounts_prev7d": [
     {
       "name": "akki",
-      "s": 195,
-      "cta": 69
+      "s": 161,
+      "cta": 61
     },
     {
       "name": "(direct)",
-      "s": 48,
+      "s": 76,
       "cta": 5
     },
     {
@@ -734,76 +763,76 @@
     },
     {
       "name": "shizu",
-      "s": 34,
-      "cta": 10
+      "s": 27,
+      "cta": 7
     },
     {
       "name": "uncle",
-      "s": 20,
+      "s": 19,
       "cta": 3
     }
   ],
   "accounts_28d": [
     {
       "name": "akki",
-      "s": 1336,
-      "cta": 413
+      "s": 1276,
+      "cta": 393
     },
     {
       "name": "(direct)",
-      "s": 354,
+      "s": 360,
       "cta": 21
     },
     {
       "name": "god",
-      "s": 166,
-      "cta": 53
+      "s": 187,
+      "cta": 60
     },
     {
       "name": "shizu",
-      "s": 138,
-      "cta": 48
+      "s": 150,
+      "cta": 52
     },
     {
       "name": "uncle",
-      "s": 94,
+      "s": 95,
       "cta": 23
     }
   ],
   "ranges": {
-    "3d": "2026-07-17~2026-07-19",
-    "7d": "2026-07-13~2026-07-19",
-    "prev7d": "2026-07-06~2026-07-12",
-    "28d": "2026-06-22~2026-07-19"
+    "3d": "2026-07-18~2026-07-20",
+    "7d": "2026-07-14~2026-07-20",
+    "prev7d": "2026-07-07~2026-07-13",
+    "28d": "2026-06-23~2026-07-20"
   },
   "picks168": {
     "kpis_28d": {
-      "users": 1331,
-      "sessions": 2147,
-      "events": 16550
+      "users": 1344,
+      "sessions": 2169,
+      "events": 16666
     },
     "kpis_7d": {
-      "users": 165,
-      "sessions": 242,
-      "events": 1457
+      "users": 167,
+      "sessions": 235,
+      "events": 1274
     },
     "kpis_prev7d": {
-      "users": 435,
-      "sessions": 702,
-      "events": 5145
+      "users": 392,
+      "sessions": 643,
+      "events": 4776
     },
     "sources_28d": [
       {
         "source": "(direct)",
         "medium": "(none)",
-        "sessions": 724,
-        "users": 484
+        "sessions": 733,
+        "users": 487
       },
       {
         "source": "god",
         "medium": "th_post",
-        "sessions": 312,
-        "users": 301
+        "sessions": 314,
+        "users": 303
       },
       {
         "source": "tg_ph",
@@ -814,20 +843,20 @@
       {
         "source": "telegram",
         "medium": "free_group",
-        "sessions": 150,
+        "sessions": 156,
         "users": 25
       },
       {
         "source": "cc",
         "medium": "th_post",
-        "sessions": 125,
-        "users": 123
+        "sessions": 131,
+        "users": 129
       },
       {
         "source": "google",
         "medium": "organic",
-        "sessions": 119,
-        "users": 91
+        "sessions": 120,
+        "users": 92
       },
       {
         "source": "accounts.google.com",
@@ -838,8 +867,8 @@
       {
         "source": "cyq",
         "medium": "th_post",
-        "sessions": 84,
-        "users": 78
+        "sessions": 85,
+        "users": 79
       },
       {
         "source": "l.threads.com",
@@ -850,13 +879,13 @@
       {
         "source": "telegram",
         "medium": "channel",
-        "sessions": 65,
+        "sessions": 66,
         "users": 10
       },
       {
         "source": "pwa",
         "medium": "(not set)",
-        "sessions": 48,
+        "sessions": 46,
         "users": 6
       },
       {
@@ -868,14 +897,8 @@
       {
         "source": "(not set)",
         "medium": "(not set)",
-        "sessions": 20,
-        "users": 18
-      },
-      {
-        "source": "telegram",
-        "medium": "vip_channel",
-        "sessions": 13,
-        "users": 7
+        "sessions": 18,
+        "users": 15
       },
       {
         "source": "localhost:8930",
@@ -888,6 +911,12 @@
         "medium": "welcome",
         "sessions": 12,
         "users": 11
+      },
+      {
+        "source": "telegram",
+        "medium": "vip_channel",
+        "sessions": 12,
+        "users": 6
       },
       {
         "source": "tg_ph",
@@ -1016,8 +1045,20 @@
         "users": 2
       },
       {
+        "source": "ys89_games",
+        "medium": "referral",
+        "sessions": 2,
+        "users": 2
+      },
+      {
         "source": "aisearchindex.space",
         "medium": "referral",
+        "sessions": 1,
+        "users": 1
+      },
+      {
+        "source": "bing",
+        "medium": "organic",
         "sessions": 1,
         "users": 1
       },
@@ -1056,32 +1097,32 @@
       {
         "source": "(direct)",
         "medium": "(none)",
-        "sessions": 92,
-        "users": 62
+        "sessions": 84,
+        "users": 60
       },
       {
         "source": "cc",
         "medium": "th_post",
-        "sessions": 29,
-        "users": 29
+        "sessions": 33,
+        "users": 33
       },
       {
         "source": "telegram",
         "medium": "free_group",
-        "sessions": 23,
-        "users": 8
+        "sessions": 26,
+        "users": 7
       },
       {
         "source": "god",
         "medium": "th_post",
-        "sessions": 20,
-        "users": 20
+        "sessions": 22,
+        "users": 22
       },
       {
         "source": "(not set)",
         "medium": "(not set)",
-        "sessions": 18,
-        "users": 16
+        "sessions": 16,
+        "users": 13
       },
       {
         "source": "google",
@@ -1096,34 +1137,28 @@
         "users": 4
       },
       {
-        "source": "fb",
-        "medium": "cpc",
-        "sessions": 10,
-        "users": 1
-      },
-      {
         "source": "cyq",
         "medium": "th_post",
-        "sessions": 7,
-        "users": 7
+        "sessions": 6,
+        "users": 6
+      },
+      {
+        "source": "fb",
+        "medium": "cpc",
+        "sessions": 6,
+        "users": 1
       },
       {
         "source": "accounts.google.com",
         "medium": "referral",
-        "sessions": 6,
-        "users": 2
+        "sessions": 5,
+        "users": 1
       },
       {
         "source": "cyq",
         "medium": "th_comment",
         "sessions": 4,
         "users": 3
-      },
-      {
-        "source": "l.threads.com",
-        "medium": "referral",
-        "sessions": 4,
-        "users": 2
       },
       {
         "source": "akki",
@@ -1150,6 +1185,12 @@
         "users": 2
       },
       {
+        "source": "l.threads.com",
+        "medium": "referral",
+        "sessions": 2,
+        "users": 1
+      },
+      {
         "source": "m.facebook.com",
         "medium": "referral",
         "sessions": 2,
@@ -1162,8 +1203,14 @@
         "users": 1
       },
       {
-        "source": "accounts.google.com.tw",
+        "source": "ys89_games",
         "medium": "referral",
+        "sessions": 2,
+        "users": 2
+      },
+      {
+        "source": "bing",
+        "medium": "organic",
         "sessions": 1,
         "users": 1
       },
@@ -1178,6 +1225,12 @@
         "medium": "welcome",
         "sessions": 1,
         "users": 1
+      },
+      {
+        "source": "telegram",
+        "medium": "vip_channel",
+        "sessions": 1,
+        "users": 0
       },
       {
         "source": "tgbot",
@@ -1195,31 +1248,31 @@
     "events_28d": [
       {
         "name": "page_view",
-        "count": 6572
+        "count": 6615
       },
       {
         "name": "user_engagement",
-        "count": 3364
+        "count": 3379
       },
       {
         "name": "session_start",
-        "count": 2168
+        "count": 2194
       },
       {
         "name": "scroll",
-        "count": 1489
+        "count": 1498
       },
       {
         "name": "first_visit",
-        "count": 1324
+        "count": 1340
       },
       {
         "name": "click",
-        "count": 871
+        "count": 874
       },
       {
         "name": "cta_click",
-        "count": 700
+        "count": 704
       },
       {
         "name": "subscribe_click",
@@ -1229,31 +1282,31 @@
     "events_7d": [
       {
         "name": "page_view",
-        "count": 564
-      },
-      {
-        "name": "user_engagement",
-        "count": 291
+        "count": 478
       },
       {
         "name": "session_start",
-        "count": 249
+        "count": 243
+      },
+      {
+        "name": "user_engagement",
+        "count": 227
       },
       {
         "name": "first_visit",
-        "count": 130
+        "count": 137
       },
       {
         "name": "scroll",
-        "count": 126
+        "count": 103
       },
       {
         "name": "cta_click",
-        "count": 52
+        "count": 47
       },
       {
         "name": "click",
-        "count": 43
+        "count": 37
       },
       {
         "name": "subscribe_click",
@@ -1265,7 +1318,7 @@
         {
           "source": "(direct)",
           "medium": "(none)",
-          "count": 241
+          "count": 242
         },
         {
           "source": "god",
@@ -1285,7 +1338,7 @@
         {
           "source": "cc",
           "medium": "th_post",
-          "count": 39
+          "count": 42
         },
         {
           "source": "accounts.google.com",
@@ -1300,7 +1353,7 @@
         {
           "source": "telegram",
           "medium": "free_group",
-          "count": 23
+          "count": 24
         },
         {
           "source": "pwa",
@@ -1318,14 +1371,14 @@
           "count": 6
         },
         {
-          "source": "(not set)",
-          "medium": "(not set)",
-          "count": 5
-        },
-        {
           "source": "pickhelp_bot",
           "medium": "welcome",
           "count": 5
+        },
+        {
+          "source": "(not set)",
+          "medium": "(not set)",
+          "count": 4
         },
         {
           "source": "chatgpt.com",
@@ -1446,12 +1499,12 @@
         {
           "source": "(direct)",
           "medium": "(none)",
-          "count": 12
+          "count": 11
         },
         {
-          "source": "cyq",
-          "medium": "th_post",
-          "count": 6
+          "source": "telegram",
+          "medium": "free_group",
+          "count": 7
         },
         {
           "source": "god",
@@ -1459,24 +1512,24 @@
           "count": 6
         },
         {
-          "source": "telegram",
-          "medium": "free_group",
-          "count": 6
-        },
-        {
-          "source": "(not set)",
-          "medium": "(not set)",
-          "count": 5
-        },
-        {
           "source": "cc",
           "medium": "th_post",
           "count": 5
         },
         {
+          "source": "(not set)",
+          "medium": "(not set)",
+          "count": 4
+        },
+        {
           "source": "telegram",
           "medium": "channel",
           "count": 3
+        },
+        {
+          "source": "cyq",
+          "medium": "th_post",
+          "count": 2
         },
         {
           "source": "pickhelp_bot",
@@ -1535,8 +1588,8 @@
       },
       {
         "content": "cc-0702-1",
-        "sessions": 40,
-        "users": 39
+        "sessions": 42,
+        "users": 41
       },
       {
         "content": "cyq-0701-1",
@@ -1589,14 +1642,19 @@
         "users": 8
       },
       {
+        "content": "cc-0717-1",
+        "sessions": 8,
+        "users": 8
+      },
+      {
         "content": "cc-0702-2",
         "sessions": 7,
         "users": 7
       },
       {
-        "content": "cc-0717-1",
-        "sessions": 7,
-        "users": 7
+        "content": "cyq-0716-1",
+        "sessions": 6,
+        "users": 6
       },
       {
         "content": "god-0715-3",
@@ -1615,11 +1673,6 @@
       },
       {
         "content": "cyq-0708-1",
-        "sessions": 5,
-        "users": 5
-      },
-      {
-        "content": "cyq-0716-1",
         "sessions": 5,
         "users": 5
       },
@@ -1694,6 +1747,11 @@
         "users": 3
       },
       {
+        "content": "cc-0719-1",
+        "sessions": 3,
+        "users": 3
+      },
+      {
         "content": "cyq-0709-1",
         "sessions": 3,
         "users": 3
@@ -1724,7 +1782,17 @@
         "users": 2
       },
       {
+        "content": "god-0719-1",
+        "sessions": 2,
+        "users": 2
+      },
+      {
         "content": "haogame-0716-1",
+        "sessions": 2,
+        "users": 2
+      },
+      {
+        "content": "mlb_banner",
         "sessions": 2,
         "users": 2
       },
@@ -1781,17 +1849,17 @@
     ],
     "contents_7d": [
       {
-        "content": "header_record",
-        "sessions": 10,
-        "users": 1
-      },
-      {
         "content": "cc-0717-1",
-        "sessions": 7,
-        "users": 7
+        "sessions": 8,
+        "users": 8
       },
       {
         "content": "cc-0702-1",
+        "sessions": 6,
+        "users": 6
+      },
+      {
+        "content": "cyq-0716-1",
         "sessions": 6,
         "users": 6
       },
@@ -1801,17 +1869,17 @@
         "users": 6
       },
       {
+        "content": "header_record",
+        "sessions": 6,
+        "users": 1
+      },
+      {
         "content": "cc-0714-1",
         "sessions": 5,
         "users": 5
       },
       {
         "content": "cc-0715-3",
-        "sessions": 5,
-        "users": 5
-      },
-      {
-        "content": "cyq-0716-1",
         "sessions": 5,
         "users": 5
       },
@@ -1846,17 +1914,27 @@
         "users": 3
       },
       {
+        "content": "cc-0719-1",
+        "sessions": 3,
+        "users": 3
+      },
+      {
         "content": "cc-0701-5",
         "sessions": 2,
         "users": 2
       },
       {
-        "content": "cyq-0709-3",
+        "content": "god-0719-1",
         "sessions": 2,
         "users": 2
       },
       {
         "content": "haogame-0716-1",
+        "sessions": 2,
+        "users": 2
+      },
+      {
+        "content": "mlb_banner",
         "sessions": 2,
         "users": 2
       },
@@ -1887,5 +1965,5 @@
       }
     ]
   },
-  "lastUpdated": "2026-07-19T04:21:11.166505"
+  "lastUpdated": "2026-07-20T04:36:01.449294"
 }
