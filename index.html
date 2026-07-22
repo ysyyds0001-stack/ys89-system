@@ -3650,7 +3650,15 @@ const DB={
         const d=await r.json()
         // Only overwrite localStorage when API actually has data; never wipe with empty
         const hasData=Array.isArray(d)?d.length>0:(d&&typeof d==='object'&&Object.keys(d).length>0)
-        if(hasData){localStorage.setItem(K+k,JSON.stringify(d))}
+        if(hasData){
+          // For object-type data: merge CF + local (local takes precedence) so local edits survive a reload
+          const local=this.get(k)
+          if(!Array.isArray(d)&&!Array.isArray(local)&&typeof local==='object'&&Object.keys(local).length>0){
+            localStorage.setItem(K+k,JSON.stringify({...d,...local}))
+          } else {
+            localStorage.setItem(K+k,JSON.stringify(d))
+          }
+        }
         return d
       }
     }catch(e){}
@@ -7039,7 +7047,7 @@ function mseSelectCat(idx){
   })
 }
 
-async function saveMonthlyScripts(){
+function saveMonthlyScripts(){
   const cats=window._mseCats||[], wks=window._mseWks||[]
   const scripts=_getScripts()
   cats.forEach((cat,ci)=>wks.forEach((wk,wi)=>{
@@ -7048,8 +7056,7 @@ async function saveMonthlyScripts(){
     const v=ta.value.trim()
     if(v) scripts[`c:${cat}::${wk}`]=v; else delete scripts[`c:${cat}::${wk}`]
   }))
-  DB.set('weekly_scripts',scripts)
-  try{ await DB.push('weekly_scripts') }catch(e){}
+  DB.set('weekly_scripts',scripts)   // 同步存 localStorage，背景 POST 至 CF Worker
   closeModal('modal-monthly-script')
   toast('月腳本已儲存 ✓')
   if(_wpView==='month') renderWeeklyCalendarView(); else renderWeeklyPostPlan()
