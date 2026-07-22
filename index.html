@@ -6432,16 +6432,16 @@ function saveAnonActor(){
 // ── 帳號類型分頁資料（預設值，首次載入寫入 localStorage）──
 const _ACCT_DEFAULT = {
   ai: [
-    { name:'世足大財神 - 體育代理', cat:'體育', followsTh:221, followsIg:null, note:'導預測平台/小財神', landing:'' },
-    { name:'陳亦強', cat:'棋牌/麻將', followsTh:30, followsIg:null, note:'個人玩家身分', landing:'' },
-    { name:'AI世界盃足球分析', cat:'棋牌/麻將', followsTh:0, followsIg:null, note:'平台身分', landing:'' },
+    { name:'世足大財神 - 體育代理', cat:'體育賽事', followsTh:221, followsIg:null, note:'導預測平台/小財神', landing:'' },
+    { name:'陳亦強', cat:'體育賽事', followsTh:30, followsIg:null, note:'個人玩家身分', landing:'' },
+    { name:'AI世界盃足球分析', cat:'體育賽事', followsTh:0, followsIg:null, note:'平台身分', landing:'' },
   ],
   forum: [
     { name:'扁扁', cat:'詐騙黑名單法律', followsTh:74, followsIg:null, note:'bio暫時無法放連結' },
-    { name:'阿奇', cat:'世足/運彩/體育投注', followsTh:86, followsIg:null, note:'' },
-    { name:'kk', cat:'世足/運彩/體育投注', followsTh:124, followsIg:null, note:'threads無法使用' },
-    { name:'蟹蟹觀測站', cat:'世足/運彩/體育投注', followsTh:32, followsIg:null, note:'用哪帳號去置換' },
-    { name:'世足大財神', cat:'世足/運彩/體育投注', followsTh:221, followsIg:null, note:'' },
+    { name:'阿奇', cat:'體育賽事', followsTh:86, followsIg:null, note:'' },
+    { name:'kk', cat:'體育賽事', followsTh:124, followsIg:null, note:'threads無法使用' },
+    { name:'蟹蟹觀測站', cat:'體育賽事', followsTh:32, followsIg:null, note:'用哪帳號去置換' },
+    { name:'世足大財神', cat:'體育賽事', followsTh:221, followsIg:null, note:'' },
     { name:'魚池阿智', cat:'捕魚', followsTh:null, followsIg:null, note:'' },
     { name:'捕魚老司機阿網', cat:'捕魚', followsTh:95, followsIg:null, note:'' },
   ]
@@ -6457,11 +6457,12 @@ function _getAcctData(){
       d[tab] = _ACCT_DEFAULT[tab].map(a=>({...a, id:DB.id()}));
       dirty = true;
     } else {
-      // 遷移舊 follows 欄位 → followsTh
+      const _CAT_FIX={'世足/運彩/體育投注':'體育賽事','體育':'體育賽事','棋牌/麻將':'體育賽事','AI預測平台工具':'體育賽事','運彩':'體育賽事'}
       d[tab].forEach(row=>{
         if('follows' in row && !('followsTh' in row)){
           row.followsTh = row.follows; row.followsIg = null; delete row.follows; dirty = true;
         }
+        if(_CAT_FIX[row.cat]){ row.cat=_CAT_FIX[row.cat]; dirty=true; }
       });
     }
   });
@@ -6910,13 +6911,12 @@ async function saveMonthlyScripts(){
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-let _wpSearch='', _wpCatFilter=''
+let _wpSearch='', _wpCatFilter=null  // null = auto-pick first cat
 function renderWeeklyPostPlan(){
   const el=document.getElementById('weekly-post-plan'); if(!el) return
   const dates=_weekPlanDates(_weekPlanOffset)
   const today=new Date().toISOString().split('T')[0]
   const WD=['一','二','三','四','五','六','日']
-  // 只取社群類角色（Threads / IG / 論壇型）
   const actors=allActors().filter(a=>{
     const raw=a.raw||{}
     if(raw.accountStatus&&raw.accountStatus!=='active') return false
@@ -6925,7 +6925,14 @@ function renderWeeklyPostPlan(){
   })
   if(!actors.length){ el.innerHTML='<div style="color:var(--text3);font-size:.8rem;padding:8px 0">尚無啟用中的社群角色</div>'; return }
 
-  // name→date→count 統計
+  // 計算所有分類（未搜尋前）
+  const allCatOrder=[], allCatMap={}
+  actors.forEach(a=>{ const cat=a.raw?.dir||'其他'; if(!allCatMap[cat]){ allCatMap[cat]=[]; allCatOrder.push(cat) } allCatMap[cat].push(a) })
+
+  // 若尚未選分類，預設第一個
+  if(_wpCatFilter===null) _wpCatFilter=allCatOrder[0]||''
+
+  // name→date→count 統計（整週所有角色）
   const ta=DB.get('thread_activities')||[]
   const cmap={}
   ta.filter(r=>r.status!=='略過'&&r.date>=dates[0]&&r.date<=dates[6])
@@ -6934,26 +6941,14 @@ function renderWeeklyPostPlan(){
   const scripts=DB.get('weekly_scripts')||{}
   const wk=getWeekKey()
   const esc=s=>(s||'').replace(/'/g,"\\'")
-
-  // 搜尋 + 分類篩選
   const sq=(_wpSearch||'').trim().toLowerCase()
   const cf=_wpCatFilter||''
-  const filtered=actors.filter(a=>{
-    if(sq&&!a.name.toLowerCase().includes(sq)&&!(a.raw?.dir||'').toLowerCase().includes(sq)) return false
-    if(cf&&(a.raw?.dir||'')!==cf) return false
-    return true
-  })
 
-  // 依 dir 分組
-  const catOrder=[], catMap={}
-  filtered.forEach(a=>{
-    const cat=a.raw?.dir||'其他'
-    if(!catMap[cat]){ catMap[cat]=[]; catOrder.push(cat) }
-    catMap[cat].push(a)
-  })
+  // 當前選中分類的帳號（加搜尋篩選）
+  const curList=(allCatMap[cf]||[]).filter(a=>!sq||a.name.toLowerCase().includes(sq)||(a.raw?.dir||'').toLowerCase().includes(sq))
 
-  const thS=`padding:7px 8px;font-size:.7rem;font-weight:600;text-align:center;color:var(--text3);background:var(--bg3);border-bottom:1px solid var(--border);white-space:nowrap`
-  const thT=`padding:7px 8px;font-size:.7rem;font-weight:600;text-align:center;color:var(--accent);background:var(--bg3);border-bottom:2px solid var(--accent);white-space:nowrap`
+  const thS=`padding:7px 8px;font-size:.7rem;font-weight:600;text-align:center;color:var(--text3);background:var(--g2);border-bottom:1px solid var(--border);white-space:nowrap`
+  const thT=`padding:7px 8px;font-size:.7rem;font-weight:600;text-align:center;color:var(--accent);background:var(--g2);border-bottom:2px solid var(--accent);white-space:nowrap`
   const headers=dates.map((d,i)=>{
     const isToday=d===today, mmdd=d.slice(5).replace('-','/')
     return `<th style="${isToday?thT:thS}">${WD[i]}<br><span style="font-weight:400;font-size:.62rem;${isToday?'':'opacity:.55'}">${mmdd}</span></th>`
@@ -6982,40 +6977,49 @@ function renderWeeklyPostPlan(){
     return `<tr style="border-bottom:1px solid var(--border2)"><td style="padding:7px 10px;min-width:120px;max-width:160px"><div style="display:flex;align-items:flex-start;gap:5px">${scriptBtn}<div>${nameHtml}${codeHtml}${rtChip}</div></div></td>${cells}<td style="text-align:center;padding:5px 10px;font-weight:700;color:${totalCol};font-size:.85rem">${weekTotal||'—'}</td></tr>`
   }
 
-  const groupHtml=catOrder.map(cat=>{
-    const list=catMap[cat]
-    const catTotal=list.reduce((s,a)=>s+Object.values(cmap[a.name]||{}).reduce((ss,v)=>ss+v,0),0)
+  // 分類 Tab 列（含週發文數角標 + 腳本狀態）
+  const catTabs=allCatOrder.map(cat=>{
+    const col=_CAT_COL[cat]||'#64748b'
+    const active=cat===cf
+    const catTotal=allCatMap[cat].reduce((s,a)=>s+Object.values(cmap[a.name]||{}).reduce((ss,v)=>ss+v,0),0)
     const hasScript=!!scripts[`c:${cat}::${wk}`]
-    const rows=list.map(mkRow).join('')
-    return `<div style="margin-bottom:14px">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--bg2);border-radius:7px 7px 0 0;border:1px solid var(--border);border-bottom:none">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:.75rem;font-weight:700;color:var(--accent)">${escHtml(cat)}</span>
-          <span style="font-size:.68rem;color:var(--text3)">${list.length} 個帳號</span>
-          ${catTotal?`<span style="font-size:.68rem;color:#60a5fa">本週 ${catTotal} 篇</span>`:''}
-        </div>
-        <button onclick="openWeeklyScript('c:${esc(cat)}','${esc(cat)}')" style="background:${hasScript?'#a78bfa22':'none'};border:1px ${hasScript?'solid #a78bfa44':'dashed var(--border2)'};border-radius:5px;color:${hasScript?'#a78bfa':'var(--text3)'};font-size:.68rem;padding:2px 9px;cursor:pointer">📝 ${hasScript?'查看腳本':'新增週腳本'}</button>
-      </div>
-      <div style="overflow-x:auto;border:1px solid var(--border);border-radius:0 0 7px 7px">
-        <table style="width:100%;border-collapse:collapse;font-size:.78rem">
-          <thead><tr><th style="${thS};text-align:left;min-width:120px">角色</th>${headers}<th style="${thS}">合計</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>`
+    return `<button onclick="_wpCatFilter='${esc(cat)}';renderWeeklyPostPlan()"
+      style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;cursor:pointer;white-space:nowrap;transition:.15s;
+        background:${active?col+'22':'transparent'};
+        border:1px solid ${active?col+'88':'var(--border2)'};
+        color:${active?col:'var(--text3)'};
+        font-size:.72rem;font-weight:${active?700:400}">
+      <span>${escHtml(cat)}</span>
+      ${catTotal?`<span style="background:${active?col:'#60a5fa'};color:#fff;border-radius:8px;padding:0 5px;font-size:.58rem;font-weight:700">${catTotal}</span>`:''}
+      ${hasScript?`<span style="background:${col}33;color:${col};border-radius:3px;padding:0 4px;font-size:.58rem">📝</span>`:''}
+    </button>`
   }).join('')
+
+  // 週腳本預覽列（選中分類）
+  const catScript=scripts[`c:${cf}::${wk}`]||''
+  const scriptBarHtml=`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--g2);border:1px solid var(--border);border-radius:7px;margin-bottom:10px">
+    <span style="font-size:.65rem;color:var(--text3);white-space:nowrap;flex-shrink:0">📝 週腳本</span>
+    ${catScript
+      ?`<span style="font-size:.72rem;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(catScript)}</span>`
+      :`<span style="font-size:.72rem;color:var(--border);flex:1">（尚無腳本）</span>`}
+    <button onclick="openWeeklyScript('c:${esc(cf)}','${esc(cf)}')" style="background:${catScript?'#a78bfa22':'none'};border:1px ${catScript?'solid #a78bfa44':'dashed var(--border2)'};border-radius:5px;color:${catScript?'#a78bfa':'var(--text3)'};font-size:.65rem;padding:2px 9px;cursor:pointer;white-space:nowrap;flex-shrink:0">
+      ${catScript?'查看／編輯':'新增'}
+    </button>
+  </div>`
 
   const weekLabel=_weekPlanOffset===0?'本週':_weekPlanOffset<0?`${Math.abs(_weekPlanOffset)}週前`:`${_weekPlanOffset}週後`
   const dr=`${dates[0].slice(5).replace('-','/')} – ${dates[6].slice(5).replace('-','/')}`
-  const todayPending=_weekPlanOffset===0?filtered.filter(a=>!(cmap[a.name]||{})[today]):[]
-  const pendingHtml=todayPending.length?`<div style="margin-top:10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-size:.72rem;color:var(--text3);white-space:nowrap">⚡ 今日待發：</span>${todayPending.slice(0,10).map(a=>`<button onclick="_quickUtmFromPersona('${esc(a.name)}','${esc(a.id)}','${today}')" style="background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text2);font-size:.7rem;padding:2px 8px;cursor:pointer">${escHtml(a.name)}</button>`).join('')}${todayPending.length>10?`<span style="font-size:.7rem;color:var(--text3)">+${todayPending.length-10}</span>`:''}</div>`:''
+  const todayPending=_weekPlanOffset===0?curList.filter(a=>!(cmap[a.name]||{})[today]):[]
+  const pendingHtml=todayPending.length?`<div style="margin-top:10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-size:.72rem;color:var(--text3);white-space:nowrap">⚡ 今日待發：</span>${todayPending.slice(0,10).map(a=>`<button onclick="_quickUtmFromPersona('${esc(a.name)}','${esc(a.id)}','${today}')" style="background:var(--g2);border:1px solid var(--border);border-radius:5px;color:var(--text2);font-size:.7rem;padding:2px 8px;cursor:pointer">${escHtml(a.name)}</button>`).join('')}${todayPending.length>10?`<span style="font-size:.7rem;color:var(--text3)">+${todayPending.length-10}</span>`:''}</div>`:''
 
-  // 分類 chips（去重，含全部）
-  const allCats=[...new Set(actors.map(a=>a.raw?.dir||'其他'))]
-  const catChips=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
-    <button onclick="_wpCatFilter='';renderWeeklyPostPlan()" style="border:1px solid ${!cf?'var(--accent)':'var(--border2)'};background:${!cf?'rgba(230,180,40,.1)':'none'};color:${!cf?'var(--accent)':'var(--text3)'};border-radius:5px;font-size:.68rem;padding:2px 10px;cursor:pointer">全部</button>
-    ${allCats.map(c=>`<button onclick="_wpCatFilter='${esc(c)}';renderWeeklyPostPlan()" style="border:1px solid ${cf===c?'var(--accent)':'var(--border2)'};background:${cf===c?'rgba(230,180,40,.1)':'none'};color:${cf===c?'var(--accent)':'var(--text3)'};border-radius:5px;font-size:.68rem;padding:2px 10px;cursor:pointer">${escHtml(c)}</button>`).join('')}
-  </div>`
+  const tableHtml=curList.length
+    ?`<div style="overflow-x:auto;border:1px solid var(--border);border-radius:7px">
+        <table style="width:100%;border-collapse:collapse;font-size:.78rem">
+          <thead><tr><th style="${thS};text-align:left;min-width:120px">角色</th>${headers}<th style="${thS}">合計</th></tr></thead>
+          <tbody>${curList.map(mkRow).join('')}</tbody>
+        </table>
+      </div>`
+    :`<div style="color:var(--text3);font-size:.8rem;padding:12px">沒有符合條件的角色</div>`
 
   el.innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
@@ -7029,14 +7033,20 @@ function renderWeeklyPostPlan(){
         <button class="btn btn-xs btn-outline" onclick="_weekPlanOffset++;renderWeeklyPostPlan()">→</button>
       </div>
     </div>
-    <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
-      <input type="text" placeholder="🔍 搜尋角色或分類…" value="${escHtml(sq)}" oninput="_wpSearch=this.value;renderWeeklyPostPlan()" style="flex:1;max-width:240px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);font-size:.78rem;outline:none">
-      ${sq?`<button class="btn btn-xs btn-outline" onclick="_wpSearch='';renderWeeklyPostPlan()">✕ 清除</button>`:''}
+    <div style="overflow-x:auto;margin-bottom:10px;padding-bottom:2px">
+      <div style="display:flex;gap:5px;min-width:max-content">${catTabs}</div>
     </div>
-    ${catChips}
-    ${catOrder.length?groupHtml:'<div style="color:var(--text3);font-size:.8rem;padding:12px 0">沒有符合條件的角色</div>'}
+    ${scriptBarHtml}
+    ${sq?`<div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+      <input type="text" placeholder="🔍 搜尋角色…" value="${escHtml(sq)}" oninput="_wpSearch=this.value;renderWeeklyPostPlan()" style="flex:1;max-width:220px;padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text);font-size:.75rem;outline:none">
+      <button class="btn btn-xs btn-outline" onclick="_wpSearch='';renderWeeklyPostPlan()">✕</button>
+    </div>`:
+    `<div style="margin-bottom:8px">
+      <input type="text" placeholder="🔍 搜尋角色…" oninput="_wpSearch=this.value;renderWeeklyPostPlan()" style="max-width:200px;padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text);font-size:.75rem;outline:none">
+    </div>`}
+    ${tableHtml}
     ${pendingHtml}
-    <div style="margin-top:8px;font-size:.65rem;color:var(--text3)">點 ＋ 跳轉 UTM 產生器 · 📝 開啟週腳本編輯器 · 停用角色已自動隱藏</div>`
+    <div style="margin-top:8px;font-size:.63rem;color:var(--text3)">點 ＋ 跳轉 UTM 產生器 · 📝 開啟週腳本 · 停用角色已自動隱藏</div>`
 }
 function _quickUtmFromPersona(name,actorId,date){
   const utmTab=document.querySelector('.nav-tab[onclick*="\'utm\'"]')
