@@ -6514,7 +6514,7 @@ const _ACCT_DEFAULT = {
     { name:'林家益',       cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
   ]
 };
-let _actTypeTab = 'ai';
+let _actTypeTab = 'ai', _acctCatFilter = null;
 
 function _getAcctData(){
   const raw = DB.get('acct_overview');
@@ -6578,7 +6578,7 @@ function deleteAcctRow(tab, id){
 }
 
 function switchActTypeTab(tab){
-  _actTypeTab = tab;
+  _actTypeTab = tab; _acctCatFilter = null;
   document.querySelectorAll('[id^="acttab-"]').forEach(b=>{
     const active = b.id === 'acttab-' + tab;
     b.style.borderBottom = active ? '2px solid var(--accent)' : '2px solid transparent';
@@ -6593,12 +6593,33 @@ function renderActTypeTab(){
   const d = _getAcctData();
   const list = d[_actTypeTab] || [];
   const IS = 'background:none;border:none;border-bottom:1px dashed rgba(255,255,255,.15);color:var(--text1);font-size:.81rem;padding:2px 0;outline:none;width:100%';
-  const rows = list.map(a=>{
+
+  // build category groups in insertion order
+  const catOrder=[], catMap={}
+  list.forEach(a=>{
+    const cat=a.cat||'其他'
+    if(!catMap[cat]){ catMap[cat]=[]; catOrder.push(cat) }
+    catMap[cat].push(a)
+  })
+  if(!_acctCatFilter||!catMap[_acctCatFilter]) _acctCatFilter=catOrder[0]||''
+  const curList=catMap[_acctCatFilter]||[]
+
+  const catTabsHtml=catOrder.map(cat=>{
+    const col=_CAT_COL[cat]||'#64748b', active=cat===_acctCatFilter
+    return `<button onclick="_acctCatFilter='${cat.replace(/'/g,"\\'")}';renderActTypeTab()"
+      style="padding:5px 13px;border-radius:7px;cursor:pointer;white-space:nowrap;
+        background:${active?col+'22':'transparent'};border:1px solid ${active?col+'88':'var(--border2)'};
+        color:${active?col:'var(--text3)'};font-size:.72rem;font-weight:${active?700:400}">
+      ${cat} <span style="background:${active?col:'#475569'};color:#fff;border-radius:8px;padding:0 5px;font-size:.58rem;margin-left:3px">${catMap[cat].length}</span>
+    </button>`
+  }).join('')
+
+  const METHOD_COL={'真人+平台':'#3b82f6','平台':'#64748b','真人':'#10b981','真人回覆':'#8b5cf6'}
+  const rows = curList.map(a=>{
     const catCol=_CAT_COL[a.cat]||'#94a3b8'
-    const METHOD_COL={'真人+平台':'#3b82f6','平台':'#64748b','真人':'#10b981','真人回覆':'#8b5cf6'}
     const mCol=METHOD_COL[a.method]||'#64748b'
     const catCell=`<div style="display:flex;flex-direction:column;gap:5px">
-      <select onchange="updateAcctField('${_actTypeTab}','${a.id}','cat',this.value);renderActTypeTab()"
+      <select onchange="updateAcctField('${_actTypeTab}','${a.id}','cat',this.value);_acctCatFilter=this.value;renderActTypeTab()"
         style="background:${catCol}1a;color:${catCol};border:1px solid ${catCol}44;border-radius:10px;font-size:.62rem;font-weight:600;padding:2px 8px;outline:none;cursor:pointer;max-width:130px">
         ${Object.keys(_CAT_COL).map(c=>`<option value="${c}"${c===a.cat?' selected':''}>${c}</option>`).join('')}
       </select>
@@ -6667,7 +6688,10 @@ function renderActTypeTab(){
       </td>
     </tr>`;
   }).join('');
-  el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+
+  el.innerHTML = `
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${catTabsHtml}</div>
+  <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
     <thead><tr style="border-bottom:2px solid var(--border)">
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">帳號</th>
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">分類</th>
