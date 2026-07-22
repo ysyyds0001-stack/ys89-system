@@ -4800,7 +4800,10 @@ function _migratePersonaCategories(){
     '世足排番週記':   {dir:'體育賽事', roleType:'真人+平台'},
     '世足排雷週記':   {dir:'體育賽事', roleType:'真人+平台'},
     '世足大財神':     {dir:'體育賽事', roleType:'真人+平台'},
-    '米亞通動賽事':   {dir:'體育賽事', roleType:'平台'},
+    '米亞運動賽事':   {dir:'體育賽事', roleType:'平台'},
+    '小悠學看球':     {dir:'體育賽事', roleType:'平台'},
+    '蟹蟹觀測站':     {dir:'體育賽事', roleType:'真人+平台'},
+    '世足大財神-體育代理': {dir:'體育賽事', roleType:'真人+平台'},
     '全球球賽情報站':  {dir:'體育賽事', roleType:'平台'},
     '哈哈看球':       {dir:'體育賽事', roleType:'平台'},
     'AI體育賽事分析':  {dir:'體育賽事', roleType:'平台'},
@@ -6495,7 +6498,9 @@ const _ACCT_DEFAULT = {
     { name:'小豪遊戲筆記',    cat:'部落格真人角',   method:'真人+平台', followsTh:0,   followsIg:null, note:'', landing:'' },
     { name:'魚池阿智',        cat:'捕魚',          method:'真人+平台', followsTh:null,followsIg:null, note:'', landing:'' },
     { name:'捕魚老司機阿網',  cat:'捕魚',          method:'平台',      followsTh:95,  followsIg:null, note:'', landing:'' },
+    { name:'面具男',          cat:'百家樂',         method:'真人+平台', followsTh:0,   followsIg:null, note:'', landing:'' },
     { name:'戰術阿森',        cat:'百家樂',         method:'真人+平台', followsTh:0,   followsIg:null, note:'', landing:'' },
+    { name:'華軒',            cat:'百家樂',         method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
     { name:'詩涵',            cat:'百家樂',         method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
     { name:'沐木Mu',          cat:'獎號通',         method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
     { name:'昭涵',            cat:'獎號通',         method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
@@ -6535,6 +6540,13 @@ function _getAcctData(){
       d[tab].forEach(row=>{
         if('follows' in row && !('followsTh' in row)){
           row.followsTh = row.follows; row.followsIg = null; delete row.follows; dirty = true;
+        }
+      });
+      // 自動補入共識清單新增但本地尚無的帳號（名稱為主鍵）
+      const existingNames = new Set(d[tab].map(r=>r.name));
+      (_ACCT_DEFAULT[tab]||[]).forEach(def=>{
+        if(!existingNames.has(def.name)){
+          d[tab].push({...def, id:DB.id()}); dirty = true;
         }
       });
     }
@@ -6729,7 +6741,7 @@ function renderCommunity(){
   const isBlogPersona=a=>{ const d=a.dir||''; return d.startsWith('匿名社群')||d==='數據分析/Blogger' }
 
   // 依共識分類分組（所有社群型 personas + community）
-  const CAT_ORDER=['體育賽事','捕魚','百家樂','獎號通','部落格真人角','真人回覆','其他']
+  const CAT_ORDER=['體育賽事','AI預測平台工具','捕魚','百家樂','獎號通','部落格真人角','電子遊戲','真人回覆','其他']
   const catGroups={}; CAT_ORDER.forEach(c=>catGroups[c]=[])
 
   persList.filter(a=>!isBlogPersona(a)).forEach(a=>{
@@ -6783,7 +6795,7 @@ function renderCommunity(){
     <div style="color:var(--text3);font-size:.8rem;padding:12px 0">尚無臉書角色 — 點右側新增</div>
   </div>`
 
-  body.innerHTML=CAT_ORDER.map(catSec).filter(Boolean).join('')+blogSec+fbSec
+  body.innerHTML=CAT_ORDER.map(catSec).filter(Boolean).join('')+blogSec
   renderWeeklyPostPlan()
 }
 
@@ -6828,7 +6840,7 @@ let _wpView='week', _wpMonthOffset=0
 
 const _CAT_COL={
   '體育賽事':'#3b82f6','AI預測平台工具':'#6366f1','捕魚':'#22c55e','百家樂':'#f59e0b',
-  '獎號通':'#8b5cf6','部落格真人角':'#ec4899','真人回覆':'#64748b','其他':'#94a3b8'
+  '獎號通':'#8b5cf6','部落格真人角':'#ec4899','電子遊戲':'#06b6d4','真人回覆':'#64748b','其他':'#94a3b8'
 }
 
 function _wkKeyDate(ds){
