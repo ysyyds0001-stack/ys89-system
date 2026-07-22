@@ -2976,6 +2976,14 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   </div>
 </div>
 
+<!-- 月腳本編輯器 -->
+<div id="modal-monthly-script" class="overlay">
+  <div class="modal" style="max-width:700px">
+    <div class="mh"><div class="mt" id="mse-title">✏️ 月腳本編輯</div><button class="mc" onclick="closeModal('modal-monthly-script')">✕</button></div>
+    <div id="mse-body" style="overflow-y:auto;max-height:72vh"></div>
+  </div>
+</div>
+
 <!-- 快速更新提示詞 -->
 <div id="modal-quick-prompt" class="overlay">
   <div class="modal">
@@ -6661,9 +6669,9 @@ function _weekPlanDates(offset){
   const mon=new Date(now); mon.setDate(now.getDate()+diffToMon+offset*7)
   return Array.from({length:7},(_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d.toISOString().split('T')[0] })
 }
-function openWeeklyScript(key,label){
+function openWeeklyScript(key,label,wkOverride){
   const scripts=DB.get('weekly_scripts')||{}
-  const wk=getWeekKey()
+  const wk=wkOverride||getWeekKey()
   const fullKey=`${key}::${wk}`
   document.getElementById('ws-key').value=fullKey
   document.getElementById('ws-title').textContent=`📝 ${label} — 週腳本`
@@ -6687,6 +6695,220 @@ async function saveWeeklyScript(){
     setTimeout(()=>closeModal('modal-weekly-script'),700)
   }catch(e){ statusEl.textContent='⚠️ 本地已儲存，同步失敗' }
 }
+
+// ─── 月曆視圖 ──────────────────────────────────────────────────────────────
+
+let _wpView='week', _wpMonthOffset=0
+
+const _CAT_COL={
+  '體育賽事':'#3b82f6','捕魚':'#22c55e','百家樂':'#f59e0b',
+  '獎號通':'#8b5cf6','部落格真人角':'#ec4899','真人回覆':'#64748b','其他':'#94a3b8'
+}
+
+function _wkKeyDate(ds){
+  const d=new Date(ds+'T12:00:00'),jan1=new Date(d.getFullYear(),0,1)
+  const wk=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7)
+  return `${d.getFullYear()}-W${String(wk).padStart(2,'0')}`
+}
+
+function _monthCal(offset){
+  const base=new Date()
+  const t=new Date(base.getFullYear(),base.getMonth()+offset,1)
+  const yr=t.getFullYear(), mo=t.getMonth()
+  const d1=new Date(yr,mo,1)
+  const back=d1.getDay()===0?6:d1.getDay()-1
+  const start=new Date(d1); start.setDate(1-back)
+  const weeks=[], cur=new Date(start)
+  for(let w=0;w<6;w++){
+    const dates=Array.from({length:7},(_,i)=>{ const c=new Date(cur); c.setDate(cur.getDate()+i); return c.toISOString().split('T')[0] })
+    const inMonth=dates.some(ds=>new Date(ds).getMonth()===mo)
+    if(!inMonth&&weeks.length>0) break
+    if(inMonth) weeks.push({wk:_wkKeyDate(dates[0]),dates})
+    cur.setDate(cur.getDate()+7)
+  }
+  return {yr,mo,weeks}
+}
+
+function _wpActors(){
+  return allActors().filter(a=>{
+    const raw=a.raw||{}
+    if(raw.accountStatus&&raw.accountStatus!=='active') return false
+    const plats=raw.platforms||(raw.platform?[raw.platform]:[])
+    return !plats.length||plats.some(p=>['Threads','IG','FB'].includes(p))
+  })
+}
+
+function renderWeeklyCalendarView(){
+  const el=document.getElementById('weekly-post-plan'); if(!el) return
+  const {yr,mo,weeks}=_monthCal(_wpMonthOffset)
+  const today=new Date().toISOString().split('T')[0]
+  const scripts=DB.get('weekly_scripts')||{}
+  const actors=_wpActors()
+  const cats=[...(new Set(actors.map(a=>a.raw?.dir||'其他')))]
+  const ta=DB.get('thread_activities')||[]
+  const allDs=weeks.flatMap(w=>w.dates)
+  const dcnt={}
+  ta.filter(r=>r.status!=='略過'&&allDs.includes(r.date)).forEach(r=>{ dcnt[r.date]=(dcnt[r.date]||0)+1 })
+  const MN=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+  const WD=['一','二','三','四','五','六','日']
+  const esc=s=>(s||'').replace(/'/g,"\\'")
+
+  const calRows=weeks.map(w=>{
+    const cells=w.dates.map(ds=>{
+      const d=new Date(ds+'T12:00:00')
+      const inM=d.getMonth()===mo, isT=ds===today, cnt=dcnt[ds]||0
+      return `<td style="padding:3px;vertical-align:top;width:14.28%">
+        <div style="border-radius:7px;padding:5px 4px 7px;min-height:42px;
+          background:${isT?'rgba(212,84,42,.1)':'transparent'};
+          border:1px solid ${isT?'rgba(212,84,42,.35)':'transparent'}">
+          <div style="font-size:.75rem;font-weight:${isT?'800':'500'};color:${inM?(isT?'var(--accent)':'var(--text)'):'var(--border)'};text-align:center">${d.getDate()}</div>
+          ${cnt?`<div style="text-align:center;margin-top:3px"><span style="background:${cnt>=3?'var(--accent)':'#60a5fa'};color:#fff;border-radius:8px;padding:0 5px;font-size:.58rem;font-weight:700">${cnt}</span></div>`:''}
+        </div>
+      </td>`
+    }).join('')
+
+    const chips=cats.map(cat=>{
+      const key=`c:${cat}::${w.wk}`, has=!!scripts[key]
+      const col=_CAT_COL[cat]||'#94a3b8'
+      return `<span onclick="openWeeklyScript('c:${esc(cat)}','${esc(cat)}','${w.wk}')"
+        style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;margin:2px;
+          background:${has?col+'1a':'transparent'};border:1px ${has?'solid':'dashed'} ${has?col+'66':col+'44'};
+          color:${has?col:col+'88'};font-size:.6rem;cursor:pointer;white-space:nowrap"
+        title="${has?'查看/編輯':'新增'} ${cat} 週腳本">${has?'●':'＋'}&nbsp;${escHtml(cat)}</span>`
+    }).join('')
+
+    const dr=`${w.dates[0].slice(5).replace('-','/')}–${w.dates[6].slice(5).replace('-','/')}`
+    return `<tr style="border-top:1px solid var(--border)">${cells}</tr>
+    <tr>
+      <td colspan="7" style="padding:3px 6px 10px">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:2px">
+          <span style="font-size:.58rem;color:var(--text3);margin-right:4px;white-space:nowrap">${w.wk.replace('-','&nbsp;')} ${dr}</span>
+          ${chips}
+        </div>
+      </td>
+    </tr>`
+  }).join('')
+
+  const toggle=`<div style="display:flex;gap:4px">
+    <button onclick="_wpView='week';_weekPlanOffset=0;renderWeeklyPostPlan()" style="background:none;border:1px solid var(--border2);border-radius:5px;color:var(--text3);font-size:.7rem;padding:3px 10px;cursor:pointer">☰ 列表</button>
+    <button style="background:rgba(212,84,42,.12);border:1px solid var(--accent);border-radius:5px;color:var(--accent);font-size:.7rem;padding:3px 10px;cursor:pointer">📅 月曆</button>
+  </div>`
+
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <span style="font-size:.88rem;font-weight:700;color:var(--accent)">📅 一週發布計畫</span>
+      ${toggle}
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <button onclick="_wpMonthOffset--;renderWeeklyCalendarView()" style="background:none;border:1px solid var(--border);border-radius:5px;padding:3px 11px;color:var(--text3);cursor:pointer;font-size:.8rem">←</button>
+        <span style="font-size:.92rem;font-weight:700;color:var(--text);min-width:80px;text-align:center">${yr}年${MN[mo]}</span>
+        <button onclick="_wpMonthOffset++;renderWeeklyCalendarView()" style="background:none;border:1px solid var(--border);border-radius:5px;padding:3px 11px;color:var(--text3);cursor:pointer;font-size:.8rem">→</button>
+        ${_wpMonthOffset!==0?`<button onclick="_wpMonthOffset=0;renderWeeklyCalendarView()" style="background:none;border:1px solid var(--border2);border-radius:5px;padding:2px 8px;color:var(--text3);cursor:pointer;font-size:.68rem">本月</button>`:''}
+      </div>
+      <button onclick="openMonthlyScriptEditor()" style="background:rgba(167,139,250,.12);border:1px solid #a78bfa55;border-radius:6px;padding:5px 14px;color:#a78bfa;font-size:.72rem;cursor:pointer;font-weight:600">✏️ 輸入月腳本</button>
+    </div>
+    <div style="overflow-x:auto;border:1px solid var(--border);border-radius:8px;background:var(--g1)">
+      <table style="width:100%;border-collapse:collapse;min-width:340px">
+        <thead><tr style="border-bottom:2px solid var(--border)">
+          ${WD.map(d=>`<th style="padding:7px 4px;font-size:.68rem;font-weight:600;color:var(--text3);text-align:center;width:14.28%">${d}</th>`).join('')}
+        </tr></thead>
+        <tbody>${calRows}</tbody>
+      </table>
+    </div>
+    <div style="margin-top:8px;font-size:.63rem;color:var(--text3)">● 填色 = 已有週腳本 · ＋ = 點擊新增 · 數字 = 當日發文數</div>`
+}
+
+function openMonthlyScriptEditor(){
+  const {yr,mo,weeks}=_monthCal(_wpMonthOffset)
+  const scripts=DB.get('weekly_scripts')||{}
+  const actors=_wpActors()
+  const cats=[...(new Set(actors.map(a=>a.raw?.dir||'其他')))]
+  const MN=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+
+  window._mseCats=cats; window._mseWks=weeks.map(w=>w.wk)
+
+  const tabsHtml=cats.map((cat,i)=>{
+    const col=_CAT_COL[cat]||'#94a3b8', active=i===0
+    return `<button id="mse-tab-${i}" onclick="mseSelectCat(${i})"
+      style="padding:6px 13px;border-radius:6px 6px 0 0;cursor:pointer;font-size:.72rem;font-weight:${active?700:400};white-space:nowrap;
+        border:1px solid ${active?col+'55':'var(--border2)'};border-bottom:${active?'1px solid var(--g2)':'none'};
+        background:${active?col+'18':'transparent'};color:${active?col:'var(--text3)'};
+        margin-bottom:-1px">${escHtml(cat)}</button>`
+  }).join('')
+
+  const panelsHtml=cats.map((cat,ci)=>{
+    const col=_CAT_COL[cat]||'#94a3b8'
+    const weekInputs=weeks.map((w,wi)=>{
+      const key=`c:${cat}::${w.wk}`, val=scripts[key]||''
+      const dr=`${w.dates[0].slice(5).replace('-','/')} – ${w.dates[6].slice(5).replace('-','/')}`
+      const pct=w.dates.filter(ds=>new Date(ds+'T12:00:00').getMonth()===mo).length
+      const shade=pct<7?'（跨月）':''
+      return `<div style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="background:${col}1a;color:${col};border:1px solid ${col}44;border-radius:5px;padding:2px 8px;font-size:.65rem;font-weight:700">${w.wk.replace('-','&nbsp;')}</span>
+          <span style="font-size:.67rem;color:var(--text3)">${dr}${shade}</span>
+        </div>
+        <textarea id="mse-${ci}-${wi}" rows="3"
+          style="width:100%;background:var(--g3);border:1px solid var(--border);border-radius:7px;padding:9px 11px;color:var(--text);font-size:.78rem;line-height:1.65;resize:vertical;outline:none;font-family:inherit;box-sizing:border-box;transition:border-color .15s"
+          onfocus="this.style.borderColor='${col}66'" onblur="this.style.borderColor='var(--border)'"
+          placeholder="例：世界盃四強賽週，週一三發賽前分析，週五發結果精華，主帳 kk 先行，阿奇互動輔助…"
+        >${escHtml(val)}</textarea>
+      </div>`
+    }).join('')
+    return `<div id="mse-panel-${ci}" style="display:${ci===0?'block':'none'};padding:2px 0">
+      ${weekInputs}
+    </div>`
+  }).join('')
+
+  document.getElementById('mse-title').textContent=`✏️ ${yr}年${MN[mo]} 月腳本`
+  document.getElementById('mse-body').innerHTML=`
+    <div style="display:flex;gap:3px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto;padding-bottom:0">
+      ${tabsHtml}
+    </div>
+    ${panelsHtml}
+    <div style="display:flex;justify-content:flex-end;gap:8px;padding-top:12px;border-top:1px solid var(--border)">
+      <button onclick="closeModal('modal-monthly-script')" style="background:none;border:1px solid var(--border);border-radius:6px;padding:7px 18px;color:var(--text3);cursor:pointer;font-size:.8rem">取消</button>
+      <button onclick="saveMonthlyScripts()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:7px 22px;font-size:.8rem;font-weight:700;cursor:pointer">💾 全部儲存</button>
+    </div>`
+  openModal('modal-monthly-script')
+}
+
+function mseSelectCat(idx){
+  const cats=window._mseCats||[]
+  cats.forEach((_,i)=>{
+    const tab=document.getElementById(`mse-tab-${i}`)
+    const panel=document.getElementById(`mse-panel-${i}`)
+    const col=_CAT_COL[cats[i]]||'#94a3b8'
+    if(tab){
+      const active=i===idx
+      tab.style.background=active?col+'18':'transparent'
+      tab.style.color=active?col:'var(--text3)'
+      tab.style.fontWeight=active?'700':'400'
+      tab.style.border=`1px solid ${active?col+'55':'var(--border2)'}`
+      tab.style.borderBottom=active?'1px solid var(--g2)':'none'
+    }
+    if(panel) panel.style.display=i===idx?'block':'none'
+  })
+}
+
+async function saveMonthlyScripts(){
+  const cats=window._mseCats||[], wks=window._mseWks||[]
+  const scripts=DB.get('weekly_scripts')||{}
+  cats.forEach((cat,ci)=>wks.forEach((wk,wi)=>{
+    const ta=document.getElementById(`mse-${ci}-${wi}`)
+    if(!ta) return
+    const v=ta.value.trim()
+    if(v) scripts[`c:${cat}::${wk}`]=v; else delete scripts[`c:${cat}::${wk}`]
+  }))
+  DB.set('weekly_scripts',scripts)
+  try{ await DB.push('weekly_scripts') }catch(e){}
+  closeModal('modal-monthly-script')
+  showToast('月腳本已儲存 ✓')
+  if(_wpView==='month') renderWeeklyCalendarView(); else renderWeeklyPostPlan()
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 let _wpSearch='', _wpCatFilter=''
 function renderWeeklyPostPlan(){
@@ -6796,9 +7018,12 @@ function renderWeeklyPostPlan(){
   </div>`
 
   el.innerHTML=`
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
       <div><span style="font-size:.88rem;font-weight:700;color:var(--accent)">📅 一週發布計畫</span><span style="font-size:.72rem;color:var(--text3);margin-left:8px">${weekLabel} · ${dr}</span></div>
-      <div style="display:flex;gap:5px">
+      <div style="display:flex;gap:4px;align-items:center">
+        <button style="background:rgba(212,84,42,.12);border:1px solid var(--accent);border-radius:5px;color:var(--accent);font-size:.7rem;padding:3px 10px;cursor:pointer">☰ 列表</button>
+        <button onclick="_wpView='month';_wpMonthOffset=0;renderWeeklyCalendarView()" style="background:none;border:1px solid var(--border2);border-radius:5px;color:var(--text3);font-size:.7rem;padding:3px 10px;cursor:pointer">📅 月曆</button>
+        <span style="width:1px;background:var(--border);height:16px;display:inline-block;margin:0 2px"></span>
         <button class="btn btn-xs btn-outline" onclick="_weekPlanOffset--;renderWeeklyPostPlan()">←</button>
         ${_weekPlanOffset!==0?`<button class="btn btn-xs btn-outline" onclick="_weekPlanOffset=0;renderWeeklyPostPlan()">本週</button>`:''}
         <button class="btn btn-xs btn-outline" onclick="_weekPlanOffset++;renderWeeklyPostPlan()">→</button>
