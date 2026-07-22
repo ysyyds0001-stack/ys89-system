@@ -2256,33 +2256,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     </div>
   </div>
 
-  <!-- ① 商業 KPI -->
-  <div id="ov-biz" class="card" style="margin-bottom:14px;border-left:3px solid var(--green2)">
-    <p class="tm" style="padding:12px 0">載入中…</p>
-  </div>
-
-  <!-- ② 社群指標 + 漏斗 (2欄) -->
-  <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:14px;margin-bottom:14px">
-    <div id="ov-social" class="card" style="border-left:3px solid var(--accent)">
-      <p class="tm" style="padding:12px 0">載入中…</p>
-    </div>
-    <div id="ov-funnel" class="card">
-      <p class="tm" style="padding:12px 0">載入中…</p>
-    </div>
-  </div>
-
-  <!-- ③ 路徑比較 + 本週行動 (2欄) -->
-  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:14px">
-    <div id="ov-paths" class="card">
-      <p class="tm" style="padding:12px 0">載入中…</p>
-    </div>
-    <div id="ov-actions" class="card">
-      <p class="tm" style="padding:12px 0">載入中…</p>
-    </div>
-  </div>
-
-  <!-- ④ 帳號成效排行 -->
-  <div id="ov-accounts" class="card" style="margin-bottom:14px">
+  <div id="ov-dashboard">
     <p class="tm" style="padding:12px 0">載入中…</p>
   </div>
 </div>
@@ -4901,165 +4875,175 @@ function renderGrowthOverview(){
   const pe=pEnd.toISOString().split('T')[0], ps=pStart.toISOString().split('T')[0]
   const prevRegs = allReg.filter(r=> r.from<=pe && r.to>=ps)
 
-  // 商業 KPI
+  // ── 核心計算 ──────────────────────────────────────────────────────────
   const cReg=regs.reduce((s,r)=>s+(r.reg||0),0)
   const cDep=regs.reduce((s,r)=>s+(r.dep||0),0)
   const cAmt=regs.reduce((s,r)=>s+(r.amt||0),0)
   const cRate=cReg>0?(cDep/cReg*100):0
   const pReg=prevRegs.reduce((s,r)=>s+(r.reg||0),0)
   const pDep=prevRegs.reduce((s,r)=>s+(r.dep||0),0)
-  const pAmt=prevRegs.reduce((s,r)=>s+(r.amt||0),0)
-  const pRate=pReg>0?(pDep/pReg*100):0
-  const chg=(a,b,pct)=>{ if(b===0)return `<span style="color:var(--text3);font-size:.68rem">— 無前期</span>`; const d=a-b; const pfx=d>=0?'↑':'↓'; const col=d>=0?'var(--green2)':'var(--red)'; return `<span style="color:${col};font-size:.68rem">${pfx} ${pct?Math.abs(d).toFixed(1)+'pp':Math.abs(d).toLocaleString('zh-TW')}</span>` }
-  document.getElementById('ov-biz').innerHTML=`
-    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">商業核心指標（後台對帳 real_reg）· ${start} → ${end}</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-      ${[['完成註冊','人',cReg,pReg,'var(--green2)',false],['儲值人數','人',cDep,pDep,'var(--accent)',false],['儲值金額','元',cAmt,pAmt,'#a78bfa',false],['儲值率','%',cRate.toFixed(1),pRate.toFixed(1),'#fb923c',true]].map(([lbl,unit,val,pval,col,isPct])=>`
-      <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;border:1px solid var(--border)">
-        <div style="font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">${lbl}</div>
-        <div style="font-size:1.6rem;font-weight:800;letter-spacing:-.03em;color:${col};font-variant-numeric:tabular-nums">${isPct?val:Number(val).toLocaleString('zh-TW')}${isPct?'%':''}</div>
-        <div style="margin-top:4px">${chg(Number(val),Number(pval),isPct)}</div>
-      </div>`).join('')}
-    </div>`
+  const prevActs=allActs.filter(a=>a.date>=ps&&a.date<=pe)
+  const nonDel=acts.filter(a=>(a.notes||'')!=='貼文已刪除')
+  const totViews=nonDel.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
+  const totLikes=nonDel.reduce((s,a)=>s+(a.platformMetrics?.Threads?.likes||0),0)
+  const totReplies=nonDel.reduce((s,a)=>s+(a.platformMetrics?.Threads?.replies||a.platformMetrics?.Threads?.comments||0),0)
+  const metaSpend=metas.reduce((s,m)=>s+(m.spend||0),0)
+  const metaImpr=metas.reduce((s,m)=>s+(m.impr||0),0)
+  const totImpr=totViews+metaImpr
 
-  // 社群指標
-  const nonDel = acts.filter(a=>(a.notes||'')!=='貼文已刪除')
-  const totViews = nonDel.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
-  const totLikes = nonDel.reduce((s,a)=>s+(a.platformMetrics?.Threads?.likes||0),0)
-  const totReplies = nonDel.reduce((s,a)=>s+(a.platformMetrics?.Threads?.replies||a.platformMetrics?.Threads?.comments||0),0)
-  const metaSpend = metas.reduce((s,m)=>s+(m.spend||0),0)
-  const metaImpr = metas.reduce((s,m)=>s+(m.impr||0),0)
-  const totImpr = totViews + metaImpr
-  const ltr = totImpr>0?(totLikes/totImpr*1000):0
-  const kpReg = totImpr>0?(cReg/totImpr*1000):0
-  const posted=acts.filter(a=>(a.notes||'')!=='UTM產生器建立').length
-  document.getElementById('ov-social').innerHTML=`
-    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">社群指標</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      ${[['總曝光',totImpr.toLocaleString('zh-TW'),'var(--accent)'],['有效發文',posted+'篇','var(--text2)'],['總讚數',totLikes,'var(--text2)'],['總留言',totReplies,'var(--text2)'],['每千曝光讚',ltr.toFixed(1),'#fbbf24'],['每千曝光轉換',kpReg.toFixed(1),'var(--green2)']].map(([l,v,c])=>`
-      <div style="background:var(--bg4);border-radius:6px;padding:8px 10px">
-        <div style="font-size:.6rem;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">${l}</div>
-        <div style="font-size:1.1rem;font-weight:800;color:${c};font-variant-numeric:tabular-nums">${v}</div>
-      </div>`).join('')}
-    </div>
-    ${metaSpend>0?`<div style="margin-top:10px;font-size:.68rem;color:var(--text3);border-top:1px solid var(--border);padding-top:8px">廣告支出 NT$${metaSpend.toLocaleString()} · 廣告曝光 ${metaImpr.toLocaleString()}</div>`:''}`
+  // 帳號彙總
+  const acctMap={}
+  acts.forEach(a=>{
+    const n=a.personaName||'未知'
+    if(!acctMap[n]) acctMap[n]={views:0,likes:0,replies:0,count:0,paths:[]}
+    const m=a.platformMetrics?.Threads||{}
+    acctMap[n].views+=(m.views||0); acctMap[n].likes+=(m.likes||0)
+    acctMap[n].replies+=(m.replies||m.comments||0); acctMap[n].count++
+    if(a.path_type) acctMap[n].paths.push(a.path_type)
+  })
+  const acctRows=Object.entries(acctMap).sort(([,a],[,b])=>b.count-a.count)
+  const prevActiveCount=new Set(prevActs.map(a=>a.personaName||'未知')).size
 
-  // 漏斗
-  const fSteps=[
-    {label:'曝光',val:totImpr,color:'rgba(96,165,250,.35)'},
-    {label:'有讚/互動',val:totLikes+totReplies,color:'rgba(167,139,250,.45)'},
-    {label:'完成註冊',val:cReg,color:'rgba(34,197,94,.55)'},
-    {label:'首次儲值',val:cDep,color:'rgba(34,197,94,.75)'},
-  ]
-  const maxV = fSteps[0].val||1
-  document.getElementById('ov-funnel').innerHTML=`
-    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">完整漏斗</div>
-    <div style="display:flex;flex-direction:column;gap:6px">
-      ${fSteps.map((s,i)=>{
-        const pct=i===0?100:(maxV>0?(s.val/maxV*100):0)
-        return `<div style="display:flex;align-items:center;gap:10px">
-          <div style="width:72px;font-size:.68rem;color:var(--text2);text-align:right;flex-shrink:0">${s.label}</div>
-          <div style="flex:1;background:var(--bg3);border-radius:4px;height:26px;overflow:hidden">
-            <div style="height:100%;width:${Math.max(pct,0.3)}%;background:${s.color};border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:.72rem;font-weight:700;white-space:nowrap;min-width:40px;transition:width .5s ease">${s.val.toLocaleString('zh-TW')}</div>
-          </div>
-          <div style="width:44px;font-size:.65rem;color:var(--text3);flex-shrink:0">${i===0?'100%':(maxV>0?(s.val/maxV*100).toFixed(1)+'%':'—')}</div>
-        </div>`
-      }).join('')}
-    </div>`
-
-  // 路徑比較
+  // 路徑彙總
   const pathMap={}
   acts.forEach(a=>{
     const pt=a.path_type||'bio'
     if(!pathMap[pt]) pathMap[pt]={count:0,views:0,likes:0}
-    pathMap[pt].count++
-    pathMap[pt].views+=(a.platformMetrics?.Threads?.views||0)
-    pathMap[pt].likes+=(a.platformMetrics?.Threads?.likes||0)
+    pathMap[pt].count++; pathMap[pt].views+=(a.platformMetrics?.Threads?.views||0); pathMap[pt].likes+=(a.platformMetrics?.Threads?.likes||0)
   })
-  if(metaImpr>0) pathMap['paid']={count:0,views:metaImpr,likes:metas.reduce((s,m)=>s+(m.clicks||0),0)}
-  const pathRows = Object.entries(pathMap).sort(([,a],[,b])=>b.views-a.views)
-  document.getElementById('ov-paths').innerHTML=`
-    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">路徑比較</div>
-    <div style="overflow-x:auto">
-    <table style="width:100%;border-collapse:collapse">
-      <thead><tr style="border-bottom:1px solid var(--border)">
-        ${['路徑','篇數','曝光','每千曝光互動','歸因'].map(h=>`<th style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding:6px 8px;text-align:left">${h}</th>`).join('')}
-      </tr></thead>
-      <tbody>
-        ${pathRows.length?pathRows.map(([pt,d])=>{
-          const ltr=d.views>0?(d.likes/d.views*1000):0
-          const attrLv=pt==='paid'?'A':pt==='bio'?'D':'B'
-          return `<tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:8px;font-size:.75rem"><span style="color:${_ovPathColor(pt)}">●</span> ${_ovPathLabel(pt)}</td>
-            <td style="padding:8px;font-size:.75rem;color:var(--text2)">${d.count}</td>
-            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums">${d.views.toLocaleString('zh-TW')}</td>
-            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums">${ltr.toFixed(1)}</td>
-            <td style="padding:8px">${_ovAttrBadge(attrLv)}</td>
-          </tr>`
-        }).join(''):`<tr><td colspan="5" style="padding:16px;text-align:center;color:var(--text3);font-size:.8rem">此期間無發文記錄</td></tr>`}
-      </tbody>
-    </table></div>`
+  if(metaImpr>0){ pathMap['paid']=pathMap['paid']||{count:0,views:0,likes:0}; pathMap['paid'].views+=metaImpr }
+  const pathRows=Object.entries(pathMap).sort(([,a],[,b])=>b.count-a.count)
 
-  // 帳號排行
-  const acctMap={}
-  acts.forEach(a=>{
-    const n=a.personaName||'未知'
-    if(!acctMap[n]) acctMap[n]={views:0,likes:0,replies:0,count:0,attrLvs:[],paths:[]}
-    const m=a.platformMetrics?.Threads||{}
-    acctMap[n].views+=(m.views||0)
-    acctMap[n].likes+=(m.likes||0)
-    acctMap[n].replies+=(m.replies||m.comments||0)
-    acctMap[n].count++
-    if(a.attribution_level) acctMap[n].attrLvs.push(a.attribution_level)
-    if(a.path_type) acctMap[n].paths.push(a.path_type)
-  })
-  const acctRows=Object.entries(acctMap).sort(([,a],[,b])=>b.views-a.views).slice(0,10)
-  const bestAttr=lvs=>{ const ord=['A','B','C','D','U']; for(const l of ord) if(lvs.includes(l)) return l; return 'U' }
-  document.getElementById('ov-accounts').innerHTML=`
-    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">帳號成效排行（按曝光數）</div>
-    <div style="overflow-x:auto">
-    <table style="width:100%;border-collapse:collapse">
-      <thead><tr style="border-bottom:1px solid var(--border)">
-        ${['#','帳號','篇數','曝光','讚','留言','每千曝光讚','路徑','歸因'].map(h=>`<th style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding:6px 8px;text-align:left">${h}</th>`).join('')}
-      </tr></thead>
-      <tbody>
-        ${acctRows.length?acctRows.map(([name,d],i)=>{
-          const ltr=d.views>0?(d.likes/d.views*1000):0
-          const pt=[...new Set(d.paths)][0]||'bio'
-          return `<tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:8px;font-size:.7rem;color:var(--text3)">${i+1}</td>
-            <td style="padding:8px;font-size:.8rem;font-weight:600;color:#a78bfa">${escHtml(name)}</td>
-            <td style="padding:8px;font-size:.75rem;color:var(--text2)">${d.count}</td>
-            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums">${d.views.toLocaleString('zh-TW')}</td>
-            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums">${d.likes}</td>
-            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums">${d.replies}</td>
-            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums;color:#fbbf24">${ltr.toFixed(1)}</td>
-            <td style="padding:8px"><span style="font-size:.68rem;color:${_ovPathColor(pt)}">${_ovPathLabel(pt)}</span></td>
-            <td style="padding:8px">${_ovAttrBadge(bestAttr(d.attrLvs))}</td>
-          </tr>`
-        }).join(''):`<tr><td colspan="9" style="padding:16px;text-align:center;color:var(--text3);font-size:.8rem">此期間無發文記錄</td></tr>`}
-      </tbody>
-    </table></div>`
+  // 角色 meta (roleType / dir)
+  const actorMeta={}; try{ allActors().forEach(a=>{ actorMeta[a.name]=a.raw }) }catch(e){}
 
-  // 本週行動建議
-  const actions=[]
-  if(acctRows.length){
-    const top=acctRows[0]; if(top[1].views>500) actions.push({icon:'⚡',text:`<b>${escHtml(top[0])}</b> 本期曝光最高（${top[1].views.toLocaleString()}），持續發同類主題`})
-    const low=acctRows.find(([,d])=>d.count>0&&d.views<50); if(low) actions.push({icon:'⚠️',text:`<b>${escHtml(low[0])}</b> 曝光偏低，考慮調整 hook 或發文時間`})
+  // ── Helpers ───────────────────────────────────────────────────────────
+  const H=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  const delta=(curr,prev)=>{
+    if(prev===0) return `<span style="color:var(--text3);font-size:.65rem">無前期</span>`
+    const d=curr-prev, up=d>=0
+    return `<span style="color:${up?'var(--green2)':'var(--red)'};font-size:.65rem">${up?'↑':'↓'} ${Math.abs(d)} 較上期</span>`
   }
-  const missing=acts.filter(a=>!(a.platformMetrics?.Threads?.views))
-  if(missing.length>0) actions.push({icon:'📋',text:`<b>${missing.length} 筆</b>發文尚未記錄成效數字`})
-  if(cReg===0&&regs.length===0) actions.push({icon:'📊',text:'本期尚無後台對帳資料，請至「後台對帳」填入'})
-  const noBio=acts.filter(a=>!a.path_type||a.path_type==='bio')
-  if(noBio.length>acts.length*0.5) actions.push({icon:'🔗',text:`${noBio.length} 筆貼文缺乏明確導流 URL，建議補齊 landingUrl 以提升歸因準確性`})
+  const rtC=rt=>({'真人+平台':'#3b82f6','平台':'#64748b','真人':'#10b981','真人回覆':'#8b5cf6'}[rt]||'#64748b')
+  const rtChip=rt=>rt?`<span style="font-size:.6rem;padding:1px 5px;border-radius:3px;background:${rtC(rt)}22;color:${rtC(rt)};border:1px solid ${rtC(rt)}44;white-space:nowrap;margin-left:4px">${H(rt)}</span>`:''
+  const cardS='background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px'
+  const secLabel='font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px'
+  const rowDiv='display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border2)'
 
-  document.getElementById('ov-actions').innerHTML=`
-    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">本週行動建議</div>
-    ${actions.length?`<div style="display:flex;flex-direction:column;gap:8px">${actions.map(a=>`
-      <div style="display:flex;gap:10px;padding:9px 12px;border-radius:7px;background:var(--bg3);border:1px solid var(--border);font-size:.75rem;color:var(--text2)">
-        <span style="flex-shrink:0">${a.icon}</span><span>${a.text}</span>
-      </div>`).join('')}</div>`
-    :`<p style="color:var(--text3);font-size:.78rem;padding:8px 0">目前無待辦行動建議 🎉</p>`}`
+  // ── ① KPI 總覽 (4 格) ────────────────────────────────────────────────
+  const kpiHtml=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">${
+    [['實際注冊','人',cReg,pReg,'var(--green2)'],
+     ['有效互動紀錄','筆',acts.length,prevActs.length,'var(--accent)'],
+     ['有效路徑數','條',pathRows.length,0,'#a78bfa'],
+     ['發文帳號數','個',acctRows.length,prevActiveCount,'#fb923c']
+    ].map(([lbl,unit,val,pval,col])=>`
+    <div style="background:var(--bg3);border-radius:10px;padding:14px 16px;border:1px solid var(--border)">
+      <div style="${secLabel}">${lbl}</div>
+      <div style="font-size:1.65rem;font-weight:800;letter-spacing:-.03em;color:${col};font-variant-numeric:tabular-nums">${val}<span style="font-size:.72rem;color:var(--text3);font-weight:400;margin-left:3px">${unit}</span></div>
+      <div style="margin-top:5px">${pval>0?delta(val,pval):`<span style="font-size:.63rem;color:var(--text3)">${start.slice(5)} → ${end.slice(5)}</span>`}</div>
+    </div>`).join('')
+  }</div>`
+
+  // ② 帳號效益排行
+  const rankHtml=`<div style="${cardS}">
+    <div style="${secLabel}">帳號效益排行</div>
+    ${acctRows.length?acctRows.slice(0,8).map(([name,d])=>{
+      const rt=actorMeta[name]?.roleType||''
+      const dir=actorMeta[name]?.dir||''
+      return `<div style="${rowDiv}">
+        <div>
+          <span style="font-size:.78rem;font-weight:600;color:var(--text)">${H(name)}</span>${rtChip(rt)}
+          ${dir?`<div style="font-size:.6rem;color:var(--text3);margin-top:1px">${H(dir)}</div>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span style="font-size:.7rem;color:var(--text3)">${d.count}篇</span>
+          ${d.views>0?`<span style="font-size:.7rem;color:var(--text2)">${d.views.toLocaleString()}曝</span>`:''}
+          <span style="font-size:.7rem;color:var(--accent)">${d.likes}讚</span>
+        </div>
+      </div>`
+    }).join(''):`<p style="color:var(--text3);font-size:.78rem;padding:8px 0">此期間無發文記錄</p>`}
+  </div>`
+
+  // ③ 路徑轉化分析
+  const pathHtml=`<div style="${cardS}">
+    <div style="${secLabel}">路徑轉化分析</div>
+    ${pathRows.length?pathRows.map(([pt,d])=>{
+      const ltr=d.views>0?(d.likes/d.views*1000):0
+      const col=_ovPathColor(pt)
+      return `<div style="${rowDiv}">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="color:${col};font-size:1rem;line-height:1">●</span>
+          <span style="font-size:.78rem;font-weight:500;color:var(--text)">${_ovPathLabel(pt)}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span style="font-size:.7rem;color:var(--text3)">${d.count}篇</span>
+          ${d.views>0?`<span style="font-size:.7rem;color:var(--text2)">${d.views.toLocaleString()}曝</span>`:''}
+          <span style="font-size:.7rem;color:#fbbf24">${ltr.toFixed(1)}‰</span>
+        </div>
+      </div>`
+    }).join(''):`<p style="color:var(--text3);font-size:.78rem;padding:8px 0">此期間無路徑記錄</p>`}
+    ${metaSpend>0?`<div style="margin-top:8px;font-size:.68rem;color:var(--text3);border-top:1px solid var(--border);padding-top:8px">廣告支出 NT$${metaSpend.toLocaleString()} · 廣告曝光 ${metaImpr.toLocaleString()}</div>`:''}
+  </div>`
+
+  // ④ 漏斗
+  const maxV=Math.max(totImpr,1)
+  const funnelHtml=`<div style="${cardS};margin-bottom:14px">
+    <div style="${secLabel}">完整漏斗</div>
+    ${[{label:'總曝光',val:totImpr,col:'rgba(96,165,250,.4)'},{label:'互動（讚+留言）',val:totLikes+totReplies,col:'rgba(167,139,250,.5)'},{label:'完成注冊',val:cReg,col:'rgba(34,197,94,.6)'},{label:'首次儲值',val:cDep,col:'rgba(34,197,94,.8)'}]
+    .map((s,i,arr)=>{
+      const pct=maxV>0?Math.max(s.val/maxV*100,0.4):0.4
+      const prev=i>0?arr[i-1].val:null
+      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+        <div style="width:80px;font-size:.67rem;color:var(--text2);text-align:right;flex-shrink:0">${s.label}</div>
+        <div style="flex:1;background:var(--bg3);border-radius:4px;height:22px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${s.col};border-radius:4px;display:flex;align-items:center;padding:0 7px;font-size:.68rem;font-weight:700;color:#fff;white-space:nowrap;min-width:28px">${s.val.toLocaleString()}</div>
+        </div>
+        <div style="width:40px;font-size:.63rem;color:var(--text3);flex-shrink:0">${prev!==null&&prev>0?(s.val/prev*100).toFixed(1)+'%':'100%'}</div>
+      </div>`
+    }).join('')}
+  </div>`
+
+  // ⑤ 決策建議（自動計算）
+  const goList=[], watchList=[], stopList=[]
+  if(acctRows.length){
+    const top3=acctRows.filter(([,d])=>d.count>=3).slice(0,3)
+    top3.forEach(([name,d])=>{ const rt=actorMeta[name]?.roleType||''; goList.push(`${H(name)}${rt?' · '+H(rt):''}：高頻發文，持續加碼`) })
+    const topView=acctRows.find(([,d])=>d.views>500)
+    if(topView&&!top3.find(([n])=>n===topView[0])) goList.push(`${H(topView[0])}：本期曝光最高（${topView[1].views.toLocaleString()}），維持主題方向`)
+  }
+  const trustPath=pathMap['trust']; if(trustPath&&trustPath.count>=3) goList.push('信任路徑發文效益佳，加大頻率')
+  acctRows.filter(([,d])=>d.views>200&&d.views>0&&d.likes/d.views<0.005).forEach(([n])=>watchList.push(`${H(n)}：曝光高但讚率偏低，調整貼文 hook`))
+  const missingMetrics=acts.filter(a=>!a.platformMetrics?.Threads?.views)
+  if(missingMetrics.length>3) watchList.push(`${missingMetrics.length} 筆發文未回填成效數字`)
+  if(cReg===0&&regs.length===0) watchList.push('本期尚無後台對帳資料，請補填')
+  const noBioPath=acts.filter(a=>!a.path_type||a.path_type==='bio')
+  if(noBioPath.length>acts.length*0.6&&acts.length>5) watchList.push(`${noBioPath.length} 筆貼文缺乏明確導流路徑`)
+  const metaROI=metaSpend>0&&cAmt>0?(cAmt/metaSpend):0
+  if(metaSpend>0&&metaROI<2) stopList.push(`Meta 廣告 ROI 偏低（${metaROI.toFixed(1)}x），考慮暫停`)
+  const zeroAccts=acctRows.filter(([,d])=>d.count===1&&d.views===0)
+  if(zeroAccts.length) stopList.push(`${zeroAccts.length} 個帳號本期僅1篇且零曝光`)
+  if(goList.length===0&&acctRows.length===0) goList.push('尚無發文資料，先至「社群互動」記錄貼文')
+
+  const decCol=(col,items,icon)=>`<div style="border-radius:8px;padding:11px 13px;background:${col}11;border:1px solid ${col}44">
+    <div style="font-size:.7rem;font-weight:700;color:${col};margin-bottom:8px">${icon==='↑'?'加碼':icon==='⚠'?'觀察':'檢討'}</div>
+    ${items.length?items.map(t=>`<div style="font-size:.7rem;color:var(--text2);padding:3px 0;display:flex;gap:5px;align-items:flex-start"><span style="color:${col};flex-shrink:0;margin-top:1px">${icon}</span>${t}</div>`).join('')
+    :`<div style="font-size:.68rem;color:var(--text3)">無待${icon==='↑'?'加碼':icon==='⚠'?'觀察':'檢討'}事項</div>`}
+  </div>`
+
+  const decisionHtml=`<div style="${cardS}">
+    <div style="${secLabel}">決策建議</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      ${decCol('var(--green2)',goList,'↑')}
+      ${decCol('#fbbf24',watchList,'⚠')}
+      ${decCol('var(--red)',stopList,'✗')}
+    </div>
+  </div>`
+
+  // ── 最終組裝 ─────────────────────────────────────────────────────────
+  const el=document.getElementById('ov-dashboard'); if(!el) return
+  el.innerHTML=kpiHtml
+    +`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">${rankHtml}${pathHtml}</div>`
+    +funnelHtml+decisionHtml
 }
 
 // ===== HELPERS =====
