@@ -6807,8 +6807,9 @@ function _weekPlanDates(offset){
   const mon=new Date(now); mon.setDate(now.getDate()+diffToMon+offset*7)
   return Array.from({length:7},(_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d.toISOString().split('T')[0] })
 }
+function _getScripts(){ const r=DB.get('weekly_scripts'); return (r&&!Array.isArray(r)&&typeof r==='object')?r:{} }
 function openWeeklyScript(key,label,wkOverride){
-  const scripts=DB.get('weekly_scripts')||{}
+  const scripts=_getScripts()
   const wk=wkOverride||getWeekKey()
   const fullKey=`${key}::${wk}`
   document.getElementById('ws-key').value=fullKey
@@ -6823,7 +6824,7 @@ async function saveWeeklyScript(){
   const key=document.getElementById('ws-key').value
   const body=document.getElementById('ws-body').value.trim()
   const statusEl=document.getElementById('ws-status')
-  const scripts=DB.get('weekly_scripts')||{}
+  const scripts=_getScripts()
   if(body) scripts[key]=body; else delete scripts[key]
   DB.set('weekly_scripts',scripts)
   statusEl.textContent='同步中…'
@@ -6880,7 +6881,7 @@ function renderWeeklyCalendarView(){
   const el=document.getElementById('weekly-post-plan'); if(!el) return
   const {yr,mo,weeks}=_monthCal(_wpMonthOffset)
   const today=new Date().toISOString().split('T')[0]
-  const scripts=DB.get('weekly_scripts')||{}
+  const scripts=_getScripts()
   const actors=_wpActors()
   // 建立分類排序（同列表視圖）
   const allCatOrder=[], allCatMap={}
@@ -6976,7 +6977,7 @@ function renderWeeklyCalendarView(){
 
 function openMonthlyScriptEditor(){
   const {yr,mo,weeks}=_monthCal(_wpMonthOffset)
-  const scripts=DB.get('weekly_scripts')||{}
+  const scripts=_getScripts()
   const actors=_wpActors()
   const cats=[...(new Set(actors.map(a=>a.raw?.dir||'其他')))]
   const MN=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
@@ -7049,7 +7050,7 @@ function mseSelectCat(idx){
 
 async function saveMonthlyScripts(){
   const cats=window._mseCats||[], wks=window._mseWks||[]
-  const scripts=DB.get('weekly_scripts')||{}
+  const scripts=_getScripts()
   cats.forEach((cat,ci)=>wks.forEach((wk,wi)=>{
     const ta=document.getElementById(`mse-${ci}-${wi}`)
     if(!ta) return
@@ -7059,7 +7060,7 @@ async function saveMonthlyScripts(){
   DB.set('weekly_scripts',scripts)
   try{ await DB.push('weekly_scripts') }catch(e){}
   closeModal('modal-monthly-script')
-  showToast('月腳本已儲存 ✓')
+  toast('月腳本已儲存 ✓')
   if(_wpView==='month') renderWeeklyCalendarView(); else renderWeeklyPostPlan()
 }
 
@@ -7092,7 +7093,7 @@ function renderWeeklyPostPlan(){
   ta.filter(r=>r.status!=='略過'&&r.date>=dates[0]&&r.date<=dates[6])
     .forEach(r=>{ const k=r.personaName||'?'; if(!cmap[k])cmap[k]={}; cmap[k][r.date]=(cmap[k][r.date]||0)+1 })
 
-  const scripts=DB.get('weekly_scripts')||{}
+  const scripts=_getScripts()
   const wk=getWeekKey()
   const esc=s=>(s||'').replace(/'/g,"\\'")
   const sq=(_wpSearch||'').trim().toLowerCase()
