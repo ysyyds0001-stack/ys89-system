@@ -2550,9 +2550,12 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   </div>
   <!-- 帳號類型總覽分頁 -->
   <div class="card" style="margin-bottom:20px">
-    <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px">
-      <button id="acttab-ai" onclick="switchActTypeTab('ai')" style="background:none;border:none;border-bottom:2px solid var(--accent);color:var(--accent);padding:8px 18px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap">📊 主力發文帳號</button>
-      <button id="acttab-forum" onclick="switchActTypeTab('forum')" style="background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);padding:8px 18px;font-size:.82rem;cursor:pointer;white-space:nowrap">💬 真人回覆帳號</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:14px">
+      <div style="display:flex;gap:0">
+        <button id="acttab-ai" onclick="switchActTypeTab('ai')" style="background:none;border:none;border-bottom:2px solid var(--accent);color:var(--accent);padding:8px 18px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap">📊 主力發文帳號</button>
+        <button id="acttab-forum" onclick="switchActTypeTab('forum')" style="background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);padding:8px 18px;font-size:.82rem;cursor:pointer;white-space:nowrap">💬 真人回覆帳號</button>
+      </div>
+      <button onclick="if(confirm('重置帳號清單為共識版本？現有欄位資料將清除。')){DB.set('acct_overview',null);renderActTypeTab();}" style="background:none;border:1px dashed var(--border2);border-radius:5px;color:var(--text3);font-size:.65rem;padding:3px 9px;cursor:pointer;margin-right:6px;white-space:nowrap">↺ 重置清單</button>
     </div>
     <div id="act-type-body"></div>
   </div>
