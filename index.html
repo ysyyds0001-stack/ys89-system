@@ -5040,7 +5040,9 @@ function renderGrowthOverview(){
   </div>`
 
   // ── 最終組裝 ─────────────────────────────────────────────────────────
-  const el=document.getElementById('ov-dashboard'); if(!el) return
+  const el=document.getElementById('ov-dashboard')
+  console.log('[OV] render start, el=',!!el,'acts=',acts.length,'cReg=',cReg)
+  if(!el) return
   el.innerHTML=kpiHtml
     +`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">${rankHtml}${pathHtml}</div>`
     +funnelHtml+decisionHtml
