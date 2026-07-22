@@ -4826,6 +4826,8 @@ function _migratePersonaCategories(){
     'Jason Chen':     {dir:'真人回覆',      roleType:'真人回覆'},
     '林家益':         {dir:'真人回覆',      roleType:'真人回覆'},
   }
+  // 顯示名稱正規化（舊帳號名稱 → 新顯示名稱）
+  const NAME_FIX={'haogamediary':'小豪遊戲筆記'}
   let changed=false
   ;['personas','community','seeding_accounts'].forEach(key=>{
     const list=DB.get(key)||[]
@@ -4835,6 +4837,7 @@ function _migratePersonaCategories(){
       if(m&&(p.dir!==m.dir||p.roleType!==m.roleType)){
         p.dir=m.dir; p.roleType=m.roleType; keyChanged=true; changed=true
       }
+      if(NAME_FIX[p.name]&&key==='personas'){ p.name=NAME_FIX[p.name]; keyChanged=true; changed=true }
     })
     if(keyChanged) DB.set(key,list)
   })
