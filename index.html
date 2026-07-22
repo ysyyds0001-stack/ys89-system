@@ -6464,39 +6464,39 @@ function saveAnonActor(){
   toast('✅ 已儲存')
 }
 
-// ── 帳號類型分頁資料（版本 2，2026-07 共識清單）──
+// ── 帳號類型分頁資料（版本 3，2026-07 共識清單，method 獨立欄位）──
 const _ACCT_DEFAULT = {
-  _version: 2,
+  _version: 3,
   ai: [
-    { name:'阿奇',           cat:'體育賽事',       followsTh:86,  followsIg:null, note:'真人+平台', landing:'' },
-    { name:'kk',             cat:'體育賽事',       followsTh:124, followsIg:null, note:'threads無法使用', landing:'' },
-    { name:'體育賽事排番大叔', cat:'體育賽事',       followsTh:0,   followsIg:null, note:'真人+平台', landing:'' },
-    { name:'財神',           cat:'體育賽事',       followsTh:221, followsIg:null, note:'真人+平台', landing:'' },
-    { name:'米亞運動賽事',    cat:'體育賽事',       followsTh:0,   followsIg:null, note:'平台', landing:'' },
-    { name:'全球球賽情報站',  cat:'體育賽事',       followsTh:0,   followsIg:null, note:'平台', landing:'' },
-    { name:'哈哈看球',        cat:'體育賽事',       followsTh:0,   followsIg:null, note:'平台', landing:'' },
-    { name:'AI體育賽事分析',  cat:'體育賽事',       followsTh:0,   followsIg:null, note:'平台', landing:'' },
-    { name:'陳亦強',          cat:'AI預測平台工具',  followsTh:30,  followsIg:null, note:'真人', landing:'' },
-    { name:'小豪遊戲筆記',    cat:'部落格真人角',   followsTh:0,   followsIg:null, note:'真人+平台', landing:'' },
-    { name:'魚池阿智',        cat:'部落格真人角',   followsTh:null,followsIg:null, note:'真人+平台', landing:'' },
-    { name:'捕魚老司機阿網',  cat:'捕魚',          followsTh:95,  followsIg:null, note:'平台', landing:'' },
-    { name:'戰術阿森',        cat:'百家樂',         followsTh:0,   followsIg:null, note:'真人+平台', landing:'' },
-    { name:'詩涵',            cat:'百家樂',         followsTh:0,   followsIg:null, note:'真人', landing:'' },
-    { name:'沐木Mu',          cat:'獎號通',         followsTh:0,   followsIg:null, note:'真人', landing:'' },
-    { name:'昭涵',            cat:'獎號通',         followsTh:0,   followsIg:null, note:'真人', landing:'' },
+    { name:'阿奇',           cat:'體育賽事',       method:'真人+平台', followsTh:86,  followsIg:null, note:'', landing:'' },
+    { name:'kk',             cat:'體育賽事',       method:'真人+平台', followsTh:124, followsIg:null, note:'threads無法使用', landing:'' },
+    { name:'體育賽事排番大叔', cat:'體育賽事',       method:'真人+平台', followsTh:0,   followsIg:null, note:'', landing:'' },
+    { name:'財神',           cat:'體育賽事',       method:'真人+平台', followsTh:221, followsIg:null, note:'', landing:'' },
+    { name:'米亞運動賽事',    cat:'體育賽事',       method:'平台',      followsTh:0,   followsIg:null, note:'', landing:'' },
+    { name:'全球球賽情報站',  cat:'體育賽事',       method:'平台',      followsTh:0,   followsIg:null, note:'', landing:'' },
+    { name:'哈哈看球',        cat:'體育賽事',       method:'平台',      followsTh:0,   followsIg:null, note:'', landing:'' },
+    { name:'AI體育賽事分析',  cat:'體育賽事',       method:'平台',      followsTh:0,   followsIg:null, note:'', landing:'' },
+    { name:'陳亦強',          cat:'AI預測平台工具',  method:'真人',      followsTh:30,  followsIg:null, note:'', landing:'' },
+    { name:'小豪遊戲筆記',    cat:'部落格真人角',   method:'真人+平台', followsTh:0,   followsIg:null, note:'', landing:'' },
+    { name:'魚池阿智',        cat:'部落格真人角',   method:'真人+平台', followsTh:null,followsIg:null, note:'', landing:'' },
+    { name:'捕魚老司機阿網',  cat:'捕魚',          method:'平台',      followsTh:95,  followsIg:null, note:'', landing:'' },
+    { name:'戰術阿森',        cat:'百家樂',         method:'真人+平台', followsTh:0,   followsIg:null, note:'', landing:'' },
+    { name:'詩涵',            cat:'百家樂',         method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
+    { name:'沐木Mu',          cat:'獎號通',         method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
+    { name:'昭涵',            cat:'獎號通',         method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
   ],
   forum: [
-    { name:'倪',          cat:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'Ian Lin',     cat:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'阿象',         cat:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'zahra',       cat:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'BS',          cat:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'愛羅絲',       cat:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'Anne',        cat:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'米恩',         cat:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'Jack是個柴迷', cat:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'Jason Chen',  cat:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'林家益',       cat:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'倪',          cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'Ian Lin',     cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'阿象',         cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'zahra',       cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'BS',          cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'愛羅絲',       cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'Anne',        cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'米恩',         cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'Jack是個柴迷', cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'Jason Chen',  cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'林家益',       cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
   ]
 };
 let _actTypeTab = 'ai';
@@ -6580,14 +6580,20 @@ function renderActTypeTab(){
   const IS = 'background:none;border:none;border-bottom:1px dashed rgba(255,255,255,.15);color:var(--text1);font-size:.81rem;padding:2px 0;outline:none;width:100%';
   const rows = list.map(a=>{
     const catCol=_CAT_COL[a.cat]||'#94a3b8'
-    const ROLE_TYPES=['真人+平台','平台','真人','真人回覆']
-    const roleType=ROLE_TYPES.includes(a.note)?a.note:''
-    const catCell=`<div style="display:flex;flex-direction:column;gap:4px">
+    const METHOD_COL={'真人+平台':'#3b82f6','平台':'#64748b','真人':'#10b981','真人回覆':'#8b5cf6'}
+    const mCol=METHOD_COL[a.method]||'#64748b'
+    const catCell=`<div style="display:flex;flex-direction:column;gap:5px">
       <select onchange="updateAcctField('${_actTypeTab}','${a.id}','cat',this.value);renderActTypeTab()"
         style="background:${catCol}1a;color:${catCol};border:1px solid ${catCol}44;border-radius:10px;font-size:.62rem;font-weight:600;padding:2px 8px;outline:none;cursor:pointer;max-width:130px">
         ${Object.keys(_CAT_COL).map(c=>`<option value="${c}"${c===a.cat?' selected':''}>${c}</option>`).join('')}
       </select>
-      ${roleType?`<span style="font-size:.6rem;color:var(--text3);padding-left:4px">${roleType}</span>`:''}
+      <div style="display:flex;align-items:center;gap:4px;padding-left:2px">
+        <span style="font-size:.58rem;color:var(--text3);white-space:nowrap">經營方式</span>
+        <select onchange="updateAcctField('${_actTypeTab}','${a.id}','method',this.value);renderActTypeTab()"
+          style="background:${mCol}18;color:${mCol};border:1px solid ${mCol}44;border-radius:8px;font-size:.6rem;font-weight:600;padding:1px 6px;outline:none;cursor:pointer">
+          ${['真人+平台','平台','真人','真人回覆'].map(m=>`<option value="${m}"${m===a.method?' selected':''}>${m}</option>`).join('')}
+        </select>
+      </div>
     </div>`
     const linkCell = a.linked
       ? `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
@@ -6632,7 +6638,7 @@ function renderActTypeTab(){
       </td>
       ${_actTypeTab==='ai' ? `<td style="padding:7px 10px;min-width:140px">
         <div style="display:flex;align-items:center;gap:5px">
-          <input data-f="landing" value="${_escVal(a.landing||'')}" placeholder="貼上連結或頁面名稱"
+          <input data-f="landing" value="${_escVal(a.landing||'')}" placeholder="帳號連結或網址"
             onchange="updateAcctField('${_actTypeTab}','${a.id}','landing',this.value);(function(inp){const lnk=inp.parentElement.querySelector('a');if(lnk){lnk.href=inp.value||'#';lnk.style.opacity=inp.value?'1':'0.25';lnk.style.pointerEvents=inp.value?'auto':'none'}})(this)"
             style="${IS};font-size:.74rem;color:#fbbf24;flex:1">
           <a href="${_escVal(a.landing||'#')}" target="_blank" rel="noopener" title="前往落地頁"
@@ -6653,7 +6659,7 @@ function renderActTypeTab(){
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">追蹤 IG/TH</th>
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">狀態</th>
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">備註</th>
-      ${_actTypeTab==='ai' ? '<th style="padding:8px 10px;text-align:left;font-size:.72rem;color:#fbbf24;font-weight:600">導流落地頁</th>' : ''}
+      ${_actTypeTab==='ai' ? '<th style="padding:8px 10px;text-align:left;font-size:.72rem;color:#fbbf24;font-weight:600">帳號連結</th>' : ''}
       <th style="padding:8px 10px;text-align:left;font-size:.72rem;color:var(--text2);font-weight:600">關聯</th>
       <th style="width:28px"></th>
     </tr></thead>
