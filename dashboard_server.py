@@ -19,6 +19,13 @@ class DashboardHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=BASE_DIR, **kwargs)
 
+    def end_headers(self):
+        # 靜態 HTML/JS/CSS 不快取，確保每次重整拿到最新檔案
+        if self.path.endswith(('.html', '.js', '.css')) or self.path in ('/', ''):
+            self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
+            self.send_header('Pragma', 'no-cache')
+        super().end_headers()
+
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         if parsed.path == '/api/ga4-custom':

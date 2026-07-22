@@ -87,7 +87,7 @@ nav{background:#0d0b0a;border-bottom:1px solid var(--border);padding:0 20px;disp
 .badge{display:inline-flex;align-items:center;font-size:.72rem;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
 .b-green{background:#1a0e08;color:var(--accent)}
 .b-green2{background:#221408;color:var(--amber4)}
-.b-gray{background:#161412;color:var(--text3)}
+.b-gray{background:#161412;color:var(--text2)}
 .b-red{background:#2a1515;color:#f87171}
 .b-yellow{background:#2a2210;color:#fbbf24}
 .b-blue{background:#10182a;color:#60a5fa}
@@ -115,7 +115,7 @@ select option{background:#0f0d0b}
 
 /* TABLE */
 table{width:100%;border-collapse:collapse;font-size:.83rem}
-th{background:#0d0b0a;color:var(--text3);font-weight:500;padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+th{background:#0d0b0a;color:var(--text2);font-weight:500;padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
 td{padding:9px 12px;border-bottom:1px solid #0f0d0b;color:var(--text2);vertical-align:middle}
 tr:hover td{background:#0f0d0b}
 
@@ -292,11 +292,13 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-brand">YS89<span>發文管理系統</span></div>
   <div id="sync-status" style="font-size:.72rem;color:var(--accent);margin-left:8px;opacity:.8"></div>
   <div class="nav-sep"></div>
-  <div class="nav-tab active" onclick="nav(this,'multipost')">📡 多平台發文</div>
-  <div class="nav-tab" onclick="nav(this,'threadtracker')">🔥 社群炒群</div>
+  <div class="nav-tab active" onclick="nav(this,'overview')">🏠 成長概覽</div>
+  <div class="nav-sep"></div>
+  <div class="nav-tab" onclick="nav(this,'multipost')">📡 矩陣發文</div>
+  <div class="nav-tab" onclick="nav(this,'threadtracker')">🤝 社群互動</div>
   <div class="nav-tab" onclick="nav(this,'channel')">📝 匿名社群</div>
   <div class="nav-tab" onclick="nav(this,'channelfb')">📘 臉書社團</div>
-  <div class="nav-tab" onclick="nav(this,'conv')">💰 轉化區</div>
+  <div class="nav-tab" onclick="nav(this,'conv')">🎯 直接轉化</div>
   <div class="nav-sep"></div>
   <div class="nav-tab" onclick="nav(this,'community')">👤 角色</div>
   <div class="nav-sep"></div>
@@ -368,6 +370,11 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <!-- 關鍵發現（依本期日期生成） -->
     <div class="card" id="ms-insights" style="border-left:3px solid var(--accent2);margin-bottom:14px">
       <p class="tm" style="font-size:.78rem;padding:8px 0">點「更新報告」後顯示關鍵發現</p>
+    </div>
+
+    <!-- ① 商業成果總覽（real_reg） -->
+    <div class="card" id="ms-biz-kpis" style="border-left:3px solid #22c55e;margin-bottom:16px">
+      <p class="tm" style="font-size:.78rem;padding:8px 0">載入中...</p>
     </div>
 
     <!-- 5 KPI 總覽 -->
@@ -1187,15 +1194,22 @@ function renderExposurePanel(d, period) {
   // 依期間決定日期範圍與 GA4 帳號資料
   const ranges = d.ranges || {};
   const rangeMap = {
-    '3d':  { str: ranges['3d']  || '', ga4: d.accounts_3d  || [], label: '近 3 天' },
-    '7d':  { str: ranges['7d']  || '', ga4: d.accounts_7d  || [], label: '近 7 天' },
-    '28d': { str: ranges['28d'] || '', ga4: d.accounts_28d || [], label: '近 28 天' },
-    'cum': { str: ranges['28d'] || '', ga4: d.accounts_28d || [], label: '累積 28 天' },
+    '3d':    { str: ranges['3d']     || '', ga4: d.accounts_3d     || [], label: '近 3 天' },
+    '7d':    { str: ranges['7d']     || '', ga4: d.accounts_7d     || [], label: '近 7 天' },
+    '28d':   { str: ranges['28d']    || '', ga4: d.accounts_28d    || [], label: '近 28 天' },
+    'cum':   { str: ranges['28d']    || '', ga4: d.accounts_28d    || [], label: '累積 28 天' },
+    'custom':{ str: ranges['custom'] || '', ga4: d.accounts_custom || [], label: '自訂' },
   };
   const rm = rangeMap[period] || rangeMap['7d'];
-  if (lbl) lbl.textContent = rm.str ? `資料：${rm.str}` : '';
 
-  const [startDate, endDate] = rm.str.includes('~') ? rm.str.split('~') : ['', ''];
+  // 優先使用開會對比區間 (_msPeriod)，確保與路線效率對比等區塊日期一致
+  const msStart = (typeof _msPeriod !== 'undefined') ? _msPeriod?.start : '';
+  const msEnd   = (typeof _msPeriod !== 'undefined') ? _msPeriod?.end   : '';
+  const useMs   = msStart && msEnd;
+  const expStr  = useMs ? `${msStart}~${msEnd}` : rm.str;
+  if (lbl) lbl.textContent = expStr ? `資料：${expStr}` : '';
+
+  const [startDate, endDate] = expStr.includes('~') ? expStr.split('~') : ['', ''];
 
   // 建立 GA4 帳號 Map
   // 28d/cum 使用全量 accounts（不限 top 5）；7d/3d 只用期間 top 5，避免跨期時間不對稱
@@ -1203,7 +1217,7 @@ function renderExposurePanel(d, period) {
   if (period === '28d' || period === 'cum') {
     (d.accounts || []).forEach(a => { ga4Map[a.name] = a; });
   } else {
-    rm.ga4.forEach(a => { ga4Map[a.name] = a; });
+    (rm.ga4 || []).forEach(a => { ga4Map[a.name] = a; });
   }
 
   // 從社群炒群記錄篩出期間內有成效資料的活動
@@ -1986,7 +2000,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   <div class="g2" style="align-items:start">
     <div class="card">
       <div class="fg"><label>① 選水軍是誰 <span style="color:var(--text3);font-size:.72rem">utm_source（來自社群水軍號）</span></label>
-        <select id="u-persona" onchange="utmGen()"></select></div>
+        <select id="u-persona" onchange="_utmPersonaChange()"></select></div>
       <div class="fr">
         <div class="fg"><label>② 貼在哪 <span style="color:var(--text3);font-size:.72rem">utm_medium</span></label>
           <select id="u-medium" onchange="utmMedChange()">
@@ -2217,6 +2231,59 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     <div class="fg"><label>儲值人數</label><input id="cv-dep-count" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
     <div class="fg"><label>儲值金額 NT$</label><input id="cv-dep" type="number" min="0" placeholder="0" inputmode="numeric" style="width:100%"></div>
     <div class="fb" style="margin-top:14px"><button class="btn btn-outline" onclick="closeModal('modal-conv')">取消</button><button class="btn btn-primary" onclick="saveConv()">儲存</button></div>
+  </div>
+</div>
+
+<!-- ===== PAGE: 成長概覽 ===== -->
+<div id="pg-overview" class="page active">
+  <!-- 標題列 + 日期選擇 -->
+  <div class="fb" style="margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:1.1rem;font-weight:800;letter-spacing:-.02em">🏠 成長概覽</div>
+      <p class="tm" style="margin-top:2px">有效註冊 · 首存 · 漏斗 · 路徑 · 帳號排行 · 本週行動</p>
+    </div>
+    <div class="flex" style="gap:8px;flex-wrap:wrap">
+      <div class="flex" style="gap:4px">
+        <button class="btn btn-xs btn-outline" id="ov-q-week" onclick="_ovSetPeriod('week')" style="font-size:.7rem">本週</button>
+        <button class="btn btn-xs btn-outline" id="ov-q-lweek" onclick="_ovSetPeriod('lweek')" style="font-size:.7rem">上週</button>
+        <button class="btn btn-xs btn-outline" id="ov-q-month" onclick="_ovSetPeriod('month')" style="font-size:.7rem">本月</button>
+      </div>
+      <div class="flex" style="gap:4px">
+        <input type="date" id="ov-start" class="input-sm" onchange="renderGrowthOverview()" style="font-size:.72rem;padding:4px 7px">
+        <span style="color:var(--text3);font-size:.8rem;align-self:center">→</span>
+        <input type="date" id="ov-end" class="input-sm" onchange="renderGrowthOverview()" style="font-size:.72rem;padding:4px 7px">
+      </div>
+    </div>
+  </div>
+
+  <!-- ① 商業 KPI -->
+  <div id="ov-biz" class="card" style="margin-bottom:14px;border-left:3px solid var(--green2)">
+    <p class="tm" style="padding:12px 0">載入中…</p>
+  </div>
+
+  <!-- ② 社群指標 + 漏斗 (2欄) -->
+  <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:14px;margin-bottom:14px">
+    <div id="ov-social" class="card" style="border-left:3px solid var(--accent)">
+      <p class="tm" style="padding:12px 0">載入中…</p>
+    </div>
+    <div id="ov-funnel" class="card">
+      <p class="tm" style="padding:12px 0">載入中…</p>
+    </div>
+  </div>
+
+  <!-- ③ 路徑比較 + 本週行動 (2欄) -->
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:14px">
+    <div id="ov-paths" class="card">
+      <p class="tm" style="padding:12px 0">載入中…</p>
+    </div>
+    <div id="ov-actions" class="card">
+      <p class="tm" style="padding:12px 0">載入中…</p>
+    </div>
+  </div>
+
+  <!-- ④ 帳號成效排行 -->
+  <div id="ov-accounts" class="card" style="margin-bottom:14px">
+    <p class="tm" style="padding:12px 0">載入中…</p>
   </div>
 </div>
 
@@ -2513,6 +2580,8 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     </div>
     <div id="act-type-body"></div>
   </div>
+  <!-- 一週發布計畫 -->
+  <div id="weekly-post-plan" class="card" style="margin-bottom:20px"></div>
   <!-- 各分類區塊由 renderCommunity() 動態產生 -->
   <div id="actors-body"></div>
   <!-- 保留舊元素供內部函式參照（隱藏） -->
@@ -2623,7 +2692,8 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
         <option value="">全部狀態</option><option>待記錄</option><option>已記錄</option>
       </select>
       <button class="btn btn-primary" onclick="openAddThreadActivity()">+ 新增炒話題</button>
-      <button class="btn btn-outline" onclick="ttAutoBatchMetrics()" id="tt-auto-btn" title="自動讀取昨日所有待記錄貼文的 Threads 公開數據">⚡ 自動讀取成效</button>
+      <button class="btn btn-outline" onclick="ttAutoBatchMetrics()" id="tt-auto-btn" title="自動讀取今日/昨日所有待記錄貼文的 Threads 公開數據">⚡ 今日成效</button>
+      <button class="btn btn-outline" onclick="ttAutoBatchMetrics(true)" id="tt-auto-all-btn" title="批次更新所有待記錄貼文（含舊貼文）" style="border-color:var(--accent2);color:var(--accent2)">⚡ 更新全部待記錄</button>
     </div>
   </div>
   <div id="tt-today-banner" style="margin-bottom:16px"></div>
@@ -2913,6 +2983,28 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
 
 <!-- ============ MODALS ============ -->
 
+<!-- 快速更新提示詞 -->
+<div id="modal-quick-prompt" class="overlay">
+  <div class="modal">
+    <div class="mh">
+      <div class="mt" id="qp-title">✏️ 更新提示詞</div>
+      <button class="mc" onclick="closeModal('modal-quick-prompt')">✕</button>
+    </div>
+    <input type="hidden" id="qp-id">
+    <div style="font-size:.72rem;color:var(--text3);margin-bottom:10px">直接貼上完整提示詞 → 儲存即覆蓋 role 欄位，並同步至 CF Worker</div>
+    <div class="fg">
+      <textarea id="qp-role" rows="18" placeholder="貼上完整角色提示詞..." style="font-family:ui-monospace,monospace;font-size:.77rem;line-height:1.6;resize:vertical"></textarea>
+    </div>
+    <div class="fb" style="margin-top:8px;align-items:center">
+      <button class="btn btn-outline" onclick="closeModal('modal-quick-prompt')">取消</button>
+      <div style="display:flex;gap:8px">
+        <span id="qp-status" style="font-size:.72rem;color:var(--text3);align-self:center"></span>
+        <button class="btn btn-primary" onclick="saveQuickPrompt()">💾 儲存並同步</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- 角色詳情 -->
 <div id="modal-persona-detail" class="overlay">
   <div class="modal modal-lg">
@@ -2928,10 +3020,14 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     <input type="hidden" id="ap-id">
     <div class="fr"><div class="fg"><label>角色名稱</label><input id="ap-name" placeholder="例：Mark"></div>
     <div class="fg"><label>粉絲數</label><input type="number" id="ap-followers" placeholder="0"></div></div>
-    <div class="fr"><div class="fg"><label>發布方向</label>
-      <select id="ap-dir"><option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option><option>百家樂</option><option>老虎機</option><option>捕魚機</option><option>通用</option></select>
+    <div class="fr"><div class="fg"><label>分類</label>
+      <select id="ap-dir"><option>世足/運彩</option><option>體育</option><option>百家樂</option><option>電子遊戲</option><option>獎號通</option><option>金流/USDT</option><option>安全/法律</option><option>老虎機</option><option>捕魚機</option><option>通用</option></select>
     </div>
-    <div class="fg"><label>發布主題</label><input id="ap-direction" placeholder="例：出金/USDT/流水"></div></div>
+    <div class="fg"><label>經營類型</label>
+      <select id="ap-operation-type"><option value="">—</option><option>平台</option><option>人設+平台</option><option>真人</option><option>品牌主帳</option></select>
+    </div></div>
+    <div class="fr"><div class="fg"><label>帳號名稱／發布主題</label><input id="ap-direction" placeholder="例：出金/USDT/流水"></div>
+    <div class="fg"><label>Threads 帳號 Handle</label><input id="ap-ig-username" placeholder="例：meiyuecai4"></div></div>
     <div class="fg"><label>核心氣質</label><input id="ap-essence" placeholder="例：書呆子感、專注、安靜"></div>
     <div class="fg"><label>語氣風格</label><textarea id="ap-tone" rows="2" placeholder="描述語氣與寫作風格"></textarea></div>
     <div class="fg"><label>適合主題</label><textarea id="ap-topics" rows="2"></textarea></div>
@@ -2957,6 +3053,32 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <button class="btn btn-outline" onclick="closeModal('modal-add-persona')">取消</button>
       <button class="btn btn-primary" id="ap-save-btn" onclick="savePersona()">儲存角色</button>
     </div>
+  </div>
+</div>
+
+<!-- 角色範本/題材管理 -->
+<div id="modal-persona-templates" class="overlay">
+  <div class="modal modal-lg">
+    <div class="mh">
+      <div class="mt" id="pt-modal-title">📝 發文範本/題材</div>
+      <button class="mc" onclick="closeModal('modal-persona-templates')">✕</button>
+    </div>
+    <input type="hidden" id="pt-persona-id">
+    <div style="background:#0d0b0a;border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px">
+      <div style="font-size:.78rem;font-weight:600;color:var(--accent);margin-bottom:10px">＋ 新增範本/題材</div>
+      <div class="fr">
+        <div class="fg"><label>標題</label><input id="pt-title-input" placeholder="例：開賽前熱身文、世足AI預測切入"></div>
+        <div class="fg" style="max-width:140px"><label>類型</label>
+          <select id="pt-type">
+            <option value="題材">💡 題材（一次性想法）</option>
+            <option value="範本">📄 範本（可重複套用）</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>內容</label><textarea id="pt-body" rows="4" placeholder="發文內容、題材描述、或可套用的範本文字..."></textarea></div>
+      <button class="btn btn-primary" onclick="savePersonaTemplate()">新增</button>
+    </div>
+    <div id="pt-list"></div>
   </div>
 </div>
 
@@ -3530,7 +3652,24 @@ const DB={
     }catch(e){}
     return this.get(k)
   },
-  push(k){return fetch(API+'/api/'+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(this.get(k))})},
+  async push(k){
+    // 先從雲端拉最新資料，以 id 為主鍵合併，再上傳，防止本機覆蓋雲端獨有的記錄
+    let base=[];
+    try{
+      const r=await fetch(API+'/api/'+k);
+      if(r.ok){const d=await r.json();if(Array.isArray(d)&&d.length)base=d;}
+    }catch(e){}
+    const local=this.get(k);
+    if(Array.isArray(local)&&local.length&&Array.isArray(base)&&base.length){
+      const map={};
+      base.forEach(item=>{if(item?.id)map[item.id]=item;});
+      local.forEach(item=>{if(item?.id)map[item.id]=item;});  // 本機覆蓋同 id
+      const merged=Object.values(map);
+      localStorage.setItem(K+k,JSON.stringify(merged));
+      return fetch(API+'/api/'+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(merged)});
+    }
+    return fetch(API+'/api/'+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(local)});
+  },
   id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
 }
 
@@ -4312,13 +4451,13 @@ const DEFAULT_PERSONAS=[
     img:'封面圖（第1張）：\nCreate a 4:5 Instagram carousel cover in Traditional Chinese for "Diego 老粉筆記".\nMinimal dark football stadium background, strong floodlights, black and white sports editorial style, subtle muted gold accents, clean bold typography, no human face, no real player, no team logo.\nThe design should be very clean and simple, with a large readable headline, match score, and one short subtitle.\nMood: veteran football fan late-night match notes, calm, slightly tired, rational, not flashy.\nUse subtle football pitch texture and light stadium atmosphere.\nNo FIFA official logo, no official World Cup trophy, no real team logos, no real player faces, no casino imagery, no chips, no cards, no roulette, no money, no betting slip, no guaranteed prediction wording.\n\n內頁圖（第2張）：\nCreate a 4:5 Instagram carousel inner-page information card in Traditional Chinese for "Diego 老粉筆記".\nDark football stadium background with floodlights, black and white editorial sports design, subtle muted gold accents, clean information layout, tactical route lines, simple numbered sections, minimal football analysis card style.\nNo character face, no human portrait, no real player, no team logo.\nContent should be arranged into 3 to 4 short analysis points, with a small "本場看點" box at the bottom.\nMobile-readable, clean hierarchy, not too much text, spacious layout.\nNo FIFA official logo, no official World Cup trophy, no real team logos, no real player faces, no casino imagery, no chips, no cards, no roulette, no money, no betting slip, no guaranteed prediction wording.',
     postPrompts:[],createdAt:new Date().toISOString()},
 
-  {id:'p5',name:'阿奇',followers:86,dir:'世足/運彩',direction:'世足/運彩/體育投注',
-    essence:'熱血、有觀點、愛分析，像球迷圈裡的意見領袖',
-    tone:'熱血、有觀點、條理清晰，像球迷朋友中最懂數據的那位',
-    topics:'世足賽事分析、運彩走勢、球隊數據、賠率解讀',
-    forbidden:'不要：保證預測、穩賺推薦、誇大勝率',
-    role:'角色名稱：阿奇\n熱血體育投注分析師，以數據和觀察分享世足看法。定位：球迷圈裡的數據達人，不是包牌老師。',
-    img:'Passionate Taiwanese male sports analyst avatar. Enthusiastic expression, sports jersey or casual wear, football/soccer themed background with data charts. Deep blue and green tones.\n\nNo guaranteed wins, no betting guarantee.',
+  {id:'p5',name:'阿奇',followers:86,dir:'世足/社群',direction:'足球資訊/IG-Threads社群/SEO文案',
+    essence:'熱血、有觀點、愛分析的台灣男性球迷，像球迷圈裡最懂脈絡又願意幫大家整理重點的朋友',
+    tone:'有真人溫度與球迷心情，可興奮、期待、失望或好奇，但每個觀點必須有資訊依據。短段落、口語、適合手機閱讀，不像 AI 摘要或正式報告',
+    topics:'足球賽事分析、球隊數據整理、賽程資訊、球迷心得、世足觀察、SEO 足球文案、IG／Threads 圖文社群內容',
+    forbidden:'穩了、穩贏、必中、保證命中、直接衝、跟上就對了、神單、爆賺、內幕、包牌、上車、無腦跟；不做下注教學或賭博推廣；不要大量使用：不是……而是……、真正值得注意的是、這不只是一場比賽、當終場哨音響起、足球的魅力就在於、讓我們拭目以待、一場屬於球迷的盛宴、熱血再次點燃',
+    role:'你是一名資深足球社群內容企劃、SEO 文案編輯與 IG／Threads 圖文設計顧問。\n請使用「阿奇」的人設，根據我提供的文章連結、主題或補充資料，產出完整的 IG＋Threads 社群內容。\n\n【文章連結】\n【發布主題】\n【補充資料】\n\n=== 阿奇角色設定 ===\n阿奇是一名熱血、有觀點、愛分析的台灣男性球迷。\n他像朋友圈裡最懂比賽脈絡、又願意幫大家整理重點的人。\n語氣要有真人溫度與球迷心情，可以興奮、期待、失望或好奇，但每個觀點都必須有資訊依據。\n\n整體感覺：\n* 像真人球迷，不像新聞主播\n* 有分析感，但不賣弄專業\n* 有情緒，但不空喊口號\n* 有觀點，但不武斷\n* 短段落、口語、適合手機閱讀\n* 不像 AI 摘要或正式報告\n\n=== 文案結構 ===\nIG 文案優先依照以下順序：\n1. 事件或比賽現況\n2. 一點真人心情與球迷共鳴\n3. 整理 2～4 個資訊重點\n4. 補上阿奇自己的觀察\n5. 表達對後續賽事的期待\n6. 自然預告下一篇或引導看完整整理\n\n可使用自然口吻（不可每篇固定照抄，要依主題變化）：\n* 終於又有比賽可以追啦\n* 看完真的有點捨不得\n* 愛追球的人應該已經在找下一站了吧😂\n* 這段時間我會先看\n* 這個變化其實蠻值得注意\n* 光想到新賽季就開始期待了\n* 接下來也會繼續整理\n\n=== 文字規則 ===\n* IG 約 180～350 字\n* Threads 約 100～200 字\n* 每段約 1～4 行\n* 每段只講一個重點\n* 每篇使用 2～5 個表情符號\n* 可以使用「啦、吧、啊、真的、其實、蠻」\n* 有判斷時必須補充理由\n* SEO 關鍵字自然加入 2～4 個\n* 品牌詞自然加入 1～2 個（YS89 / YS89 世足資訊整理 / YS89 體育資訊整理）\n* 不要硬塞關鍵字或品牌名稱\n\n=== 避免 AI 感 ===\n不要大量使用：不是……而是……／真正值得注意的是／這不只是一場比賽／當終場哨音響起／足球的魅力就在於／讓我們拭目以待／接下來值得持續關注／一場屬於球迷的盛宴／熱血再次點燃。\n不要每篇都用「老實說」「我先說」「阿奇先講一句」。\n\n=== 禁用語氣 ===\n禁止出現：穩了／穩贏／必中／保證命中／直接衝／跟上就對了／神單／爆賺／內幕／包牌／上車／無腦跟\n內容以足球資訊、球迷心得與賽事理解為主，不做下注教學或賭博推廣。\n\n=== 圖文規則 ===\n每次產出兩張圖。第 1 張：封面圖。第 2 張：重點整理圖。\n固定尺寸：4:5 直式，1080 × 1350 px\n視覺主色：深藍、草綠、白色\n可使用：足球場線條、戰術箭頭、數據面板、賽程卡、比賽筆記、日曆、資訊圖卡\n角色阿奇的五官、臉型、髮型與辨識度不可改，只能調整動作、表情、站位、服裝與道具。\n禁止出現：真實球員臉／官方球隊 Logo／FIFA 或 UEFA Logo／官方獎盃／籌碼、紙鈔、金幣／casino、betting、下注單等元素\n\n=== 輸出格式 ===\n1. 主題判斷（資訊型/討論型/收藏型/導流型）\n2. 文章重點整理（1～3 點，含具體資訊與觀察依據）\n3. IG 發文文案（短段落、真人心情、資訊重點、個人觀察、後續預告、CTA 與 Hashtag）\n4. Threads 貼文（比 IG 更口語，挑最適合討論的觀點，結尾加問句或簡短 CTA）\n5. 第 1 張封面圖文（上方小字、英文小標、主標、副標、最多 3 個重點短句、底部短句）\n6. 第 2 張重點整理圖文（主標、01～04 重點、底部 CTA、本文看點最多 3 項）\n7. 封面圖生圖提示詞（完整英文，指定 1080×1350 px、繁體中文、固定阿奇角色與安全限制）\n8. 內頁圖生圖提示詞（完整英文，3～4 個資訊重點、清楚層級、高手機可讀性）\n9. Hashtag（10～16 個與主題直接相關的標籤）\n10. CTA 三種（收藏型／查看完整整理型／追蹤後續內容型，所有 CTA 都要自然、不硬銷）',
+    img:'Create a 4:5 Instagram carousel cover (1080×1350 px) in Traditional Chinese for the character "阿奇".\n\nCharacter: Enthusiastic Taiwanese male football fan, mid-20s to early 30s, warm friendly face, short dark hair, football jersey or casual sporty wear, lively expressive gestures, deep blue and grass green palette.\n\nScene: football stadium atmosphere with soft floodlights in background, tactical lines and data card elements as subtle overlays, clean readable layout with bold headline area.\n\nMood: passionate but analytical football fan, not a broadcaster — like the friend who texts you match analysis at midnight.\n\nStyle: warm hand-drawn anime editorial, soft painterly, natural proportions, 4:5 vertical format.\nColors: deep blue (#1a2a4a), grass green (#2d7a45), white text.\n\nSafe constraints — NO: real player faces, official team logos, FIFA/UEFA/World Cup official logos or trophies, chips, coins, banknotes, casino, betting slips, roulette, money rain, guaranteed prediction wording.\nNO changes to 阿奇\'s face shape, hair, or features — only adjust pose, expression, costume, props.',
     postPrompts:[],createdAt:new Date().toISOString()},
 
   {id:'p6',name:'世足大財神',followers:221,dir:'世足/運彩',direction:'世足/運彩/體育投注',
@@ -4613,13 +4752,255 @@ async function initData(){
   }
 }
 
+// ===== MIGRATION: 補齊 thread_activities 新欄位 =====
+function _migrateThreadActivities(){
+  const list = DB.get('thread_activities')||[]
+  let changed = false
+  list.forEach(a=>{
+    // path_type: 從 landingUrl 推導
+    if(!a.path_type){
+      const u = (a.landingUrl||'').toLowerCase()
+      a.path_type = u.includes('ys89') ? 'trust' : u.includes('picks168') ? 'ai_tool' : u ? 'other' : 'bio'
+      changed = true
+    }
+    // attribution_level: 從 url + utmContent 推導
+    if(!a.attribution_level){
+      a.attribution_level = (a.url && a.utmContent) ? 'B' : a.utmContent ? 'C' : a.url ? 'D' : 'U'
+      changed = true
+    }
+    // primary_goal: 從 landingUrl 推導
+    if(!a.primary_goal){
+      const u = (a.landingUrl||'').toLowerCase()
+      a.primary_goal = (u.includes('ys89')||u.includes('picks168')) ? 'conversion' : 'awareness'
+      changed = true
+    }
+    // cta_type
+    if(!a.cta_type){
+      a.cta_type = a.landingUrl ? (a.primary_goal==='conversion' ? 'medium' : 'soft') : 'none'
+      changed = true
+    }
+    // organic_paid
+    if(!a.organic_paid){ a.organic_paid = 'organic'; changed = true }
+    // post_id: 同 url 的記錄共用 post_id
+    if(!a.post_id){ a.post_id = a.url ? btoa(a.url).replace(/[^a-z0-9]/gi,'').slice(0,12) : null; changed = true }
+  })
+  if(changed){ DB.set('thread_activities', list); console.log('[Migration] thread_activities 新欄位補齊完成') }
+}
+
+// ===== 成長概覽 =====
+function _ovSetPeriod(mode){
+  const now = new Date()
+  let s, e = now.toISOString().split('T')[0]
+  if(mode==='week'){
+    const day=now.getDay(), diff=day===0?-6:1-day
+    const mon=new Date(now); mon.setDate(now.getDate()+diff)
+    s=mon.toISOString().split('T')[0]
+  } else if(mode==='lweek'){
+    const day=now.getDay(), diff=day===0?-6:1-day
+    const mon=new Date(now); mon.setDate(now.getDate()+diff-7)
+    const sun=new Date(mon); sun.setDate(mon.getDate()+6)
+    s=mon.toISOString().split('T')[0]; e=sun.toISOString().split('T')[0]
+  } else if(mode==='month'){
+    s=e.slice(0,7)+'-01'
+  }
+  document.getElementById('ov-start').value=s
+  document.getElementById('ov-end').value=e
+  renderGrowthOverview()
+}
+
+function _ovPathColor(pt){ return {trust:'#22c55e',ai_tool:'#a78bfa',bio:'#60a5fa',paid:'#fb923c',other:'#94a3b8'}[pt]||'#94a3b8' }
+function _ovPathLabel(pt){ return {trust:'信任路徑',ai_tool:'AI工具路徑',bio:'Bio/品牌',paid:'廣告路徑',other:'其他'}[pt]||'未分類' }
+function _ovAttrBadge(lv){ const c={A:'#22c55e',B:'#60a5fa',C:'#fbbf24',D:'#fb923c',U:'#64748b'}; return `<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:${c[lv]||'#64748b'}22;color:${c[lv]||'#64748b'};border:1px solid ${c[lv]||'#64748b'}44;font-weight:700">${lv||'U'}</span>` }
+
+function renderGrowthOverview(){
+  // 初始化日期
+  const si = document.getElementById('ov-start'), ei = document.getElementById('ov-end')
+  if(!si.value) _ovSetPeriod('week'), ''
+  const start = si?.value||'', end = ei?.value||''
+  if(!start||!end) return
+
+  const allActs = DB.get('thread_activities')||[]
+  const acts = allActs.filter(a=> a.date>=start && a.date<=end)
+  const allReg = DB.get('real_reg')||[]
+  const regs = allReg.filter(r=> r.from<=end && r.to>=start)
+  const allMeta = DB.get('meta_ads')||[]
+  const metas = allMeta.filter(m=> m.from<=end && m.to>=start)
+
+  // 計算期間長度（用於上期對比）
+  const days = Math.ceil((new Date(end)-new Date(start))/86400000)+1
+  const pEnd = new Date(start); pEnd.setDate(pEnd.getDate()-1)
+  const pStart = new Date(pEnd); pStart.setDate(pEnd.getDate()-days+1)
+  const pe=pEnd.toISOString().split('T')[0], ps=pStart.toISOString().split('T')[0]
+  const prevRegs = allReg.filter(r=> r.from<=pe && r.to>=ps)
+
+  // 商業 KPI
+  const cReg=regs.reduce((s,r)=>s+(r.reg||0),0)
+  const cDep=regs.reduce((s,r)=>s+(r.dep||0),0)
+  const cAmt=regs.reduce((s,r)=>s+(r.amt||0),0)
+  const cRate=cReg>0?(cDep/cReg*100):0
+  const pReg=prevRegs.reduce((s,r)=>s+(r.reg||0),0)
+  const pDep=prevRegs.reduce((s,r)=>s+(r.dep||0),0)
+  const pAmt=prevRegs.reduce((s,r)=>s+(r.amt||0),0)
+  const pRate=pReg>0?(pDep/pReg*100):0
+  const chg=(a,b,pct)=>{ if(b===0)return `<span style="color:var(--text3);font-size:.68rem">— 無前期</span>`; const d=a-b; const pfx=d>=0?'↑':'↓'; const col=d>=0?'var(--green2)':'var(--red)'; return `<span style="color:${col};font-size:.68rem">${pfx} ${pct?Math.abs(d).toFixed(1)+'pp':Math.abs(d).toLocaleString('zh-TW')}</span>` }
+  document.getElementById('ov-biz').innerHTML=`
+    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">商業核心指標（後台對帳 real_reg）· ${start} → ${end}</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+      ${[['完成註冊','人',cReg,pReg,'var(--green2)',false],['儲值人數','人',cDep,pDep,'var(--accent)',false],['儲值金額','元',cAmt,pAmt,'#a78bfa',false],['儲值率','%',cRate.toFixed(1),pRate.toFixed(1),'#fb923c',true]].map(([lbl,unit,val,pval,col,isPct])=>`
+      <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;border:1px solid var(--border)">
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">${lbl}</div>
+        <div style="font-size:1.6rem;font-weight:800;letter-spacing:-.03em;color:${col};font-variant-numeric:tabular-nums">${isPct?val:Number(val).toLocaleString('zh-TW')}${isPct?'%':''}</div>
+        <div style="margin-top:4px">${chg(Number(val),Number(pval),isPct)}</div>
+      </div>`).join('')}
+    </div>`
+
+  // 社群指標
+  const nonDel = acts.filter(a=>(a.notes||'')!=='貼文已刪除')
+  const totViews = nonDel.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
+  const totLikes = nonDel.reduce((s,a)=>s+(a.platformMetrics?.Threads?.likes||0),0)
+  const totReplies = nonDel.reduce((s,a)=>s+(a.platformMetrics?.Threads?.replies||a.platformMetrics?.Threads?.comments||0),0)
+  const metaSpend = metas.reduce((s,m)=>s+(m.spend||0),0)
+  const metaImpr = metas.reduce((s,m)=>s+(m.impr||0),0)
+  const totImpr = totViews + metaImpr
+  const ltr = totImpr>0?(totLikes/totImpr*1000):0
+  const kpReg = totImpr>0?(cReg/totImpr*1000):0
+  const posted=acts.filter(a=>(a.notes||'')!=='UTM產生器建立').length
+  document.getElementById('ov-social').innerHTML=`
+    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">社群指標</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      ${[['總曝光',totImpr.toLocaleString('zh-TW'),'var(--accent)'],['有效發文',posted+'篇','var(--text2)'],['總讚數',totLikes,'var(--text2)'],['總留言',totReplies,'var(--text2)'],['每千曝光讚',ltr.toFixed(1),'#fbbf24'],['每千曝光轉換',kpReg.toFixed(1),'var(--green2)']].map(([l,v,c])=>`
+      <div style="background:var(--bg4);border-radius:6px;padding:8px 10px">
+        <div style="font-size:.6rem;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">${l}</div>
+        <div style="font-size:1.1rem;font-weight:800;color:${c};font-variant-numeric:tabular-nums">${v}</div>
+      </div>`).join('')}
+    </div>
+    ${metaSpend>0?`<div style="margin-top:10px;font-size:.68rem;color:var(--text3);border-top:1px solid var(--border);padding-top:8px">廣告支出 NT$${metaSpend.toLocaleString()} · 廣告曝光 ${metaImpr.toLocaleString()}</div>`:''}`
+
+  // 漏斗
+  const fSteps=[
+    {label:'曝光',val:totImpr,color:'rgba(96,165,250,.35)'},
+    {label:'有讚/互動',val:totLikes+totReplies,color:'rgba(167,139,250,.45)'},
+    {label:'完成註冊',val:cReg,color:'rgba(34,197,94,.55)'},
+    {label:'首次儲值',val:cDep,color:'rgba(34,197,94,.75)'},
+  ]
+  const maxV = fSteps[0].val||1
+  document.getElementById('ov-funnel').innerHTML=`
+    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">完整漏斗</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      ${fSteps.map((s,i)=>{
+        const pct=i===0?100:(maxV>0?(s.val/maxV*100):0)
+        return `<div style="display:flex;align-items:center;gap:10px">
+          <div style="width:72px;font-size:.68rem;color:var(--text2);text-align:right;flex-shrink:0">${s.label}</div>
+          <div style="flex:1;background:var(--bg3);border-radius:4px;height:26px;overflow:hidden">
+            <div style="height:100%;width:${Math.max(pct,0.3)}%;background:${s.color};border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:.72rem;font-weight:700;white-space:nowrap;min-width:40px;transition:width .5s ease">${s.val.toLocaleString('zh-TW')}</div>
+          </div>
+          <div style="width:44px;font-size:.65rem;color:var(--text3);flex-shrink:0">${i===0?'100%':(maxV>0?(s.val/maxV*100).toFixed(1)+'%':'—')}</div>
+        </div>`
+      }).join('')}
+    </div>`
+
+  // 路徑比較
+  const pathMap={}
+  acts.forEach(a=>{
+    const pt=a.path_type||'bio'
+    if(!pathMap[pt]) pathMap[pt]={count:0,views:0,likes:0}
+    pathMap[pt].count++
+    pathMap[pt].views+=(a.platformMetrics?.Threads?.views||0)
+    pathMap[pt].likes+=(a.platformMetrics?.Threads?.likes||0)
+  })
+  if(metaImpr>0) pathMap['paid']={count:0,views:metaImpr,likes:metas.reduce((s,m)=>s+(m.clicks||0),0)}
+  const pathRows = Object.entries(pathMap).sort(([,a],[,b])=>b.views-a.views)
+  document.getElementById('ov-paths').innerHTML=`
+    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">路徑比較</div>
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        ${['路徑','篇數','曝光','每千曝光互動','歸因'].map(h=>`<th style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding:6px 8px;text-align:left">${h}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+        ${pathRows.length?pathRows.map(([pt,d])=>{
+          const ltr=d.views>0?(d.likes/d.views*1000):0
+          const attrLv=pt==='paid'?'A':pt==='bio'?'D':'B'
+          return `<tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:8px;font-size:.75rem"><span style="color:${_ovPathColor(pt)}">●</span> ${_ovPathLabel(pt)}</td>
+            <td style="padding:8px;font-size:.75rem;color:var(--text2)">${d.count}</td>
+            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums">${d.views.toLocaleString('zh-TW')}</td>
+            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums">${ltr.toFixed(1)}</td>
+            <td style="padding:8px">${_ovAttrBadge(attrLv)}</td>
+          </tr>`
+        }).join(''):`<tr><td colspan="5" style="padding:16px;text-align:center;color:var(--text3);font-size:.8rem">此期間無發文記錄</td></tr>`}
+      </tbody>
+    </table></div>`
+
+  // 帳號排行
+  const acctMap={}
+  acts.forEach(a=>{
+    const n=a.personaName||'未知'
+    if(!acctMap[n]) acctMap[n]={views:0,likes:0,replies:0,count:0,attrLvs:[],paths:[]}
+    const m=a.platformMetrics?.Threads||{}
+    acctMap[n].views+=(m.views||0)
+    acctMap[n].likes+=(m.likes||0)
+    acctMap[n].replies+=(m.replies||m.comments||0)
+    acctMap[n].count++
+    if(a.attribution_level) acctMap[n].attrLvs.push(a.attribution_level)
+    if(a.path_type) acctMap[n].paths.push(a.path_type)
+  })
+  const acctRows=Object.entries(acctMap).sort(([,a],[,b])=>b.views-a.views).slice(0,10)
+  const bestAttr=lvs=>{ const ord=['A','B','C','D','U']; for(const l of ord) if(lvs.includes(l)) return l; return 'U' }
+  document.getElementById('ov-accounts').innerHTML=`
+    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">帳號成效排行（按曝光數）</div>
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        ${['#','帳號','篇數','曝光','讚','留言','每千曝光讚','路徑','歸因'].map(h=>`<th style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding:6px 8px;text-align:left">${h}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+        ${acctRows.length?acctRows.map(([name,d],i)=>{
+          const ltr=d.views>0?(d.likes/d.views*1000):0
+          const pt=[...new Set(d.paths)][0]||'bio'
+          return `<tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:8px;font-size:.7rem;color:var(--text3)">${i+1}</td>
+            <td style="padding:8px;font-size:.8rem;font-weight:600;color:#a78bfa">${escHtml(name)}</td>
+            <td style="padding:8px;font-size:.75rem;color:var(--text2)">${d.count}</td>
+            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums">${d.views.toLocaleString('zh-TW')}</td>
+            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums">${d.likes}</td>
+            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums">${d.replies}</td>
+            <td style="padding:8px;font-size:.75rem;font-variant-numeric:tabular-nums;color:#fbbf24">${ltr.toFixed(1)}</td>
+            <td style="padding:8px"><span style="font-size:.68rem;color:${_ovPathColor(pt)}">${_ovPathLabel(pt)}</span></td>
+            <td style="padding:8px">${_ovAttrBadge(bestAttr(d.attrLvs))}</td>
+          </tr>`
+        }).join(''):`<tr><td colspan="9" style="padding:16px;text-align:center;color:var(--text3);font-size:.8rem">此期間無發文記錄</td></tr>`}
+      </tbody>
+    </table></div>`
+
+  // 本週行動建議
+  const actions=[]
+  if(acctRows.length){
+    const top=acctRows[0]; if(top[1].views>500) actions.push({icon:'⚡',text:`<b>${escHtml(top[0])}</b> 本期曝光最高（${top[1].views.toLocaleString()}），持續發同類主題`})
+    const low=acctRows.find(([,d])=>d.count>0&&d.views<50); if(low) actions.push({icon:'⚠️',text:`<b>${escHtml(low[0])}</b> 曝光偏低，考慮調整 hook 或發文時間`})
+  }
+  const missing=acts.filter(a=>!(a.platformMetrics?.Threads?.views))
+  if(missing.length>0) actions.push({icon:'📋',text:`<b>${missing.length} 筆</b>發文尚未記錄成效數字`})
+  if(cReg===0&&regs.length===0) actions.push({icon:'📊',text:'本期尚無後台對帳資料，請至「後台對帳」填入'})
+  const noBio=acts.filter(a=>!a.path_type||a.path_type==='bio')
+  if(noBio.length>acts.length*0.5) actions.push({icon:'🔗',text:`${noBio.length} 筆貼文缺乏明確導流 URL，建議補齊 landingUrl 以提升歸因準確性`})
+
+  document.getElementById('ov-actions').innerHTML=`
+    <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">本週行動建議</div>
+    ${actions.length?`<div style="display:flex;flex-direction:column;gap:8px">${actions.map(a=>`
+      <div style="display:flex;gap:10px;padding:9px 12px;border-radius:7px;background:var(--bg3);border:1px solid var(--border);font-size:.75rem;color:var(--text2)">
+        <span style="flex-shrink:0">${a.icon}</span><span>${a.text}</span>
+      </div>`).join('')}</div>`
+    :`<p style="color:var(--text3);font-size:.78rem;padding:8px 0">目前無待辦行動建議 🎉</p>`}`
+}
+
 // ===== HELPERS =====
 function nav(el,page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
-  const renders={roles:renderRoles,channel:renderChannelPosts,channelfb:renderChannelFb,conv:renderConversions,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,entrances:renderEntrances,links:renderLinks,cast:renderCast}
+  const renders={overview:renderGrowthOverview,roles:renderRoles,channel:renderChannelPosts,channelfb:renderChannelFb,conv:renderConversions,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,entrances:renderEntrances,links:renderLinks,cast:renderCast}
   if(page==='todo'){initTodayTodos(false);renderTodo()}
   else if(page==='ga4'){ if(_ga4Data) renderGA4(_ga4Data); }
   else if(page==='utm'){ utmInit() }
@@ -4671,23 +5052,35 @@ function renderPersonas(){
   if(!list.length){grid.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">尚無角色</div>';return}
   grid.innerHTML=list.map(p=>{
     const pc=p.postPrompts?.length||0
+    const opType=p.operationType||''
+    const opColor=opType==='平台'?'#3b82f6':opType==='真人'?'#22c55e':opType==='人設+平台'?'#a78bfa':'#64748b'
+    const hasPrompt=!!(p.role||p.essence||p.tone)
     return`<div class="pcard">
-      <div class="fb">
-        <div><div class="pname">${p.name}</div><div class="pdir">${p.direction}</div></div>
-        <div class="flex">
-          <span class="badge b-gray">${p.dir||''}</span>
+      <div class="fb" style="margin-bottom:6px">
+        <div>
+          <div class="pname">${p.name}</div>
+          <div style="display:flex;gap:5px;align-items:center;margin-top:3px;flex-wrap:wrap">
+            <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:rgba(100,116,139,.15);color:#94a3b8">${p.dir||''}</span>
+            ${opType?`<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:${opColor}22;color:${opColor};border:1px solid ${opColor}44">${opType}</span>`:''}
+            ${p.igUsername?`<span style="font-size:9px;font-family:ui-monospace,monospace;color:#60a5fa">@${escHtml(p.igUsername)}</span>`:''}
+          </div>
+        </div>
+        <div class="flex" style="gap:4px;flex-shrink:0">
+          <button class="btn btn-sm" style="background:#a78bfa22;color:#a78bfa;border:1px solid #a78bfa44;font-size:.72rem;padding:4px 9px" onclick="openQuickPrompt('${p.id}')">✏️ 提示詞</button>
           <button class="btn btn-sm btn-outline" onclick="openEditPersona('${p.id}')">編輯</button>
           <button class="btn btn-sm btn-primary" onclick="openPersonaDetail('${p.id}')">查看</button>
         </div>
       </div>
-      <div class="sec">核心氣質</div>
-      <div style="font-size:.82rem;color:var(--text2)">${p.essence||'—'}</div>
-      <div class="sec">禁忌用詞</div>
-      <div style="font-size:.8rem;color:#f87171;line-height:1.5">${(p.forbidden||'').slice(0,70)}${(p.forbidden?.length||0)>70?'…':''}</div>
+      ${p.essence?`<div class="sec">核心氣質</div><div style="font-size:.82rem;color:var(--text2)">${p.essence}</div>`:''}
+      ${p.forbidden?`<div class="sec">禁忌用詞</div><div style="font-size:.8rem;color:#f87171;line-height:1.5">${(p.forbidden||'').slice(0,70)}${(p.forbidden?.length||0)>70?'…':''}</div>`:''}
       <hr>
-      <div class="fb">
-        <span class="tm">已記錄文案 <span class="tg">${pc}</span> 筆</span>
-        <button class="btn btn-xs btn-copy" onclick="openLogPrompt('${p.id}','${p.name}')">+ 記錄文案</button>
+      <div class="fb" style="flex-wrap:wrap;gap:5px">
+        <span class="tm">文案 <span class="tg">${pc}</span> 筆　範本/題材 <span class="tg">${(p.templates||[]).length}</span> 筆</span>
+        <div style="display:flex;gap:4px">
+          ${hasPrompt?`<button class="btn btn-xs" style="background:#1e3a5f;color:#60a5fa;border:1px solid #2563eb44;font-size:.67rem" onclick="showPersonaCard('${p.id}')">📋 建立提示詞</button>`:''}
+          <button class="btn btn-xs" style="background:#1e1a2e;color:#a78bfa;border:1px solid #a78bfa44;font-size:.67rem" onclick="openPersonaTemplates('${p.id}')">📝 範本/題材</button>
+          <button class="btn btn-xs btn-copy" onclick="openLogPrompt('${p.id}','${p.name}')">+ 記錄文案</button>
+        </div>
       </div>
       ${pc>0?`<div style="margin-top:8px">${(p.postPrompts||[]).slice(-1).map(pp=>`
         <div style="background:#080e09;border:1px solid var(--border);border-radius:5px;padding:7px 10px;font-size:.78rem">
@@ -4699,6 +5092,41 @@ function renderPersonas(){
         </div>`).join('')}</div>`:''}
     </div>`
   }).join('')
+}
+
+function openQuickPrompt(id){
+  const p=DB.get('personas').find(x=>x.id===id); if(!p) return
+  const current=(p.postPrompts&&p.postPrompts.length)
+    ?p.postPrompts[p.postPrompts.length-1]?.prompt||''
+    :(p.role||p.prompt||'')
+  document.getElementById('qp-id').value=id
+  document.getElementById('qp-title').textContent=`✏️ ${p.name} — 更新提示詞`
+  document.getElementById('qp-role').value=current
+  document.getElementById('qp-status').textContent=''
+  openModal('modal-quick-prompt')
+  setTimeout(()=>document.getElementById('qp-role').focus(),100)
+}
+
+async function saveQuickPrompt(){
+  const id=document.getElementById('qp-id').value
+  const newPrompt=document.getElementById('qp-role').value.trim()
+  const statusEl=document.getElementById('qp-status')
+  if(!newPrompt){statusEl.textContent='提示詞不能為空';return}
+  const personas=DB.get('personas')
+  const idx=personas.findIndex(p=>p.id===id)
+  if(idx<0){statusEl.textContent='找不到角色';return}
+  if(!personas[idx].postPrompts) personas[idx].postPrompts=[]
+  personas[idx].postPrompts.push({prompt:newPrompt,title:'快速更新',createdAt:new Date().toISOString()})
+  personas[idx].role=newPrompt
+  DB.set('personas',personas)
+  statusEl.textContent='同步中…'
+  try{
+    await DB.push('personas')
+    statusEl.textContent='✅ 已儲存並同步'
+    setTimeout(()=>{closeModal('modal-quick-prompt');try{renderCommunity()}catch(e){try{renderPersonas()}catch(e2){}}},800)
+  }catch(e){
+    statusEl.textContent='⚠️ 本地已儲存，同步失敗：'+e.message
+  }
 }
 
 function openPersonaDetail(id){
@@ -4742,8 +5170,9 @@ function openAddPersona(){
   document.getElementById('ap-id').value=''
   document.getElementById('ap-title').textContent='新增發文角色'
   document.getElementById('ap-save-btn').textContent='儲存角色'
-  ;['ap-name','ap-direction','ap-essence','ap-tone','ap-topics','ap-forbidden','ap-role','ap-img','ap-tagline','ap-persona-desc','ap-visual-style','ap-color-scheme','ap-forbidden-style','ap-seo-kw'].forEach(i=>document.getElementById(i).value='')
+  ;['ap-name','ap-direction','ap-essence','ap-tone','ap-topics','ap-forbidden','ap-role','ap-img','ap-tagline','ap-persona-desc','ap-visual-style','ap-color-scheme','ap-forbidden-style','ap-seo-kw','ap-ig-username'].forEach(i=>document.getElementById(i).value='')
   document.getElementById('ap-followers').value='0'
+  document.getElementById('ap-operation-type').value=''
   openModal('modal-add-persona')
 }
 
@@ -4769,6 +5198,8 @@ function openEditPersona(id){
   document.getElementById('ap-forbidden-style').value=p.forbiddenStyle||''
   document.getElementById('ap-seo-kw').value=p.seoKeywords||''
   document.getElementById('ap-picks-url').value=p.picksUrl||''
+  document.getElementById('ap-operation-type').value=p.operationType||''
+  document.getElementById('ap-ig-username').value=p.igUsername||''
   openModal('modal-add-persona')
 }
 
@@ -4794,6 +5225,8 @@ function savePersona(){
     forbiddenStyle:document.getElementById('ap-forbidden-style').value,
     seoKeywords:document.getElementById('ap-seo-kw').value,
     picksUrl:document.getElementById('ap-picks-url').value.trim(),
+    operationType:document.getElementById('ap-operation-type').value,
+    igUsername:document.getElementById('ap-ig-username').value.trim(),
   }
   if(id){const i=personas.findIndex(x=>x.id===id);if(i>=0)personas[i]={...personas[i],...obj}}
   else personas.push({...obj,id:DB.id(),postPrompts:[],createdAt:new Date().toISOString()})
@@ -4825,6 +5258,135 @@ function savePromptLog(){
   toast('提示詞已儲存 ✅')
   try{renderCommunity()}catch(e){}
   try{renderPersonas()}catch(e){}
+}
+
+function showPersonaCard(id){
+  const p=DB.get('personas').find(x=>x.id===id); if(!p)return
+  const parts=[]
+  if(p.name) parts.push(`【角色名稱】${p.name}`)
+  if(p.dir||p.operationType) parts.push(`【分類／類型】${[p.dir,p.operationType].filter(Boolean).join(' · ')}`)
+  if(p.igUsername) parts.push(`【帳號】@${p.igUsername}`)
+  if(p.tagline) parts.push(`【一句話定位】${p.tagline}`)
+  if(p.personaDesc) parts.push(`【人設說法】${p.personaDesc}`)
+  if(p.essence) parts.push(`【核心氣質】${p.essence}`)
+  if(p.tone) parts.push(`\n【語氣風格】\n${p.tone}`)
+  if(p.topics) parts.push(`\n【適合主題】\n${p.topics}`)
+  if(p.forbidden) parts.push(`\n【禁忌用詞】\n${p.forbidden}`)
+  if(p.role) parts.push(`\n【角色定位完整提示詞】\n${p.role}`)
+  if(p.visualStyle) parts.push(`\n【視覺風格】${p.visualStyle}`)
+  if(p.colorScheme) parts.push(`【主色系】${p.colorScheme}`)
+  if(p.forbiddenStyle) parts.push(`【禁用視覺】${p.forbiddenStyle}`)
+  if(p.seoKeywords) parts.push(`【SEO關鍵字】${p.seoKeywords}`)
+  if(p.img) parts.push(`\n【生圖提示詞】\n${p.img}`)
+  const prompt=parts.join('\n')
+  // 顯示在 persona detail modal 的頂部
+  document.getElementById('pd-title').textContent=`${p.name} — 完整提示詞`
+  document.getElementById('pd-body').innerHTML=`
+    <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center">
+      <span style="font-size:.78rem;color:var(--text3)">完整角色提示詞 · 可直接貼入 ChatGPT / Claude</span>
+      <button class="btn btn-sm btn-primary" data-cp="${escAttr(prompt)}" onclick="cpd(this);this.textContent='✅ 已複製'">一鍵複製</button>
+    </div>
+    <div style="position:relative">
+      <div style="background:#0d1117;border:1px solid var(--border);border-radius:7px;padding:14px 16px;font-size:.82rem;color:#e2e8f0;white-space:pre-wrap;line-height:1.75;font-family:ui-monospace,monospace;max-height:65vh;overflow-y:auto">${escHtml(prompt)}</div>
+      <button class="pcopy" data-cp="${escAttr(prompt)}" onclick="cpd(this)" style="top:8px;right:8px">複製</button>
+    </div>
+    <div style="margin-top:14px">
+      <div class="fb" style="margin-bottom:8px">
+        <div class="sec" style="margin-top:0">📝 發文範本/題材（${(p.templates||[]).length} 筆）</div>
+        <button class="btn btn-xs" style="background:#1e1a2e;color:#a78bfa;border:1px solid #a78bfa44" onclick="closeModal('modal-persona-detail');openPersonaTemplates('${p.id}')">＋ 管理範本</button>
+      </div>
+      ${(p.templates||[]).length===0?'<div class="tm">尚無範本/題材</div>':
+        (p.templates||[]).slice().reverse().map(t=>`
+        <div style="background:#080e09;border:1px solid var(--border);border-radius:7px;padding:10px;margin-bottom:8px">
+          <div class="fb" style="margin-bottom:5px">
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-weight:600;font-size:.82rem">${escHtml(t.title)}</span>
+              <span style="font-size:.62rem;padding:1px 5px;border-radius:3px;${t.type==='範本'?'background:#a78bfa18;color:#a78bfa;border:1px solid #a78bfa40':'background:#3b82f618;color:#60a5fa;border:1px solid #3b82f640'}">${t.type}</span>
+            </div>
+            <button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.77rem" data-cp="${escAttr(t.body)}" onclick="cpd(this)">複製</button>
+          </div>
+          <div style="font-size:.82rem;color:var(--text2);white-space:pre-wrap;line-height:1.6">${escHtml(t.body)}</div>
+          <div class="tm" style="margin-top:4px">${new Date(t.createdAt).toLocaleDateString('zh-TW')}</div>
+        </div>`).join('')}
+    </div>
+    <div style="margin-top:14px;border-top:1px solid var(--border2);padding-top:14px">
+      <div class="fb" style="margin-bottom:8px">
+        <div class="sec" style="margin-top:0">發文文案記錄（${(p.postPrompts||[]).length} 筆）</div>
+        <button class="btn btn-xs btn-copy" onclick="closeModal('modal-persona-detail');openLogPrompt('${p.id}','${p.name}')">+ 新增記錄</button>
+      </div>
+      ${(p.postPrompts||[]).length===0?'<div class="tm">尚無記錄</div>':
+        (p.postPrompts||[]).slice().reverse().map(pp=>`
+        <div style="background:#080e09;border:1px solid var(--border);border-radius:7px;padding:10px;margin-bottom:8px">
+          <div class="fb" style="margin-bottom:5px">
+            <span class="tm">${new Date(pp.createdAt).toLocaleString('zh-TW')}</span>
+            <button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.77rem" data-cp="${escAttr(pp.prompt)}" onclick="cpd(this)">複製</button>
+          </div>
+          <div style="font-size:.82rem;color:var(--text2);white-space:pre-wrap;line-height:1.6">${pp.prompt}</div>
+          ${pp.note?`<div class="tm" style="margin-top:4px">備註：${pp.note}</div>`:''}
+        </div>`).join('')}
+    </div>`
+  openModal('modal-persona-detail')
+}
+
+// ===== PERSONA TEMPLATES =====
+function openPersonaTemplates(id){
+  const p=(DB.get('personas')||[]).find(x=>x.id===id); if(!p)return
+  document.getElementById('pt-persona-id').value=id
+  document.getElementById('pt-modal-title').textContent=`📝 ${p.name} — 發文範本/題材`
+  document.getElementById('pt-title-input').value=''
+  document.getElementById('pt-body').value=''
+  _renderPtList(id)
+  openModal('modal-persona-templates')
+}
+function _renderPtList(id){
+  const p=(DB.get('personas')||[]).find(x=>x.id===id); if(!p)return
+  const tpls=(p.templates||[]).slice().reverse()
+  const el=document.getElementById('pt-list'); if(!el)return
+  if(!tpls.length){el.innerHTML='<div class="tm" style="text-align:center;padding:24px">尚無範本/題材 — 在上方新增第一筆</div>';return}
+  el.innerHTML=tpls.map(t=>`
+    <div style="background:#0d0b0a;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px">
+      <div class="fb" style="margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-weight:600;font-size:.88rem">${escHtml(t.title)}</span>
+          <span style="font-size:.64rem;padding:1px 6px;border-radius:3px;${t.type==='範本'?'background:#a78bfa18;color:#a78bfa;border:1px solid #a78bfa40':'background:#3b82f618;color:#60a5fa;border:1px solid #3b82f640'}">${t.type}</span>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-xs btn-copy" data-cp="${escAttr(t.body)}" onclick="cpd(this)">複製</button>
+          <button class="btn btn-xs" style="color:#f87171;border-color:#ef444430;background:none;border:1px solid" onclick="deletePersonaTemplate('${escAttr(id)}','${escAttr(t.id)}')">刪除</button>
+        </div>
+      </div>
+      <div style="font-size:.8rem;color:var(--text2);white-space:pre-wrap;line-height:1.6">${escHtml(t.body)}</div>
+      <div class="tm" style="margin-top:5px">${new Date(t.createdAt).toLocaleDateString('zh-TW')}</div>
+    </div>`).join('')
+}
+function savePersonaTemplate(){
+  const id=document.getElementById('pt-persona-id').value
+  const title=document.getElementById('pt-title-input').value.trim()
+  const body=document.getElementById('pt-body').value.trim()
+  const type=document.getElementById('pt-type').value
+  if(!title||!body){toast('請填入標題和內容','err');return}
+  const personas=DB.get('personas')
+  const i=personas.findIndex(x=>x.id===id); if(i<0)return
+  if(!personas[i].templates) personas[i].templates=[]
+  personas[i].templates.push({id:DB.id(),title,body,type,createdAt:new Date().toISOString()})
+  personas[i].updatedAt=new Date().toISOString()
+  DB.set('personas',personas)
+  document.getElementById('pt-title-input').value=''
+  document.getElementById('pt-body').value=''
+  _renderPtList(id)
+  renderPersonas()
+  toast('✅ 範本已新增')
+}
+function deletePersonaTemplate(personaId,templateId){
+  if(!confirm('確定刪除這筆範本/題材？'))return
+  const personas=DB.get('personas')
+  const i=personas.findIndex(x=>x.id===personaId); if(i<0)return
+  personas[i].templates=(personas[i].templates||[]).filter(t=>t.id!==templateId)
+  personas[i].updatedAt=new Date().toISOString()
+  DB.set('personas',personas)
+  _renderPtList(personaId)
+  renderPersonas()
+  toast('已刪除')
 }
 
 // ===== TRACKER =====
@@ -5683,7 +6245,7 @@ function _actorCard(a,tableKey,opts){
   const nextSt=acctStatus==='active'?'inactive':acctStatus==='inactive'?'banned':'active'
   const toggleLbl=acctStatus==='active'?'⏸ 停用':acctStatus==='inactive'?'⚠ 停權':'▶ 啟用'
   const esc=s=>(s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')
-  // 取最新提示詞
+  // 取提示詞：優先顯示 postPrompts 最新一筆，沒有再 fallback role/prompt
   const latestPrompt=(a.postPrompts&&a.postPrompts.length)
     ?a.postPrompts[a.postPrompts.length-1]?.prompt||''
     :(a.prompt||a.role||'')
@@ -5696,7 +6258,11 @@ function _actorCard(a,tableKey,opts){
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
       <div style="min-width:0">
         <div style="font-weight:700;font-size:1.02rem;margin-bottom:4px">${a.name}</div>
-        <div style="font-size:.72rem;color:var(--text3)">${code?`<span style="color:var(--accent);font-family:monospace">${code}</span>`:''} ${a.handle?`· @${a.handle}`:''}</div>
+        <div style="font-size:.72rem;color:var(--text2)">${code?`<span style="color:var(--accent);font-family:monospace">${code}</span>`:''} ${(a.igUsername||a.handle)?`· <span style="color:#60a5fa">@${a.igUsername||a.handle}</span>`:''}</div>
+        ${a.dir||a.operationType?`<div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap">
+          ${a.dir?`<span style="font-size:.65rem;padding:1px 7px;border-radius:3px;background:#ffffff0d;color:#94a3b8;border:1px solid #ffffff15">${a.dir}</span>`:''}
+          ${(()=>{const ot=a.operationType||'';const c=ot==='平台'?'#3b82f6':ot==='真人'?'#22c55e':ot==='人設+平台'?'#a78bfa':'';return ot&&c?`<span style="font-size:.65rem;padding:1px 7px;border-radius:3px;background:${c}18;color:${c};border:1px solid ${c}40;font-weight:600">${ot}</span>`:''})()}
+        </div>`:''}
         ${platStr?`<div style="font-size:.75rem;color:var(--text2);margin-top:5px">${platStr}</div>`:''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
@@ -5709,14 +6275,36 @@ function _actorCard(a,tableKey,opts){
         <span style="font-size:.7rem;color:var(--accent);font-weight:600;letter-spacing:.3px">💬 發文提示詞</span>
         <div style="display:flex;gap:5px">
           ${latestPrompt?`<button class="btn btn-xs btn-copy" data-cp="${escAttr(latestPrompt)}" onclick="cpd(this)" style="font-size:.66rem">一鍵複製</button>`:''}
+          ${(!latestPrompt&&tableKey==='personas')?`<button class="btn btn-xs" style="background:#1e3a5f;color:#60a5fa;border:1px solid #2563eb44;font-size:.66rem" onclick="showPersonaCard('${esc(a.id)}')">📋 建立提示詞</button>`:''}
           <button class="btn btn-xs btn-outline" onclick="${promptFn}" style="font-size:.66rem">＋ 記錄</button>
         </div>
       </div>
-      <div style="font-size:.76rem;color:${promptPreview?'var(--text2)':'var(--text3)'};line-height:1.6;${promptPreview?'':'opacity:.5'}">
+      <div style="font-size:.76rem;color:${promptPreview?'var(--text)':'var(--text2)'};line-height:1.6;${promptPreview?'':'opacity:.6'}">
         ${promptPreview||'尚無提示詞 — 點右側「＋ 記錄」新增'}
       </div>
     </div>
+    ${tableKey==='personas'?(()=>{
+      const tpls=a.templates||[]
+      const previewTpls=tpls.slice(-2).reverse()
+      return `<div style="background:#070605;border:1px solid var(--border2);border-radius:8px;padding:11px 14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${previewTpls.length?'8px':'0'}">
+          <span style="font-size:.7rem;color:#a78bfa;font-weight:600;letter-spacing:.3px">📝 發文範本/題材 <span style="color:var(--text3);font-weight:400">${tpls.length?tpls.length+'筆':''}</span></span>
+          <button class="btn btn-xs" style="background:#1e1a2e;color:#a78bfa;border:1px solid #a78bfa44;font-size:.66rem" onclick="openPersonaTemplates('${esc(a.id)}')">＋ 管理</button>
+        </div>
+        ${previewTpls.length?previewTpls.map(t=>`
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:5px 0;border-top:1px solid var(--border2)">
+            <div style="min-width:0">
+              <span style="font-size:.72rem;font-weight:600;color:var(--text)">${escHtml(t.title)}</span>
+              <span style="font-size:.62rem;margin-left:4px;${t.type==='範本'?'color:#a78bfa':'color:#60a5fa'}">${t.type}</span>
+              <div style="font-size:.7rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px">${escHtml(t.body.slice(0,60))}${t.body.length>60?'…':''}</div>
+            </div>
+            <button class="btn btn-xs btn-copy" data-cp="${escAttr(t.body)}" onclick="cpd(this)" style="flex-shrink:0;font-size:.64rem">複製</button>
+          </div>`).join('')
+        :'<div style="font-size:.72rem;color:var(--text3);padding:4px 0">尚無範本/題材 — 點右側「管理」新增</div>'}
+      </div>`
+    })():''}
     <div style="display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--border2);padding-top:12px">
+      ${tableKey==='personas'?`<button class="btn btn-xs" style="background:#a78bfa22;color:#a78bfa;border:1px solid #a78bfa44;font-size:.66rem" onclick="openQuickPrompt('${esc(a.id)}')">✏️ 提示詞</button>`:''}
       <button class="btn btn-xs btn-outline" onclick="${opts.editFn}">✏ 編輯</button>
       <button class="btn btn-xs btn-outline" onclick="_toggleActorStatus('${esc(a.id)}','${tableKey}','${nextSt}')">${toggleLbl}</button>
       <button class="btn btn-xs btn-outline" onclick="_viewActorRecords('${esc(code||a.name)}')">📊 發文記錄</button>
@@ -6007,6 +6595,81 @@ function renderCommunity(){
     secWrap('📘 臉書角色','FB 社團 / 粉專 · 社群導流',
       `<div style="color:var(--text3);font-size:.8rem;padding:12px 0">尚無臉書角色 — 點右側新增</div>`,
       `<button class="btn btn-xs btn-outline" onclick="openAddCommunityModal()">+ 新增</button>`)
+  renderWeeklyPostPlan()
+}
+
+// ─── 一週發布計畫 ────────────────────────────────────────────────────────────
+let _weekPlanOffset=0
+function _weekPlanDates(offset){
+  const now=new Date(), day=now.getDay()
+  const diffToMon=day===0?-6:1-day
+  const mon=new Date(now); mon.setDate(now.getDate()+diffToMon+offset*7)
+  return Array.from({length:7},(_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d.toISOString().split('T')[0] })
+}
+function renderWeeklyPostPlan(){
+  const el=document.getElementById('weekly-post-plan'); if(!el) return
+  const dates=_weekPlanDates(_weekPlanOffset)
+  const today=new Date().toISOString().split('T')[0]
+  const WD=['一','二','三','四','五','六','日']
+  // 只取社群類角色（Threads / IG / 論壇型）
+  const actors=allActors().filter(a=>{
+    const raw=a.raw||{}
+    if(raw.accountStatus&&raw.accountStatus!=='active') return false
+    const plats=raw.platforms||(raw.platform?[raw.platform]:[])
+    return !plats.length||plats.some(p=>['Threads','IG','FB'].includes(p))
+  })
+  if(!actors.length){ el.innerHTML='<div style="color:var(--text3);font-size:.8rem;padding:8px 0">尚無社群角色</div>'; return }
+  // 建立 name→date→count 統計表
+  const ta=DB.get('thread_activities')||[]
+  const cmap={}
+  ta.filter(r=>r.status!=='略過'&&r.date>=dates[0]&&r.date<=dates[6])
+    .forEach(r=>{ const k=r.personaName||'?'; if(!cmap[k])cmap[k]={}; cmap[k][r.date]=(cmap[k][r.date]||0)+1 })
+  const thS=`padding:7px 8px;font-size:.7rem;font-weight:600;text-align:center;color:var(--text3);background:var(--bg2);border-bottom:1px solid var(--border);white-space:nowrap`
+  const thT=`padding:7px 8px;font-size:.7rem;font-weight:600;text-align:center;color:var(--accent);background:var(--bg2);border-bottom:2px solid var(--accent);white-space:nowrap`
+  const headers=dates.map((d,i)=>{
+    const isToday=d===today, mmdd=d.slice(5).replace('-','/')
+    return `<th style="${isToday?thT:thS}">${WD[i]}<br><span style="font-weight:400;font-size:.62rem;${isToday?'':'opacity:.55'}">${mmdd}</span></th>`
+  }).join('')
+  const rows=actors.map(a=>{
+    const pmap=cmap[a.name]||{}
+    const weekTotal=Object.values(pmap).reduce((s,v)=>s+v,0)
+    const esc=s=>(s||'').replace(/'/g,"\\'")
+    const cells=dates.map(d=>{
+      const cnt=pmap[d]||0, isToday=d===today, bg=isToday?'background:rgba(230,180,40,.05)':''
+      if(cnt>0){ const col=cnt>=2?'var(--accent)':'#60a5fa'; return `<td style="text-align:center;padding:5px 3px;${bg}"><span style="font-weight:700;font-size:.85rem;color:${col}">${cnt}</span></td>` }
+      if(d>=today) return `<td style="text-align:center;padding:4px 3px;${bg}"><button onclick="_quickUtmFromPersona('${esc(a.name)}','${esc(a.id)}','${d}')" title="快速建立 ${escAttr(a.name)} UTM" style="background:none;border:1px dashed var(--border2);border-radius:4px;color:var(--text3);font-size:.72rem;padding:1px 7px;cursor:pointer" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text3)'">＋</button></td>`
+      return `<td style="text-align:center;padding:5px 3px"><span style="color:var(--border2);font-size:.7rem">—</span></td>`
+    }).join('')
+    const rawHandle=(a.raw||{}).igUsername||(a.raw||{}).handle||''
+    const nameHtml=rawHandle
+      ?`<a href="https://www.threads.com/@${rawHandle}" target="_blank" style="color:var(--text);text-decoration:none;font-size:.78rem;font-weight:600" title="@${rawHandle}">${escHtml(a.name)}</a>`
+      :`<span style="font-size:.78rem;font-weight:600">${escHtml(a.name)}</span>`
+    const codeHtml=a.code?`<span style="font-size:.61rem;color:var(--text3);font-family:monospace;display:block;margin-top:1px">${escHtml(a.code)}</span>`:''
+    const totalCol=weekTotal>=5?'var(--accent)':weekTotal>=2?'#60a5fa':'var(--text3)'
+    return `<tr style="border-bottom:1px solid var(--border2)"><td style="padding:7px 10px;min-width:110px;max-width:150px">${nameHtml}${codeHtml}</td>${cells}<td style="text-align:center;padding:5px 10px;font-weight:700;color:${totalCol};font-size:.85rem">${weekTotal||'—'}</td></tr>`
+  }).join('')
+  const weekLabel=_weekPlanOffset===0?'本週':_weekPlanOffset<0?`${Math.abs(_weekPlanOffset)}週前`:`${_weekPlanOffset}週後`
+  const dr=`${dates[0].slice(5).replace('-','/')} – ${dates[6].slice(5).replace('-','/')}`
+  const todayPending=_weekPlanOffset===0?actors.filter(a=>!(cmap[a.name]||{})[today]):[]
+  const pendingHtml=todayPending.length?`<div style="margin-top:10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-size:.72rem;color:var(--text3);white-space:nowrap">⚡ 今日待發：</span>${todayPending.slice(0,10).map(a=>{ const esc=s=>(s||'').replace(/'/g,"\\'"); return `<button onclick="_quickUtmFromPersona('${esc(a.name)}','${esc(a.id)}','${today}')" style="background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text2);font-size:.7rem;padding:2px 8px;cursor:pointer" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">${escHtml(a.name)}</button>` }).join('')}${todayPending.length>10?`<span style="font-size:.7rem;color:var(--text3)">+${todayPending.length-10}</span>`:''}</div>`:''
+  el.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div><span style="font-size:.88rem;font-weight:700;color:var(--accent)">📅 一週發布計畫</span><span style="font-size:.72rem;color:var(--text3);margin-left:8px">${weekLabel} · ${dr}</span></div><div style="display:flex;gap:5px"><button class="btn btn-xs btn-outline" onclick="_weekPlanOffset--;renderWeeklyPostPlan()">←</button>${_weekPlanOffset!==0?`<button class="btn btn-xs btn-outline" onclick="_weekPlanOffset=0;renderWeeklyPostPlan()">本週</button>`:''}<button class="btn btn-xs btn-outline" onclick="_weekPlanOffset++;renderWeeklyPostPlan()">→</button></div></div><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.78rem"><thead><tr><th style="${thS};text-align:left;min-width:110px">角色</th>${headers}<th style="${thS}">合計</th></tr></thead><tbody>${rows}</tbody></table></div>${pendingHtml}<div style="margin-top:8px;font-size:.65rem;color:var(--text3)">點 ＋ 跳轉 UTM 產生器（自動預填角色） · 點角色名稱開啟 Threads</div>`
+}
+function _quickUtmFromPersona(name,actorId,date){
+  const utmTab=document.querySelector('.nav-tab[onclick*="\'utm\'"]')
+  if(utmTab) nav(utmTab,'utm')
+  const todayStr=new Date().toISOString().split('T')[0]
+  setTimeout(()=>{
+    const sel=document.getElementById('u-persona')
+    if(sel&&actorId&&Array.from(sel.options).some(o=>o.value===actorId)){
+      sel.value=actorId; sel.dispatchEvent(new Event('change'))
+      if(typeof _utmPersonaChange==='function') _utmPersonaChange()
+    }
+    const med=document.getElementById('u-medium')
+    if(med&&!med.value){ med.value='th_post'; med.dispatchEvent(new Event('change')) }
+    if(typeof utmGen==='function') utmGen()
+    const msg=date!==todayStr?`${name} · 計畫日 ${date.slice(5).replace('-','/')}（非今天）`:`${name} · UTM 已預填，點「產生 UTM」即可`
+    toast(msg,'ok')
+  },350)
 }
 
 function renderKpiBanner(){
@@ -7535,7 +8198,7 @@ function utmInit(){
     html+=`<optgroup label="${t.label}">`+byT[t.k].map(a=>`<option value="${a.id}">${a.name}（${a.code}）</option>`).join('')+`</optgroup>`; });
   sel.innerHTML=html||'<option value="">（請先到社群水軍號新增帳號）</option>';
   if(cur && utmPersonas().some(a=>a.id===cur)) sel.value=cur;
-  utmFillLanding(); utmUsageChange(); utmGen();
+  utmFillLanding(); utmUsageChange(); _utmApplyPicksUrl(); utmGen();
   clearTimeout(_utmAutoTimer);  // 進頁面的自動產生不自動保存，等使用者實際操作才存
 }
 // ④ 落地頁下拉直接讀「入口」分頁 → UTM 與入口形成閉環（要導哪入口都有紀載）
@@ -7586,34 +8249,37 @@ function utmBuildUrl(p){
   const ct=utmContentVal(); if(ct) url+=`&utm_content=${ct}`;
   return url;
 }
-let _utmLastPersona=null;
+// 換人設 onchange → 重設 content/usage/落地頁，然後呼叫 utmGen
+function _utmPersonaChange(){
+  const p=utmCurrentPersona(); if(!p){utmGen();return;}
+  document.getElementById('u-content').value=utmSuggestContent(p);
+  const us=document.getElementById('u-usage');
+  if(us){
+    const med=document.getElementById('u-medium')?.value||'';
+    let auto;
+    if(med.startsWith('th')||med.startsWith('ig')) auto='炒群';
+    else if(med.startsWith('fb')) auto='fb';
+    else if(med.startsWith('blog')||med.startsWith('forum')||med.startsWith('link')) auto='匿名';
+    else { const t=roleType(commCode(p)); auto=t==='seeding'?'匿名':t==='fb'?'fb':'炒群'; }
+    us.value=auto; utmUsageChange();
+  }
+  _utmApplyPicksUrl(p);
+  utmGen();
+}
+// 依人設 picksUrl 填入落地頁（僅在換人設或 init 時呼叫，不在 utmGen 裡）
+function _utmApplyPicksUrl(p){
+  if(!p) p=utmCurrentPersona(); if(!p) return;
+  const pu=p.raw&&p.raw.picksUrl; if(!pu) return;
+  const landSel=document.getElementById('u-landing');
+  const landCustom=document.getElementById('u-landing-custom');
+  if(!landSel) return;
+  const match=Array.from(landSel.options).find(o=>o.value===pu);
+  if(match){landSel.value=pu;if(landCustom)landCustom.style.display='none';}
+  else{landSel.value='__custom__';if(landCustom){landCustom.value=pu;landCustom.style.display='block';}}
+}
 function utmGen(){
   const p=utmCurrentPersona(); const out=document.getElementById('u-out'); if(!out) return;
   if(!p){ out.textContent='（請先在社群水軍號新增帳號）'; return; }
-  if(_utmLastPersona!==p.id){ _utmLastPersona=p.id; document.getElementById('u-content').value=utmSuggestContent(p);
-    // 換角色時，優先依 medium 決定分類；medium 不確定才用角色型別 fallback
-    const us=document.getElementById('u-usage');
-    if(us){
-      const med=document.getElementById('u-medium')?.value||'';
-      let auto;
-      if(med.startsWith('th')||med.startsWith('ig')) auto='炒群';
-      else if(med.startsWith('fb')) auto='fb';
-      else if(med.startsWith('blog')||med.startsWith('forum')||med.startsWith('link')) auto='匿名';
-      else { const t=roleType(commCode(p)); auto=t==='seeding'?'匿名':t==='fb'?'fb':'炒群'; }
-      us.value=auto; utmUsageChange();
-    }
-  }
-  // 若角色有設 picks168 URL → 每次都確保落地頁正確（不限首次）
-  {
-    const pu=p.raw&&p.raw.picksUrl;
-    const landSel=document.getElementById('u-landing');
-    const landCustom=document.getElementById('u-landing-custom');
-    if(pu && landSel){
-      const match=Array.from(landSel.options).find(o=>o.value===pu);
-      if(match){ landSel.value=pu; landCustom.style.display='none'; }
-      else { landSel.value='__custom__'; landCustom.value=pu; landCustom.style.display='block'; }
-    }
-  }
   const url=utmBuildUrl(p);
   const isPicks=url.includes('picks168.com');
   out.innerHTML=(isPicks?'<span style="display:inline-block;background:#a78bfa22;border:1px solid #a78bfa60;border-radius:4px;font-size:.67rem;color:#a78bfa;padding:1px 7px;margin-bottom:6px">🤖 GA4：picks168 追蹤</span><br>':'')+url.replace(/utm_source=([^&]*)/,'utm_source=<b style="color:var(--accent2)">$1</b>').replace(/utm_medium=([^&]*)/,'utm_medium=<b style="color:var(--accent2)">$1</b>').replace(/utm_content=([^&]*)/,'utm_content=<b style="color:#4ade80">$1</b>');
@@ -8015,7 +8681,7 @@ function renderThreadTracker(){
     const s = n.toLocaleString('zh-TW')
     return n>=1000
       ? `<span style="color:var(--accent);font-weight:700;font-family:ui-monospace,monospace">${s}</span>`
-      : `<span style="font-family:ui-monospace,monospace;color:var(--text)">${s}</span>`
+      : `<span style="font-family:ui-monospace,monospace;color:var(--text3)">${s}</span>`
   }
   const thStyle = `padding:5px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);background:var(--bg2);border-bottom:1px solid var(--border);white-space:nowrap`
 
@@ -8033,7 +8699,7 @@ function renderThreadTracker(){
   }
 
   // 桌機：單一 row
-  const renderNewRow = a => {
+  const renderNewRow = (a, ctx={}) => {
     const m = a.platformMetrics?.Threads || {}
     const nt = a.notes||''
     const isDel = nt==='貼文已刪除'
@@ -8046,19 +8712,24 @@ function renderThreadTracker(){
     if(isDel) rowStyle += ';border-left:3px solid #dc2626;background:rgba(220,38,38,.04)'
     else if(isNoView) rowStyle += ';border-left:3px solid #e86a1a'
     else if(isUtmGen) rowStyle += ';opacity:.5'
+    if(!isDel && !isNoView && !isUtmGen && ctx.isSibling) rowStyle += ';border-left:3px solid rgba(167,139,250,.4);background:rgba(167,139,250,.03)'
     const anHtml = a.url
       ? `<a href="${escAttr(a.url)}" target="_blank" style="font-size:12px;font-weight:600;color:#a78bfa;text-decoration:none">${escHtml(a.personaName||'—')}</a>`
       : `<span style="font-size:12px;font-weight:600;color:#a78bfa">${escHtml(a.personaName||'—')}</span>`
     const slHtml = a.shortLink
       ? `<a href="${escAttr(a.shortLink)}" target="_blank" style="display:block;font-size:10px;color:#2563eb;text-decoration:none;font-family:ui-monospace,monospace;opacity:.8;margin-top:2px">${a.shortLink.replace(/^https?:\/\//,'')}</a>`
       : ''
+    const topicParts = [a.dir, a.topic].filter(Boolean)
+    const topicHtml = topicParts.length
+      ? `<div style="font-size:9px;color:var(--text3);margin-top:3px;line-height:1.3">${topicParts.map(function(t){return escHtml(t)}).join(' · ')}</div>`
+      : ''
     return `<tr style="${rowStyle}">
-      <td style="padding:8px 10px;vertical-align:middle">${anHtml}${slHtml}</td>
-      <td style="padding:8px 10px;vertical-align:middle"><span style="font-size:10px;font-family:ui-monospace,monospace;color:#e86a1a">${escHtml(a.utmContent||'—')}</span></td>
+      <td style="padding:8px 10px;vertical-align:middle">${anHtml}${slHtml}${topicHtml}</td>
+      <td style="padding:8px 10px;vertical-align:middle"><span style="font-size:10px;font-family:ui-monospace,monospace;color:#e86a1a">${escHtml(a.utmContent||'—')}</span>${ctx.isGroupFirst&&ctx.siblingCount>1?`<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.25);margin-left:6px;vertical-align:middle">×${ctx.siblingCount}</span>`:''}</td>
       <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(isDel?null:views)}</td>
       <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(likes)}</td>
       <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(replies)}</td>
-      <td style="padding:8px 10px;vertical-align:middle">${noteHtml(a)}</td>
+      <td style="padding:8px 10px;vertical-align:middle">${ctx.isSibling?'<span style="font-size:9px;color:#a78bfa;margin-right:4px">↳</span>':''}${noteHtml(a)}</td>
       <td style="padding:8px 10px;vertical-align:middle;white-space:nowrap;text-align:right">
         ${a.url?`<a href="${escAttr(a.url)}" target="_blank" class="btn btn-xs btn-copy" title="原帖">🔗</a> `:''}
         ${a.shortLink?`<a href="${escAttr(a.shortLink)}" target="_blank" class="btn btn-xs btn-copy" style="color:#fbbf24" title="短連結">短</a> `:''}
@@ -8071,17 +8742,17 @@ function renderThreadTracker(){
   }
 
   // 手機：展開卡
-  const renderNewCard = a => {
+  const renderNewCard = (a, ctx={}) => {
     const m = a.platformMetrics?.Threads || {}
     const nt = a.notes||''
     const isDel = nt==='貼文已刪除'
     const views = m.views, likes = m.likes, replies = m.replies ?? m.comments
-    return `<div class="po-card">
+    return `<div class="po-card"${ctx.isSibling?' style="border-left:3px solid rgba(167,139,250,.4)"':''}>
       <div class="po-head" onclick="poToggle(this)">
         <span class="po-chev">▸</span>
         <span style="font-size:.72rem;color:var(--text3);white-space:nowrap;flex-shrink:0">${(a.date||'').slice(5)}</span>
         <span style="font-size:12px;font-weight:600;color:#a78bfa;flex-shrink:0">${escHtml(a.personaName||'—')}</span>
-        <span style="font-size:10px;font-family:ui-monospace,monospace;color:#e86a1a;overflow:hidden;text-overflow:ellipsis">${escHtml(a.utmContent||'')}</span>
+        <span style="font-size:10px;font-family:ui-monospace,monospace;color:#e86a1a;overflow:hidden;text-overflow:ellipsis">${ctx.isSibling?'↳ ':''}${escHtml(a.utmContent||'')}${ctx.isGroupFirst&&ctx.siblingCount>1?` <span style="font-size:9px;padding:1px 4px;border-radius:3px;background:rgba(167,139,250,.15);color:#a78bfa">×${ctx.siblingCount}</span>`:''}</span>
       </div>
       <div class="po-body">
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;text-align:center">
@@ -8148,7 +8819,7 @@ function renderThreadTracker(){
           <th style="${thStyle};text-align:left">備注</th>
           <th style="${thStyle};text-align:right">操作</th>
         </tr></thead>
-        <tbody>${rows.map(renderNewRow).join('')}</tbody>
+        <tbody>${(()=>{const _um=new Map();rows.forEach(a=>{if(a.url){if(!_um.has(a.url))_um.set(a.url,[]);_um.get(a.url).push(a)}});const _mu=new Set([..._um.entries()].filter(([,v])=>v.length>1).map(([k])=>k));const _uf=new Set();return rows.map(a=>{const im=!!(a.url&&_mu.has(a.url)),igf=im&&!_uf.has(a.url)&&(_uf.add(a.url),true),isib=im&&!igf;return renderNewRow(a,{isMulti:im,isGroupFirst:igf,isSibling:isib,siblingCount:im?_um.get(a.url).length:1})}).join('')})()}</tbody>
       </table></div>
     </div>`
   }
@@ -8165,7 +8836,7 @@ function renderThreadTracker(){
   sorted.forEach(([d,rows]) => {
     const dt=new Date(d+'T12:00:00'), [,mm,dd]=d.split('-')
     mob += `<div style="font-size:.82rem;font-weight:700;color:var(--text3);margin:12px 0 6px;padding-left:4px">${mm}/${dd} (${WD[dt.getDay()]}) · ${rows.length} 則</div>`
-    mob += rows.map(renderNewCard).join('')
+    ;(()=>{const _um=new Map();rows.forEach(a=>{if(a.url){if(!_um.has(a.url))_um.set(a.url,[]);_um.get(a.url).push(a)}});const _mu=new Set([..._um.entries()].filter(([,v])=>v.length>1).map(([k])=>k));const _uf=new Set();mob+=rows.map(a=>{const im=!!(a.url&&_mu.has(a.url)),igf=im&&!_uf.has(a.url)&&(_uf.add(a.url),true),isib=im&&!igf;return renderNewCard(a,{isMulti:im,isGroupFirst:igf,isSibling:isib,siblingCount:im?_um.get(a.url).length:1})}).join('')})()
   })
   mob += '</div>'
 
@@ -8475,30 +9146,24 @@ function openSetThreadUrl(id){
 // ── 自動批次讀取 Threads 成效（呼叫本地 Python 伺服器）──
 const TT_METRICS_API = 'http://localhost:5568'
 
-async function ttAutoBatchMetrics(){
+async function ttAutoBatchMetrics(all=false){
   const ta = DB.get('thread_activities') || []
   const today = new Date().toISOString().split('T')[0]
   const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0]
   const pending = ta.filter(a =>
-    (a.date === today || a.date === yesterday) &&
+    (all || a.date === today || a.date === yesterday) &&
     a.status !== '已記錄' &&
     a.url && a.url.length > 20 && a.url.includes('/post/')
   )
   const log = document.getElementById('tt-auto-log')
   log.style.display = 'block'
   if(!pending.length){
-    log.innerHTML = '✅ 沒有待讀取的貼文（昨天與今天已全部記錄或無有效連結）'
+    log.innerHTML = all
+      ? '✅ 所有貼文均已記錄成效，無待更新項目'
+      : '✅ 沒有待讀取的貼文（昨天與今天已全部記錄或無有效連結）'
     return
   }
-  // 確認伺服器已啟動
-  try {
-    await fetch(TT_METRICS_API + '/health', {signal: AbortSignal.timeout(2000)})
-  } catch(e) {
-    log.innerHTML = `⚠️ 請先在終端機啟動 Threads 成效伺服器：<br>
-      <code style="background:var(--g3);padding:3px 8px;border-radius:4px;font-size:.8rem">python threads_metrics.py</code><br>
-      <span style="font-size:.75rem;color:var(--text3)">安裝說明：pip install playwright && playwright install chromium</span>`
-    return
-  }
+  // 伺服器需自行在終端機啟動：python threads_metrics.py
   // 建立 personaId → Threads handle 對照表
   // 優先從 personas 表的 igUsername 取，其次從非回覆活動的 URL 抽取
   const personaHandleMap = {}
@@ -8511,8 +9176,10 @@ async function ttAutoBatchMetrics(){
       if(m) personaHandleMap[a.personaId] = m[1]
     }
   })
-  const btn = document.getElementById('tt-auto-btn')
+  const btn = document.getElementById(all ? 'tt-auto-all-btn' : 'tt-auto-btn')
+  const btnOther = document.getElementById(all ? 'tt-auto-btn' : 'tt-auto-all-btn')
   if(btn){ btn.disabled=true; btn.textContent='⏳ 讀取中…' }
+  if(btnOther) btnOther.disabled = true
   log.innerHTML = `⚡ 開始讀取 <b>${pending.length}</b> 篇 Threads 成效（不跳頁，請稍候）<br>`
   const list = DB.get('thread_activities') || []
   const now = new Date().toISOString()
@@ -8539,16 +9206,27 @@ async function ttAutoBatchMetrics(){
       list[i].updatedAt = now
       if(m.replyUrl) list[i].replyUrl = m.replyUrl
       else delete list[i].replyUrl
+      // 瀏覽備註：無法顯示時附加，恢復後自動移除
+      const noViews = m.viewsAvailable === false
+      const noteTag = '無法顯示瀏覽'
+      let existingNote = list[i].notes || ''
+      if(noViews && !existingNote.includes(noteTag)){
+        list[i].notes = existingNote ? existingNote + '\n' + noteTag : noteTag
+      } else if(!noViews && existingNote.includes(noteTag)){
+        list[i].notes = existingNote.replace(/\n?無法顯示瀏覽/g, '').trim()
+      }
       count++
       const tag = m.replyUrl ? ' <span style="color:#fbbf24;font-size:.7rem">↩找到回覆</span>' : ''
-      log.innerHTML += ` ✅${tag} 讚${m.likes} 回覆${m.replies} 轉${m.reposts} 瀏覽${m.views}<br>`
+      const viewStr = noViews ? '<span style="color:#f87171">無法顯示</span>' : m.views
+      log.innerHTML += ` ✅${tag} 讚${m.likes} 回覆${m.replies} 轉${m.reposts} 瀏覽${viewStr}<br>`
     } catch(e) {
       log.innerHTML += ` ❌ ${e.message}<br>`
     }
   }
   DB.set('thread_activities', list)
   log.innerHTML += `<b>✅ 完成！已更新 ${count} / ${pending.length} 篇</b>`
-  if(btn){ btn.disabled=false; btn.textContent='⚡ 自動讀取成效' }
+  if(btn){ btn.disabled=false; btn.textContent = all ? '⚡ 更新全部待記錄' : '⚡ 今日成效' }
+  if(btnOther) btnOther.disabled = false
   renderThreadTracker()
 }
 
@@ -9857,6 +10535,62 @@ function msToggleDrilldown(id) {
   el.style.display = el.style.display==='none'?'block':'none';
 }
 
+// ── 商業成果總覽（來源：real_reg 後台對帳）─────────────────────────────────
+function renderMsBizKpis(start, end) {
+  const el = document.getElementById('ms-biz-kpis'); if (!el) return;
+  const allReg = DB.get('real_reg') || [];
+  // 取日期重疊的對帳記錄
+  const cur = allReg.filter(r => r.from <= end && r.to >= start);
+  const cReg = cur.reduce((s,r) => s+(r.reg||0), 0);
+  const cDep = cur.reduce((s,r) => s+(r.dep||0), 0);
+  const cAmt = cur.reduce((s,r) => s+(r.amt||0), 0);
+  const cRate = cReg > 0 ? (cDep/cReg*100) : 0;
+  // 上期（等長天數往前）
+  const days = Math.ceil((new Date(end)-new Date(start))/86400000)+1;
+  const pEndD = new Date(start); pEndD.setDate(pEndD.getDate()-1);
+  const pStartD = new Date(pEndD); pStartD.setDate(pEndD.getDate()-days+1);
+  const pe = pEndD.toISOString().split('T')[0], ps = pStartD.toISOString().split('T')[0];
+  const prev = allReg.filter(r => r.from <= pe && r.to >= ps);
+  const pReg = prev.reduce((s,r)=>s+(r.reg||0),0);
+  const pDep = prev.reduce((s,r)=>s+(r.dep||0),0);
+  const pAmt = prev.reduce((s,r)=>s+(r.amt||0),0);
+  const pRate = pReg>0?(pDep/pReg*100):0;
+  const hasPrev = prev.length>0;
+  const fmt = n => n>=10000?(n/10000).toFixed(1)+'萬':n.toLocaleString('zh-TW');
+  const fmtAmt = n => n>=10000?'NT$'+(n/10000).toFixed(1)+'萬':'NT$'+n.toLocaleString('zh-TW');
+  const diff = (c,p,isPercent) => {
+    if(!hasPrev||p===0) return '';
+    const d=c-p, pct=(d/p*100).toFixed(1);
+    const col=d>=0?'#4ade80':'#f87171', ar=d>=0?'↑':'↓';
+    const label=isPercent?`${ar} ${Math.abs(d).toFixed(1)}pp`:`${ar} ${Math.abs(d).toLocaleString()}（${Math.abs(pct)}%）`;
+    return `<div style="font-size:.67rem;color:${col};margin-top:4px;font-weight:600">${label} 較上期</div>`;
+  };
+  const card = (icon,label,val,dHtml,col) =>
+    `<div style="background:#0d0b0a;border:1px solid var(--border);border-radius:12px;padding:16px 18px;border-top:3px solid ${col}">
+      <div style="font-size:.7rem;color:var(--text3);margin-bottom:8px">${icon} ${label}</div>
+      <div style="font-size:1.65rem;font-weight:800;color:${col};letter-spacing:-.02em;line-height:1">${val}</div>
+      ${dHtml}
+    </div>`;
+  if(!cur.length){
+    el.innerHTML=`<div style="font-size:.82rem;font-weight:700;color:var(--accent);margin-bottom:10px">🏆 本期商業成果</div>
+      <div style="background:#0d0b0a;border:1px dashed var(--border2);border-radius:10px;padding:16px;text-align:center;color:var(--text3);font-size:.76rem">
+        此期間尚無對帳記錄<br><span style="font-size:.68rem;opacity:.7">請在下方「🧾 真實註冊對帳」填入數字後點「更新報告」</span></div>`;
+    return;
+  }
+  const srcNote = cur.map(r=>`${r.from}~${r.to}`).join('、');
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="font-size:.88rem;font-weight:700;color:var(--accent)">🏆 本期商業成果</div>
+      <span style="font-size:.65rem;color:var(--text3)">後台對帳 · ${srcNote}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px">
+      ${card('🧑','完成註冊',fmt(cReg),diff(cReg,pReg,false),'#22c55e')}
+      ${card('💳','儲值人數',fmt(cDep),diff(cDep,pDep,false),'#f59e0b')}
+      ${card('💰','儲值金額',fmtAmt(cAmt),diff(cAmt,pAmt,false),'#a78bfa')}
+      ${card('📊','儲值率',cRate.toFixed(1)+'%',diff(cRate,pRate,true),'#60a5fa')}
+    </div>`;
+}
+
 function renderMsKpiRow(ga4Data, start, end, prevStart, prevEnd) {
   const ta=DB.get('thread_activities')||[], cd=DB.get('conv_daily')||[];
   let curViews=0,prevViews=0,curInq=0,prevInq=0,curReg=0,prevReg=0;
@@ -10002,8 +10736,16 @@ function renderMsRouteEfficiency(r1, r2) {
   if (!el) return;
   const sum = (arr, key) => (arr||[]).reduce((s,p) => s + Number(p[key]||0), 0);
   const r1p = r1?.personas || [], r2p = r2?.personas || [];
-  const r1Imp = sum(r1p,'impressions'), r1Sess = sum(r1p,'forumSessions');
-  const r2Imp = sum(r2p,'impressions'), r2Sess = sum(r2p,'forumSessions'), r2Out = sum(r2p,'forumOutbound');
+  const r1Sess = sum(r1p,'forumSessions');
+  const r2Sess = sum(r2p,'forumSessions'), r2Out = sum(r2p,'forumOutbound');
+
+  // Split Threads views by landing URL from local DB, filtered to current period
+  const ta = DB.get('thread_activities') || [];
+  const { start, end } = _msPeriod;
+  const inRange = ta.filter(r => r.date >= start && r.date <= end);
+  const r1LocalImp = inRange.reduce((s,r) => (r.landingUrl||'').includes('ys89') ? s + Number(r.platformMetrics?.Threads?.views||0) : s, 0);
+  const r2LocalImp = inRange.reduce((s,r) => (r.landingUrl||'').includes('picks168') ? s + Number(r.platformMetrics?.Threads?.views||0) : s, 0);
+
   const pct = (a,b) => b>0 ? (a/b*100).toFixed(2)+'%' : '—';
   const fmt = n => n>=10000 ? (n/10000).toFixed(1)+'萬' : n.toLocaleString();
   const sync = r2?.lastSync ? new Date(r2.lastSync).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
@@ -10019,22 +10761,22 @@ function renderMsRouteEfficiency(r1, r2) {
       <div style="border-left:3px solid #C44A2A;padding:10px 14px;background:var(--g2);border-radius:6px">
         <div style="font-size:.75rem;font-weight:700;color:#C44A2A;margin-bottom:10px">🎯 路線一 → YS89.fun</div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;font-variant-numeric:tabular-nums">${fmt(r1Imp)}</div><div style="font-size:.67rem;color:var(--text3)">Threads 曝光</div></div>
+          <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums">${fmt(r1LocalImp)}</div><div style="font-size:.67rem;color:var(--text3)">Threads 曝光</div></div>
           <div style="color:var(--text3)">→</div>
           <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;color:#C44A2A;font-variant-numeric:tabular-nums">${r1Sess.toLocaleString()}</div><div style="font-size:.67rem;color:var(--text3)">論壇進站</div></div>
-          <div style="margin-left:auto;text-align:right"><div style="font-size:1rem;font-weight:700;color:var(--amber)">${pct(r1Sess,r1Imp)}</div><div style="font-size:.67rem;color:var(--text3)">曝光→進站</div></div>
+          <div style="margin-left:auto;text-align:right"><div style="font-size:1rem;font-weight:700;color:var(--amber)">${pct(r1Sess,r1LocalImp)}</div><div style="font-size:.67rem;color:var(--text3)">曝光→進站</div></div>
         </div>
       </div>
       <div style="border-left:3px solid #a78bfa;padding:10px 14px;background:var(--g2);border-radius:6px">
         <div style="font-size:.75rem;font-weight:700;color:#a78bfa;margin-bottom:10px">🏁 路線二 → picks168.com</div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;font-variant-numeric:tabular-nums">${fmt(r2Imp)}</div><div style="font-size:.67rem;color:var(--text3)">Threads 曝光</div></div>
+          <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums">${fmt(r2LocalImp)}</div><div style="font-size:.67rem;color:var(--text3)">Threads 曝光</div></div>
           <div style="color:var(--text3)">→</div>
           <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;color:#a78bfa;font-variant-numeric:tabular-nums">${r2Sess.toLocaleString()}</div><div style="font-size:.67rem;color:var(--text3)">picks168 進站</div></div>
           <div style="color:var(--text3)">→</div>
           <div style="text-align:center"><div style="font-size:1.35rem;font-weight:800;color:#22c55e;font-variant-numeric:tabular-nums">${r2Out.toLocaleString()}</div><div style="font-size:.67rem;color:var(--text3)">VIP 外連</div></div>
           <div style="margin-left:auto;text-align:right">
-            <div style="font-size:.82rem;font-weight:700;color:var(--amber)">${pct(r2Sess,r2Imp)} <span style="font-size:.67rem;font-weight:400;color:var(--text3)">曝→站</span></div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--amber)">${pct(r2Sess,r2LocalImp)} <span style="font-size:.67rem;font-weight:400;color:var(--text3)">曝→站</span></div>
             <div style="font-size:.82rem;font-weight:700;color:#22c55e">${pct(r2Out,r2Sess)} <span style="font-size:.67rem;font-weight:400;color:var(--text3)">站→外</span></div>
           </div>
         </div>
@@ -10078,6 +10820,25 @@ function renderMsPersonaRanking(r1, r2) {
     }
   });
 
+  // Build persona → Threads handle map from thread_activities URLs
+  const personaHandles = {};
+  ta.forEach(r => {
+    if (!r.personaName || personaHandles[r.personaName]) return;
+    const handle = (r.url||'').match(/threads\.com\/@([^/?&#]+)/)?.[1];
+    if (handle) personaHandles[r.personaName] = handle;
+  });
+
+  // Build persona → Threads views from thread_activities (same source as top KPI)
+  const { start: taStart, end: taEnd } = _msPeriod;
+  const personaThreadsViews = {};
+  const personaPostCount = {};
+  ta.filter(r => r.date >= taStart && r.date <= taEnd && r.status !== '略過')
+    .forEach(r => {
+      const n = r.personaName || '?';
+      personaThreadsViews[n] = (personaThreadsViews[n] || 0) + Number(r.platformMetrics?.Threads?.views || 0);
+      personaPostCount[n] = (personaPostCount[n] || 0) + 1;
+    });
+
   const codeToName = r2?.codeToName || {};
   const maxSess = personas[0]?.forumSessions || 1;
   const medals = ['🥇','🥈','🥉'];
@@ -10105,10 +10866,13 @@ function renderMsPersonaRanking(r1, r2) {
         </tr></thead>
         <tbody>
           ${personas.map((p, i) => {
-            const bar = maxSess > 0 ? Math.round((p.forumSessions||0)/maxSess*100) : 0;
-            const rate    = p.impressions > 0 ? (((p.forumSessions||0)/p.impressions)*100).toFixed(2)+'%' : '—';
-            const vipRate = p.impressions > 0 && (p.forumOutbound||0) > 0 ? (((p.forumOutbound||0)/p.impressions)*100).toFixed(2)+'%' : '—';
             const pName = p.name || p.persona || '?';
+            // Use thread_activities Threads views (same source as top KPI), fall back to API impressions
+            const localViews = personaThreadsViews[pName] || 0;
+            const localPosts = personaPostCount[pName] || p.posts || 0;
+            const bar = maxSess > 0 ? Math.round((p.forumSessions||0)/maxSess*100) : 0;
+            const rate    = localViews > 0 ? (((p.forumSessions||0)/localViews)*100).toFixed(2)+'%' : '—';
+            const vipRate = localViews > 0 && (p.forumOutbound||0) > 0 ? (((p.forumOutbound||0)/localViews)*100).toFixed(2)+'%' : '—';
             const ys89Sess = r1Map[pName] || 0;
             const ddId = 'ms-prdd-' + pName.replace(/[^a-z0-9]/gi, '_');
 
@@ -10128,9 +10892,12 @@ function renderMsPersonaRanking(r1, r2) {
               const linkBtn = postUrl
                 ? `<a href="${postUrl}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-size:.7rem;text-decoration:none;white-space:nowrap;padding:2px 6px;border:1px solid var(--accent);border-radius:4px" title="${postUrl}">🔗 開貼文</a>`
                 : `<span style="color:var(--text3);font-size:.7rem">無連結</span>`;
+              const codeCell = postUrl
+                ? `<a href="${postUrl}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);text-decoration:none;font-family:monospace;font-size:.72rem" title="${postUrl}">${c.code}</a>`
+                : `<span style="color:var(--text3);font-family:monospace;font-size:.72rem">${c.code}</span>`;
               return `<tr style="border-bottom:1px solid var(--g3);cursor:${postUrl?'pointer':'default'}" ${postUrl ? `onclick="window.open('${postUrl}','_blank')"` : ''}>
                 <td style="padding:5px 8px;font-size:.72rem;color:var(--text3);white-space:nowrap">${dateStr}</td>
-                <td style="padding:5px 8px;font-size:.72rem;font-family:monospace;color:var(--text3);white-space:nowrap">${c.code}</td>
+                <td style="padding:5px 8px;white-space:nowrap" onclick="event.stopPropagation()">${codeCell}</td>
                 <td style="padding:5px 8px;font-size:.75rem;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${title}">${title}</td>
                 <td style="padding:5px 8px;text-align:right;font-weight:700;color:#a78bfa;white-space:nowrap">${c.sessions} 進站</td>
                 <td style="padding:5px 8px;text-align:right;font-weight:700;color:#22c55e;white-space:nowrap">${c.outbound > 0 ? c.outbound+' VIP外連' : '<span style="color:var(--text3)">—</span>'}</td>
@@ -10138,10 +10905,14 @@ function renderMsPersonaRanking(r1, r2) {
               </tr>`;
             }).join('') : `<tr><td colspan="6" style="padding:10px 8px;color:var(--text3);font-size:.75rem">此區間無 UTM 追蹤貼文（或文案記錄未填）</td></tr>`;
 
+            const handle = personaHandles[pName];
+            const handleLink = handle
+              ? ` <a href="https://www.threads.com/@${handle}" target="_blank" onclick="event.stopPropagation()" style="font-size:.63rem;color:var(--accent);text-decoration:none;opacity:.8" title="Threads @${handle}">@${handle}</a>`
+              : '';
             return `<tr style="border-bottom:1px solid var(--g3);cursor:pointer" onclick="msToggleDrilldown('${ddId}')" title="點擊展開貼文明細">
-              <td style="padding:6px 8px;font-weight:600">${medals[i]||'  '} ${pName} <span style="font-size:.68rem;color:var(--text3)">▾</span></td>
-              <td style="padding:6px 8px;text-align:right;color:var(--text3)">${p.posts||0}</td>
-              <td style="padding:6px 8px;text-align:right;color:var(--amber);font-variant-numeric:tabular-nums">${fmt(p.impressions||0)}</td>
+              <td style="padding:6px 8px;font-weight:600">${medals[i]||'  '} ${pName}${handleLink} <span style="font-size:.68rem;color:var(--text3)">▾</span></td>
+              <td style="padding:6px 8px;text-align:right;color:var(--text3)">${localPosts}</td>
+              <td style="padding:6px 8px;text-align:right;color:var(--amber);font-variant-numeric:tabular-nums" title="Threads 觀看數（thread_activities）">${fmt(localViews)}</td>
               <td style="padding:6px 8px;text-align:right;color:var(--text3)">${(p.likes||0).toLocaleString()}</td>
               <td style="padding:6px 8px;text-align:right;color:var(--text3)">${p.comments||0}</td>
               <td style="padding:6px 8px;text-align:right;font-weight:700;color:#C44A2A">${ys89Sess > 0 ? ys89Sess : '<span style="color:var(--text3)">—</span>'}</td>
@@ -10222,7 +10993,15 @@ function renderMsTopPosts(r2) {
         const postUrl = meta.url || '';
         const pct     = Math.round(c.sessions/max*100);
         const isTop3  = i < 3;
-        return `<div style="padding:5px 4px;border-radius:6px;transition:background .12s" onmouseover="this.style.background='var(--g2)'" onmouseout="this.style.background='transparent'">
+        const rowClick = postUrl ? `onclick="window.open('${postUrl}','_blank')" style="cursor:pointer"` : '';
+        const codeLabel = postUrl
+          ? `<a href="${postUrl}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);text-decoration:none;font-family:monospace;font-size:.65rem" title="${postUrl}">${c.code}</a>`
+          : `<span style="color:var(--text3);font-family:monospace;font-size:.65rem">${c.code}</span>`;
+        const titleLine = title
+          ? `<div style="padding:2px 26px 0 77px;font-size:.68rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${title}">
+              ${postUrl ? `<a href="${postUrl}" target="_blank" onclick="event.stopPropagation()" style="color:var(--text2);text-decoration:none">└ ${title}</a>` : `└ ${title}`}
+            </div>` : '';
+        return `<div ${rowClick} style="padding:5px 4px;border-radius:6px;transition:background .12s" onmouseover="this.style.background='var(--g2)'" onmouseout="this.style.background='transparent'">
           <div style="display:flex;align-items:center;gap:7px">
             <div style="width:18px;font-size:.7rem;color:${isTop3?'var(--amber)':'var(--text3)'};text-align:right;flex-shrink:0;font-weight:${isTop3?'700':'400'}">${i+1}</div>
             <div style="width:52px;font-size:.76rem;font-weight:700;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${isTop3?'var(--text)':'var(--text2)'}">${personaName}</div>
@@ -10231,13 +11010,11 @@ function renderMsTopPosts(r2) {
                 <span style="font-size:.68rem;color:#fff;white-space:nowrap;font-weight:700">${c.sessions} 進站</span>
               </div>
             </div>
-            ${c.outbound > 0
-              ? `<div style="font-size:.7rem;color:#22c55e;flex-shrink:0;white-space:nowrap;font-weight:700">VIP外連 ${c.outbound}</div>`
-              : ''}
-            <div style="font-size:.65rem;color:var(--text3);flex-shrink:0;font-family:monospace;white-space:nowrap">${dateStr ? dateStr+' · ' : ''}${c.code}</div>
-            ${postUrl ? `<a href="${postUrl}" target="_blank" style="flex-shrink:0;color:var(--accent);font-size:.7rem;text-decoration:none;padding:1px 6px;border:1px solid var(--accent);border-radius:4px;white-space:nowrap" title="開啟原貼文">🔗</a>` : ''}
+            ${c.outbound > 0 ? `<div style="font-size:.7rem;color:#22c55e;flex-shrink:0;white-space:nowrap;font-weight:700">VIP外連 ${c.outbound}</div>` : ''}
+            <div style="font-size:.65rem;color:var(--text3);flex-shrink:0;white-space:nowrap">${dateStr ? dateStr+' · ' : ''}${codeLabel}</div>
+            ${postUrl ? `<a href="${postUrl}" target="_blank" onclick="event.stopPropagation()" style="flex-shrink:0;color:var(--accent);font-size:.7rem;text-decoration:none;padding:1px 6px;border:1px solid var(--accent);border-radius:4px;white-space:nowrap" title="開啟 Threads 貼文">🔗</a>` : ''}
           </div>
-          ${title ? `<div style="padding:2px 26px 0 77px;font-size:.68rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${title}">└ ${title}</div>` : ''}
+          ${titleLine}
         </div>`;
       }).join('')}
     </div>`;
@@ -10246,9 +11023,32 @@ function renderMsTopPosts(r2) {
 function renderMsCrossover(r2) {
   const el = document.getElementById('ms-crossover');
   if (!el) return;
-  const data = (r2?.crossover || []).filter(d => d.date);
+  const brandData = (r2?.crossover || []).filter(d => d.date);
+
+  // Build daily Threads views from thread_activities (same source as top KPI)
+  const ta = DB.get('thread_activities') || [];
+  const { start, end } = _msPeriod;
+  const dailyViews = {};
+  ta.filter(r => r.date >= start && r.date <= end && r.status !== '略過')
+    .forEach(r => {
+      const v = Number(r.platformMetrics?.Threads?.views||0);
+      dailyViews[r.date] = (dailyViews[r.date]||0) + v;
+    });
+
+  // Merge: use brandData dates as axis, inject Threads views
+  const allDates = [...new Set([
+    ...Object.keys(dailyViews),
+    ...brandData.map(d=>d.date)
+  ])].filter(d=>d>=start&&d<=end).sort();
+
+  const data = allDates.map(date => ({
+    date,
+    postImpr: dailyViews[date] || 0,
+    brandClicks: (brandData.find(d=>d.date===date)||{}).brandClicks || 0
+  }));
+
   if (!data.length) {
-    el.innerHTML = '<div class="card-title">📈 每日趨勢：曝光 vs 品牌搜尋</div><p class="tm" style="font-size:.78rem">無資料</p>';
+    el.innerHTML = '<div class="card-title">📈 每日趨勢：Threads 曝光 vs 品牌搜尋</div><p class="tm" style="font-size:.78rem">無資料</p>';
     return;
   }
   const maxImp   = Math.max(...data.map(d => d.postImpr||0), 1);
@@ -10259,7 +11059,7 @@ function renderMsCrossover(r2) {
   const yImp   = v => pT + iH - iH*(v||0)/maxImp;
   const yBrand = v => pT + iH - iH*(v||0)/maxBrand;
   const bars = data.map((d,i) =>
-    `<rect x="${(x(i)-bW/2).toFixed(1)}" y="${yImp(d.postImpr).toFixed(1)}" width="${bW}" height="${(iH-yImp(d.postImpr)+pT).toFixed(1)}" fill="#a78bfa" opacity="0.55" rx="2"/>`
+    `<rect x="${(x(i)-bW/2).toFixed(1)}" y="${yImp(d.postImpr).toFixed(1)}" width="${bW}" height="${(iH-yImp(d.postImpr)+pT).toFixed(1)}" fill="#a78bfa" opacity="0.55" rx="2"><title>${d.date}: Threads 曝光 ${d.postImpr.toLocaleString()}</title></rect>`
   ).join('');
   const line = data.map((d,i) => `${i===0?'M':'L'}${x(i).toFixed(1)},${yBrand(d.brandClicks).toFixed(1)}`).join(' ');
   const dots = data.map((d,i) =>
@@ -10274,15 +11074,15 @@ function renderMsCrossover(r2) {
   el.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <div class="card-title" style="margin:0">📈 每日趨勢：曝光 vs 品牌搜尋</div>
+        <div class="card-title" style="margin:0">📈 每日趨勢：Threads 曝光 vs 品牌搜尋</div>
         <div style="font-size:.7rem;color:var(--text3);background:var(--g3);padding:2px 8px;border-radius:4px">${_msPeriod.start} ～ ${_msPeriod.end}</div>
       </div>
       <div style="display:flex;gap:14px;font-size:.72rem;color:var(--text2)">
-        <span><span style="display:inline-block;width:10px;height:8px;background:#a78bfa;border-radius:2px;opacity:.6;vertical-align:middle;margin-right:4px"></span>貼文曝光 ${totImp>=10000?(totImp/10000).toFixed(1)+'萬':totImp.toLocaleString()}</span>
+        <span><span style="display:inline-block;width:10px;height:8px;background:#a78bfa;border-radius:2px;opacity:.6;vertical-align:middle;margin-right:4px"></span>Threads 曝光 ${totImp>=10000?(totImp/10000).toFixed(1)+'萬':totImp.toLocaleString()}</span>
         <span><span style="display:inline-block;width:10px;height:3px;background:#22c55e;border-radius:2px;vertical-align:middle;margin-right:4px"></span>品牌搜尋 ${totBrand} 次</span>
       </div>
     </div>
-    <p style="font-size:.67rem;color:var(--text3);margin-bottom:8px">貼文曝光（紫柱）vs picks168 品牌關鍵字搜尋次數（綠線）· 看社群是否帶動品牌認知累積</p>
+    <p style="font-size:.67rem;color:var(--text3);margin-bottom:8px">Threads 每日觀看數（紫柱）vs picks168 品牌關鍵字搜尋次數（綠線）· 看社群是否帶動品牌認知累積</p>
     <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
       <line x1="${pL}" y1="${pT+iH}" x2="${W-pR}" y2="${pT+iH}" stroke="var(--border)" stroke-width="1"/>
       ${bars}
@@ -10523,10 +11323,10 @@ function _msInitDates() {
   const f = d => d.toISOString().slice(0,10);
   const cs = document.getElementById('ms-cur-start');
   if (!cs || cs.value) return;
-  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-  const curStart  = new Date(yesterday); curStart.setDate(curStart.getDate()-6);
+  const today    = new Date();
+  const curStart = new Date(today); curStart.setDate(curStart.getDate()-6);
   document.getElementById('ms-cur-start').value = f(curStart);
-  document.getElementById('ms-cur-end').value   = f(yesterday);
+  document.getElementById('ms-cur-end').value   = f(today);
 }
 
 function _msDates() {
@@ -10584,6 +11384,7 @@ async function renderMeetingSummary(ga4Data) {
   }
 
   _msPeriod = { start, end };
+  renderMsBizKpis(start, end);
   renderMsKpiRow(ga4Data, start, end, '', '');
   renderMsFunnel(ga4Data, start, end);
   renderMsNotes();
@@ -10626,6 +11427,10 @@ async function renderMeetingSummary(ga4Data) {
     renderMsPersonaRanking(r1, r2);
     renderMsTopPosts(r2);
     renderMsCrossover(r2);
+    // 同步更新平台曝光度面板，確保日期與開會區間一致
+    if (typeof _ga4Data !== 'undefined' && _ga4Data && typeof renderExposurePanel === 'function') {
+      renderExposurePanel(_ga4Data, _ga4Period || '7d');
+    }
   } catch(e) {
     const err = `<p class="tm" style="font-size:.78rem;color:#ef4444;padding:8px 0">⚠ 資料載入失敗：${e.message}</p>`;
     ['ms-route-summary','ms-persona-ranking','ms-top-posts','ms-crossover']
@@ -11084,11 +11889,41 @@ function renderComparison() {
 // ===== INIT =====
 (async()=>{
   await recoverLocalStorageData()
-  initData().then(()=>{ try{renderPersonas();}catch(e){} utmFillLanding(); })
+  initData().then(()=>{
+    try{_migrateThreadActivities();}catch(e){}
+    try{renderPersonas();}catch(e){}
+    try{renderGrowthOverview();}catch(e){}
+    utmFillLanding()
+  })
 })()
 </script>
 <script src="assets/js/navigation-config.js"></script>
 <script src="assets/js/dashboard-adapter.js"></script>
+<script>
+// 相容 thread_activities 的 platformMetrics.Threads 欄位格式
+(function(){
+  var _orig = DashboardAdapter.getMetrics;
+  DashboardAdapter.getMetrics = function(entry) {
+    if (entry && entry.platformMetrics && entry.platformMetrics.Threads) {
+      var t = entry.platformMetrics.Threads;
+      return {
+        views:   t.views   != null ? +t.views   : null,
+        likes:   t.likes   != null ? +t.likes   : null,
+        cmts:    t.replies != null ? +t.replies  : null,
+        shares:  t.reposts != null ? +t.reposts  : (t.shares != null ? +t.shares : null),
+        saves:   t.saves   != null ? +t.saves    : null,
+        follows: t.follows != null ? +t.follows  : null,
+      };
+    }
+    return _orig(entry);
+  };
+  DashboardAdapter.hasMetrics = function(entry) {
+    if ((entry.notes||'').indexOf('貼文已刪除') !== -1) return false;
+    var m = DashboardAdapter.getMetrics(entry);
+    return m.views != null || m.likes != null;
+  };
+})();
+</script>
 <script src="assets/js/dashboard.js"></script>
 <script src="assets/js/app-shell.js"></script>
 </body>
