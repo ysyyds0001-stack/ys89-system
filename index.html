@@ -4468,7 +4468,7 @@ const DEFAULT_PERSONAS=[
     img:'封面圖（第1張）：\nCreate a 4:5 Instagram carousel cover in Traditional Chinese for "Diego 老粉筆記".\nMinimal dark football stadium background, strong floodlights, black and white sports editorial style, subtle muted gold accents, clean bold typography, no human face, no real player, no team logo.\nThe design should be very clean and simple, with a large readable headline, match score, and one short subtitle.\nMood: veteran football fan late-night match notes, calm, slightly tired, rational, not flashy.\nUse subtle football pitch texture and light stadium atmosphere.\nNo FIFA official logo, no official World Cup trophy, no real team logos, no real player faces, no casino imagery, no chips, no cards, no roulette, no money, no betting slip, no guaranteed prediction wording.\n\n內頁圖（第2張）：\nCreate a 4:5 Instagram carousel inner-page information card in Traditional Chinese for "Diego 老粉筆記".\nDark football stadium background with floodlights, black and white editorial sports design, subtle muted gold accents, clean information layout, tactical route lines, simple numbered sections, minimal football analysis card style.\nNo character face, no human portrait, no real player, no team logo.\nContent should be arranged into 3 to 4 short analysis points, with a small "本場看點" box at the bottom.\nMobile-readable, clean hierarchy, not too much text, spacious layout.\nNo FIFA official logo, no official World Cup trophy, no real team logos, no real player faces, no casino imagery, no chips, no cards, no roulette, no money, no betting slip, no guaranteed prediction wording.',
     postPrompts:[],createdAt:new Date().toISOString()},
 
-  {id:'p5',name:'阿奇',followers:86,dir:'世足/社群',direction:'足球資訊/IG-Threads社群/SEO文案',
+  {id:'p5',name:'阿奇',followers:86,dir:'體育賽事/運彩',roleType:'真人+平台',direction:'足球資訊/IG-Threads社群/SEO文案',
     essence:'熱血、有觀點、愛分析的台灣男性球迷，像球迷圈裡最懂脈絡又願意幫大家整理重點的朋友',
     tone:'有真人溫度與球迷心情，可興奮、期待、失望或好奇，但每個觀點必須有資訊依據。短段落、口語、適合手機閱讀，不像 AI 摘要或正式報告',
     topics:'足球賽事分析、球隊數據整理、賽程資訊、球迷心得、世足觀察、SEO 足球文案、IG／Threads 圖文社群內容',
@@ -4477,7 +4477,7 @@ const DEFAULT_PERSONAS=[
     img:'Create a 4:5 Instagram carousel cover (1080×1350 px) in Traditional Chinese for the character "阿奇".\n\nCharacter: Enthusiastic Taiwanese male football fan, mid-20s to early 30s, warm friendly face, short dark hair, football jersey or casual sporty wear, lively expressive gestures, deep blue and grass green palette.\n\nScene: football stadium atmosphere with soft floodlights in background, tactical lines and data card elements as subtle overlays, clean readable layout with bold headline area.\n\nMood: passionate but analytical football fan, not a broadcaster — like the friend who texts you match analysis at midnight.\n\nStyle: warm hand-drawn anime editorial, soft painterly, natural proportions, 4:5 vertical format.\nColors: deep blue (#1a2a4a), grass green (#2d7a45), white text.\n\nSafe constraints — NO: real player faces, official team logos, FIFA/UEFA/World Cup official logos or trophies, chips, coins, banknotes, casino, betting slips, roulette, money rain, guaranteed prediction wording.\nNO changes to 阿奇\'s face shape, hair, or features — only adjust pose, expression, costume, props.',
     postPrompts:[],createdAt:new Date().toISOString()},
 
-  {id:'p6',name:'世足大財神',followers:221,dir:'世足/運彩',direction:'世足/運彩/體育投注',
+  {id:'p6',name:'世足大財神',followers:221,dir:'體育賽事/運彩',roleType:'真人+平台',direction:'世足/運彩/體育投注',
     essence:'熱門風向捕捉者、大局觀、財神感、沉著專業',
     tone:'大局觀、沉著分析，提供熱門方向參考，不激進',
     topics:'世足冠軍熱門、賽事大局觀、運彩走勢',
@@ -4487,7 +4487,7 @@ const DEFAULT_PERSONAS=[
     postPrompts:[],createdAt:new Date().toISOString()},
 
 
-  {id:'p8',name:'世足排雷週記',followers:30,dir:'世足/運彩',direction:'世足/運彩/體育投注',
+  {id:'p8',name:'世足排雷週記',followers:30,dir:'體育賽事/運彩',roleType:'真人+平台',direction:'世足/運彩/體育投注',
     essence:'謹慎、細心、理性，專注風險提示',
     tone:'謹慎提示、風險意識、友善建議，不聳動',
     topics:'世足風險提示、常見盲點、判斷陷阱',
@@ -4802,6 +4802,57 @@ function _migrateThreadActivities(){
     if(!a.post_id){ a.post_id = a.url ? btoa(a.url).replace(/[^a-z0-9]/gi,'').slice(0,12) : null; changed = true }
   })
   if(changed){ DB.set('thread_activities', list); console.log('[Migration] thread_activities 新欄位補齊完成') }
+}
+
+// ===== MIGRATION: 角色分類與定位 =====
+function _migratePersonaCategories(){
+  const MAP={
+    '阿奇':          {dir:'體育賽事/運彩', roleType:'真人+平台'},
+    'kk':            {dir:'體育賽事/運彩', roleType:'真人+平台'},
+    'KK':            {dir:'體育賽事/運彩', roleType:'真人+平台'},
+    '世足排番週記':   {dir:'體育賽事/運彩', roleType:'真人+平台'},
+    '世足排雷週記':   {dir:'體育賽事/運彩', roleType:'真人+平台'},
+    '世足大財神':     {dir:'體育賽事/運彩', roleType:'真人+平台'},
+    '米亞通動賽事':   {dir:'體育賽事/運彩', roleType:'平台'},
+    '全球球賽情報站':  {dir:'體育賽事/運彩', roleType:'平台'},
+    '哈哈看球':       {dir:'體育賽事/運彩', roleType:'平台'},
+    'AI體育賽事分析':  {dir:'體育賽事/運彩', roleType:'平台'},
+    '陳亦強':         {dir:'AI預測平台工具', roleType:'真人'},
+    '小袞遊戲筆記':   {dir:'部落格真人角',  roleType:'真人+平台'},
+    '魚池阿智':       {dir:'部落格真人角',  roleType:'真人+平台'},
+    '捕魚老司機阿網':  {dir:'捕魚',         roleType:'平台'},
+    '戰術阿森':       {dir:'百家樂',        roleType:'真人+平台'},
+    '詩涵':           {dir:'百家樂',        roleType:'真人'},
+    '沐木Mu':         {dir:'獎號通',        roleType:'真人'},
+    '昭涵':           {dir:'獎號通',        roleType:'真人'},
+    '倪':             {dir:'真人回覆',      roleType:'真人回覆'},
+    'Ian Lin':        {dir:'真人回覆',      roleType:'真人回覆'},
+    '阿象':           {dir:'真人回覆',      roleType:'真人回覆'},
+    'zahra':          {dir:'真人回覆',      roleType:'真人回覆'},
+    'BS':             {dir:'真人回覆',      roleType:'真人回覆'},
+    '愛羅絲':         {dir:'真人回覆',      roleType:'真人回覆'},
+    'Anne':           {dir:'真人回覆',      roleType:'真人回覆'},
+    '米恩':           {dir:'真人回覆',      roleType:'真人回覆'},
+    'Jack是個柴迷':   {dir:'真人回覆',      roleType:'真人回覆'},
+    'Jason Chen':     {dir:'真人回覆',      roleType:'真人回覆'},
+    '林家益':         {dir:'真人回覆',      roleType:'真人回覆'},
+  }
+  let changed=false
+  ;['personas','community','seeding_accounts'].forEach(key=>{
+    const list=DB.get(key)||[]
+    let keyChanged=false
+    list.forEach(p=>{
+      const m=MAP[p.name]
+      if(m&&(p.dir!==m.dir||p.roleType!==m.roleType)){
+        p.dir=m.dir; p.roleType=m.roleType; keyChanged=true; changed=true
+      }
+    })
+    if(keyChanged) DB.set(key,list)
+  })
+  if(changed){
+    Promise.all(['personas','community','seeding_accounts'].map(k=>DB.push(k)))
+    console.log('[Migration] 角色分類與定位更新完成')
+  }
 }
 
 // ===== 成長概覽 =====
@@ -6713,10 +6764,13 @@ function renderWeeklyPostPlan(){
       ?`<a href="https://www.threads.com/@${rawHandle}" target="_blank" style="color:var(--text);text-decoration:none;font-size:.78rem;font-weight:600">${escHtml(a.name)}</a>`
       :`<span style="font-size:.78rem;font-weight:600">${escHtml(a.name)}</span>`
     const codeHtml=a.code?`<span style="font-size:.61rem;color:var(--text3);font-family:monospace;display:block;margin-top:1px">${escHtml(a.code)}</span>`:''
+    const rt=a.raw?.roleType||''
+    const rtC={'真人+平台':'#3b82f6','平台':'#64748b','真人':'#10b981','真人回覆':'#8b5cf6'}[rt]||'#64748b'
+    const rtChip=rt?`<span style="font-size:.58rem;padding:1px 5px;border-radius:3px;background:${rtC}22;color:${rtC};border:1px solid ${rtC}44;white-space:nowrap;display:inline-block;margin-top:2px">${escHtml(rt)}</span>`:''
     const totalCol=weekTotal>=5?'var(--accent)':weekTotal>=2?'#60a5fa':'var(--text3)'
     const hasScript=!!scripts[`p:${a.id}::${wk}`]
     const scriptBtn=`<button onclick="openWeeklyScript('p:${esc(a.id)}','${esc(a.name)}')" style="background:${hasScript?'#a78bfa22':'none'};border:1px ${hasScript?'solid #a78bfa44':'dashed var(--border2)'};border-radius:4px;color:${hasScript?'#a78bfa':'var(--text3)'};font-size:.65rem;padding:1px 6px;cursor:pointer;white-space:nowrap" title="週腳本">📝</button>`
-    return `<tr style="border-bottom:1px solid var(--border2)"><td style="padding:7px 10px;min-width:120px;max-width:160px"><div style="display:flex;align-items:flex-start;gap:5px">${scriptBtn}<div>${nameHtml}${codeHtml}</div></div></td>${cells}<td style="text-align:center;padding:5px 10px;font-weight:700;color:${totalCol};font-size:.85rem">${weekTotal||'—'}</td></tr>`
+    return `<tr style="border-bottom:1px solid var(--border2)"><td style="padding:7px 10px;min-width:120px;max-width:160px"><div style="display:flex;align-items:flex-start;gap:5px">${scriptBtn}<div>${nameHtml}${codeHtml}${rtChip}</div></div></td>${cells}<td style="text-align:center;padding:5px 10px;font-weight:700;color:${totalCol};font-size:.85rem">${weekTotal||'—'}</td></tr>`
   }
 
   const groupHtml=catOrder.map(cat=>{
@@ -12009,6 +12063,7 @@ function renderComparison() {
   await recoverLocalStorageData()
   initData().then(()=>{
     try{_migrateThreadActivities();}catch(e){}
+    try{_migratePersonaCategories();}catch(e){}
     try{renderPersonas();}catch(e){}
     try{renderGrowthOverview();}catch(e){}
     utmFillLanding()
