@@ -6579,6 +6579,16 @@ function renderActTypeTab(){
   const list = d[_actTypeTab] || [];
   const IS = 'background:none;border:none;border-bottom:1px dashed rgba(255,255,255,.15);color:var(--text1);font-size:.81rem;padding:2px 0;outline:none;width:100%';
   const rows = list.map(a=>{
+    const catCol=_CAT_COL[a.cat]||'#94a3b8'
+    const ROLE_TYPES=['真人+平台','平台','真人','真人回覆']
+    const roleType=ROLE_TYPES.includes(a.note)?a.note:''
+    const catCell=`<div style="display:flex;flex-direction:column;gap:4px">
+      <select onchange="updateAcctField('${_actTypeTab}','${a.id}','cat',this.value);renderActTypeTab()"
+        style="background:${catCol}1a;color:${catCol};border:1px solid ${catCol}44;border-radius:10px;font-size:.62rem;font-weight:600;padding:2px 8px;outline:none;cursor:pointer;max-width:130px">
+        ${Object.keys(_CAT_COL).map(c=>`<option value="${c}"${c===a.cat?' selected':''}>${c}</option>`).join('')}
+      </select>
+      ${roleType?`<span style="font-size:.6rem;color:var(--text3);padding-left:4px">${roleType}</span>`:''}
+    </div>`
     const linkCell = a.linked
       ? `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
            <span style="display:inline-flex;align-items:center;gap:4px;background:#1c1a3a;border:1px solid #6366f1;color:#a5b4fc;border-radius:4px;font-size:.65rem;padding:2px 7px;cursor:pointer;white-space:nowrap"
@@ -6595,11 +6605,7 @@ function renderActTypeTab(){
           onchange="updateAcctField('${_actTypeTab}','${a.id}','name',this.value)"
           style="${IS};font-weight:600">
       </td>
-      <td style="padding:7px 10px;min-width:80px">
-        <input data-f="cat" value="${_escVal(a.cat)}" placeholder="分類"
-          onchange="updateAcctField('${_actTypeTab}','${a.id}','cat',this.value)"
-          style="${IS};font-size:.74rem;color:var(--text2)">
-      </td>
+      <td style="padding:7px 10px;min-width:110px">${catCell}</td>
       <td style="padding:7px 10px">
         <div style="display:flex;flex-direction:column;gap:3px">
           <div style="display:flex;align-items:center;gap:5px">
