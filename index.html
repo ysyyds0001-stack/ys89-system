@@ -6828,6 +6828,7 @@ function saveWeeklyScript(){
   DB.push('weekly_scripts').catch(()=>{})
   closeModal('modal-weekly-script')
   toast('腳本已儲存 ✓')
+  if(_wpView==='month') renderWeeklyCalendarView(); else renderWeeklyPostPlan()
 }
 
 // ─── 月曆視圖 ──────────────────────────────────────────────────────────────
@@ -7052,7 +7053,8 @@ function saveMonthlyScripts(){
     const v=ta.value.trim()
     if(v) scripts[`c:${cat}::${wk}`]=v; else delete scripts[`c:${cat}::${wk}`]
   }))
-  DB.set('weekly_scripts',scripts)   // 同步存 localStorage，背景 POST 至 CF Worker
+  DB.set('weekly_scripts',scripts)
+  DB.push('weekly_scripts').catch(()=>{})
   closeModal('modal-monthly-script')
   toast('月腳本已儲存 ✓')
   if(_wpView==='month') renderWeeklyCalendarView(); else renderWeeklyPostPlan()
