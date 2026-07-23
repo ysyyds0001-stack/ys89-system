@@ -13017,24 +13017,26 @@ function _tplShowPromptFallback(prompt){
 }
 
 function copyGptDecomposePrompt(){
-  const prompt=`以下是一篇社群貼文，請幫我分析它的文案結構，並輸出 JSON 格式，欄位如下：
-{
-  "name": "模板名稱（3-8字）",
-  "stage": "起 或 承 或 信 或 轉 或 合",
-  "goal": "這篇貼文的主要目的",
-  "platforms": ["適用平台陣列"],
-  "techniques": ["使用的內容手法陣列"],
-  "structure": ["段落1描述", "段落2描述", "..."],
-  "toneRules": "語氣與格式規則說明",
-  "ctaTypes": ["CTA類型陣列"],
-  "replaceableFields": ["可替換欄位陣列"],
-  "lockedRules": ["不可改動規則陣列"]
-}
+  const prompt=`請將這篇內容拆解成可匯入「YS89文案模板庫」的JSON。
 
-貼文如下（請在此貼上原文）：
-[請貼上要拆解的貼文]`
+要求：
+
+1. 判斷主要階段：起／承／信／轉／合，只能選一個。
+2. 拆解流量機制、內容手法與段落功能。
+3. 不要改寫成新貼文。
+4. 不要照抄原文句子。
+5. 模板不能綁定原本的球隊、人物或事件。
+6. 使用角色類型與內容能力判斷適配，不要寫死角色名稱。
+7. 整理可替換欄位與不可改動規則。
+8. 輸出系統可以直接匯入的JSON。
+9. 同時提供可下載的.json檔案。
+
+原始平台：
+原始網址：
+原始成效：
+補充說明：`
   if(navigator.clipboard){
-    navigator.clipboard.writeText(prompt).then(()=>alert('已複製 GPT拆解提示詞！貼到 ChatGPT 後再貼上貼文原文即可。')).catch(()=>prompt_fallback())
+    navigator.clipboard.writeText(prompt).then(()=>alert('已複製 GPT拆解提示詞！填入原始平台/網址/成效後，再把原文貼在下方送出即可。')).catch(()=>prompt_fallback())
   }else{prompt_fallback()}
   function prompt_fallback(){alert('請手動複製：\n\n'+prompt)}
 }
