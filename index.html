@@ -7095,8 +7095,10 @@ function renderWeeklyPostPlan(){
   const sq=(_wpSearch||'').trim().toLowerCase()
   const cf=_wpCatFilter||''
 
-  // 全部帳號（加搜尋篩選，不再依分類 tab 篩選）
-  const curList=actors.filter(a=>!sq||a.name.toLowerCase().includes(sq)||(a.raw?.dir||'').toLowerCase().includes(sq))
+  const curList=actors.filter(a=>{
+    if(sq) return a.name.toLowerCase().includes(sq)||(a.raw?.dir||'').toLowerCase().includes(sq)
+    return !cf||(a.raw?.dir||'其他')===cf
+  })
 
   const thS=`padding:7px 8px;font-size:.7rem;font-weight:600;text-align:center;color:var(--text3);background:var(--g2);border-bottom:1px solid var(--border);white-space:nowrap`
   const thT=`padding:7px 8px;font-size:.7rem;font-weight:600;text-align:center;color:var(--accent);background:var(--g2);border-bottom:2px solid var(--accent);white-space:nowrap`
@@ -7184,13 +7186,13 @@ function renderWeeklyPostPlan(){
         <button class="btn btn-xs btn-outline" onclick="_weekPlanOffset++;renderWeeklyPostPlan()">→</button>
       </div>
     </div>
-    ${sq?`<div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
-      <input type="text" placeholder="🔍 搜尋角色…" value="${escHtml(sq)}" oninput="_wpSearch=this.value;renderWeeklyPostPlan()" style="flex:1;max-width:220px;padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text);font-size:.75rem;outline:none">
-      <button class="btn btn-xs btn-outline" onclick="_wpSearch='';renderWeeklyPostPlan()">✕</button>
-    </div>`:
-    `<div style="margin-bottom:8px">
-      <input type="text" placeholder="🔍 搜尋角色…" oninput="_wpSearch=this.value;renderWeeklyPostPlan()" style="max-width:200px;padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text);font-size:.75rem;outline:none">
-    </div>`}
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+      <div style="display:flex;gap:3px;flex-wrap:nowrap;overflow-x:auto;flex:1;padding-bottom:2px">${sq?'':catTabs}</div>
+      ${sq
+        ?`<div style="display:flex;gap:6px;align-items:center"><input type="text" placeholder="🔍 搜尋角色…" value="${escHtml(sq)}" oninput="_wpSearch=this.value;renderWeeklyPostPlan()" style="padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text);font-size:.75rem;outline:none;width:160px"><button class="btn btn-xs btn-outline" onclick="_wpSearch='';_wpCatFilter=null;renderWeeklyPostPlan()">✕</button></div>`
+        :`<input type="text" placeholder="🔍 搜尋角色…" oninput="_wpSearch=this.value;renderWeeklyPostPlan()" style="padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text);font-size:.75rem;outline:none;width:140px">`}
+    </div>
+    ${sq?'':scriptBarHtml}
     ${tableHtml}
     ${pendingHtml}
     <div style="margin-top:8px;font-size:.63rem;color:var(--text3)">點 ＋ 跳轉 UTM 產生器 · 📝 開啟週腳本 · 停用角色已自動隱藏</div>`
