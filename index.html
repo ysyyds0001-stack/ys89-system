@@ -305,6 +305,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'overview')">📊 成效總結</div>
   <div class="nav-tab" onclick="nav(this,'tracker')">📈 發文追蹤</div>
   <div class="nav-tab" onclick="nav(this,'articles')">📚 文章庫</div>
+  <div class="nav-tab" onclick="nav(this,'templates')">🧩 文案模板庫</div>
   <div class="nav-sep"></div>
   <div class="nav-tab" onclick="nav(this,'utm')">🏷️ UTM 產生器</div>
   <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
@@ -2539,6 +2540,36 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   <div id="art-list"></div>
 </div>
 
+<!-- ===== PAGE: 文案模板庫 ===== -->
+<div id="pg-templates" class="page">
+  <div class="fb" style="margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">🧩 文案模板庫</h2>
+      <p class="tm" style="margin-top:3px">保存流量文章的可複製結構，依起／承／信／轉／合、平台、內容手法與角色快速取用。</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-outline" style="font-size:.8rem" onclick="copyGptDecomposePrompt()">📋 複製GPT拆解提示詞</button>
+      <button class="btn btn-outline" style="font-size:.8rem" onclick="openImportTemplateModal()">📥 匯入GPT模板</button>
+      <button class="btn btn-primary" style="font-size:.8rem" onclick="openAddTemplateModal(null)">＋ 新增模板</button>
+    </div>
+  </div>
+  <div class="g4" id="tpl-stats" style="margin-bottom:18px"></div>
+  <div id="tpl-stage-tabs" style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap"></div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+    <input type="text" id="tpl-search" placeholder="🔍 搜尋模板名稱、手法…" oninput="_tplSearch=this.value;renderTemplates()" style="padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text);font-size:.78rem;outline:none;min-width:180px">
+    <select id="tpl-filter-platform" onchange="renderTemplates()" style="padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text2);font-size:.78rem;outline:none">
+      <option value="">全部平台</option>
+      <option>IG</option><option>Threads</option><option>Facebook</option>
+      <option>部落格</option><option>Reels</option><option>限時動態</option>
+    </select>
+    <select id="tpl-filter-status" onchange="renderTemplates()" style="padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text2);font-size:.78rem;outline:none">
+      <option value="">全部狀態</option>
+      <option>待驗證</option><option>可使用</option><option>高成效</option><option>暫停使用</option><option>封存</option>
+    </select>
+  </div>
+  <div id="tpl-list"></div>
+</div>
+
 <!-- ===== PAGE: 角色 ===== -->
 <div id="pg-community" class="page">
   <div class="fb" style="margin-bottom:16px">
@@ -3628,6 +3659,114 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     <div class="fb" style="margin-top:6px">
       <button class="btn btn-outline" onclick="closeModal('modal-threads-add-reply')">取消</button>
       <button class="btn btn-primary" onclick="saveReplyScript()">儲存回覆</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: 新增／編輯模板 ===== -->
+<div id="modal-tpl-edit" class="overlay">
+  <div class="modal modal-lg" style="max-width:720px">
+    <div class="mh"><div class="mt" id="tpl-edit-title">新增模板</div><button class="mc" onclick="closeModal('modal-tpl-edit')">✕</button></div>
+    <input type="hidden" id="tpl-edit-id">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">模板名稱 *</label><input id="tpl-edit-name" placeholder="例：熱點三點整理型" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">主要階段 *</label>
+          <select id="tpl-edit-stage" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none">
+            <option value="起">起｜吸引</option><option value="承">承｜養成</option><option value="信">信｜信任</option><option value="轉">轉｜導流</option><option value="合">合｜行動</option>
+          </select>
+        </div>
+        <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">次要階段</label>
+          <select id="tpl-edit-secondary" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text2);font-size:.82rem;outline:none">
+            <option value="">—</option><option value="起">起</option><option value="承">承</option><option value="信">信</option><option value="轉">轉</option><option value="合">合</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:10px"><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">主要目的／用途</label><input id="tpl-edit-goal" placeholder="例：讓讀者收藏或追蹤帳號" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px">
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">發布平台（逗號分隔）</label><input id="tpl-edit-platforms" placeholder="IG, Threads" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none"></div>
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">內容手法（逗號分隔）</label><input id="tpl-edit-techniques" placeholder="熱點承接, 三點整理" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none"></div>
+    </div>
+    <div style="margin-bottom:10px"><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">適用情境（逗號分隔）</label><input id="tpl-edit-scenarios" placeholder="世足賽事熱點, 體育新聞跟進" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px">
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">必要角色類型（逗號分隔）</label><input id="tpl-edit-req-role-types" placeholder="平台型, 科普型" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none"></div>
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">必要內容能力（逗號分隔）</label><input id="tpl-edit-req-caps" placeholder="資訊整理, 熱點反應" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none"></div>
+    </div>
+    <div style="margin-bottom:10px"><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">排除特徵（逗號分隔）</label><input id="tpl-edit-excluded-traits" placeholder="過度專業, 神秘感" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none"></div>
+    <div style="margin-bottom:10px"><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">文章段落結構（每行一段）</label><textarea id="tpl-edit-structure" rows="5" placeholder="01｜熱點或痛點開場&#10;02｜補充事件背景&#10;03｜三項核心資訊&#10;04｜角色觀點&#10;05｜收藏或互動結尾" style="width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.8rem;outline:none;resize:vertical;font-family:inherit"></textarea></div>
+    <div style="margin-bottom:10px"><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">語氣與格式規則</label><textarea id="tpl-edit-tone-rules" rows="3" placeholder="短段落、口語、適合手機閱讀…" style="width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.8rem;outline:none;resize:vertical;font-family:inherit"></textarea></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px">
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">CTA 類型（逗號分隔）</label><input id="tpl-edit-cta-types" placeholder="收藏型, 追蹤型, 查看連結型" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none"></div>
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">可替換欄位（逗號分隔）</label><input id="tpl-edit-replaceable" placeholder="主題, 賽事名稱, 具體數字" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none"></div>
+    </div>
+    <div style="margin-bottom:10px"><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">不可改動規則（每行一條）</label><textarea id="tpl-edit-locked" rows="3" placeholder="開場必須在 100 字內&#10;段落數不可少於 4 段" style="width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.8rem;outline:none;resize:vertical;font-family:inherit"></textarea></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">來源標題</label><input id="tpl-edit-source-title" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.8rem;outline:none"></div>
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">來源網址</label><input id="tpl-edit-source-url" placeholder="https://…" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.8rem;outline:none"></div>
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">來源成效</label><input id="tpl-edit-source-metrics" placeholder="讚 1.2k、收藏 340" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.8rem;outline:none"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:12px;margin-bottom:14px">
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">備注</label><input id="tpl-edit-notes" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.8rem;outline:none"></div>
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">狀態</label>
+        <select id="tpl-edit-status" style="padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none">
+          <option>待驗證</option><option>可使用</option><option>高成效</option><option>暫停使用</option><option>封存</option>
+        </select>
+      </div>
+    </div>
+    <div class="fb"><button class="btn btn-outline" onclick="closeModal('modal-tpl-edit')">取消</button><button class="btn btn-primary" onclick="saveTemplate()">儲存模板</button></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: 查看結構 ===== -->
+<div id="modal-tpl-view" class="overlay">
+  <div class="modal modal-lg" style="max-width:680px">
+    <div class="mh"><div class="mt" id="tpl-view-title">查看結構</div><button class="mc" onclick="closeModal('modal-tpl-view')">✕</button></div>
+    <div id="tpl-view-body"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: 匯入GPT模板 ===== -->
+<div id="modal-tpl-import" class="overlay">
+  <div class="modal" style="max-width:640px">
+    <div class="mh"><div class="mt">📥 匯入GPT模板</div><button class="mc" onclick="closeModal('modal-tpl-import')">✕</button></div>
+    <p style="font-size:.78rem;color:var(--text3);margin-bottom:10px">貼入 GPT 輸出的 JSON（單一物件或陣列），系統自動驗證格式後匯入。</p>
+    <textarea id="tpl-import-text" rows="10" placeholder='{"name":"...","stage":"承",...}' style="width:100%;padding:10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.78rem;font-family:monospace;outline:none;resize:vertical;margin-bottom:10px"></textarea>
+    <button class="btn btn-outline" style="font-size:.82rem;margin-bottom:12px" onclick="previewImportTemplates()">🔍 驗證預覽</button>
+    <div id="tpl-import-preview" style="margin-bottom:12px"></div>
+    <div class="fb"><button class="btn btn-outline" onclick="closeModal('modal-tpl-import')">取消</button><button id="tpl-import-confirm-btn" class="btn btn-primary" style="display:none" onclick="confirmImportTemplates()">確認匯入</button></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: 套用模板 ===== -->
+<div id="modal-tpl-apply" class="overlay">
+  <div class="modal modal-lg" style="max-width:740px">
+    <div class="mh">
+      <div>
+        <div class="mt">套用模板</div>
+        <div style="font-size:.72rem;color:var(--text3);margin-top:2px"><span id="tpl-apply-name"></span> ／ <span id="tpl-apply-stage"></span></div>
+      </div>
+      <button class="mc" onclick="closeModal('modal-tpl-apply')">✕</button>
+    </div>
+    <input type="hidden" id="tpl-apply-id">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">本次主題 *</label><input id="tpl-apply-topic" placeholder="例：2026世足小組賽第一輪結果" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none"></div>
+      <div><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">發布平台</label>
+        <select id="tpl-apply-platform" style="width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.82rem;outline:none">
+          <option>Threads</option><option>IG</option><option>Facebook</option><option>部落格</option><option>Reels</option><option>限時動態</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:12px"><label style="font-size:.75rem;color:var(--text3);display:block;margin-bottom:4px">已確認資料（賽果、數據、事件等）</label><textarea id="tpl-apply-data" rows="3" placeholder="例：巴西 2:1 阿根廷，進球：內馬爾 23'、梅西 67'（OG）" style="width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--g2);color:var(--text);font-size:.8rem;outline:none;resize:vertical;font-family:inherit"></textarea></div>
+    <div style="margin-bottom:4px;font-size:.75rem;color:var(--text3)">選擇角色</div>
+    <div id="tpl-apply-personas" style="max-height:280px;overflow-y:auto;margin-bottom:14px"></div>
+    <div id="tpl-apply-result" style="margin-bottom:12px"></div>
+    <div class="fb" style="flex-wrap:wrap;gap:8px">
+      <button class="btn btn-outline" onclick="closeModal('modal-tpl-apply')">取消</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="generateAndCopyPrompt()">📋 複製生成提示詞</button>
+        <button class="btn btn-outline" style="color:var(--text3);font-size:.78rem" title="下一階段功能" disabled>📡 送到多平台發文（下一階段）</button>
+      </div>
     </div>
   </div>
 </div>
@@ -5091,7 +5230,7 @@ function nav(el,page){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
-  const renders={overview:renderGrowthOverview,roles:renderRoles,channel:renderChannelPosts,channelfb:renderChannelFb,conv:renderConversions,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,community:renderCommunity,threadtracker:renderThreadTracker,entrances:renderEntrances,links:renderLinks,cast:renderCast}
+  const renders={overview:renderGrowthOverview,roles:renderRoles,channel:renderChannelPosts,channelfb:renderChannelFb,conv:renderConversions,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,templates:renderTemplates,community:renderCommunity,threadtracker:renderThreadTracker,entrances:renderEntrances,links:renderLinks,cast:renderCast}
   if(page==='todo'){initTodayTodos(false);renderTodo()}
   else if(page==='ga4'){ if(_ga4Data) renderGA4(_ga4Data); }
   else if(page==='utm'){ utmInit() }
@@ -12450,6 +12589,465 @@ function renderComparison() {
     utmFillLanding()
   })
 })()
+
+// ===== 文案模板庫 =====
+
+const TPL_STAGES=[
+  {id:'起',label:'起｜吸引',color:'#f59e42'},
+  {id:'承',label:'承｜養成',color:'#38bdf8'},
+  {id:'信',label:'信｜信任',color:'#a78bfa'},
+  {id:'轉',label:'轉｜導流',color:'#34d399'},
+  {id:'合',label:'合｜行動',color:'#f43f5e'}
+]
+const TPL_STATUS_COLOR={待驗證:'#94a3b8',可使用:'#38bdf8',高成效:'#f59e42',暫停使用:'#f87171',封存:'#6b7280'}
+let _tplStageFilter='all', _tplSearch=''
+
+function _tplAll(){return DB.get('copy_templates')||[]}
+function _tplSave(arr){DB.set('copy_templates',arr);DB.push('copy_templates').catch(()=>{})}
+
+function renderTemplates(){
+  _renderTplStats()
+  _renderTplStageTabs()
+  _renderTplCards()
+}
+
+function _renderTplStats(){
+  const all=_tplAll()
+  const counts={}
+  TPL_STAGES.forEach(s=>{counts[s.id]=0})
+  all.forEach(t=>{if(counts[t.stage]!=null)counts[t.stage]++})
+  const active=all.filter(t=>t.status==='高成效').length
+  const el=document.getElementById('tpl-stats')
+  if(!el)return
+  el.innerHTML=`
+    <div class="stat"><div class="stat-num">${all.length}</div><div class="stat-label">模板總數</div></div>
+    <div class="stat"><div class="stat-num">${all.filter(t=>t.status==='可使用'||t.status==='高成效').length}</div><div class="stat-label">可用模板</div></div>
+    <div class="stat"><div class="stat-num">${active}</div><div class="stat-label">高成效模板</div></div>
+    <div class="stat"><div class="stat-num">${(DB.get('copy_template_usage')||[]).length}</div><div class="stat-label">累計套用次數</div></div>
+  `
+}
+
+function _renderTplStageTabs(){
+  const all=_tplAll()
+  const el=document.getElementById('tpl-stage-tabs')
+  if(!el)return
+  const tabs=[{id:'all',label:'全部',color:'var(--text2)'},...TPL_STAGES]
+  el.innerHTML=tabs.map(s=>{
+    const cnt=s.id==='all'?all.length:all.filter(t=>t.stage===s.id).length
+    const active=_tplStageFilter===s.id
+    return `<button onclick="_tplStageFilter='${s.id}';renderTemplates()" style="padding:5px 14px;border-radius:20px;border:1.5px solid ${active?s.color:'var(--border)'};background:${active?s.color+'22':'transparent'};color:${active?s.color:'var(--text2)'};font-size:.78rem;cursor:pointer;font-weight:${active?700:400}">${s.label} <span style="opacity:.7">${cnt}</span></button>`
+  }).join('')
+}
+
+function _renderTplCards(){
+  const el=document.getElementById('tpl-list')
+  if(!el)return
+  let all=_tplAll()
+  if(_tplStageFilter&&_tplStageFilter!=='all') all=all.filter(t=>t.stage===_tplStageFilter||t.secondaryStage===_tplStageFilter)
+  const pf=document.getElementById('tpl-filter-platform')?.value||''
+  const sf=document.getElementById('tpl-filter-status')?.value||''
+  const q=(_tplSearch||'').trim().toLowerCase()
+  if(pf) all=all.filter(t=>(t.platforms||[]).includes(pf))
+  if(sf) all=all.filter(t=>t.status===sf)
+  if(q) all=all.filter(t=>(t.name||'').toLowerCase().includes(q)||(t.techniques||[]).join(' ').toLowerCase().includes(q)||(t.goal||'').toLowerCase().includes(q))
+  if(!all.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3);font-size:.85rem">尚無模板，點「＋ 新增模板」建立第一個</div>';return}
+
+  // 依階段分組
+  const grouped={}
+  TPL_STAGES.forEach(s=>{grouped[s.id]=[]})
+  grouped['其他']=[]
+  all.forEach(t=>{
+    if(grouped[t.stage]) grouped[t.stage].push(t)
+    else grouped['其他'].push(t)
+  })
+
+  let html=''
+  TPL_STAGES.forEach(s=>{
+    const list=grouped[s.id]
+    if(!list.length) return
+    html+=`<div style="margin-bottom:22px"><div style="font-size:.72rem;font-weight:700;color:${s.color};letter-spacing:.06em;margin-bottom:8px;text-transform:uppercase">${s.label}</div>`
+    html+=`<div class="g4" style="gap:10px">`
+    list.forEach(t=>{html+=_renderTemplateCard(t)})
+    html+=`</div></div>`
+  })
+  if(grouped['其他'].length){
+    html+=`<div style="margin-bottom:22px"><div style="font-size:.72rem;font-weight:700;color:var(--text3);margin-bottom:8px">其他</div><div class="g4" style="gap:10px">`
+    grouped['其他'].forEach(t=>{html+=_renderTemplateCard(t)})
+    html+=`</div></div>`
+  }
+  el.innerHTML=html
+}
+
+function _renderTemplateCard(t){
+  const stageInfo=TPL_STAGES.find(s=>s.id===t.stage)||{color:'var(--text3)'}
+  const statusColor=TPL_STATUS_COLOR[t.status]||'#94a3b8'
+  const platforms=(t.platforms||[]).slice(0,3).map(p=>`<span style="font-size:.7rem;padding:1px 6px;border-radius:10px;background:var(--g3);color:var(--text2)">${p}</span>`).join('')
+  const techniques=(t.techniques||[]).slice(0,2).map(k=>`<span style="font-size:.68rem;color:var(--text3)">#${k}</span>`).join(' ')
+  const usageCnt=(DB.get('copy_template_usage')||[]).filter(u=>u.tplId===t.id).length
+  return `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+    <div class="fb" style="align-items:flex-start;gap:6px">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:2px;line-height:1.3">${t.name||'（未命名）'}</div>
+        <div style="font-size:.72rem;color:var(--text3)">${t.goal||''}</div>
+      </div>
+      <span style="font-size:.68rem;padding:2px 8px;border-radius:8px;background:${statusColor}22;color:${statusColor};white-space:nowrap;flex-shrink:0">${t.status||'待驗證'}</span>
+    </div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap">${platforms}</div>
+    <div style="font-size:.7rem;color:var(--text3)">${(t.structure||[]).slice(0,3).map((s,i)=>`<span style="display:block">${s}</span>`).join('')}${(t.structure||[]).length>3?`<span style="color:var(--text3)">…共 ${t.structure.length} 段</span>`:''}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">${techniques}</div>
+    <div class="fb" style="border-top:1px solid var(--border);padding-top:8px;margin-top:2px">
+      <span style="font-size:.68rem;color:var(--text3)">套用 ${usageCnt} 次</span>
+      <div style="display:flex;gap:6px">
+        <button onclick="openViewStructureModal('${t.id}')" style="font-size:.72rem;padding:3px 8px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--text2);cursor:pointer">查看</button>
+        <button onclick="openApplyTemplateModal('${t.id}')" style="font-size:.72rem;padding:3px 8px;border:1px solid var(--accent);border-radius:6px;background:var(--accent);color:#fff;cursor:pointer">套用</button>
+        <button onclick="openAddTemplateModal('${t.id}')" style="font-size:.72rem;padding:3px 8px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--text3);cursor:pointer">編輯</button>
+      </div>
+    </div>
+  </div>`
+}
+
+// --------- 人設評分 ---------
+function computePersonaScore(persona, tpl){
+  if(!persona||!tpl) return 0
+  if((tpl.forcedPersonaIds||[]).includes(persona.id)) return 100
+  if((tpl.excludedPersonaIds||[]).includes(persona.id)) return 0
+
+  let score=0
+  const pStage=persona.funnelStage||''
+  if(pStage===tpl.stage) score+=30
+  else if(pStage===tpl.secondaryStage) score+=15
+
+  const pCaps=persona.contentAbilities||[]
+  const reqCaps=tpl.requiredCapabilities||[]
+  if(reqCaps.length){
+    const hit=reqCaps.filter(c=>pCaps.includes(c)).length
+    score+=Math.round((hit/reqCaps.length)*25)
+  }
+
+  const pTypes=persona.roleTypes||[]
+  const reqTypes=tpl.requiredRoleTypes||[]
+  if(reqTypes.length){
+    const hit=reqTypes.filter(r=>pTypes.includes(r)).length
+    score+=Math.round((hit/reqTypes.length)*20)
+  }
+
+  const pPlatforms=persona.platforms||[]
+  const tplPlatforms=tpl.platforms||[]
+  if(tplPlatforms.length){
+    const hit=tplPlatforms.filter(p=>pPlatforms.includes(p)).length
+    score+=Math.round((hit/tplPlatforms.length)*15)
+  }
+
+  const toneMatch=persona.toneStyle&&(tpl.toneRules||'').includes(persona.toneStyle)
+  if(toneMatch) score+=5
+
+  const pSpec=persona.specialty||''
+  const scenarioMatch=(tpl.scenarios||[]).some(s=>pSpec&&s.includes(pSpec))
+  if(scenarioMatch) score+=5
+
+  const exTraits=tpl.excludedTraits||[]
+  const pTraits=[...(persona.roleTypes||[]),...(persona.contentAbilities||[])]
+  const traitHit=exTraits.filter(et=>pTraits.includes(et)).length
+  score-=traitHit*40
+
+  return Math.max(0,Math.min(99,score))
+}
+
+function getRecommendedPersonas(tpl){
+  const all=allActors?allActors():(DB.get('personas')||[])
+  return all.map(p=>({persona:p,score:computePersonaScore(p,tpl)}))
+    .filter(x=>x.score>0)
+    .sort((a,b)=>b.score-a.score)
+}
+
+// --------- modal: 新增/編輯 ---------
+function openAddTemplateModal(id){
+  const tpl=id?(_tplAll().find(t=>t.id===id)||null):null
+  document.getElementById('tpl-edit-title').textContent=tpl?'編輯模板':'新增模板'
+  document.getElementById('tpl-edit-id').value=tpl?.id||''
+  const fields={
+    'tpl-edit-name':tpl?.name||'',
+    'tpl-edit-goal':tpl?.goal||'',
+    'tpl-edit-platforms':(tpl?.platforms||[]).join(', '),
+    'tpl-edit-techniques':(tpl?.techniques||[]).join(', '),
+    'tpl-edit-scenarios':(tpl?.scenarios||[]).join(', '),
+    'tpl-edit-req-role-types':(tpl?.requiredRoleTypes||[]).join(', '),
+    'tpl-edit-req-caps':(tpl?.requiredCapabilities||[]).join(', '),
+    'tpl-edit-excluded-traits':(tpl?.excludedTraits||[]).join(', '),
+    'tpl-edit-structure':(tpl?.structure||[]).join('\n'),
+    'tpl-edit-tone-rules':tpl?.toneRules||'',
+    'tpl-edit-cta-types':(tpl?.ctaTypes||[]).join(', '),
+    'tpl-edit-replaceable':(tpl?.replaceableFields||[]).join(', '),
+    'tpl-edit-locked':(tpl?.lockedRules||[]).join('\n'),
+    'tpl-edit-source-title':tpl?.sourceTitle||'',
+    'tpl-edit-source-url':tpl?.sourceUrl||'',
+    'tpl-edit-source-metrics':tpl?.sourceMetrics||'',
+    'tpl-edit-notes':tpl?.notes||''
+  }
+  Object.keys(fields).forEach(id=>{
+    const el=document.getElementById(id)
+    if(el) el.value=fields[id]
+  })
+  const stageEl=document.getElementById('tpl-edit-stage')
+  const secEl=document.getElementById('tpl-edit-secondary')
+  const statEl=document.getElementById('tpl-edit-status')
+  if(stageEl) stageEl.value=tpl?.stage||'起'
+  if(secEl) secEl.value=tpl?.secondaryStage||''
+  if(statEl) statEl.value=tpl?.status||'待驗證'
+  openModal('modal-tpl-edit')
+}
+
+function saveTemplate(){
+  const id=document.getElementById('tpl-edit-id').value
+  const csv=s=>(document.getElementById(s)?.value||'').split(',').map(x=>x.trim()).filter(Boolean)
+  const lines=s=>(document.getElementById(s)?.value||'').split('\n').map(x=>x.trim()).filter(Boolean)
+  const name=document.getElementById('tpl-edit-name')?.value.trim()
+  if(!name){alert('請填寫模板名稱');return}
+  const now=new Date().toISOString()
+  const tpl={
+    id:id||DB.id(),
+    name,
+    stage:document.getElementById('tpl-edit-stage')?.value||'起',
+    secondaryStage:document.getElementById('tpl-edit-secondary')?.value||'',
+    goal:document.getElementById('tpl-edit-goal')?.value.trim()||'',
+    platforms:csv('tpl-edit-platforms'),
+    techniques:csv('tpl-edit-techniques'),
+    scenarios:csv('tpl-edit-scenarios'),
+    requiredRoleTypes:csv('tpl-edit-req-role-types'),
+    requiredCapabilities:csv('tpl-edit-req-caps'),
+    excludedTraits:csv('tpl-edit-excluded-traits'),
+    structure:lines('tpl-edit-structure'),
+    toneRules:document.getElementById('tpl-edit-tone-rules')?.value.trim()||'',
+    ctaTypes:csv('tpl-edit-cta-types'),
+    replaceableFields:csv('tpl-edit-replaceable'),
+    lockedRules:lines('tpl-edit-locked'),
+    sourceTitle:document.getElementById('tpl-edit-source-title')?.value.trim()||'',
+    sourceUrl:document.getElementById('tpl-edit-source-url')?.value.trim()||'',
+    sourceMetrics:document.getElementById('tpl-edit-source-metrics')?.value.trim()||'',
+    notes:document.getElementById('tpl-edit-notes')?.value.trim()||'',
+    status:document.getElementById('tpl-edit-status')?.value||'待驗證',
+    updatedAt:now
+  }
+  if(!id) tpl.createdAt=now
+  const all=_tplAll()
+  const idx=all.findIndex(t=>t.id===tpl.id)
+  if(idx>=0) all[idx]=tpl; else all.push(tpl)
+  _tplSave(all)
+  closeModal('modal-tpl-edit')
+  renderTemplates()
+}
+
+// --------- modal: 查看結構 ---------
+function openViewStructureModal(id){
+  const tpl=_tplAll().find(t=>t.id===id)
+  if(!tpl) return
+  const stageInfo=TPL_STAGES.find(s=>s.id===tpl.stage)||{color:'#888',label:tpl.stage}
+  document.getElementById('tpl-view-title').textContent=tpl.name
+  const recPersonas=getRecommendedPersonas(tpl).slice(0,5)
+  const pRow=recPersonas.length?recPersonas.map(x=>`<span style="font-size:.72rem;padding:2px 8px;border-radius:10px;background:var(--g3);color:var(--text2)">${x.persona.name} <span style="color:var(--text3)">${x.score}%</span></span>`).join(' '):'<span style="color:var(--text3);font-size:.8rem">暫無匹配角色</span>'
+  document.getElementById('tpl-view-body').innerHTML=`
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <span style="padding:3px 12px;border-radius:12px;background:${stageInfo.color}22;color:${stageInfo.color};font-size:.75rem;font-weight:700">${stageInfo.label}</span>
+      ${tpl.secondaryStage?`<span style="padding:3px 12px;border-radius:12px;background:var(--g3);color:var(--text2);font-size:.75rem">次：${tpl.secondaryStage}</span>`:''}
+      <span style="padding:3px 12px;border-radius:12px;background:${(TPL_STATUS_COLOR[tpl.status]||'#888')}22;color:${TPL_STATUS_COLOR[tpl.status]||'#888'};font-size:.75rem">${tpl.status||'待驗證'}</span>
+    </div>
+    ${tpl.goal?`<div style="margin-bottom:10px;font-size:.82rem;color:var(--text)">${tpl.goal}</div>`:''}
+    ${(tpl.platforms||[]).length?`<div style="margin-bottom:10px;display:flex;gap:4px;flex-wrap:wrap">${tpl.platforms.map(p=>`<span style="font-size:.72rem;padding:2px 8px;border-radius:10px;background:var(--g3);color:var(--text2)">${p}</span>`).join('')}</div>`:''}
+    ${(tpl.structure||[]).length?`<div style="margin-bottom:14px"><div style="font-size:.72rem;font-weight:700;color:var(--text3);margin-bottom:6px">段落結構</div>${tpl.structure.map(s=>`<div style="padding:8px 12px;margin-bottom:4px;background:var(--g3);border-radius:6px;font-size:.8rem;color:var(--text)">${s}</div>`).join('')}</div>`:''}
+    ${tpl.toneRules?`<div style="margin-bottom:14px"><div style="font-size:.72rem;font-weight:700;color:var(--text3);margin-bottom:6px">語氣與格式規則</div><div style="font-size:.8rem;color:var(--text2);line-height:1.6">${tpl.toneRules}</div></div>`:''}
+    ${(tpl.techniques||[]).length?`<div style="margin-bottom:10px"><span style="font-size:.72rem;color:var(--text3)">手法：</span>${tpl.techniques.map(k=>`<span style="font-size:.72rem;color:var(--text3)">#${k} </span>`).join('')}</div>`:''}
+    <div style="margin-bottom:10px"><div style="font-size:.72rem;font-weight:700;color:var(--text3);margin-bottom:4px">推薦角色</div><div style="display:flex;gap:6px;flex-wrap:wrap">${pRow}</div></div>
+    ${tpl.sourceTitle?`<div style="margin-top:10px;font-size:.72rem;color:var(--text3)">來源：${tpl.sourceUrl?`<a href="${tpl.sourceUrl}" target="_blank" style="color:var(--accent)">${tpl.sourceTitle}</a>`:`${tpl.sourceTitle}`}${tpl.sourceMetrics?` ／ ${tpl.sourceMetrics}`:''}</div>`:''}
+  `
+  openModal('modal-tpl-view')
+}
+
+// --------- modal: 匯入GPT ---------
+function openImportTemplateModal(){
+  document.getElementById('tpl-import-text').value=''
+  document.getElementById('tpl-import-preview').innerHTML=''
+  document.getElementById('tpl-import-confirm-btn').style.display='none'
+  openModal('modal-tpl-import')
+}
+
+function previewImportTemplates(){
+  const raw=document.getElementById('tpl-import-text')?.value.trim()
+  const prev=document.getElementById('tpl-import-preview')
+  const btn=document.getElementById('tpl-import-confirm-btn')
+  if(!raw){prev.innerHTML='<p style="color:var(--text3);font-size:.8rem">請先貼入 JSON</p>';return}
+  let parsed
+  try{parsed=JSON.parse(raw)}catch(e){prev.innerHTML=`<p style="color:#f87171;font-size:.8rem">JSON 解析失敗：${e.message}</p>`;btn.style.display='none';return}
+  const arr=Array.isArray(parsed)?parsed:[parsed]
+  const valid=arr.filter(t=>t&&typeof t.name==='string'&&t.name.trim())
+  if(!valid.length){prev.innerHTML='<p style="color:#f87171;font-size:.8rem">沒有找到有效模板（必須有 name 欄位）</p>';btn.style.display='none';return}
+  prev.innerHTML=`<div style="font-size:.78rem;color:var(--text3);margin-bottom:6px">找到 <strong style="color:var(--text)">${valid.length}</strong> 筆模板：</div>`+valid.map(t=>`<div style="padding:6px 10px;background:var(--g3);border-radius:6px;margin-bottom:4px;font-size:.78rem;color:var(--text)">${t.name} <span style="color:var(--text3)">${t.stage||'?'}</span></div>`).join('')
+  btn.style.display=''
+  btn.dataset.json=JSON.stringify(valid)
+}
+
+function confirmImportTemplates(){
+  const btn=document.getElementById('tpl-import-confirm-btn')
+  let arr
+  try{arr=JSON.parse(btn.dataset.json||'[]')}catch{arr=[]}
+  if(!arr.length) return
+  const existing=_tplAll()
+  const now=new Date().toISOString()
+  let added=0,updated=0
+  arr.forEach(t=>{
+    const id=t.id||DB.id()
+    const idx=existing.findIndex(e=>e.id===id)
+    const obj={...t,id,createdAt:t.createdAt||now,updatedAt:now,status:t.status||'待驗證'}
+    if(idx>=0){existing[idx]=obj;updated++}else{existing.push(obj);added++}
+  })
+  _tplSave(existing)
+  closeModal('modal-tpl-import')
+  renderTemplates()
+  alert(`匯入完成：新增 ${added} 筆，更新 ${updated} 筆`)
+}
+
+// --------- modal: 套用模板 ---------
+function openApplyTemplateModal(id){
+  const tpl=_tplAll().find(t=>t.id===id)
+  if(!tpl) return
+  document.getElementById('tpl-apply-id').value=id
+  document.getElementById('tpl-apply-name').textContent=tpl.name
+  document.getElementById('tpl-apply-stage').textContent=TPL_STAGES.find(s=>s.id===tpl.stage)?.label||tpl.stage
+  document.getElementById('tpl-apply-topic').value=''
+  document.getElementById('tpl-apply-data').value=''
+  document.getElementById('tpl-apply-result').innerHTML=''
+  const pfEl=document.getElementById('tpl-apply-platform')
+  if(pfEl&&(tpl.platforms||[]).length) pfEl.value=tpl.platforms[0]
+
+  // 渲染角色列表（依評分排序）
+  const scored=getRecommendedPersonas(tpl)
+  const all=allActors?allActors():(DB.get('personas')||[])
+  const unmatched=all.filter(p=>!scored.find(x=>x.persona.id===p.id))
+  const personaEl=document.getElementById('tpl-apply-personas')
+  if(!personaEl) return
+  if(!all.length){personaEl.innerHTML='<p style="color:var(--text3);font-size:.8rem">尚無角色，請先在「角色管理」建立角色</p>';openModal('modal-tpl-apply');return}
+
+  const renderRow=(x,showScore)=>{
+    const p=x.persona||x
+    const score=showScore?(x.score||0):null
+    const scoreLabel=score!=null?`<span style="font-size:.68rem;padding:1px 6px;border-radius:8px;background:${score>=60?'#34d39933':'#94a3b822'};color:${score>=60?'#34d399':'#94a3b8'};margin-left:6px">${score}%</span>`:''
+    return `<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;hover:background:var(--g3)">
+      <input type="checkbox" name="tpl-apply-persona" value="${p.id}" ${score!=null&&score>=50?'checked':''} style="accent-color:var(--accent)">
+      <span style="font-size:.8rem;color:var(--text)">${p.name||'（無名）'}</span>
+      ${scoreLabel}
+      <span style="font-size:.68rem;color:var(--text3);margin-left:auto">${(p.platforms||[]).join('/')}</span>
+    </label>`
+  }
+  let html=''
+  if(scored.length){
+    html+=`<div style="font-size:.7rem;color:var(--text3);margin-bottom:4px">推薦角色（依相符分數）</div>`
+    html+=scored.map(x=>renderRow(x,true)).join('')
+  }
+  if(unmatched.length){
+    html+=`<div style="font-size:.7rem;color:var(--text3);margin-top:10px;margin-bottom:4px">其他角色</div>`
+    html+=unmatched.map(p=>renderRow({persona:p},false)).join('')
+  }
+  personaEl.innerHTML=html
+  openModal('modal-tpl-apply')
+}
+
+function generateAndCopyPrompt(){
+  const id=document.getElementById('tpl-apply-id')?.value
+  const tpl=_tplAll().find(t=>t.id===id)
+  if(!tpl){alert('找不到模板');return}
+  const topic=document.getElementById('tpl-apply-topic')?.value.trim()
+  if(!topic){alert('請填寫本次主題');return}
+  const platform=document.getElementById('tpl-apply-platform')?.value||''
+  const dataCtx=document.getElementById('tpl-apply-data')?.value.trim()||''
+  const checkedIds=[...document.querySelectorAll('input[name="tpl-apply-persona"]:checked')].map(el=>el.value)
+  const all=allActors?allActors():(DB.get('personas')||[])
+  const selectedPersonas=all.filter(p=>checkedIds.includes(p.id))
+
+  const structureText=(tpl.structure||[]).map((s,i)=>`${i+1}. ${s}`).join('\n')
+  const personaBlock=selectedPersonas.length
+    ?selectedPersonas.map(p=>`【角色：${p.name}】 平台：${(p.platforms||[]).join('/')}，語氣：${p.toneStyle||''}，特色：${p.specialty||''}`).join('\n')
+    :'（未指定角色，以品牌調性發文）'
+  const toneBlock=tpl.toneRules||'未指定，依角色預設語氣'
+  const ctaBlock=(tpl.ctaTypes||[]).join('、')||'未指定'
+  const lockedBlock=(tpl.lockedRules||[]).length?(tpl.lockedRules.map(r=>`• ${r}`).join('\n')):'無'
+  const replaceable=(tpl.replaceableFields||[]).length?`可替換欄位：${tpl.replaceableFields.join('、')}`:'（無特定替換欄位）'
+
+  const prompt=`你是一位社群內容撰稿人，請依照以下模板結構與規則生成一篇社群貼文。
+
+【本次主題】
+${topic}
+
+【發布平台】
+${platform||'（未指定）'}
+
+${dataCtx?`【已確認資料】\n${dataCtx}\n`:''}
+【發文角色】
+${personaBlock}
+
+【模板結構（依序完成每一段）】
+${structureText||'（未設定段落結構）'}
+
+【語氣與格式規則】
+${toneBlock}
+
+【CTA 類型】
+${ctaBlock}
+
+【不可改動規則】
+${lockedBlock}
+
+${replaceable}
+
+請依上述模板逐段生成內容，輸出完整貼文，不要加任何解釋或說明。`
+
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(prompt).then(()=>{
+      document.getElementById('tpl-apply-result').innerHTML=`<div style="padding:10px;background:#34d39922;border-radius:8px;font-size:.78rem;color:#34d399;margin-top:4px">✅ 已複製到剪貼簿！貼到 ChatGPT 或 Claude 即可生成貼文。</div>`
+    }).catch(()=>{_tplShowPromptFallback(prompt)})
+  }else{_tplShowPromptFallback(prompt)}
+
+  // 記錄使用
+  const usage=DB.get('copy_template_usage')||[]
+  usage.push({id:DB.id(),tplId:id,topic,platform,personaIds:checkedIds,at:new Date().toISOString()})
+  DB.set('copy_template_usage',usage)
+  DB.push('copy_template_usage').catch(()=>{})
+}
+
+function _tplShowPromptFallback(prompt){
+  document.getElementById('tpl-apply-result').innerHTML=`<div style="margin-top:4px"><div style="font-size:.75rem;color:var(--text3);margin-bottom:4px">請手動複製下方提示詞：</div><textarea readonly style="width:100%;height:160px;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--g3);color:var(--text);font-size:.72rem;font-family:monospace;resize:vertical">${prompt.replace(/</g,'&lt;')}</textarea></div>`
+}
+
+function copyGptDecomposePrompt(){
+  const prompt=`以下是一篇社群貼文，請幫我分析它的文案結構，並輸出 JSON 格式，欄位如下：
+{
+  "name": "模板名稱（3-8字）",
+  "stage": "起 或 承 或 信 或 轉 或 合",
+  "goal": "這篇貼文的主要目的",
+  "platforms": ["適用平台陣列"],
+  "techniques": ["使用的內容手法陣列"],
+  "structure": ["段落1描述", "段落2描述", "..."],
+  "toneRules": "語氣與格式規則說明",
+  "ctaTypes": ["CTA類型陣列"],
+  "replaceableFields": ["可替換欄位陣列"],
+  "lockedRules": ["不可改動規則陣列"]
+}
+
+貼文如下（請在此貼上原文）：
+[請貼上要拆解的貼文]`
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(prompt).then(()=>alert('已複製 GPT拆解提示詞！貼到 ChatGPT 後再貼上貼文原文即可。')).catch(()=>prompt_fallback())
+  }else{prompt_fallback()}
+  function prompt_fallback(){alert('請手動複製：\n\n'+prompt)}
+}
+
+function archiveTemplate(id){
+  if(!confirm('確定要封存此模板？')) return
+  const all=_tplAll()
+  const tpl=all.find(t=>t.id===id)
+  if(!tpl) return
+  tpl.status='封存'
+  _tplSave(all)
+  renderTemplates()
+}
 </script>
 <script src="assets/js/navigation-config.js"></script>
 <script src="assets/js/dashboard-adapter.js"></script>

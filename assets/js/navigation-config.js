@@ -26,6 +26,7 @@ const NAV_CONFIG = {
       label: '內容資產',
       items: [
         { id: 'articles',      label: '文章庫',       icon: '📚', page: 'articles',      keywords: ['文章','article'] },
+        { id: 'templates',     label: '文案模板庫',   icon: '🧩', page: 'templates',     keywords: ['模板','template','文案','結構'] },
         { id: 'community',     label: '角色管理',     icon: '👤', page: 'community',     keywords: ['角色','persona','帳號'] }
       ]
     },
