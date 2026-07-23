@@ -3651,9 +3651,15 @@ const DB={
         // Only overwrite localStorage when API actually has data; never wipe with empty
         const hasData=Array.isArray(d)?d.length>0:(d&&typeof d==='object'&&Object.keys(d).length>0)
         if(hasData){
-          // For object-type data: merge CF + local (local takes precedence) so local edits survive a reload
           const local=this.get(k)
-          if(!Array.isArray(d)&&!Array.isArray(local)&&typeof local==='object'&&Object.keys(local).length>0){
+          if(Array.isArray(d)&&Array.isArray(local)&&local.length){
+            // 陣列：以 id 為主鍵合併，本機優先，防止 CF 舊資料蓋掉本機新寫入
+            const map={}
+            d.forEach(item=>{if(item?.id)map[item.id]=item})
+            local.forEach(item=>{if(item?.id)map[item.id]=item})
+            localStorage.setItem(K+k,JSON.stringify(Object.values(map)))
+          } else if(!Array.isArray(d)&&!Array.isArray(local)&&typeof local==='object'&&Object.keys(local).length>0){
+            // 物件：CF + local 合併，local 優先
             localStorage.setItem(K+k,JSON.stringify({...d,...local}))
           } else {
             localStorage.setItem(K+k,JSON.stringify(d))
@@ -7121,13 +7127,10 @@ function renderWeeklyPostPlan(){
       ?`<a href="https://www.threads.com/@${rawHandle}" target="_blank" style="color:var(--text);text-decoration:none;font-size:.78rem;font-weight:600">${escHtml(a.name)}</a>`
       :`<span style="font-size:.78rem;font-weight:600">${escHtml(a.name)}</span>`
     const codeHtml=a.code?`<span style="font-size:.61rem;color:var(--text3);font-family:monospace;display:block;margin-top:1px">${escHtml(a.code)}</span>`:''
-    const rt=a.raw?.roleType||''
-    const rtC={'真人+平台':'#3b82f6','平台':'#64748b','真人':'#10b981','真人回覆':'#8b5cf6'}[rt]||'#64748b'
-    const rtChip=rt?`<span style="font-size:.58rem;padding:1px 5px;border-radius:3px;background:${rtC}22;color:${rtC};border:1px solid ${rtC}44;white-space:nowrap;display:inline-block;margin-top:2px">${escHtml(rt)}</span>`:''
     const totalCol=weekTotal>=5?'var(--accent)':weekTotal>=2?'#60a5fa':'var(--text3)'
     const hasScript=!!scripts[`p:${a.id}::${wk}`]
     const scriptBtn=`<button onclick="openWeeklyScript('p:${esc(a.id)}','${esc(a.name)}')" style="background:${hasScript?'#a78bfa22':'none'};border:1px ${hasScript?'solid #a78bfa44':'dashed var(--border2)'};border-radius:4px;color:${hasScript?'#a78bfa':'var(--text3)'};font-size:.65rem;padding:1px 6px;cursor:pointer;white-space:nowrap" title="週腳本">📝</button>`
-    return `<tr style="border-bottom:1px solid var(--border2)"><td style="padding:7px 10px;min-width:120px;max-width:160px"><div style="display:flex;align-items:flex-start;gap:5px">${scriptBtn}<div>${nameHtml}${codeHtml}${rtChip}</div></div></td>${cells}<td style="text-align:center;padding:5px 10px;font-weight:700;color:${totalCol};font-size:.85rem">${weekTotal||'—'}</td></tr>`
+    return `<tr style="border-bottom:1px solid var(--border2)"><td style="padding:7px 10px;min-width:120px;max-width:160px"><div style="display:flex;align-items:flex-start;gap:5px">${scriptBtn}<div>${nameHtml}${codeHtml}</div></div></td>${cells}<td style="text-align:center;padding:5px 10px;font-weight:700;color:${totalCol};font-size:.85rem">${weekTotal||'—'}</td></tr>`
   }
 
   // 分類 Tab 列（含週發文數角標 + 腳本狀態）
@@ -7186,13 +7189,16 @@ function renderWeeklyPostPlan(){
         <button class="btn btn-xs btn-outline" onclick="_weekPlanOffset++;renderWeeklyPostPlan()">→</button>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-      <div style="display:flex;gap:3px;flex-wrap:nowrap;overflow-x:auto;flex:1;padding-bottom:2px">${sq?'':catTabs}</div>
-      ${sq
-        ?`<div style="display:flex;gap:6px;align-items:center"><input type="text" placeholder="🔍 搜尋角色…" value="${escHtml(sq)}" oninput="_wpSearch=this.value;renderWeeklyPostPlan()" style="padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text);font-size:.75rem;outline:none;width:160px"><button class="btn btn-xs btn-outline" onclick="_wpSearch='';_wpCatFilter=null;renderWeeklyPostPlan()">✕</button></div>`
-        :`<input type="text" placeholder="🔍 搜尋角色…" oninput="_wpSearch=this.value;renderWeeklyPostPlan()" style="padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text);font-size:.75rem;outline:none;width:140px">`}
-    </div>
-    ${sq?'':scriptBarHtml}
+    ${sq
+      ?`<div style="display:flex;gap:6px;align-items:center;margin-bottom:10px">
+          <input type="text" placeholder="🔍 搜尋角色…" value="${escHtml(sq)}" oninput="_wpSearch=this.value;renderWeeklyPostPlan()" style="padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text);font-size:.75rem;outline:none;width:200px">
+          <button class="btn btn-xs btn-outline" onclick="_wpSearch='';_wpCatFilter=null;renderWeeklyPostPlan()">✕ 清除</button>
+        </div>`
+      :`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px">
+          <div style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;flex:1">${catTabs}</div>
+          <input type="text" placeholder="🔍 搜尋" oninput="_wpSearch=this.value;renderWeeklyPostPlan()" style="padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--g2);color:var(--text);font-size:.75rem;outline:none;width:100px;flex-shrink:0">
+        </div>
+        ${scriptBarHtml}`}
     ${tableHtml}
     ${pendingHtml}
     <div style="margin-top:8px;font-size:.63rem;color:var(--text3)">點 ＋ 跳轉 UTM 產生器 · 📝 開啟週腳本 · 停用角色已自動隱藏</div>`
