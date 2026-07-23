@@ -9614,6 +9614,7 @@ function saveThreadActivity(){
     list.push({...obj, id:DB.id(), createdAt:new Date().toISOString()})
   }
   DB.set('thread_activities', list)
+  DB.push('thread_activities').catch(()=>{})
   closeModal('modal-thread-activity')
   renderThreadTracker()
   toast(id?'炒話題記錄已更新':'炒話題記錄已新增')
@@ -9672,6 +9673,7 @@ function saveThreadMetrics(){
   list[i].updatedAt = new Date().toISOString()
   console.log('[saveThreadMetrics] id=',id,' notes=',list[i].notes,' pm=',JSON.stringify(pm))
   DB.set('thread_activities', list)
+  DB.push('thread_activities').catch(()=>{})
   const verify = (DB.get('thread_activities')||[]).find(x=>x.id===id)
   console.log('[saveThreadMetrics] verify notes=',verify?.notes,' pm=',JSON.stringify(verify?.platformMetrics))
   closeModal('modal-thread-metrics')
@@ -9767,6 +9769,7 @@ async function ttAutoBatchMetrics(all=false){
     }
   }
   DB.set('thread_activities', list)
+  DB.push('thread_activities').catch(()=>{})
   log.innerHTML += `<b>✅ 完成！已更新 ${count} / ${pending.length} 篇</b>`
   if(btn){ btn.disabled=false; btn.textContent = all ? '⚡ 更新全部待記錄' : '⚡ 今日成效' }
   if(btnOther) btnOther.disabled = false
@@ -9779,6 +9782,7 @@ function saveTTNote(id, text){
   if(list[i].notes===text)return
   list[i].notes=text; list[i].updatedAt=new Date().toISOString()
   DB.set('thread_activities',list)
+  DB.push('thread_activities').catch(()=>{})
 }
 
 function saveTTReplyUrl(id, url){
