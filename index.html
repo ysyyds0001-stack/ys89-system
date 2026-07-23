@@ -6819,19 +6819,15 @@ function openWeeklyScript(key,label,wkOverride){
   openModal('modal-weekly-script')
   setTimeout(()=>document.getElementById('ws-body').focus(),100)
 }
-async function saveWeeklyScript(){
+function saveWeeklyScript(){
   const key=document.getElementById('ws-key').value
   const body=document.getElementById('ws-body').value.trim()
-  const statusEl=document.getElementById('ws-status')
   const scripts=_getScripts()
   if(body) scripts[key]=body; else delete scripts[key]
   DB.set('weekly_scripts',scripts)
-  statusEl.textContent='同步中…'
-  try{
-    await DB.push('weekly_scripts')
-    statusEl.textContent='✅ 已儲存'
-    setTimeout(()=>closeModal('modal-weekly-script'),700)
-  }catch(e){ statusEl.textContent='⚠️ 本地已儲存，同步失敗' }
+  DB.push('weekly_scripts').catch(()=>{})
+  closeModal('modal-weekly-script')
+  toast('腳本已儲存 ✓')
 }
 
 // ─── 月曆視圖 ──────────────────────────────────────────────────────────────
