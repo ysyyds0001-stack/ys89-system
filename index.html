@@ -2402,6 +2402,18 @@ function _ovFunnel() {
   }).join('')
 }
 
+function _inferPathId(a) {
+  if (a.path_id) return a.path_id
+  const url = (a.landingUrl || '').toLowerCase()
+  if (url.includes('picks168.com') || url.includes('t.me/picks168') || url.includes('t.me/pickhelp')) return 'PATH_02'
+  if (url.includes('lin.ee') || url.startsWith('line:')) return 'PATH_05'
+  if (url.includes('ys89.fun') || url.includes('ys89.games') || url.includes('ys89.info') ||
+      url.includes('ys89.bet') || url.includes('ys89.me') || url.includes('ys89.biz') ||
+      url.includes('haogamediary.blogspot') || url.includes('fifa-worldcups.tw')) return 'PATH_01'
+  if (a.path_type === 'bio') return 'PATH_03'
+  return 'PATH_04'
+}
+
 function _ovPaths() {
   const el = document.getElementById('ga4ov-paths')
   if (!el) return
@@ -2413,37 +2425,64 @@ function _ovPaths() {
     {id:'PATH_05',icon:'💬',label:'私訊/LINE → 承接頁 → 註冊',attr:'D 推估',ac:'#f59e42',note:'時間段推估，需 conv_daily 補充'},
     {id:'PATH_06',icon:'📣',label:'Meta 廣告 → 落地頁 → 註冊',attr:'B/C',ac:'#94a3b8',note:'需 Meta Ads 與 GA4 paid source 對帳'}
   ]
+
+  // 從 thread_activities 依 landingUrl 推算路徑、累計曝光與發文數
+  const acts = DB.get('thread_activities') || []
+  const ga4 = _ga4Data || {}
+  const ga4Accts = ga4.accounts || []
+  const stats = {}
+  PATHS.forEach(p => { stats[p.id] = { views:0, cnt:0 } })
+  acts.forEach(a => {
+    const pid = _inferPathId(a)
+    if (!stats[pid]) return
+    stats[pid].cnt++
+    stats[pid].views += (a.platformMetrics && a.platformMetrics.Threads ? a.platformMetrics.Threads.views||0 : 0)
+  })
+
+  // GA4 sessions/CTA：PATH_02 對應 picks168 帳號 source；其他路徑暫無法自動拆分
+  const ga4ByName = {}
+  ga4Accts.forEach(a => { ga4ByName[a.name] = a })
+  // PATH_02 可從 GA4 source 'picks168' / 'crab' 等估算，但目前 GA4 以帳號（persona）為主
+  // 暫顯示 —，僅曝光/發文數有實際資料
+
+  const fmt = n => n >= 10000 ? (n/1000).toFixed(1)+'k' : n.toLocaleString()
+
   el.innerHTML = `<div style="overflow-x:auto">
   <table style="width:100%;border-collapse:collapse;font-size:.75rem">
     <thead><tr style="border-bottom:1px solid var(--border);color:var(--text3);font-size:.67rem">
       <th style="padding:7px 10px;text-align:left">路徑</th>
+      <th style="padding:7px 8px;text-align:right">發文數</th>
       <th style="padding:7px 8px;text-align:right">曝光</th>
       <th style="padding:7px 8px;text-align:right">Sessions</th>
       <th style="padding:7px 8px;text-align:right">CTA</th>
       <th style="padding:7px 8px;text-align:right">有效註冊</th>
-      <th style="padding:7px 8px;text-align:right">首存</th>
       <th style="padding:7px 8px;text-align:right">歸因等級</th>
     </tr></thead>
     <tbody>
-      ${PATHS.map(p=>`<tr style="border-bottom:1px solid var(--border)">
-        <td style="padding:7px 10px">
-          <span style="font-size:.72rem;font-weight:700">${p.icon} ${p.id}</span>
-          <div style="font-size:.67rem;color:var(--text3)">${p.label}</div>
-          <div style="font-size:.61rem;color:var(--text3);margin-top:1px">${p.note}</div>
-        </td>
-        <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
-        <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
-        <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
-        <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
-        <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
-        <td style="padding:7px 8px;text-align:right"><span style="font-size:.63rem;padding:2px 6px;border-radius:5px;background:${p.ac}20;color:${p.ac}">${p.attr}</span></td>
-      </tr>`).join('')}
+      ${PATHS.map(p => {
+        const s = stats[p.id] || {views:0,cnt:0}
+        const viewsStr = s.views > 0 ? `<span style="color:var(--text)">${fmt(s.views)}</span>` : '<span style="color:var(--text3)">—</span>'
+        const cntStr = s.cnt > 0 ? `<span style="color:var(--text3);font-size:.65rem">${s.cnt}篇</span>` : '<span style="color:var(--text3)">—</span>'
+        return `<tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:7px 10px">
+            <span style="font-size:.72rem;font-weight:700">${p.icon} ${p.id}</span>
+            <div style="font-size:.67rem;color:var(--text3)">${p.label}</div>
+            <div style="font-size:.61rem;color:var(--text3);margin-top:1px">${p.note}</div>
+          </td>
+          <td style="padding:7px 8px;text-align:right;font-size:.7rem">${cntStr}</td>
+          <td style="padding:7px 8px;text-align:right;font-size:.7rem">${viewsStr}</td>
+          <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
+          <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
+          <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
+          <td style="padding:7px 8px;text-align:right"><span style="font-size:.63rem;padding:2px 6px;border-radius:5px;background:${p.ac}20;color:${p.ac}">${p.attr}</span></td>
+        </tr>`
+      }).join('')}
     </tbody>
   </table></div>
   <div style="margin-top:10px;padding:9px 12px;background:var(--g2);border-radius:7px;font-size:.67rem;color:var(--text3);line-height:1.7">
-    ℹ️ 路徑數據需在每篇貼文標記 <b>path_id</b> 欄位後自動累計。歸因等級：
+    ℹ️ 曝光由 <b>landingUrl</b> 自動推算路徑歸屬；Sessions/CTA 需完整 UTM 對帳後啟用。歸因等級：
     <span style="color:#34d399">A 精準</span>（Post ID + UTM + GA4 完整對帳）・
-    <span style="color:#60a5fa">B 強歸因</span>（帳號或專屬連結，無單篇追蹤）・
+    <span style="color:#60a5fa">B 強歸因</span>（帳號或專屬連結）・
     <span style="color:#f59e42">D 推估</span>（時間 / 活動推估）
   </div>`
 }
@@ -2476,10 +2515,11 @@ function _ovAcctHealth() {
   const rows = personas.map(p => {
     const name = p.name
     const isDisabled = p.raw?.accountStatus==='disabled'||p.raw?.accountStatus==='stopped'
-    const firstAct = acts.filter(a=>a.account===name).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''))[0]
+    const matchAct = a => (a.personaName||a.account||'')===name
+    const firstAct = acts.filter(matchAct).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''))[0]
     const isNew = firstAct && firstAct.date>=d14s
-    const aa30 = acts.filter(a=>a.account===name&&(a.date||'')>=d30s)
-    const aa7  = acts.filter(a=>a.account===name&&(a.date||'')>=d7s)
+    const aa30 = acts.filter(a=>matchAct(a)&&(a.date||'')>=d30s)
+    const aa7  = acts.filter(a=>matchAct(a)&&(a.date||'')>=d7s)
     const cnt30=aa30.length, cnt7=aa7.length
     const views30=aa30.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
     const likes30=aa30.reduce((s,a)=>s+(a.platformMetrics?.Threads?.likes||0),0)
