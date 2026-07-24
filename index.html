@@ -2497,6 +2497,8 @@ function _ovAcctHealth() {
   const personas = _allP.filter(p => {
     const rt = p.raw?.roleType
     if (!rt || rt === '真人回覆') return false
+    const st = p.raw?.accountStatus
+    if (st && ['inactive','disabled','stopped'].includes(st)) return false
     if (_seen.has(p.name)) return false
     _seen.add(p.name)
     return true
@@ -2524,7 +2526,8 @@ function _ovAcctHealth() {
   const rows = personas.map(p => {
     const name = p.name
     const isDisabled = p.raw?.accountStatus==='disabled'||p.raw?.accountStatus==='stopped'
-    const matchAct = a => (a.personaName||a.account||'')===name
+    const _pid = p.id ? p.id.replace(/^[a-z]+_/,'') : null
+    const matchAct = a => (a.personaName||a.account||'')===name || (_pid && a.personaId===_pid)
     const firstAct = acts.filter(matchAct).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''))[0]
     const isNew = firstAct && firstAct.date>=d14s
     const aa30 = acts.filter(a=>matchAct(a)&&(a.date||'')>=d30s)
