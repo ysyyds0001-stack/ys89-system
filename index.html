@@ -212,6 +212,9 @@ tr:hover td{background:#0f0d0b}
 /* ── 真實註冊對帳表單 ── */
 .rr-form{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 @media(max-width:600px){.rr-form{grid-template-columns:repeat(2,1fr)!important}}
+/* ── 數據輸入 tab ── */
+.di-tab{border-radius:6px 6px 0 0!important;border-bottom:2px solid transparent!important;color:var(--text3)!important}
+.di-tab.active{color:var(--accent)!important;border-bottom-color:var(--accent)!important;background:transparent!important}
 
 /* ── 發文追蹤：手機統計橫式並列 + 記錄卡下拉展開 ── */
 .posts-mob{display:none}
@@ -292,26 +295,32 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-brand">YS89<span>發文管理系統</span></div>
   <div id="sync-status" style="font-size:.72rem;color:var(--accent);margin-left:8px;opacity:.8"></div>
   <div class="nav-sep"></div>
-  <div class="nav-tab active" onclick="nav(this,'overview')">🏠 成長概覽</div>
+  <!-- 第一區：會議與分析 -->
+  <div class="nav-tab" onclick="nav(this,'meeting')">📋 會議總覽</div>
+  <div class="nav-tab active" onclick="nav(this,'ga4')">📊 成效分析</div>
+  <div class="nav-tab" onclick="nav(this,'datahealth')">🔍 資料健康</div>
   <div class="nav-sep"></div>
-  <div class="nav-tab" onclick="nav(this,'multipost')">📡 矩陣發文</div>
-  <div class="nav-tab" onclick="nav(this,'threadtracker')">🤝 社群互動</div>
-  <div class="nav-tab" onclick="nav(this,'channel')">📝 匿名社群</div>
-  <div class="nav-tab" onclick="nav(this,'channelfb')">📘 臉書社團</div>
-  <div class="nav-tab" onclick="nav(this,'conv')">🎯 轉化型內容</div>
-  <div class="nav-sep"></div>
-  <div class="nav-tab" onclick="nav(this,'community')">👤 角色</div>
-  <div class="nav-sep"></div>
-  <div class="nav-tab" onclick="nav(this,'overview')">📊 成效總結</div>
+  <!-- 第二區：內容與執行 -->
   <div class="nav-tab" onclick="nav(this,'tracker')">📈 發文追蹤</div>
+  <div class="nav-tab" onclick="nav(this,'threadtracker')">🔥 社群互動</div>
+  <div class="nav-tab" onclick="nav(this,'channel')">📝 匿名社群</div>
+  <div class="nav-tab" onclick="nav(this,'channelfb')">📘 Facebook</div>
+  <div class="nav-tab" onclick="nav(this,'conv')">🎯 轉化型內容</div>
+  <div class="nav-tab" onclick="nav(this,'multipost')">📡 多平台發文</div>
+  <div class="nav-sep"></div>
+  <!-- 第三區：內容資產 -->
+  <div class="nav-tab" onclick="nav(this,'community')">👤 角色</div>
   <div class="nav-tab" onclick="nav(this,'articles')">📚 文章庫</div>
   <div class="nav-tab" onclick="nav(this,'templates')">🧩 文案模板庫</div>
   <div class="nav-sep"></div>
+  <!-- 第四區：追蹤工具 -->
   <div class="nav-tab" onclick="nav(this,'utm')">🏷️ UTM 產生器</div>
   <div class="nav-tab" onclick="nav(this,'links')">🔗 短連結</div>
-  <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口</div>
+  <div class="nav-tab" onclick="nav(this,'entrances')">🚪 入口管理</div>
+  <div class="nav-tab" onclick="nav(this,'abtest')">🧪 A/B Test</div>
   <div class="nav-sep"></div>
-  <!-- 今日待辦已從側欄移除（pg-todo 與資料完整保留，可恢復） -->
+  <!-- 第五區：管理 -->
+  <div class="nav-tab" onclick="nav(this,'datainput')">✏️ 數據輸入</div>
   <div class="nav-tab" onclick="nav(this,'guide')">📖 使用說明</div>
 </nav>
 
@@ -324,8 +333,8 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 <div id="pg-ga4" class="page">
   <div class="fb" style="margin-bottom:12px">
     <div>
-      <h2 style="font-size:1.2rem;font-weight:700">📊 成效總結</h2>
-      <p class="tm" style="margin-top:3px">Threads 曝光 · GA4 進站 · picks168 直達 · 私訊詢問 · 登記 — 開會一頁看完</p>
+      <h2 style="font-size:1.2rem;font-weight:700">📊 成效分析</h2>
+      <p class="tm" style="margin-top:3px">Threads 曝光 · GA4 進站 · picks168 直達 · 私訊詢問 · 登記</p>
       <p class="tm" style="font-size:.75rem;margin-top:6px" id="ga4Range">資料區間：近 7 天 · 測量 ID：G-THDJFGXCZ7</p>
     </div>
   </div>
@@ -3888,6 +3897,189 @@ function renderAbTests() {
   </div>
 </div>
 
+<!-- ===== PAGE: 會議總覽 ===== -->
+<div id="pg-meeting" class="page">
+  <div class="fb" style="margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">📋 會議總覽</h2>
+      <p class="tm" style="margin-top:3px">報告期間完整漏斗 · 平台帳號比較 · 本週決策 — 開會即用</p>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-xs" onclick="mtgSetPeriod('this_week')" id="mtg-btn-thisweek">本週</button>
+      <button class="btn btn-xs" onclick="mtgSetPeriod('last_week')" id="mtg-btn-lastweek">上週</button>
+      <button class="btn btn-xs" onclick="mtgSetPeriod('7d')" id="mtg-btn-7d">近7天</button>
+      <button class="btn btn-xs" onclick="mtgSetPeriod('28d')" id="mtg-btn-28d">近28天</button>
+      <input type="date" id="mtg-from" style="background:var(--g3);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-size:.78rem">
+      <span style="color:var(--text3);font-size:.8rem">～</span>
+      <input type="date" id="mtg-to" style="background:var(--g3);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-size:.78rem">
+      <button class="btn btn-primary btn-xs" onclick="renderMeeting()">查詢</button>
+      <button class="btn btn-xs" onclick="mtgEnterPresentMode()" style="border-color:var(--accent2);color:var(--accent2)">📽 會議模式</button>
+    </div>
+  </div>
+
+  <!-- 第一區：報告狀態 -->
+  <div id="mtg-status-bar" style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:18px">
+    <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:.75rem;color:var(--text2)">
+      <span>📅 報告期間：<b id="mtg-s-period" style="color:var(--text)">—</b></span>
+      <span>🔄 比較期間：<b id="mtg-s-compare" style="color:var(--text)">—</b></span>
+      <span>🕐 時區：<b style="color:var(--text)">Asia/Taipei</b></span>
+      <span>✅ 資料完整至：<b id="mtg-s-complete" style="color:#34d399">—</b></span>
+      <span>🔁 最後同步：<b id="mtg-s-sync" style="color:var(--text)">—</b></span>
+      <span id="mtg-s-today-warn" style="color:#fbbf24;display:none">⚠ 今日數據不完整，不納入比較</span>
+    </div>
+  </div>
+
+  <!-- 第二區：核心 KPI -->
+  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">核心 KPI</div>
+  <div id="mtg-kpi-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px"></div>
+
+  <!-- 第三區：完整轉化漏斗 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div>
+      <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">完整轉化漏斗</div>
+      <div id="mtg-funnel"></div>
+    </div>
+    <div>
+      <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">導流路徑比較</div>
+      <div id="mtg-paths"></div>
+    </div>
+  </div>
+
+  <!-- 第四區：Top/Bottom 內容 -->
+  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">內容結果</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div>
+      <div style="font-size:.72rem;color:#34d399;margin-bottom:6px">🏆 Top 5 高成效</div>
+      <div id="mtg-top5"></div>
+    </div>
+    <div>
+      <div style="font-size:.72rem;color:#f87171;margin-bottom:6px">⚠ Bottom 5 需修正</div>
+      <div id="mtg-bot5"></div>
+    </div>
+  </div>
+
+  <!-- 第五區：帳號與平台 -->
+  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">帳號與平台</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div id="mtg-acct-table"></div>
+    <div id="mtg-platform-table"></div>
+  </div>
+
+  <!-- 第六區：本週決策 -->
+  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">本週決策</div>
+  <div id="mtg-actions"></div>
+</div>
+
+<!-- ===== PAGE: 資料健康 ===== -->
+<div id="pg-datahealth" class="page">
+  <div class="fb" style="margin-bottom:16px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">🔍 資料健康</h2>
+      <p class="tm" style="margin-top:3px">數據完整性 · 欄位缺失 · UTM 一致性 · 同步狀態</p>
+    </div>
+    <button class="btn btn-primary btn-xs" onclick="renderDataHealth()">🔄 重新掃描</button>
+  </div>
+  <div id="dh-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px"></div>
+  <div id="dh-issues"></div>
+</div>
+
+<!-- ===== PAGE: 數據輸入 ===== -->
+<div id="pg-datainput" class="page">
+  <div class="fb" style="margin-bottom:16px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">✏️ 數據輸入</h2>
+      <p class="tm" style="margin-top:3px">GA4 只追到 CTA；真實註冊／首存在後台 → 這裡手填區間數字補完漏斗</p>
+    </div>
+  </div>
+
+  <!-- 標籤列 -->
+  <div style="display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0">
+    <button class="btn btn-xs di-tab active" onclick="diSwitchTab('reg',this)">有效註冊 & 首存</button>
+    <button class="btn btn-xs di-tab" onclick="diSwitchTab('ad',this)">Meta 廣告</button>
+    <button class="btn btn-xs di-tab" onclick="diSwitchTab('daily',this)">每日成效觀察</button>
+    <button class="btn btn-xs di-tab" onclick="diSwitchTab('history',this)">輸入紀錄</button>
+  </div>
+
+  <!-- Tab: 有效註冊 & 首存 -->
+  <div id="di-tab-reg">
+    <div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:10px">本期數字輸入</div>
+      <div class="rr-form">
+        <div class="fg"><label>區間起（台北時間）</label><input type="date" id="rr-from"></div>
+        <div class="fg"><label>區間迄（台北時間）</label><input type="date" id="rr-to"></div>
+        <div class="fg"><label>完成註冊人數</label><input type="number" id="rr-completed-reg" placeholder="0" min="0"></div>
+        <div class="fg"><label>有效註冊人數</label><input type="number" id="rr-reg" placeholder="0" min="0"></div>
+        <div class="fg"><label>首存人數</label><input type="number" id="rr-dep" placeholder="0" min="0"></div>
+        <div class="fg"><label>首存金額 NT$</label><input type="number" id="rr-amt" placeholder="0" min="0"></div>
+        <div class="fg"><label>備註</label><input type="text" id="rr-note" placeholder="例：含補登優惠"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+        <button class="btn btn-primary btn-sm" onclick="diSaveReg()">💾 儲存</button>
+        <span style="font-size:.72rem;color:var(--text3)">⚠ 區間數字無法拆日，查詢期間須完整涵蓋此區間才會納入計算</span>
+      </div>
+    </div>
+    <div id="di-reg-list" style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px">已輸入記錄</div>
+      <div id="di-reg-table"></div>
+    </div>
+  </div>
+
+  <!-- Tab: Meta 廣告 -->
+  <div id="di-tab-ad" style="display:none">
+    <div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:10px">Meta 廣告手填（從 Ads Manager 抄入）</div>
+      <div class="rr-form">
+        <div class="fg"><label>區間起</label><input type="date" id="ad-from"></div>
+        <div class="fg"><label>區間迄</label><input type="date" id="ad-to"></div>
+        <div class="fg"><label>花費 NT$</label><input type="number" id="ad-spend" placeholder="0" min="0"></div>
+        <div class="fg"><label>曝光</label><input type="number" id="ad-impr" placeholder="0" min="0"></div>
+        <div class="fg"><label>觸及人數</label><input type="number" id="ad-reach" placeholder="0" min="0"></div>
+        <div class="fg"><label>點擊</label><input type="number" id="ad-clicks" placeholder="0" min="0"></div>
+        <div class="fg"><label>完成註冊</label><input type="number" id="ad-reg" placeholder="0" min="0"></div>
+        <div class="fg"><label>首存人數</label><input type="number" id="ad-dep" placeholder="0" min="0"></div>
+      </div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="diSaveAd()">💾 儲存廣告數據</button>
+    </div>
+    <div id="di-ad-list" style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px">已輸入廣告記錄</div>
+      <div id="di-ad-table"></div>
+    </div>
+  </div>
+
+  <!-- Tab: 每日成效觀察 -->
+  <div id="di-tab-daily" style="display:none">
+    <div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:10px">每日成效觀察</div>
+      <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
+        <div class="fg" style="flex:0 0 160px"><label style="font-size:.74rem;display:block;margin-bottom:4px">日期</label>
+          <input type="date" id="dr-lookup-date" style="width:100%;font-size:.85rem"></div>
+        <button class="btn btn-primary btn-sm" style="height:34px" onclick="drLookup()">🔍 查看當天發文</button>
+        <span style="font-size:.76rem;color:var(--text3);align-self:center">選昨天或更早，帶出當天記錄供填入觀察到的成效</span>
+      </div>
+      <div id="dr-results"></div>
+    </div>
+  </div>
+
+  <!-- Tab: 輸入紀錄 -->
+  <div id="di-tab-history" style="display:none">
+    <div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px">所有輸入記錄（最新在前）</div>
+      <div id="di-history-table"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE: A/B Test (獨立入口，實際內容在 GA4 成效分析 tab) ===== -->
+<div id="pg-abtest" class="page">
+  <div class="fb" style="margin-bottom:16px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:700">🧪 A/B Test</h2>
+      <p class="tm" style="margin-top:3px">內容測試管理 · 樣本數 · 勝出條件 · 結果可信度</p>
+    </div>
+  </div>
+  <div id="pg-abtest-content"></div>
+</div>
+
 <!-- modal: 新增/編輯短連結 -->
 <div id="modal-add-link" class="overlay">
   <div class="modal modal-lg">
@@ -6379,9 +6571,15 @@ function nav(el,page){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'))
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
-  const renders={overview:renderGrowthOverview,roles:renderRoles,channel:renderChannelPosts,channelfb:renderChannelFb,conv:renderConversions,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,templates:renderTemplates,community:renderCommunity,threadtracker:renderThreadTracker,entrances:renderEntrances,links:renderLinks,cast:renderCast}
+  const renders={overview:renderGrowthOverview,roles:renderRoles,channel:renderChannelPosts,channelfb:renderChannelFb,conv:renderConversions,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,templates:renderTemplates,community:renderCommunity,threadtracker:renderThreadTracker,entrances:renderEntrances,links:renderLinks,cast:renderCast,meeting:renderMeeting,datahealth:renderDataHealth,datainput:renderDataInput,abtest:function(){
+    const c=document.getElementById('pg-abtest-content')
+    if(!c)return
+    const list=DB.get('ys89_ab_tests')||[]
+    if(!list.length){c.innerHTML='<div style="font-size:.8rem;color:var(--text3);padding:20px">尚未建立任何 A/B Test。前往「成效分析」→「成效分析」tab 可新增。</div>';return}
+    c.innerHTML=list.map(t=>`<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px"><div style="font-weight:600;font-size:.85rem">${t.name||'未命名測試'}</div><div style="font-size:.72rem;color:var(--text3);margin-top:4px">${t.start||'—'}～${t.end||'—'} · ${t.metric||'—'}</div></div>`).join('')
+  }}
   if(page==='todo'){initTodayTodos(false);renderTodo()}
-  else if(page==='ga4'){ if(_ga4Data) renderGA4(_ga4Data); }
+  else if(page==='ga4'){ if(typeof switchGA4Layer==='function') switchGA4Layer('overview'); else if(_ga4Data) renderGA4(_ga4Data); }
   else if(page==='utm'){ utmInit() }
   else if(page==='fortune'){ fpInit() }
   else renders[page]&&renders[page]()
@@ -13788,6 +13986,435 @@ function renderComparison() {
     </table>
     </div>`;
 }
+
+// ===== TAIPEI TIMEZONE UTILS =====
+function getTaipeiDateString(date) {
+  const d = date || new Date()
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(d)
+  const m = Object.fromEntries(parts.filter(p=>p.type!=='literal').map(p=>[p.type,p.value]))
+  return `${m.year}-${m.month}-${m.day}`
+}
+function getTaipeiYesterday() {
+  const d = new Date(); d.setDate(d.getDate()-1); return getTaipeiDateString(d)
+}
+function getTaipeiWeekStart(offset) {
+  const now = new Date()
+  const taipeiNow = new Date(now.toLocaleString('en-US',{timeZone:'Asia/Taipei'}))
+  const day = taipeiNow.getDay(), diff = day===0?-6:1-day
+  const mon = new Date(taipeiNow); mon.setDate(taipeiNow.getDate()+diff+(offset||0)*7)
+  return getTaipeiDateString(mon)
+}
+function getTaipeiWeekEnd(offset) {
+  const mon = new Date(getTaipeiWeekStart(offset))
+  const sun = new Date(mon); sun.setDate(mon.getDate()+6)
+  return getTaipeiDateString(sun)
+}
+function mtgSetPeriod(mode) {
+  const today = getTaipeiDateString()
+  const yest = getTaipeiYesterday()
+  let from, to
+  if (mode==='this_week') { from=getTaipeiWeekStart(0); to=yest }
+  else if (mode==='last_week') { from=getTaipeiWeekStart(-1); to=getTaipeiWeekEnd(-1) }
+  else if (mode==='7d') { const d=new Date();d.setDate(d.getDate()-7); from=getTaipeiDateString(d); to=yest }
+  else if (mode==='28d') { const d=new Date();d.setDate(d.getDate()-28); from=getTaipeiDateString(d); to=yest }
+  document.getElementById('mtg-from').value = from
+  document.getElementById('mtg-to').value = to
+  renderMeeting()
+}
+
+// ===== 會議總覽 =====
+function renderMeeting() {
+  const fromEl = document.getElementById('mtg-from')
+  const toEl = document.getElementById('mtg-to')
+  const today = getTaipeiDateString()
+  const yest = getTaipeiYesterday()
+  if (!fromEl.value) { mtgSetPeriod('this_week'); return }
+  const from = fromEl.value, to = toEl.value || yest
+  const days = Math.round((new Date(to)-new Date(from))/(86400000))+1
+  const prevTo = new Date(from); prevTo.setDate(prevTo.getDate()-1)
+  const prevFrom = new Date(prevTo); prevFrom.setDate(prevTo.getDate()-days+1)
+  const pFrom = getTaipeiDateString(prevFrom), pTo = getTaipeiDateString(prevTo)
+  const todayIncluded = to >= today
+  const completeTo = todayIncluded ? yest : to
+
+  // 狀態列
+  document.getElementById('mtg-s-period').textContent = `${from} ～ ${to}`
+  document.getElementById('mtg-s-compare').textContent = `${pFrom} ～ ${pTo}`
+  document.getElementById('mtg-s-complete').textContent = completeTo
+  const sw = document.getElementById('mtg-s-today-warn')
+  if (todayIncluded) sw.style.display='' ; else sw.style.display='none'
+  const ga4Updated = (_ga4Data||{}).lastUpdated || '尚未同步'
+  document.getElementById('mtg-s-sync').textContent = ga4Updated
+
+  // 資料
+  const acts = DB.get('thread_activities')||[]
+  const cActs = acts.filter(a=>(a.date||'')>=from&&(a.date||'')<=completeTo)
+  const pActs = acts.filter(a=>(a.date||'')>=pFrom&&(a.date||'')<=pTo)
+  const ga4 = _ga4Data||{}
+  const k7 = ga4.kpis_7d||{}, k28 = ga4.kpis_28d||{}, kCum = ga4.kpis||{}
+  const kUse = days<=3 ? (ga4.kpis_3d||k7) : days<=7 ? k7 : days<=28 ? k28 : kCum
+  const kPrev = days<=7 ? (ga4.kpis_prev7d||{}) : {}
+  const regs = DB.get('real_reg')||[]
+  const cReg = regs.filter(r=>(r.from||'')>=from||(r.to||'')<=to).slice(-1)[0]||{}
+  const totV = cActs.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
+  const pTotV = pActs.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
+
+  function kpiDelta(cur,prev) {
+    if(cur==null||prev==null||prev===0) return ''
+    const d=((cur-prev)/prev*100)
+    return `<span style="font-size:.62rem;padding:1px 5px;border-radius:4px;margin-left:4px;background:${d>=0?'#34d39920':'#f8717120'};color:${d>=0?'#34d399':'#f87171'}">${d>=0?'↑':'↓'}${Math.abs(d).toFixed(0)}%</span>`
+  }
+  function kpiCard(icon,label,cur,prev,src,warn,attrs) {
+    const hasCur = cur!=null
+    const hasPrev = prev!=null&&prev>0
+    return `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:12px 14px" ${attrs||''}>
+      <div style="font-size:.65rem;color:var(--text3);margin-bottom:5px">${icon} ${label}</div>
+      ${hasCur?`<div style="font-size:1.2rem;font-weight:700;color:var(--accent)">${typeof cur==='number'?cur.toLocaleString():cur}</div>`:`<div style="font-size:.72rem;color:var(--text3);padding:4px 0">尚未取得資料</div>`}
+      ${hasPrev?`<div style="font-size:.62rem;color:var(--text3);margin-top:2px">前期 ${prev.toLocaleString()}${kpiDelta(cur,prev)}</div>`:''}
+      <div style="font-size:.57rem;color:var(--text3);margin-top:5px;border-top:1px solid var(--border);padding-top:3px">${src}</div>
+      ${warn?`<div style="font-size:.57rem;color:#f59e42;margin-top:2px">⚠ ${warn}</div>`:''}
+    </div>`
+  }
+
+  document.getElementById('mtg-kpi-grid').innerHTML = [
+    kpiCard('📝','發文數',cActs.length||null,pActs.length||null,'thread_activities'),
+    kpiCard('👁','已追蹤曝光',totV||null,pTotV||null,'Threads platformMetrics','未含 IG/FB Organic'),
+    kpiCard('🔗','社群連結點擊',null,null,'尚未取得','需短連結點擊追蹤'),
+    kpiCard('📈','GA4 Sessions',kUse.sessions||null,kPrev.sessions||null,'GA4 自動同步'),
+    kpiCard('💬','Engaged Sessions',null,null,'GA4 Engagement','尚未取得'),
+    kpiCard('🎯','CTA Click',kUse.cta||null,kPrev.cta||null,'GA4 cta_click','非完成註冊'),
+    kpiCard('✅','完成註冊',null,null,'需後台 API','GA4 只追到 CTA'),
+    kpiCard('🎖','有效註冊',cReg.reg||null,null,'手動輸入'),
+    kpiCard('💳','首存人數',cReg.dep||null,null,'手動輸入'),
+    kpiCard('💰','首存金額 NT$',cReg.amt||null,null,'手動輸入')
+  ].join('')
+
+  // 漏斗
+  const fSteps = [
+    {n:'① 社群曝光',v:totV||null,u:'次',s:'Threads'},
+    {n:'② 社群連結點擊',v:null,u:'次',s:'尚未取得'},
+    {n:'③ GA4 Sessions',v:kUse.sessions||null,u:'次',s:'GA4'},
+    {n:'④ Engaged Sessions',v:null,u:'次',s:'尚未取得'},
+    {n:'⑤ CTA Click',v:kUse.cta||null,u:'次',s:'GA4 cta_click'},
+    {n:'⑥ 完成註冊',v:null,u:'人',s:'需後台 API'},
+    {n:'⑦ 有效註冊',v:cReg.reg||null,u:'人',s:'手動輸入'},
+    {n:'⑧ 首存',v:cReg.dep||null,u:'人',s:'手動輸入'}
+  ]
+  function convRate(a,b) { return (a&&b&&b>0)?((a/b)*100).toFixed(1)+'%':'—' }
+  document.getElementById('mtg-funnel').innerHTML = fSteps.map((s,i)=>{
+    const next = fSteps[i+1]
+    const rate = next ? convRate(next.v, s.v) : null
+    return `<div style="margin-bottom:2px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--g2);border:1px solid var(--border);border-radius:7px">
+        <div>
+          <div style="font-size:.7rem;font-weight:600;color:${s.v!=null?'var(--text)':'var(--text3)'}">${s.n}</div>
+          ${s.v!=null?`<div style="font-size:1rem;font-weight:700;color:var(--accent)">${s.v.toLocaleString()} <span style="font-size:.62rem;color:var(--text3)">${s.u}</span></div>`:`<div style="font-size:.68rem;color:var(--text3)">尚未取得資料</div>`}
+        </div>
+        <div style="font-size:.6rem;color:var(--text3);background:var(--g3);padding:2px 6px;border-radius:4px">${s.s}</div>
+      </div>
+      ${rate?`<div style="text-align:center;font-size:.62rem;color:var(--text3);padding:2px 0">↓ ${rate}</div>`:''}`
+  }).join('')
+
+  // 路徑比較
+  const pathStats = {PATH_01:{views:0,posts:0},PATH_02:{views:0,posts:0},PATH_03:{views:0,posts:0},PATH_04:{views:0,posts:0},PATH_05:{views:0,posts:0}}
+  cActs.forEach(a=>{
+    const pid = (typeof _inferPathId==='function') ? _inferPathId(a) : (a.path_id||'PATH_04')
+    if(pathStats[pid]){ pathStats[pid].views+=(a.platformMetrics?.Threads?.views||0); pathStats[pid].posts++ }
+  })
+  const pathLabels={PATH_01:'論壇/部落格→YS89',PATH_02:'AI工具→picks168',PATH_03:'IG Bio→承接頁',PATH_04:'Threads單篇',PATH_05:'LINE/私訊'}
+  document.getElementById('mtg-paths').innerHTML = `<table style="width:100%;font-size:.72rem;border-collapse:collapse">
+    <thead><tr style="border-bottom:1px solid var(--border)">
+      <th style="padding:5px 6px;text-align:left;color:var(--text3)">路徑</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">篇數</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">曝光</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">歸因</th>
+    </tr></thead><tbody>` +
+    Object.entries(pathStats).map(([pid,d])=>`<tr style="border-bottom:1px solid var(--g3)">
+      <td style="padding:5px 6px;color:var(--text2)">${pathLabels[pid]||pid}</td>
+      <td style="padding:5px 6px;text-align:right;color:var(--text)">${d.posts}</td>
+      <td style="padding:5px 6px;text-align:right;color:var(--accent)">${d.views>999?(d.views/1000).toFixed(1)+'k':d.views}</td>
+      <td style="padding:5px 6px;text-align:right;color:#60a5fa">B</td>
+    </tr>`).join('') + `</tbody></table>`
+
+  // Top / Bottom 5
+  const ranked = cActs.filter(a=>(a.platformMetrics?.Threads?.views||0)>0)
+    .sort((a,b)=>(b.platformMetrics?.Threads?.views||0)-(a.platformMetrics?.Threads?.views||0))
+  function contentRow(a,idx) {
+    const v = a.platformMetrics?.Threads?.views||0
+    const url = a.url||''
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--g2);border:1px solid var(--border);border-radius:7px;margin-bottom:4px">
+      <span style="font-size:.65rem;color:var(--text3);width:16px">${idx}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.7rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(a.personaName||a.account||'—')} · ${(a.date||'').slice(5)}</div>
+        <div style="font-size:.65rem;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(a.content||'').slice(0,40)||'—'}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:.78rem;font-weight:700;color:var(--accent)">${v>999?(v/1000).toFixed(1)+'k':v}</div>
+        ${url?`<a href="${url}" target="_blank" style="font-size:.6rem;color:#60a5fa">查看</a>`:`<span style="font-size:.6rem;color:var(--text3)">無連結</span>`}
+      </div>
+    </div>`
+  }
+  document.getElementById('mtg-top5').innerHTML = ranked.slice(0,5).map((a,i)=>contentRow(a,i+1)).join('') || '<div style="font-size:.75rem;color:var(--text3);padding:8px">尚無資料</div>'
+  document.getElementById('mtg-bot5').innerHTML = ranked.slice(-5).reverse().map((a,i)=>contentRow(a,i+1)).join('') || '<div style="font-size:.75rem;color:var(--text3);padding:8px">尚無資料</div>'
+
+  // 帳號排行（依曝光）
+  const acctMap = {}
+  cActs.forEach(a=>{
+    const n=a.personaName||a.account||'未知'
+    if(!acctMap[n]) acctMap[n]={posts:0,views:0,likes:0}
+    acctMap[n].posts++
+    acctMap[n].views+=(a.platformMetrics?.Threads?.views||0)
+    acctMap[n].likes+=(a.platformMetrics?.Threads?.likes||0)
+  })
+  const acctArr = Object.entries(acctMap).sort((a,b)=>b[1].views-a[1].views).slice(0,8)
+  document.getElementById('mtg-acct-table').innerHTML = `
+    <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px">帳號排行（排序：曝光）</div>
+    <table style="width:100%;font-size:.72rem;border-collapse:collapse">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        <th style="padding:4px 6px;text-align:left;color:var(--text3)">帳號</th>
+        <th style="padding:4px 6px;text-align:right;color:var(--text3)">篇</th>
+        <th style="padding:4px 6px;text-align:right;color:var(--text3)">曝光</th>
+        <th style="padding:4px 6px;text-align:right;color:var(--text3)">均曝</th>
+      </tr></thead><tbody>` +
+    acctArr.map(([n,d])=>`<tr style="border-bottom:1px solid var(--g3)">
+      <td style="padding:4px 6px;color:var(--text2)">${n}</td>
+      <td style="padding:4px 6px;text-align:right">${d.posts}</td>
+      <td style="padding:4px 6px;text-align:right;color:var(--accent)">${d.views>999?(d.views/1000).toFixed(1)+'k':d.views}</td>
+      <td style="padding:4px 6px;text-align:right;color:var(--text3)">${d.posts?Math.round(d.views/d.posts).toLocaleString():'—'}</td>
+    </tr>`).join('') + '</tbody></table>'
+
+  // 本週決策（重用 _ovActions 如果存在）
+  const actEl = document.getElementById('mtg-actions')
+  if (typeof _ovActions === 'function') {
+    const tmpEl = document.createElement('div')
+    tmpEl.id = 'ga4ov-actions-tmp'
+    const origEl = document.getElementById('ga4ov-actions')
+    if (origEl) actEl.innerHTML = origEl.innerHTML
+    else { try{_ovActions();actEl.innerHTML=origEl?.innerHTML||''}catch(e){actEl.innerHTML='<div style="font-size:.75rem;color:var(--text3)">尚未取得資料</div>'} }
+  } else {
+    actEl.innerHTML = '<div style="font-size:.75rem;color:var(--text3)">切換到成效分析後可生成本週決策</div>'
+  }
+}
+
+// 會議模式
+function mtgEnterPresentMode() {
+  document.body.classList.toggle('meeting-mode')
+  const btn = document.querySelector('[onclick="mtgEnterPresentMode()"]')
+  if (document.body.classList.contains('meeting-mode')) {
+    btn.textContent = '✕ 離開會議模式'
+    btn.style.background = 'var(--accent)'
+    btn.style.color = '#fff'
+  } else {
+    btn.textContent = '📽 會議模式'
+    btn.style.background = ''
+    btn.style.color = ''
+  }
+}
+
+// ===== 資料健康 =====
+function renderDataHealth() {
+  const acts = DB.get('thread_activities')||[]
+  const regs = DB.get('real_reg')||[]
+  const links = DB.get('links')||[]
+
+  const issues = []
+
+  // 掃描 thread_activities
+  let missingUrl=0, missingUtm=0, missingPath=0, zeroViews=0, noLandingPage=0
+  acts.forEach(a=>{
+    if(!a.url&&!a.postUrl) missingUrl++
+    if(!a.utm_content&&!a.utmContent) missingUtm++
+    if(!a.path_id&&!a.path_type) missingPath++
+    if(!(a.platformMetrics?.Threads?.views)) zeroViews++
+    if(!a.landingUrl) noLandingPage++
+  })
+
+  const utmSet = new Set()
+  const utmDups = []
+  acts.forEach(a=>{ const u=a.utm_content||a.utmContent; if(u){ if(utmSet.has(u))utmDups.push(u); else utmSet.add(u) } })
+
+  const ga4 = _ga4Data||{}
+  const lastSync = ga4.lastUpdated || null
+  const syncOld = lastSync ? (Date.now()-new Date(lastSync).getTime())>172800000 : true
+
+  if(missingUrl>0) issues.push({sev:'high',cat:'貼文連結',msg:`${missingUrl} 篇缺少原貼文 URL`,fix:'手動填入原貼文網址',auto:false})
+  if(missingUtm>0) issues.push({sev:'medium',cat:'UTM',msg:`${missingUtm} 篇缺少 utm_content`,fix:'為每篇建立唯一 UTM Content',auto:false})
+  if(missingPath>0) issues.push({sev:'low',cat:'路徑歸因',msg:`${missingPath} 篇無 path_id（系統自動推算）`,fix:'可手動補標 path_id',auto:true})
+  if(zeroViews>0) issues.push({sev:'medium',cat:'曝光數據',msg:`${zeroViews} 篇 Threads Views = 0`,fix:'執行數據更新抓取',auto:false})
+  if(noLandingPage>0) issues.push({sev:'medium',cat:'落地頁',msg:`${noLandingPage} 篇缺少 landingUrl`,fix:'補填導流目標網址',auto:false})
+  if(utmDups.length>0) issues.push({sev:'high',cat:'UTM 重複',msg:`${utmDups.length} 個 UTM Content 重複使用`,fix:'確保每篇貼文使用唯一 UTM',auto:false})
+  if(regs.length===0) issues.push({sev:'medium',cat:'有效註冊',msg:'尚未輸入任何有效註冊 & 首存資料',fix:'前往數據輸入頁手動填入',auto:false})
+  if(syncOld) issues.push({sev:'high',cat:'GA4 同步',msg:`GA4 資料超過 48 小時未同步${lastSync?'（上次：'+lastSync+'）':'（從未同步）'}`,fix:'重新觸發 GitHub Actions GA4 同步',auto:false})
+
+  const sevColor = {high:'#f87171',medium:'#fbbf24',low:'#60a5fa'}
+  const sevLabel = {high:'嚴重',medium:'注意',low:'提示'}
+
+  const highN = issues.filter(i=>i.sev==='high').length
+  const midN = issues.filter(i=>i.sev==='medium').length
+  const lowN = issues.filter(i=>i.sev==='low').length
+
+  document.getElementById('dh-summary').innerHTML = [
+    `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center"><div style="font-size:1.6rem;font-weight:700;color:#f87171">${highN}</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px">嚴重問題</div></div>`,
+    `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center"><div style="font-size:1.6rem;font-weight:700;color:#fbbf24">${midN}</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px">需注意</div></div>`,
+    `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center"><div style="font-size:1.6rem;font-weight:700;color:#60a5fa">${lowN}</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px">提示</div></div>`,
+    `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center"><div style="font-size:1.6rem;font-weight:700;color:#34d399">${acts.length}</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px">總發文記錄</div></div>`
+  ].join('')
+
+  document.getElementById('dh-issues').innerHTML = issues.length===0
+    ? `<div style="text-align:center;padding:30px;color:#34d399;font-size:.85rem">✅ 未發現問題</div>`
+    : issues.map(i=>`<div style="background:var(--g2);border:1px solid var(--border);border-left:3px solid ${sevColor[i.sev]||'var(--border)'};border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start">
+        <span style="font-size:.65rem;padding:2px 6px;border-radius:4px;background:${sevColor[i.sev]}22;color:${sevColor[i.sev]};white-space:nowrap;margin-top:2px">${sevLabel[i.sev]}</span>
+        <div style="flex:1">
+          <div style="font-size:.75rem;font-weight:600;color:var(--text)">${i.cat}：${i.msg}</div>
+          <div style="font-size:.68rem;color:var(--text3);margin-top:3px">修正方式：${i.fix}</div>
+        </div>
+        ${i.auto?`<span style="font-size:.6rem;color:#34d399;white-space:nowrap">可自動</span>`:''}
+      </div>`).join('')
+}
+
+// ===== 數據輸入 =====
+function diSwitchTab(tab, btn) {
+  ['reg','ad','daily','history'].forEach(t=>{
+    const el = document.getElementById('di-tab-'+t)
+    if(el) el.style.display = t===tab?'':'none'
+  })
+  document.querySelectorAll('.di-tab').forEach(b=>b.classList.remove('active'))
+  if(btn) btn.classList.add('active')
+  if(tab==='reg') diRenderRegList()
+  if(tab==='ad') diRenderAdList()
+  if(tab==='history') diRenderHistory()
+}
+function diSaveReg() {
+  const from = document.getElementById('rr-from')?.value
+  const to = document.getElementById('rr-to')?.value
+  if(!from||!to){ alert('請填寫區間起迄'); return }
+  const reg = parseInt(document.getElementById('rr-reg')?.value)||0
+  const dep = parseInt(document.getElementById('rr-dep')?.value)||0
+  const amt = parseInt(document.getElementById('rr-amt')?.value)||0
+  const completedReg = parseInt(document.getElementById('rr-completed-reg')?.value)||0
+  const note = document.getElementById('rr-note')?.value||''
+  const regs = DB.get('real_reg')||[]
+  regs.push({from,to,reg,dep,amt,completedReg,note,inputAt:getTaipeiDateString(),_ver:'v2'})
+  DB.set('real_reg',regs)
+  try{DB.push('real_reg')}catch(e){}
+  diRenderRegList()
+  showToast('✅ 已儲存')
+}
+function diSaveAd() {
+  const from = document.getElementById('ad-from')?.value
+  const to = document.getElementById('ad-to')?.value
+  if(!from||!to){ alert('請填寫區間起迄'); return }
+  const record = {
+    from, to,
+    spend: parseInt(document.getElementById('ad-spend')?.value)||0,
+    impr: parseInt(document.getElementById('ad-impr')?.value)||0,
+    reach: parseInt(document.getElementById('ad-reach')?.value)||0,
+    clicks: parseInt(document.getElementById('ad-clicks')?.value)||0,
+    reg: parseInt(document.getElementById('ad-reg')?.value)||0,
+    dep: parseInt(document.getElementById('ad-dep')?.value)||0,
+    inputAt: getTaipeiDateString()
+  }
+  const ads = DB.get('ad_data')||[]
+  ads.push(record)
+  DB.set('ad_data', ads)
+  try{DB.push('ad_data')}catch(e){}
+  diRenderAdList()
+  showToast('✅ 廣告資料已儲存')
+}
+function diRenderRegList() {
+  const el = document.getElementById('di-reg-table')
+  if(!el) return
+  const regs = (DB.get('real_reg')||[]).slice().reverse()
+  if(!regs.length){ el.innerHTML='<div style="font-size:.75rem;color:var(--text3)">尚未輸入任何記錄</div>'; return }
+  el.innerHTML = `<table style="width:100%;font-size:.72rem;border-collapse:collapse">
+    <thead><tr style="border-bottom:1px solid var(--border)">
+      <th style="padding:5px 6px;text-align:left;color:var(--text3)">區間</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">完成</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">有效</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">首存人</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">金額</th>
+      <th style="padding:5px 6px;text-align:left;color:var(--text3)">備註</th>
+    </tr></thead><tbody>` +
+    regs.map(r=>`<tr style="border-bottom:1px solid var(--g3)">
+      <td style="padding:5px 6px;color:var(--text2)">${r.from} ～ ${r.to}</td>
+      <td style="padding:5px 6px;text-align:right">${r.completedReg??'—'}</td>
+      <td style="padding:5px 6px;text-align:right;color:var(--accent)">${r.reg??'—'}</td>
+      <td style="padding:5px 6px;text-align:right">${r.dep??'—'}</td>
+      <td style="padding:5px 6px;text-align:right">${r.amt?'NT$'+r.amt.toLocaleString():'—'}</td>
+      <td style="padding:5px 6px;color:var(--text3)">${r.note||''}</td>
+    </tr>`).join('') + '</tbody></table>'
+}
+function diRenderAdList() {
+  const el = document.getElementById('di-ad-table')
+  if(!el) return
+  const ads = (DB.get('ad_data')||[]).slice().reverse()
+  if(!ads.length){ el.innerHTML='<div style="font-size:.75rem;color:var(--text3)">尚未輸入廣告記錄</div>'; return }
+  el.innerHTML = `<table style="width:100%;font-size:.72rem;border-collapse:collapse">
+    <thead><tr style="border-bottom:1px solid var(--border)">
+      <th style="padding:5px 6px;text-align:left;color:var(--text3)">區間</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">花費</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">曝光</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">點擊</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">完成</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">首存</th>
+    </tr></thead><tbody>` +
+    ads.map(r=>`<tr style="border-bottom:1px solid var(--g3)">
+      <td style="padding:5px 6px;color:var(--text2)">${r.from} ～ ${r.to}</td>
+      <td style="padding:5px 6px;text-align:right">NT$${(r.spend||0).toLocaleString()}</td>
+      <td style="padding:5px 6px;text-align:right">${(r.impr||0).toLocaleString()}</td>
+      <td style="padding:5px 6px;text-align:right">${(r.clicks||0).toLocaleString()}</td>
+      <td style="padding:5px 6px;text-align:right">${r.reg??'—'}</td>
+      <td style="padding:5px 6px;text-align:right">${r.dep??'—'}</td>
+    </tr>`).join('') + '</tbody></table>'
+}
+function diRenderHistory() {
+  const el = document.getElementById('di-history-table')
+  if(!el) return
+  const regs = (DB.get('real_reg')||[]).slice().reverse()
+  const ads = (DB.get('ad_data')||[]).slice().reverse()
+  const all = [...regs.map(r=>({...r,_type:'有效註冊'})), ...ads.map(r=>({...r,_type:'Meta廣告'}))]
+    .sort((a,b)=>(b.inputAt||'').localeCompare(a.inputAt||''))
+  if(!all.length){ el.innerHTML='<div style="font-size:.75rem;color:var(--text3)">尚無輸入記錄</div>'; return }
+  el.innerHTML = all.map(r=>`<div style="padding:8px 10px;border-bottom:1px solid var(--border);font-size:.72rem">
+    <span style="color:var(--accent2)">${r._type}</span> · ${r.from}～${r.to}
+    ${r._type==='有效註冊'?` · 有效:${r.reg??'—'} 首存:${r.dep??'—'}`:''}
+    ${r._type==='Meta廣告'?` · 花費:NT$${(r.spend||0).toLocaleString()}`:''}
+    <span style="color:var(--text3);margin-left:8px">輸入於 ${r.inputAt||'—'}</span>
+  </div>`).join('')
+}
+function renderDataInput() {
+  diRenderRegList()
+  // 自動填今天的日期範圍
+  const from = document.getElementById('rr-from')
+  const to = document.getElementById('rr-to')
+  if(from && !from.value) {
+    const d = new Date(); d.setDate(d.getDate()-6)
+    from.value = getTaipeiDateString(d)
+  }
+  if(to && !to.value) to.value = getTaipeiYesterday()
+}
+
+// 會議模式 CSS
+const _mtgStyle = document.createElement('style')
+_mtgStyle.textContent = `
+body.meeting-mode .legacy-navigation { display: none !important }
+body.meeting-mode .sidebar-item[data-page="datainput"],
+body.meeting-mode .sidebar-item[data-page="multipost"],
+body.meeting-mode .sidebar-item[data-page="utm"],
+body.meeting-mode .sidebar-item[data-page="links"],
+body.meeting-mode .sidebar-item[data-page="guide"] { display: none !important }
+body.meeting-mode #pg-meeting h2 { font-size: 1.4rem !important }
+body.meeting-mode #mtg-kpi-grid { grid-template-columns: repeat(5,1fr) !important }
+@media print {
+  body.meeting-mode .app-sidebar { display: none }
+  body.meeting-mode .app-topbar { display: none }
+  body.meeting-mode #pg-meeting { padding: 0 }
+}
+`
+document.head.appendChild(_mtgStyle)
 
 // ===== INIT =====
 (async()=>{
