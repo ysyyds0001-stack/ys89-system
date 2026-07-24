@@ -4238,8 +4238,29 @@ const DB={
     const local=this.get(k);
     if(Array.isArray(local)&&local.length&&Array.isArray(base)&&base.length){
       const map={};
-      base.forEach(item=>{if(item?.id)map[item.id]=item;});
-      local.forEach(item=>{if(item?.id)map[item.id]=item;});  // 本機覆蓋同 id
+      base.forEach(item=>{
+        if(!item?.id) return
+        if(item.platformMetrics?.threads && !item.platformMetrics?.Threads){
+          const pm={...item.platformMetrics, Threads:item.platformMetrics.threads}
+          delete pm.threads
+          item={...item, platformMetrics:pm}
+        }
+        map[item.id]=item
+      });
+      local.forEach(item=>{
+        if(!item?.id) return
+        const cfItem=map[item.id]
+        if(cfItem){
+          const localPm=item.platformMetrics||{}
+          const cfPm=cfItem.platformMetrics||{}
+          const localEmpty=Object.keys(localPm).length===0
+          const cfHasData=Object.keys(cfPm).length>0
+          map[item.id]={...cfItem,...item,
+            platformMetrics:(localEmpty&&cfHasData)?cfPm:localPm}
+        } else {
+          map[item.id]=item
+        }
+      });
       const merged=Object.values(map);
       localStorage.setItem(K+k,JSON.stringify(merged));
       return fetch(API+'/api/'+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(merged)});
