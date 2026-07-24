@@ -2453,49 +2453,90 @@ function _ovAcctHealth() {
   if (!el) return
   const acts = DB.get('thread_activities') || []
   const personas = allActors ? allActors() : []
-  const active = personas.filter(p => !p.raw?.accountStatus || p.raw?.accountStatus === 'active')
-  if (!active.length) { el.innerHTML='<p style="color:var(--text3);font-size:.8rem">尚無啟用角色</p>'; return }
+  if (!personas.length) { el.innerHTML='<p style="color:var(--text3);font-size:.8rem">尚無角色</p>'; return }
   const now = new Date()
-  const d30 = new Date(now); d30.setDate(d30.getDate()-30)
-  const d30s = d30.toISOString().slice(0,10)
-  const rows = active.map(p => {
+  const mkDate = n => { const d=new Date(now); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10) }
+  const d7s=mkDate(7), d14s=mkDate(14), d30s=mkDate(30)
+
+  // 9 種健康狀態判斷
+  const calcStatus = ({cnt,daysAgo,avgV7,avgV30,views30,likes30,cnt30,isDisabled,isNew}) => {
+    if (isDisabled) return {st:'已停用',sc:'#94a3b8',icon:'⛔'}
+    if (cnt30===0&&daysAgo>30) return {st:'長期休眠',sc:'#f87171',icon:'💀'}
+    if (daysAgo>14) return {st:'長期未發布',sc:'#f87171',icon:'🔇'}
+    if (isNew) return {st:'新帳號',sc:'#60a5fa',icon:'🌱'}
+    if (cnt30===0||avgV30===0) return {st:'資料不足',sc:'#94a3b8',icon:'📊'}
+    const erAll = views30>0?(likes30/views30):0
+    if (erAll<0.0005&&avgV30>100) return {st:'疑似限流',sc:'#f87171',icon:'🚨'}
+    if (erAll<0.001) return {st:'有曝光無互動',sc:'#f59e42',icon:'⚠️'}
+    if (avgV7>0&&avgV30>0&&avgV7>avgV30*1.2) return {st:'成長中',sc:'#34d399',icon:'🌟'}
+    if (avgV7>0&&avgV30>0&&avgV7<avgV30*0.7) return {st:'曝光下滑',sc:'#f59e42',icon:'📉'}
+    return {st:'正常運作',sc:'#34d399',icon:'✅'}
+  }
+
+  const rows = personas.map(p => {
     const name = p.name
-    const aa = acts.filter(a => a.account===name && (a.date||'')>=d30s)
-    const cnt = aa.length
-    const views = aa.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
-    const likes = aa.reduce((s,a)=>s+(a.platformMetrics?.Threads?.likes||0),0)
-    const avgV = cnt ? Math.round(views/cnt) : 0
-    const engR = views ? likes/views : 0
-    const last = aa.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0]
-    const lastD = last?.date || null
-    const daysAgo = lastD ? Math.round((now-new Date(lastD))/86400000) : 999
-    let st='資料不足', sc='#94a3b8'
-    if (cnt===0||daysAgo>14) { st='長期未發布'; sc='#f87171' }
-    else if (avgV===0) { st='資料不足'; sc='#94a3b8' }
-    else if (engR<0.001) { st='有曝光無互動'; sc='#f59e42' }
-    else { st='正常'; sc='#34d399' }
-    return {name, cnt, avgV, engR, lastD, daysAgo, st, sc, plats:(p.raw?.platforms||[])}
-  }).sort((a,b)=>b.avgV-a.avgV)
-  el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.75rem">
+    const isDisabled = p.raw?.accountStatus==='disabled'||p.raw?.accountStatus==='stopped'
+    const firstAct = acts.filter(a=>a.account===name).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''))[0]
+    const isNew = firstAct && firstAct.date>=d14s
+    const aa30 = acts.filter(a=>a.account===name&&(a.date||'')>=d30s)
+    const aa7  = acts.filter(a=>a.account===name&&(a.date||'')>=d7s)
+    const cnt30=aa30.length, cnt7=aa7.length
+    const views30=aa30.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
+    const likes30=aa30.reduce((s,a)=>s+(a.platformMetrics?.Threads?.likes||0),0)
+    const replies30=aa30.reduce((s,a)=>s+(a.platformMetrics?.Threads?.replies||0),0)
+    const views7=aa7.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
+    const likes7=aa7.reduce((s,a)=>s+(a.platformMetrics?.Threads?.likes||0),0)
+    const avgV30=cnt30?Math.round(views30/cnt30):0
+    const avgV7=cnt7?Math.round(views7/cnt7):0
+    const engR30=views30?((likes30+replies30)/views30):0
+    const last=aa30.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0]
+    const lastD=last?.date||null
+    const daysAgo=lastD?Math.round((now-new Date(lastD))/86400000):999
+    const trend = avgV30>0&&avgV7>0 ? ((avgV7-avgV30)/avgV30) : null
+    const {st,sc,icon}=calcStatus({cnt:cnt7,daysAgo,avgV7,avgV30,views30,likes30,cnt30,isDisabled,isNew})
+    return {name,cnt30,cnt7,avgV30,avgV7,engR30,lastD,daysAgo,st,sc,icon,trend,plats:(p.raw?.platforms||[])}
+  }).sort((a,b)=>{
+    // 成長中/正常運作排前，停用/休眠排後
+    const rank={成長中:0,正常運作:1,新帳號:2,有曝光無互動:3,曝光下滑:4,資料不足:5,長期未發布:6,疑似限流:7,長期休眠:8,已停用:9}
+    return (rank[a.st]??5)-(rank[b.st]??5) || b.avgV30-a.avgV30
+  })
+
+  // 狀態統計
+  const statCount = {}
+  rows.forEach(r=>{ statCount[r.st]=(statCount[r.st]||0)+1 })
+  const summary = Object.entries(statCount).map(([k,v])=>{
+    const r=rows.find(x=>x.st===k)
+    return `<span style="font-size:.65rem;padding:2px 8px;border-radius:10px;background:${r?.sc||'#94a3b8'}20;color:${r?.sc||'#94a3b8'}">${r?.icon||''} ${k} ${v}</span>`
+  }).join(' ')
+
+  el.innerHTML = `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${summary}</div>
+  <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.75rem">
   <thead><tr style="border-bottom:2px solid var(--border);color:var(--text3);font-size:.67rem">
     <th style="padding:6px 10px;text-align:left">帳號</th>
-    <th style="padding:6px 8px;text-align:left">平台</th>
-    <th style="padding:6px 8px;text-align:right">發文(30天)</th>
-    <th style="padding:6px 8px;text-align:right">平均曝光</th>
+    <th style="padding:6px 8px;text-align:right">發文/30天</th>
+    <th style="padding:6px 8px;text-align:right">發文/7天</th>
+    <th style="padding:6px 8px;text-align:right">均曝(30天)</th>
+    <th style="padding:6px 8px;text-align:right">均曝(7天)</th>
+    <th style="padding:6px 8px;text-align:right">趨勢</th>
     <th style="padding:6px 8px;text-align:right">互動率</th>
     <th style="padding:6px 8px;text-align:right">最後發布</th>
     <th style="padding:6px 8px;text-align:center">狀態</th>
   </tr></thead>
   <tbody>
-    ${rows.slice(0,20).map(r=>`<tr style="border-bottom:1px solid var(--border)">
-      <td style="padding:6px 10px;font-weight:600;font-size:.76rem">${r.name}</td>
-      <td style="padding:6px 8px;font-size:.67rem;color:var(--text3)">${r.plats.slice(0,3).join('/')}</td>
-      <td style="padding:6px 8px;text-align:right">${r.cnt}</td>
-      <td style="padding:6px 8px;text-align:right">${r.avgV>0?r.avgV.toLocaleString():'—'}</td>
-      <td style="padding:6px 8px;text-align:right">${r.engR>0?(r.engR*100).toFixed(2)+'%':'—'}</td>
-      <td style="padding:6px 8px;text-align:right;font-size:.67rem;color:${r.daysAgo>14?'#f87171':'var(--text3)'}">${r.lastD||'—'}</td>
-      <td style="padding:6px 8px;text-align:center"><span style="font-size:.63rem;padding:2px 7px;border-radius:8px;background:${r.sc}20;color:${r.sc}">${r.st}</span></td>
-    </tr>`).join('')}
+    ${rows.map(r=>{
+      const trendStr = r.trend!=null ? (r.trend>0?`<span style="color:#34d399">↑${(r.trend*100).toFixed(0)}%</span>`:`<span style="color:#f87171">↓${Math.abs(r.trend*100).toFixed(0)}%</span>`) : '—'
+      return `<tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:6px 10px;font-weight:600;font-size:.76rem">${r.name}</td>
+        <td style="padding:6px 8px;text-align:right">${r.cnt30}</td>
+        <td style="padding:6px 8px;text-align:right">${r.cnt7}</td>
+        <td style="padding:6px 8px;text-align:right">${r.avgV30>0?r.avgV30.toLocaleString():'—'}</td>
+        <td style="padding:6px 8px;text-align:right">${r.avgV7>0?r.avgV7.toLocaleString():'—'}</td>
+        <td style="padding:6px 8px;text-align:right;font-size:.72rem">${trendStr}</td>
+        <td style="padding:6px 8px;text-align:right">${r.engR30>0?(r.engR30*100).toFixed(2)+'%':'—'}</td>
+        <td style="padding:6px 8px;text-align:right;font-size:.67rem;color:${r.daysAgo>14?'#f87171':'var(--text3)'}">${r.lastD||'—'}</td>
+        <td style="padding:6px 8px;text-align:center"><span style="font-size:.62rem;padding:2px 7px;border-radius:8px;background:${r.sc}20;color:${r.sc};white-space:nowrap">${r.icon} ${r.st}</span></td>
+      </tr>`
+    }).join('')}
   </tbody>
   </table></div>`
 }
@@ -10644,6 +10685,10 @@ function openAddThreadActivity(){
   const customEl = document.getElementById('ta-persona-custom')
   if(customEl){ customEl.value=''; customEl.style.display='none' }
   _fillTaPersonaSel(document.getElementById('ta-persona'), '', '')
+  // 重置內容分析欄位
+  ;['ta-primary-goal','ta-funnel-stage','ta-content-pillar','ta-format','ta-hook-type','ta-cta-type'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value=''
+  })
   taSyncUtmCopy()
   openModal('modal-thread-activity')
 }
