@@ -1,6 +1,21 @@
 {
-  "lastUpdated": "2026-07-23T05:28:01Z",
+  "lastUpdated": "2026-07-24T04:14:39Z",
   "posts": [
+    {
+      "date": "2026-07-23",
+      "persona": null,
+      "personaName": "Mark",
+      "platform": "threads",
+      "postUrl": "https://www.threads.net/@test/post/TEST123",
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "測試寫入檢查"
+    },
     {
       "date": "2026-07-23",
       "persona": "god",
@@ -24,6 +39,21 @@
       "postUrl": "https://www.threads.com/@wc_ccai/post/DbH3IO-k07o?xmt=AQG0e9rs0LKG0kwbNL7-jVdVDMV53se0NRQE0WqkjZ4pg184aUMBU8d9zeJpcGpD_WIXNIY&slof=1",
       "landingUrl": "https://picks168.com/trust/?utm_source=cc&utm_medium=th_post&utm_campaign=wc2026&utm_content=cc-0723-1",
       "utmContent": "cc-0723-1",
+      "impressions": 0,
+      "likes": 0,
+      "comments": 0,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-07-23",
+      "persona": null,
+      "personaName": "世足排雷週記",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/@uncle_wc/post/DbIW8PzCWp4?xmt=AQG0NnZZbqn6qtHP3S4UcqGSHlKT4e57k8YNaCGKkI0QZb3DODWIhiaZtITa9f_NiVst3Pa2&slof=1",
+      "landingUrl": null,
+      "utmContent": "shizu-0723-1",
       "impressions": null,
       "likes": null,
       "comments": null,
@@ -45,6 +75,36 @@
       "linkClicks": null,
       "registrations": null,
       "note": "推AI"
+    },
+    {
+      "date": "2026-07-23",
+      "persona": "akki",
+      "personaName": "阿奇",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/@noloxd6467/post/DbIWGPoE0uG?xmt=AQG0iVpjWmrZUZwWPTewcMs8L7cwZ4vSx1f8CSBvtiLbeQ",
+      "landingUrl": null,
+      "utmContent": "akki-0723-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "歐戰資格賽"
+    },
+    {
+      "date": "2026-07-23",
+      "persona": null,
+      "personaName": "哈哈看球",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/@baoxinyi824h/post/DbIZ1D2EV2W?xmt=AQG0_fYQA9hS55bkzVTyEgmdmcksiq6rAIUl8mX0HyR3lw",
+      "landingUrl": null,
+      "utmContent": "hahaqiu-0723-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-07-22",
@@ -94,7 +154,7 @@
     {
       "date": "2026-07-22",
       "persona": null,
-      "personaName": "全球球賽情報站",
+      "personaName": "��球球賽�報站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qingyu7907/post/DbFs7T4krzK?xmt=AQG02n_jl-FO7GKi3Hp5Z4mR2jaEcxiJKs-k-IwDNmU1uQ",
       "landingUrl": "https://picks168.com/trust/?utm_source=qiuqiusaizhan&utm_medium=th_post&utm_campaign=wc2026&utm_content=qiuqiusaizhan-0722-2",
@@ -244,7 +304,7 @@
     {
       "date": "2026-07-21",
       "persona": null,
-      "personaName": "全球球賽情報站",
+      "personaName": "��球球賽�報站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qingyu7907/post/DbDWddWkvxn?xmt=AQG0EMYZgdvNAXObqnIyfiFGhqfJkExk5w4l7tv_HcK_Mw",
       "landingUrl": "https://ys89.fun/?utm_source=qiuqiusaizhan&utm_medium=th_post&utm_campaign=wc2026&utm_content=qiuqiusaizhan-0721-1",
@@ -269,7 +329,7 @@
       "comments": 16,
       "linkClicks": null,
       "registrations": null,
-      "note": "世界盃獎項心得"
+      "note": "世界盃獎�心得"
     },
     {
       "date": "2026-07-21",
@@ -1409,7 +1469,7 @@
       "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": "哪裡有好用的AI工具"
+      "note": "哪裡有好用的AI工��"
     },
     {
       "date": "2026-07-08",
@@ -1694,7 +1754,7 @@
       "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": "AI工具分享"
+      "note": "AI工��分享"
     },
     {
       "date": "2026-07-06",
@@ -2237,6 +2297,21 @@
       "note": "UTM產生器建立"
     },
     {
+      "date": "2026-07-01",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-30",
       "persona": "nightcat",
       "personaName": "nightcat-game-notes",
@@ -2462,6 +2537,21 @@
       "note": "UTM產生器建立"
     },
     {
+      "date": "2026-06-30",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-29",
       "persona": "god",
       "personaName": "世足大財神",
@@ -2519,7 +2609,7 @@
       "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": "AI預測工具"
+      "note": "AI預測工��"
     },
     {
       "date": "2026-06-29",
@@ -2567,6 +2657,21 @@
       "note": "無法顯示瀏覽"
     },
     {
+      "date": "2026-06-29",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-28",
       "persona": "god",
       "personaName": "世足大財神",
@@ -2582,6 +2687,21 @@
       "note": "世界盃預測"
     },
     {
+      "date": "2026-06-28",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-27",
       "persona": "god",
       "personaName": "世足大財神",
@@ -2595,6 +2715,21 @@
       "linkClicks": null,
       "registrations": null,
       "note": "世界盃預測"
+    },
+    {
+      "date": "2026-06-27",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-06-26",
@@ -2624,7 +2759,7 @@
       "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": "AI分析工具"
+      "note": "AI分析工��"
     },
     {
       "date": "2026-06-26",
@@ -2700,6 +2835,21 @@
       "linkClicks": null,
       "registrations": null,
       "note": "回覆私訊用戶"
+    },
+    {
+      "date": "2026-06-26",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-06-25",
@@ -2895,6 +3045,21 @@
       "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
+    },
+    {
+      "date": "2026-06-25",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-06-24",
@@ -3167,6 +3332,21 @@
       "note": "跳通知 需要驗證真人"
     },
     {
+      "date": "2026-06-24",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-23",
       "persona": "nightcat",
       "personaName": "nightcat-game-notes",
@@ -3422,6 +3602,21 @@
       "note": "串關投注攻略2026｜世界盃賠率計算×風險控管×新手如何靠串關翻倍獲利"
     },
     {
+      "date": "2026-06-23",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-22",
       "persona": "god",
       "personaName": "世足大財神",
@@ -3587,6 +3782,21 @@
       "note": "哈蘭德 2026 世界盃：最佳射手賠率分析，挪威能晉級嗎？"
     },
     {
+      "date": "2026-06-22",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-21",
       "persona": "god",
       "personaName": "世足大財神",
@@ -3647,6 +3857,21 @@
       "note": "世界盃比分"
     },
     {
+      "date": "2026-06-21",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-20",
       "persona": "god",
       "personaName": "世足大財神",
@@ -3687,6 +3912,21 @@
       "impressions": 324,
       "likes": 1,
       "comments": 0,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-06-20",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -3765,6 +4005,21 @@
       "linkClicks": null,
       "registrations": null,
       "note": "世界盃比分"
+    },
+    {
+      "date": "2026-06-19",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-06-18",
@@ -3932,6 +4187,21 @@
       "note": "2026世足分析｜最新熱門戰場與盤口走勢"
     },
     {
+      "date": "2026-06-18",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-17",
       "persona": null,
       "personaName": "Mark",
@@ -4034,7 +4304,7 @@
       "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": "梅西帽子戲法"
+      "note": "�西帽子戲法"
     },
     {
       "date": "2026-06-17",
@@ -4109,7 +4379,7 @@
       "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": "梅西帽子戲法"
+      "note": "�西帽子戲法"
     },
     {
       "date": "2026-06-17",
@@ -4215,6 +4485,21 @@
       "linkClicks": null,
       "registrations": null,
       "note": "2026世足黑馬完整預測：賠率最高的冷門隊投注指南"
+    },
+    {
+      "date": "2026-06-17",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-06-16",
@@ -4458,6 +4743,21 @@
     },
     {
       "date": "2026-06-16",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-06-16",
       "persona": "boredcow",
       "personaName": "角角牛",
       "platform": "reddit",
@@ -4529,7 +4829,7 @@
       "comments": 1,
       "linkClicks": null,
       "registrations": null,
-      "note": "體育投注新手入門完全指南｜從選平台到下注一步步教"
+      "note": "體育投注新手��門完��指南｜從選平台到下注一步步教"
     },
     {
       "date": "2026-06-15",
@@ -4679,7 +4979,7 @@
       "comments": null,
       "linkClicks": null,
       "registrations": null,
-      "note": "直播入口"
+      "note": "直播��口"
     },
     {
       "date": "2026-06-15",
@@ -4785,6 +5085,51 @@
       "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
+    },
+    {
+      "date": "2026-06-15",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-06-14",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-06-13",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-06-12",
@@ -5072,6 +5417,21 @@
       "note": "娛樂城出金前檢查清單｜我的提款流程筆記"
     },
     {
+      "date": "2026-06-12",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-11",
       "persona": null,
       "personaName": "林家益",
@@ -5114,7 +5474,7 @@
       "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": "世界盃免費觀賽資訊"
+      "note": "世界盃��費觀賽資訊"
     },
     {
       "date": "2026-06-11",
@@ -5129,7 +5489,7 @@
       "comments": 10,
       "linkClicks": null,
       "registrations": null,
-      "note": "免費觀賽連結"
+      "note": "��費觀賽連結"
     },
     {
       "date": "2026-06-11",
@@ -5354,7 +5714,7 @@
       "comments": null,
       "linkClicks": null,
       "registrations": null,
-      "note": "3/12直播入口"
+      "note": "3/12直播��口"
     },
     {
       "date": "2026-06-11",
@@ -5400,6 +5760,21 @@
       "linkClicks": null,
       "registrations": null,
       "note": "個人預測"
+    },
+    {
+      "date": "2026-06-11",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-06-10",
@@ -5459,7 +5834,7 @@
       "comments": 3,
       "linkClicks": null,
       "registrations": null,
-      "note": "世足懶人包"
+      "note": "世足懶人�"
     },
     {
       "date": "2026-06-10",
@@ -5639,7 +6014,7 @@
       "comments": 2,
       "linkClicks": null,
       "registrations": null,
-      "note": "世界盃懶人包"
+      "note": "世界盃懶人�"
     },
     {
       "date": "2026-06-10",
@@ -5655,6 +6030,21 @@
       "linkClicks": null,
       "registrations": null,
       "note": "賽程表"
+    },
+    {
+      "date": "2026-06-10",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-06-09",
@@ -5807,6 +6197,21 @@
       "note": "球員討論"
     },
     {
+      "date": "2026-06-09",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-08",
       "persona": null,
       "personaName": "YS主IG",
@@ -5897,6 +6302,51 @@
       "note": "2026世界盃分組賽完整賠率｜A到L組哪組最難預測、黑馬在哪"
     },
     {
+      "date": "2026-06-08",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-06-07",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-06-06",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-05",
       "persona": null,
       "personaName": "YS主IG",
@@ -5954,7 +6404,7 @@
       "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": "免費直播"
+      "note": "��費直播"
     },
     {
       "date": "2026-06-05",
@@ -6029,7 +6479,7 @@
       "comments": 23,
       "linkClicks": null,
       "registrations": null,
-      "note": "看世足餐廳酒吧"
+      "note": "看世足餐廳��吧"
     },
     {
       "date": "2026-06-05",
@@ -6122,6 +6572,21 @@
       "note": "賽程"
     },
     {
+      "date": "2026-06-05",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-04",
       "persona": null,
       "personaName": "YS主IG",
@@ -6149,7 +6614,7 @@
       "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": "哪裡可以看免費直播"
+      "note": "哪裡可以看��費直播"
     },
     {
       "date": "2026-06-04",
@@ -6164,7 +6629,7 @@
       "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": "小紅書看直播"
+      "note": "小�書看直播"
     },
     {
       "date": "2026-06-04",
@@ -6209,7 +6674,7 @@
       "comments": 37,
       "linkClicks": null,
       "registrations": null,
-      "note": "免費直播"
+      "note": "��費直播"
     },
     {
       "date": "2026-06-04",
@@ -6224,7 +6689,7 @@
       "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": "小紅書能不能看直播"
+      "note": "小�書能不能看直播"
     },
     {
       "date": "2026-06-04",
@@ -6254,7 +6719,7 @@
       "comments": 2,
       "linkClicks": null,
       "registrations": null,
-      "note": "哪裡可以看免費直播"
+      "note": "哪裡可以看��費直播"
     },
     {
       "date": "2026-06-04",
@@ -6285,6 +6750,21 @@
       "linkClicks": null,
       "registrations": null,
       "note": "賠率怎麼算？體育投注三大賠率格式完全解析"
+    },
+    {
+      "date": "2026-06-04",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-06-03",
@@ -6362,6 +6842,21 @@
       "note": "賠率怎麼算？體育投注三大賠率格式完全解析"
     },
     {
+      "date": "2026-06-03",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-02",
       "persona": "god",
       "personaName": "世足大財神",
@@ -6377,6 +6872,21 @@
       "note": "賽程表"
     },
     {
+      "date": "2026-06-02",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-06-01",
       "persona": "laok",
       "personaName": "老K娛樂筆記",
@@ -6390,6 +6900,21 @@
       "linkClicks": null,
       "registrations": null,
       "note": "玩了 3 年百家樂後，新手最常犯的 5 個錯誤"
+    },
+    {
+      "date": "2026-06-01",
+      "persona": null,
+      "personaName": null,
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-05-29",
@@ -6755,7 +7280,7 @@
   "daily": [
     {
       "date": "2026-07-23",
-      "totalImpressions": null,
+      "totalImpressions": 0,
       "totalLinkClicks": null,
       "totalRegistrations": null
     },
@@ -6970,6 +7495,18 @@
       "totalRegistrations": null
     },
     {
+      "date": "2026-06-14",
+      "totalImpressions": null,
+      "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
+    {
+      "date": "2026-06-13",
+      "totalImpressions": null,
+      "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
+    {
       "date": "2026-06-12",
       "totalImpressions": 10310,
       "totalLinkClicks": null,
@@ -6996,6 +7533,18 @@
     {
       "date": "2026-06-08",
       "totalImpressions": 3633,
+      "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
+    {
+      "date": "2026-06-07",
+      "totalImpressions": null,
+      "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
+    {
+      "date": "2026-06-06",
+      "totalImpressions": null,
       "totalLinkClicks": null,
       "totalRegistrations": null
     },
