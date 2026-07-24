@@ -2547,24 +2547,107 @@ function _ovActions() {
   const ga4 = _ga4Data || {}
   const k = ga4.kpis_7d||{}, kp = ga4.kpis_prev7d||{}
   const {cur} = _ovDateRange()
-  const acts = (DB.get('thread_activities')||[]).filter(a=>(a.date||'')>=cur)
+  const allActs = DB.get('thread_activities')||[]
+  const acts = allActs.filter(a=>(a.date||'')>=cur)
   const amplify=[], stop=[], fix=[], test=[]
   const sess=k.sessions||0, sessP=kp.sessions||0, cta=k.cta||0
   const ctaR = sess>0?cta/sess:null
+  const regs = DB.get('real_reg')||[]
 
+  // ── 放大 ──────────────────────────────────────────────
+  // 1. 整體導流成長
   if (sess>0&&sessP>0&&sess/sessP>1.2&&cta>0)
-    amplify.push({obj:'整體導流策略',find:`進站較上週成長 ${((sess/sessP-1)*100).toFixed(0)}%`,data:`Sessions ${sess.toLocaleString()} vs 上週 ${sessP.toLocaleString()}`,act:'維持當前發文節奏，觀察能否維持 2 週以上'})
+    amplify.push({obj:'整體導流策略',find:`進站較上週成長 ${((sess/sessP-1)*100).toFixed(0)}%`,data:`Sessions ${sess.toLocaleString()} vs 上週 ${sessP.toLocaleString()}`,act:'維持當前發文節奏，可考慮提高本週發文量放大效果'})
 
-  if (sess>50&&ctaR!=null&&ctaR<0.02)
-    fix.push({obj:'承接頁 CTA',find:`CTA 率 ${(ctaR*100).toFixed(1)}%（建議 ≥ 3%）`,data:`${sess.toLocaleString()} Sessions 僅 ${cta} CTA`,act:'檢查落地頁 CTA 位置、文案與頁面載入速度'})
+  // 2. 最高互動率的內容柱
+  const pillarStats = {}
+  acts.filter(a=>a.content_pillar).forEach(a=>{
+    const v=a.platformMetrics?.Threads?.views||0, l=a.platformMetrics?.Threads?.likes||0
+    const r=a.platformMetrics?.Threads?.replies||0
+    if(!pillarStats[a.content_pillar]) pillarStats[a.content_pillar]={v:0,l:0,r:0,cnt:0}
+    pillarStats[a.content_pillar].v+=v; pillarStats[a.content_pillar].l+=l
+    pillarStats[a.content_pillar].r+=r; pillarStats[a.content_pillar].cnt++
+  })
+  const bestPillar = Object.entries(pillarStats).filter(([,s])=>s.v>0).sort((a,b)=>(b[1].l+b[1].r)/b[1].v-(a[1].l+a[1].r)/a[1].v)[0]
+  if (bestPillar) {
+    const [name,s]=bestPillar; const er=((s.l+s.r)/s.v*100).toFixed(1)
+    amplify.push({obj:`內容柱「${name}」`,find:`本週互動率最高 ${er}%`,data:`${s.cnt} 篇，總曝光 ${s.v.toLocaleString()}`,act:`增加「${name}」主題發文比例，複製成功格式`})
+  }
 
-  const actAccts = new Set(acts.map(a=>a.account))
+  // 3. 最高曝光的 hook 類型
+  const hookStats = {}
+  acts.filter(a=>a.hook_type).forEach(a=>{
+    const v=a.platformMetrics?.Threads?.views||0
+    if(!hookStats[a.hook_type]) hookStats[a.hook_type]={v:0,cnt:0}
+    hookStats[a.hook_type].v+=v; hookStats[a.hook_type].cnt++
+  })
+  const bestHook = Object.entries(hookStats).filter(([,s])=>s.cnt>=2).sort((a,b)=>b[1].v/b[1].cnt-a[1].v/a[1].cnt)[0]
+  if (bestHook) {
+    const [name,s]=bestHook; const avg=Math.round(s.v/s.cnt)
+    amplify.push({obj:`Hook「${name}」`,find:`平均曝光 ${avg.toLocaleString()}（本週最高）`,data:`共 ${s.cnt} 篇使用此 Hook`,act:`下週優先採用「${name}」作為開頭鉤句格式`})
+  }
+
+  // 4. 最高帶量帳號
+  const acctSess = {}
+  ;(ga4.accounts_7d||[]).forEach(a=>{ acctSess[a.account||a.source]=a.sessions||0 })
+  const topAcct = Object.entries(acctSess).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1])[0]
+  if (topAcct&&topAcct[1]>5) {
+    amplify.push({obj:`帳號「${topAcct[0]}」`,find:`本週帶來 ${topAcct[1]} sessions（排名第一）`,data:'GA4 utm_source 分析',act:'增加此帳號發文頻率，複製其用詞與內容風格'})
+  }
+
+  // ── 停止 ──────────────────────────────────────────────
+  // 5. 長期未發文帳號
+  const actAccts = new Set(acts.map(a=>a.account||a.personaName))
   const allA = allActors ? allActors().filter(p=>!p.raw?.accountStatus||p.raw?.accountStatus==='active') : []
   const inactive = allA.filter(p=>!actAccts.has(p.name))
   if (inactive.length>0)
-    stop.push({obj:`${inactive.slice(0,3).map(p=>p.name).join('、')}${inactive.length>3?'…等':''}`,find:`${inactive.length} 個啟用角色 7 天未發文`,data:'發文紀錄為 0',act:'確認是策略性停更或需補排腳本'})
+    stop.push({obj:`${inactive.slice(0,3).map(p=>p.name).join('、')}${inactive.length>3?`等 ${inactive.length} 個`:''}`,find:`${inactive.length} 個啟用角色本週未發文`,data:'發文紀錄為 0',act:'確認是策略性停更或需安排補發，避免帳號老化'})
 
-  test.push({obj:'漏斗橋接：社群點擊→GA4',find:'社群連結點擊到 GA4 Sessions 的橋接數據缺失',data:'短連結有點擊但未與 GA4 Sessions 對應',act:'為每篇貼文建立帶 utm_content 短連結，完成漏斗②→③橋接'})
+  // 6. 低互動率的內容柱
+  const worstPillar = Object.entries(pillarStats).filter(([,s])=>s.v>100&&s.cnt>=2).sort((a,b)=>(a[1].l+a[1].r)/a[1].v-(b[1].l+b[1].r)/b[1].v)[0]
+  if (worstPillar&&bestPillar&&worstPillar[0]!==bestPillar[0]) {
+    const [name,s]=worstPillar; const er=((s.l+s.r)/s.v*100).toFixed(2)
+    stop.push({obj:`內容柱「${name}」互動率偏低`,find:`互動率僅 ${er}%，遠低於其他主題`,data:`${s.cnt} 篇，總曝光 ${s.v.toLocaleString()}`,act:'暫停此主題或重新調整切入角度後再測試'})
+  }
+
+  // ── 修正 ──────────────────────────────────────────────
+  // 7. 高曝光低 CTA
+  if (sess>50&&ctaR!=null&&ctaR<0.02)
+    fix.push({obj:'承接頁 CTA 效率',find:`CTA 率 ${(ctaR*100).toFixed(1)}%（建議 ≥ 3%）`,data:`${sess.toLocaleString()} Sessions 僅 ${cta} CTA`,act:'調整落地頁 CTA 位置、文案強度，或增加錨點連結數量'})
+
+  // 8. 進站下滑
+  if (sess>0&&sessP>0&&sess/sessP<0.8)
+    fix.push({obj:'整體導流下滑',find:`進站較上週下降 ${((1-sess/sessP)*100).toFixed(0)}%`,data:`Sessions ${sess.toLocaleString()} vs 上週 ${sessP.toLocaleString()}`,act:'提高發文頻率，或檢查本週是否有帳號限流或平台演算法異動'})
+
+  // 9. UTM 缺失率高
+  const noUtm = acts.filter(a=>!a.utmContent)
+  if (noUtm.length>acts.length*0.3&&acts.length>3)
+    fix.push({obj:'UTM 標記覆蓋率低',find:`${noUtm.length}/${acts.length} 篇缺少 utm_content（${Math.round(noUtm.length/acts.length*100)}%）`,data:'無 UTM 的貼文無法對應 GA4 流量',act:'用 UTM 產生器補產帶追蹤碼的短連結'})
+
+  // 10. 有 CTA 但無後台登記
+  if (cta>10&&!regs.length)
+    fix.push({obj:'漏斗後段數據缺漏',find:`本週 ${cta} CTA 但無後台登記記錄`,data:'real_reg 為空，漏斗轉化率無法計算',act:'到「數據輸入」手動填入本期真實註冊與儲值數字'})
+
+  // ── 測試 ──────────────────────────────────────────────
+  // 11. 漏斗橋接缺失
+  const noShortLink = acts.filter(a=>!a.shortLink&&!a.url?.includes('pse.is'))
+  if (noShortLink.length>acts.length*0.5&&acts.length>2)
+    test.push({obj:'漏斗②→③橋接（社群點擊→GA4）',find:`${noShortLink.length} 篇未使用短連結`,data:'無短連結則無法追蹤貼文帶來的 GA4 Sessions',act:'為每篇貼文建立 pse.is 短連結，完成漏斗②③橋接'})
+
+  // 12. 未測試的 content_pillar
+  const allPillars = ['AI工具','日常敘事','平台技巧','信任建立','話題參與','產品推廣']
+  const usedPillars = new Set(acts.map(a=>a.content_pillar).filter(Boolean))
+  const unusedPillars = allPillars.filter(p=>!usedPillars.has(p))
+  if (unusedPillars.length>0&&acts.length>=3)
+    test.push({obj:`未嘗試的內容柱`,find:`本週未發佈：${unusedPillars.join('、')}`,data:`已用內容柱：${[...usedPillars].join('、')||'（無）'}`,act:`下週可嘗試「${unusedPillars[0]}」主題，擴大受眾觸及`})
+
+  // 13. 最高曝光貼文的複製測試
+  const topPost = acts.filter(a=>a.platformMetrics?.Threads?.views>0)
+    .sort((a,b)=>(b.platformMetrics?.Threads?.views||0)-(a.platformMetrics?.Threads?.views||0))[0]
+  if (topPost&&topPost.platformMetrics?.Threads?.views>500) {
+    const v=topPost.platformMetrics.Threads.views
+    test.push({obj:`複製高曝光貼文模式`,find:`「${topPost.personaName||topPost.account||'?'}」${v.toLocaleString()} 次曝光（本週最高）`,data:`UTM: ${topPost.utmContent||'無'} · Hook: ${topPost.hook_type||'未標記'}`,act:'分析此篇的 Hook 形式、字數、時間，本週複製 2 篇相似格式驗證可重現性'})
+  }
 
   const noItems = '<div style="font-size:.75rem;color:var(--text3);padding:8px 0">本期數據尚不足以生成此類建議</div>'
   const cat = (list,label,c,ico) => `<div style="margin-bottom:14px">
