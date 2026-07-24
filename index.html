@@ -4190,8 +4190,31 @@ const DB={
           if(Array.isArray(d)&&Array.isArray(local)&&local.length){
             // 陣列：以 id 為主鍵合併，本機優先，防止 CF 舊資料蓋掉本機新寫入
             const map={}
-            d.forEach(item=>{if(item?.id)map[item.id]=item})
-            local.forEach(item=>{if(item?.id)map[item.id]=item})
+            d.forEach(item=>{
+              if(!item?.id) return
+              // 正規化 CF 資料的 platformMetrics key（Python 寫 lowercase threads）
+              if(item.platformMetrics?.threads && !item.platformMetrics?.Threads){
+                const pm={...item.platformMetrics, Threads:item.platformMetrics.threads}
+                delete pm.threads
+                item={...item, platformMetrics:pm}
+              }
+              map[item.id]=item
+            })
+            local.forEach(item=>{
+              if(!item?.id) return
+              const cfItem=map[item.id]
+              if(cfItem){
+                // 本機優先；但若本機 platformMetrics 是空物件而 CF 有成效資料，保留 CF 的
+                const localPm=item.platformMetrics||{}
+                const cfPm=cfItem.platformMetrics||{}
+                const localEmpty=Object.keys(localPm).length===0
+                const cfHasData=Object.keys(cfPm).length>0
+                map[item.id]={...cfItem,...item,
+                  platformMetrics:(localEmpty&&cfHasData)?cfPm:localPm}
+              } else {
+                map[item.id]=item
+              }
+            })
             localStorage.setItem(K+k,JSON.stringify(Object.values(map)))
           } else if(!Array.isArray(d)&&!Array.isArray(local)&&typeof local==='object'&&Object.keys(local).length>0){
             // 物件：CF + local 合併，local 優先
