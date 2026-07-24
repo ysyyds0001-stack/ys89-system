@@ -2491,7 +2491,16 @@ function _ovAcctHealth() {
   const el = document.getElementById('ga4ov-acct-health')
   if (!el) return
   const acts = DB.get('thread_activities') || []
-  const personas = allActors ? allActors() : []
+  // 只顯示有 roleType 且不是「真人回覆」的角色，去除同名重複
+  const _allP = allActors ? allActors() : []
+  const _seen = new Set()
+  const personas = _allP.filter(p => {
+    const rt = p.raw?.roleType
+    if (!rt || rt === '真人回覆') return false
+    if (_seen.has(p.name)) return false
+    _seen.add(p.name)
+    return true
+  })
   if (!personas.length) { el.innerHTML='<p style="color:var(--text3);font-size:.8rem">尚無角色</p>'; return }
   const now = new Date()
   const mkDate = n => { const d=new Date(now); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10) }
