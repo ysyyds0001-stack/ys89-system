@@ -1335,6 +1335,7 @@ function switchGA4Period(p) {
 
   // 成效總結
   renderMeetingSummary(d);
+  try { renderGA4Overview(); } catch(e) {}
 }
 
 function renderExposurePanel(d, period) {
@@ -2284,9 +2285,11 @@ function renderGA4Overview() {
 
 function _ovDateRange() {
   const now = new Date()
-  const d7 = new Date(now); d7.setDate(d7.getDate()-7)
-  const d14 = new Date(now); d14.setDate(d14.getDate()-14)
-  return { cur: d7.toISOString().slice(0,10), prev: d14.toISOString().slice(0,10) }
+  const p = (typeof _ga4Period !== 'undefined') ? _ga4Period : '7d'
+  const days = p === '3d' ? [3, 6] : (p === '28d' || p === 'cum') ? [28, 56] : [7, 14]
+  const dCur = new Date(now); dCur.setDate(dCur.getDate() - days[0])
+  const dPrev = new Date(now); dPrev.setDate(dPrev.getDate() - days[1])
+  return { cur: dCur.toISOString().slice(0,10), prev: dPrev.toISOString().slice(0,10) }
 }
 
 function _ovKpiCard(label, cur, prev, source, icon, warn) {
@@ -2315,8 +2318,9 @@ function _ovKpiGrid() {
   const cActs = acts.filter(a => (a.date||'') >= cur)
   const pActs = acts.filter(a => (a.date||'') >= prev && (a.date||'') < cur)
   const ga4 = _ga4Data || {}
-  const k = ga4.kpis_7d || {}
-  const kp = ga4.kpis_prev7d || {}
+  const _p = (typeof _ga4Period !== 'undefined') ? _ga4Period : '7d'
+  const k = (_p==='3d' ? ga4.kpis_3d : _p==='28d'||_p==='cum' ? ga4.kpis_28d : _p==='custom' ? ga4.kpis_custom : null) || ga4.kpis_7d || {}
+  const kp = (_p==='7d' ? ga4.kpis_prev7d : _p==='3d' ? ga4.kpis_7d : {}) || {}
   const regs = DB.get('real_reg') || []
   const sorted = regs.slice().sort((a,b)=>(b.from||'').localeCompare(a.from||''))
   const cReg = sorted.find(r=>(r.from||'')>=cur) || {}
