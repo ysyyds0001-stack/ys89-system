@@ -298,7 +298,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'threadtracker')">🤝 社群互動</div>
   <div class="nav-tab" onclick="nav(this,'channel')">📝 匿名社群</div>
   <div class="nav-tab" onclick="nav(this,'channelfb')">📘 臉書社團</div>
-  <div class="nav-tab" onclick="nav(this,'conv')">🎯 直接轉化</div>
+  <div class="nav-tab" onclick="nav(this,'conv')">🎯 轉化型內容</div>
   <div class="nav-sep"></div>
   <div class="nav-tab" onclick="nav(this,'community')">👤 角色</div>
   <div class="nav-sep"></div>
@@ -348,13 +348,68 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <button id="ga4ResetCustomBtn" onclick="resetCustomGA4()" style="display:none;background:var(--g3);color:var(--text2);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:.78rem;cursor:pointer">← 重設</button>
   </div>
 
+  <!-- ===== 三層架構 導航 ===== -->
+  <div id="ga4-layer-nav" style="display:flex;gap:0;margin-bottom:18px;border-bottom:2px solid var(--border)">
+    <button class="ga4-ltab" data-layer="overview" onclick="switchGA4Layer('overview')" style="padding:9px 20px;border:none;border-bottom:3px solid var(--accent);background:none;cursor:pointer;font-size:.82rem;font-weight:700;color:var(--accent);white-space:nowrap;margin-bottom:-2px">🏠 成長概覽</button>
+    <button class="ga4-ltab" data-layer="analysis" onclick="switchGA4Layer('analysis')" style="padding:9px 20px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:.82rem;font-weight:400;color:var(--text3);white-space:nowrap;margin-bottom:-2px">🔍 成效分析</button>
+    <button class="ga4-ltab" data-layer="input" onclick="switchGA4Layer('input')" style="padding:9px 20px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:.82rem;font-weight:400;color:var(--text3);white-space:nowrap;margin-bottom:-2px">✏️ 數據輸入</button>
+  </div>
+
+  <!-- ===== 層一：成長概覽 ===== -->
+  <div id="ga4-layer-overview">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;padding:9px 13px;background:var(--g2);border-radius:8px;border:1px solid var(--border)">
+      <span style="font-size:.75rem;font-weight:700;color:var(--text2)">篩選</span>
+      <select id="ga4ov-filter-org" onchange="renderGA4Overview()" style="font-size:.78rem;padding:4px 8px;background:var(--g3);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+        <option value="">全部（自然+付費）</option>
+        <option value="organic">Organic 自然</option>
+        <option value="paid">Paid 付費</option>
+      </select>
+      <span style="font-size:.72rem;color:var(--text3)">平台、角色、路徑篩選待貼文補標 path_id 後開放</span>
+    </div>
+    <!-- 10 KPI 卡片 第一排 -->
+    <div id="ga4ov-kpi-row1" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:10px"></div>
+    <!-- 10 KPI 卡片 第二排 -->
+    <div id="ga4ov-kpi-row2" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px"></div>
+    <!-- 社群轉化漏斗 -->
+    <div class="card" style="border-left:3px solid var(--accent);margin-bottom:18px">
+      <div class="card-title" style="margin-bottom:8px">📊 社群轉化漏斗</div>
+      <p class="tm" style="font-size:.74rem;margin-bottom:14px">完整 8 步驟 · 缺少資料的環節標示來源與修補方式，不以 0 代替</p>
+      <div id="ga4ov-funnel"></div>
+    </div>
+    <!-- 導流路徑分析 -->
+    <div class="card" style="border-left:3px solid #6366f1;margin-bottom:18px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+        <div class="card-title" style="margin-bottom:0">🛤️ 導流路徑分析</div>
+        <span style="font-size:.7rem;padding:2px 8px;border-radius:10px;background:#6366f122;color:#6366f1">6 條路徑已定義 · 需補 path_id 標記才能顯示路徑數據</span>
+      </div>
+      <div id="ga4ov-paths"></div>
+    </div>
+    <!-- 矩陣帳號健康 -->
+    <div class="card" style="border-left:3px solid #a78bfa;margin-bottom:18px">
+      <div class="card-title" style="color:#a78bfa;margin-bottom:10px">🏥 矩陣帳號健康</div>
+      <div id="ga4ov-acct-health"></div>
+    </div>
+    <!-- 本週行動建議 -->
+    <div class="card" style="border-left:3px solid var(--amber);margin-bottom:18px">
+      <div class="card-title" style="color:var(--amber);margin-bottom:6px">🎯 本週行動建議</div>
+      <p class="tm" style="font-size:.74rem;margin-bottom:14px">依漏斗診斷自動生成 · 無數據依據的項目不顯示</p>
+      <div id="ga4ov-actions"></div>
+    </div>
+    <!-- 資料健康摘要 -->
+    <div class="card" style="border-left:3px solid #f59e0b;margin-bottom:18px">
+      <div class="card-title" style="color:#f59e0b;margin-bottom:10px">⚠️ 資料健康摘要</div>
+      <div id="ga4ov-health"></div>
+    </div>
+  </div>
+
+  <!-- ===== 層二：成效分析（原有面板，預設隱藏）===== -->
   <!-- ===== 決策儀表板 ===== -->
-  <div id="ov-dashboard" style="margin-bottom:18px">
+  <div id="ov-dashboard" style="margin-bottom:18px;display:none">
     <p class="tm" style="padding:12px 0">載入中…</p>
   </div>
 
   <!-- ===== 成效總結面板 ===== -->
-  <div id="ms-panel" style="margin-bottom:18px">
+  <div id="ms-panel" style="margin-bottom:18px;display:none">
 
     <!-- 開會日期選擇器 -->
     <div style="background:var(--g2);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
@@ -455,7 +510,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 
   <!-- 主面板 (非 compare 模式) -->
-  <div id="ga4MainPanel">
+  <div id="ga4MainPanel" style="display:none">
 
   <!-- KPI 統計 -->
   <div class="g5 ga4-kpis" style="margin-bottom:18px">
@@ -486,7 +541,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:10px">
       <div>
         <div class="card-title" style="margin-bottom:2px">📡 平台曝光度 vs GA4 流量</div>
-        <p class="tm" style="font-size:.74rem">從「社群炒群」讀取的 Threads 成效，對比同期 GA4 進站數 ── 找出高曝光低導流（貼文引流力不足）或低曝光高導流（精準但觸及小）的帳號</p>
+        <p class="tm" style="font-size:.74rem">從「社群互動」讀取的 Threads 成效，對比同期 GA4 進站數 ── 找出高曝光低導流（貼文引流力不足）或低曝光高導流（精準但觸及小）的帳號</p>
       </div>
       <span id="expRangeLabel" style="font-size:.72rem;color:var(--text3);white-space:nowrap;padding-top:4px"></span>
     </div>
@@ -519,8 +574,8 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <!-- 漏斗 + 帳號表 -->
   <div class="g2" style="margin-bottom:18px">
     <div class="card">
-      <div class="card-title">社群水軍漏斗</div>
-      <p class="tm" style="font-size:.75rem;margin-bottom:12px">進站 → 瀏覽 → 點 CTA 去註冊</p>
+      <div class="card-title">社群轉化漏斗（3步驟）</div>
+      <p class="tm" style="font-size:.75rem;margin-bottom:12px">進站 → 瀏覽 → 點 CTA 去註冊（完整 8 步驟請看成長概覽）</p>
       <div id="funnel" style="display:flex;flex-direction:column;gap:4px"></div>
     </div>
     <div class="card">
@@ -580,7 +635,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div><!-- /ga4MainPanel -->
 
   <!-- picks168.com 落地頁成效（完整漏斗第二段）-->
-  <div class="card" style="border-left:3px solid #a78bfa;margin-bottom:18px">
+  <div id="ga4-picks168-wrap" class="card" style="border-left:3px solid #a78bfa;margin-bottom:18px;display:none">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
       <div>
         <div class="card-title" style="color:#a78bfa">🏁 picks168.com 落地頁成效</div>
@@ -630,7 +685,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 
   <!-- Meta 廣告區（手填 Ads Manager 真實值，存 DB 同步）-->
-  <div class="card" style="border-left:3px solid var(--amber);margin-bottom:18px">
+  <div id="ga4-ads-wrap" class="card" style="border-left:3px solid var(--amber);margin-bottom:18px;display:none">
     <div class="card-title" style="color:var(--amber)">📣 Meta 廣告成效</div>
     <p class="tm" style="font-size:.75rem;margin-bottom:12px">Facebook / Instagram 廣告數據 GA4 抓不到 → 從 Ads Manager 抄真實值手填（會存進資料庫同步），每次 CTA 成本用 GA4 真實 CTA 數自動算</p>
     <div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
@@ -651,7 +706,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 
   <!-- 每日成效觀察（隔日記錄） -->
-  <div class="card" style="border-left:3px solid #818cf8;margin-bottom:18px">
+  <div id="ga4-daily-wrap" class="card" style="border-left:3px solid #818cf8;margin-bottom:18px;display:none">
     <div class="card-title" style="color:#818cf8">📅 每日成效觀察</div>
     <p class="tm" style="font-size:.75rem;margin-bottom:14px">選擇想查看的日期 → 自動帶出當天的發文記錄 → 隔日觀察到曝光/流量效果後補填數字存檔，追蹤哪件事真正有效</p>
 
@@ -743,7 +798,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 
   <!-- 代理收益週報 -->
-  <div class="card" style="border-left:3px solid var(--amber);margin-bottom:18px">
+  <div id="ga4-proxy-wrap" class="card" style="border-left:3px solid var(--amber);margin-bottom:18px;display:none">
     <div class="card-title" style="color:var(--amber)">💰 代理收益週報</div>
     <p class="tm" style="font-size:.75rem;margin-bottom:12px">每週從 ys89.bet 後台查各代理碼的實際註冊／首存數字，直接在表格填入後按儲存</p>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
@@ -855,9 +910,9 @@ function renderGA4(d){
 
   // 圓餅圖 by 類別
   const cats = {};
-  sources.forEach(s=>{ const key = s.cls==='army'?'社群水軍':s.cls==='paid'?'廣告':s.cls==='offline'?'地推':s.cls==='line'?'LINE':s.cls==='organic'?'自然搜尋':'直接/未知';
+  sources.forEach(s=>{ const key = s.cls==='army'?'矩陣帳號':s.cls==='paid'?'廣告':s.cls==='offline'?'地推':s.cls==='line'?'LINE':s.cls==='organic'?'自然搜尋':'直接/未知';
     cats[key]=(cats[key]||0)+s.sessions; });
-  const catColor = {'社群水軍':'#C44A2A','直接/未知':'#8A7D74','地推':'#8B3214','廣告':'#D4542A','LINE':'#D4542A','自然搜尋':'#6B5D54'};
+  const catColor = {'矩陣帳號':'#C44A2A','直接/未知':'#8A7D74','地推':'#8B3214','廣告':'#D4542A','LINE':'#D4542A','自然搜尋':'#6B5D54'};
   const total = Object.values(cats).reduce((a,b)=>a+b,0) || 1;
   let off=0; let circles='';
   Object.entries(cats).sort((a,b)=>b[1]-a[1]).forEach(([key,v])=>{
@@ -1981,18 +2036,354 @@ function drRender(from, to, acc){
   set('dr-tot-imp',tImp); set('dr-tot-sess',tSess); set('dr-tot-cta',tCta)
 }
 
+/* ===== 成效總結 三層架構 ===== */
+let _ga4Layer = 'overview'
+
+function switchGA4Layer(layer) {
+  _ga4Layer = layer
+  document.querySelectorAll('.ga4-ltab').forEach(b => {
+    const active = b.dataset.layer === layer
+    b.style.borderBottomColor = active ? 'var(--accent)' : 'transparent'
+    b.style.color = active ? 'var(--accent)' : 'var(--text3)'
+    b.style.fontWeight = active ? '700' : '400'
+  })
+  const MAP = {
+    overview: ['ga4-layer-overview'],
+    analysis: ['ov-dashboard','ms-panel','ga4ComparePanel','ga4MainPanel','ga4-picks168-wrap'],
+    input:    ['ga4-ads-wrap','ga4-daily-wrap','ga4-proxy-wrap']
+  }
+  const ALL = ['ga4-layer-overview','ov-dashboard','ms-panel','ga4ComparePanel','ga4MainPanel',
+               'ga4-picks168-wrap','ga4-ads-wrap','ga4-daily-wrap','ga4-proxy-wrap']
+  ALL.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none' })
+  ;(MAP[layer]||[]).forEach(id => { const el=document.getElementById(id); if(el) el.style.display='' })
+  if (layer === 'overview') renderGA4Overview()
+}
+
+function renderGA4Overview() {
+  try{_ovKpiGrid();}catch(e){console.warn('[ov kpi]',e)}
+  try{_ovFunnel();}catch(e){console.warn('[ov funnel]',e)}
+  try{_ovPaths();}catch(e){console.warn('[ov paths]',e)}
+  try{_ovAcctHealth();}catch(e){console.warn('[ov acct]',e)}
+  try{_ovActions();}catch(e){console.warn('[ov actions]',e)}
+  try{_ovDataHealth();}catch(e){console.warn('[ov health]',e)}
+}
+
+function _ovDateRange() {
+  const now = new Date()
+  const d7 = new Date(now); d7.setDate(d7.getDate()-7)
+  const d14 = new Date(now); d14.setDate(d14.getDate()-14)
+  return { cur: d7.toISOString().slice(0,10), prev: d14.toISOString().slice(0,10) }
+}
+
+function _ovKpiCard(label, cur, prev, source, icon, warn) {
+  const has = cur != null
+  const hasPrev = prev != null && prev > 0
+  const delta = has && hasPrev ? ((cur-prev)/prev*100) : null
+  const dHtml = delta != null
+    ? `<span style="font-size:.63rem;padding:1px 5px;border-radius:5px;margin-left:3px;background:${delta>=0?'#34d39920':'#f8717120'};color:${delta>=0?'#34d399':'#f87171'}">${delta>=0?'↑':'↓'}${Math.abs(delta).toFixed(0)}%</span>` : ''
+  return `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:11px 12px;min-width:0;overflow:hidden">
+    <div style="font-size:.66rem;color:var(--text3);margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${icon} ${label}</div>
+    ${has
+      ? `<div style="font-size:1.25rem;font-weight:700;color:var(--accent);line-height:1.1">${typeof cur==='number'?cur.toLocaleString():cur}</div>`
+      : `<div style="font-size:.7rem;color:var(--text3);padding:5px 0;line-height:1.4">尚未取得資料</div>`}
+    ${hasPrev ? `<div style="font-size:.63rem;color:var(--text3);margin-top:2px">上期 ${prev.toLocaleString()} ${dHtml}</div>` : ''}
+    <div style="font-size:.58rem;color:var(--text3);margin-top:5px;border-top:1px solid var(--border);padding-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${source}</div>
+    ${warn ? `<div style="font-size:.58rem;color:#f59e42;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">⚠ ${warn}</div>` : ''}
+  </div>`
+}
+
+function _ovKpiGrid() {
+  const r1 = document.getElementById('ga4ov-kpi-row1')
+  const r2 = document.getElementById('ga4ov-kpi-row2')
+  if (!r1) return
+  const {cur, prev} = _ovDateRange()
+  const acts = DB.get('thread_activities') || []
+  const cActs = acts.filter(a => (a.date||'') >= cur)
+  const pActs = acts.filter(a => (a.date||'') >= prev && (a.date||'') < cur)
+  const ga4 = _ga4Data || {}
+  const k = ga4.kpis_7d || {}
+  const kp = ga4.kpis_prev7d || {}
+  const regs = DB.get('real_reg') || []
+  const sorted = regs.slice().sort((a,b)=>(b.from||'').localeCompare(a.from||''))
+  const cReg = sorted.find(r=>(r.from||'')>=cur) || {}
+  const pReg = sorted.find(r=>(r.from||'')>=prev&&(r.from||'')<cur) || {}
+  const totalV = cActs.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
+  const prevV  = pActs.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
+  const validReg = cReg.reg||null, prevValidReg = pReg.reg||null
+  const dep = cReg.dep||null, prevDep = pReg.dep||null
+  const depAmt = cReg.amt||null, prevDepAmt = pReg.amt||null
+  const eR = totalV&&validReg ? Math.round(validReg/totalV*1000*10)/10 : null
+  r1.innerHTML = [
+    _ovKpiCard('發文數', cActs.length||null, pActs.length||null, '社群互動記錄', '📝'),
+    _ovKpiCard('社群總曝光', totalV||null, prevV||null, 'Threads platformMetrics', '👁'),
+    _ovKpiCard('社群連結點擊', null, null, '短連結數據尚未串接', '🔗', '需搭配短連結點擊追蹤'),
+    _ovKpiCard('GA4 Sessions', k.sessions||null, kp.sessions||null, 'GA4 自動每日 09:00', '📈'),
+    _ovKpiCard('CTA 點擊', k.cta||null, kp.cta||null, 'GA4 cta_click 事件', '🎯', k.cta?'此為 CTA 點擊，非完成註冊':'')
+  ].join('')
+  r2.innerHTML = [
+    _ovKpiCard('完成註冊', null, null, '需接後台 API', '✅', 'GA4 只追蹤 CTA 點擊'),
+    _ovKpiCard('有效註冊', validReg, prevValidReg, '手動輸入 real_reg', '🎖'),
+    _ovKpiCard('首存人數', dep, prevDep, '手動輸入 real_reg', '💳'),
+    _ovKpiCard('首存金額 NT$', depAmt, prevDepAmt, '手動輸入 real_reg', '💰'),
+    _ovKpiCard('每千曝光有效註冊', eR, null, '計算值（有效註冊÷曝光×1k）', '📊', (!totalV||!validReg)?'需同時有曝光與有效註冊':'')
+  ].join('')
+}
+
+function _ovFunnel() {
+  const el = document.getElementById('ga4ov-funnel')
+  if (!el) return
+  const {cur} = _ovDateRange()
+  const acts = (DB.get('thread_activities')||[]).filter(a=>(a.date||'')>=cur)
+  const ga4 = _ga4Data || {}
+  const k = ga4.kpis_7d || {}
+  const regs = DB.get('real_reg') || []
+  const cReg = regs.slice().sort((a,b)=>(b.from||'').localeCompare(a.from||'')).find(r=>(r.from||'')>=cur) || {}
+  const exposure = acts.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)||null
+  const sessions = k.sessions||null
+  const cta = k.cta||null
+  const validReg = cReg.reg||null
+  const dep = cReg.dep||null
+  const depAmt = cReg.amt||null
+  const steps = [
+    {label:'① 社群曝光',    val:exposure, unit:'次', src:'Threads 成效', miss:null,
+     diag:null},
+    {label:'② 社群連結點擊', val:null,     unit:'次', src:'尚未串接',
+     miss:'補足方式：為每篇貼文建立帶 utm_content 的短連結，接短連結點擊 API'},
+    {label:'③ GA4 Sessions', val:sessions, unit:'次', src:'GA4',
+     diag:sessions!=null&&sessions<10?{c:'#f59e42',m:'進站數過低，確認短連結是否正確帶 UTM'}:null},
+    {label:'④ Engaged Sessions', val:null, unit:'次', src:'尚未取得',
+     miss:'補足方式：GA4 探索報告查「參與工作階段」'},
+    {label:'⑤ CTA 點擊',   val:cta, unit:'次', src:'GA4 cta_click',
+     diag:sessions&&cta&&cta/sessions<0.02?{c:'#f59e42',m:`CTA 率 ${(cta/sessions*100).toFixed(1)}% 低於 2%，檢查落地頁 CTA 位置`}:null},
+    {label:'⑥ 完成註冊',   val:null, unit:'人', src:'需後台 API',
+     miss:'補足方式：接 ys89.bet 後台 API，目前只能靠有效註冊推算'},
+    {label:'⑦ 有效註冊',   val:validReg, unit:'人', src:'手動輸入 real_reg', miss:null, diag:null},
+    {label:'⑧ 首存',       val:dep, unit:'人', src:'手動輸入 real_reg',
+     note:depAmt?`首存金額 NT$${depAmt.toLocaleString()}`:'', miss:null, diag:null}
+  ]
+  const rateColor = r => r==null?'var(--text3)':r>=0.05?'#34d399':r>=0.01?'#f59e42':'#f87171'
+  const convRates = [null,null,null,null,
+    sessions&&cta?cta/sessions:null,
+    null,
+    null,
+    validReg&&dep?dep/validReg:null]
+  el.innerHTML = steps.map((s,i) => {
+    const hasVal = s.val!=null
+    const r = convRates[i]
+    const rLabel = ['社群點擊率','點擊進站率','網站承接率','瀏覽 CTA 率','CTA 完成率','有效率','首存率',''][i]||''
+    return `<div style="margin-bottom:4px">
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--g2);border:1px solid var(--border);border-radius:8px;flex-wrap:wrap">
+        <div style="flex:1;min-width:120px">
+          <div style="font-size:.7rem;font-weight:600;color:${hasVal?'var(--text)':'var(--text3)'}">${s.label}</div>
+          ${hasVal
+            ?`<div style="font-size:1.1rem;font-weight:700;color:var(--accent);line-height:1.2">${s.val.toLocaleString()} <span style="font-size:.68rem;font-weight:400;color:var(--text3)">${s.unit}</span></div>`
+            :`<div style="font-size:.72rem;color:var(--text3)">尚未取得資料</div>`}
+          ${s.note?`<div style="font-size:.67rem;color:var(--text2);margin-top:1px">${s.note}</div>`:''}
+        </div>
+        <div style="font-size:.62rem;color:var(--text3);background:var(--g3);padding:2px 7px;border-radius:5px;flex-shrink:0">${s.src}</div>
+      </div>
+      ${s.miss?`<div style="font-size:.65rem;padding:4px 10px;background:#60a5fa14;color:#60a5fa;border-radius:0 0 6px 6px;border:1px solid #60a5fa22;border-top:none">ℹ ${s.miss}</div>`:''}
+      ${s.diag?`<div style="font-size:.65rem;padding:4px 10px;background:${s.diag.c}14;color:${s.diag.c};border-radius:0 0 6px 6px;border:1px solid ${s.diag.c}22;border-top:none">⚠ ${s.diag.m}</div>`:''}
+      ${i<steps.length-1?`<div style="text-align:center;font-size:.63rem;color:${rateColor(r)};padding:3px 0">↓ ${rLabel} ${r!=null?(r*100).toFixed(1)+'%':'—'}</div>`:''}`
+  }).join('')
+}
+
+function _ovPaths() {
+  const el = document.getElementById('ga4ov-paths')
+  if (!el) return
+  const PATHS = [
+    {id:'PATH_01',icon:'🗺️',label:'社群 → 論壇/部落格 → YS89 → 註冊',attr:'B 強歸因',ac:'#60a5fa',note:'來自 ys89.fun 或部落格 referral'},
+    {id:'PATH_02',icon:'🤖',label:'社群 → AI 預測工具 → picks168 → 進群',attr:'B 強歸因',ac:'#60a5fa',note:'流量至 picks168.com'},
+    {id:'PATH_03',icon:'📸',label:'Instagram → Bio → 承接頁 → 註冊',attr:'B 強歸因',ac:'#60a5fa',note:'IG 個人頁 Bio 連結'},
+    {id:'PATH_04',icon:'🧵',label:'Threads 單篇 → 承接頁 → 註冊',attr:'A 精準',ac:'#34d399',note:'Post ID + UTM + link_id = 完整歸因'},
+    {id:'PATH_05',icon:'💬',label:'私訊/LINE → 承接頁 → 註冊',attr:'D 推估',ac:'#f59e42',note:'時間段推估，需 conv_daily 補充'},
+    {id:'PATH_06',icon:'📣',label:'Meta 廣告 → 落地頁 → 註冊',attr:'B/C',ac:'#94a3b8',note:'需 Meta Ads 與 GA4 paid source 對帳'}
+  ]
+  el.innerHTML = `<div style="overflow-x:auto">
+  <table style="width:100%;border-collapse:collapse;font-size:.75rem">
+    <thead><tr style="border-bottom:1px solid var(--border);color:var(--text3);font-size:.67rem">
+      <th style="padding:7px 10px;text-align:left">路徑</th>
+      <th style="padding:7px 8px;text-align:right">曝光</th>
+      <th style="padding:7px 8px;text-align:right">Sessions</th>
+      <th style="padding:7px 8px;text-align:right">CTA</th>
+      <th style="padding:7px 8px;text-align:right">有效註冊</th>
+      <th style="padding:7px 8px;text-align:right">首存</th>
+      <th style="padding:7px 8px;text-align:right">歸因等級</th>
+    </tr></thead>
+    <tbody>
+      ${PATHS.map(p=>`<tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:7px 10px">
+          <span style="font-size:.72rem;font-weight:700">${p.icon} ${p.id}</span>
+          <div style="font-size:.67rem;color:var(--text3)">${p.label}</div>
+          <div style="font-size:.61rem;color:var(--text3);margin-top:1px">${p.note}</div>
+        </td>
+        <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--text3);font-size:.7rem">—</td>
+        <td style="padding:7px 8px;text-align:right"><span style="font-size:.63rem;padding:2px 6px;border-radius:5px;background:${p.ac}20;color:${p.ac}">${p.attr}</span></td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div>
+  <div style="margin-top:10px;padding:9px 12px;background:var(--g2);border-radius:7px;font-size:.67rem;color:var(--text3);line-height:1.7">
+    ℹ️ 路徑數據需在每篇貼文標記 <b>path_id</b> 欄位後自動累計。歸因等級：
+    <span style="color:#34d399">A 精準</span>（Post ID + UTM + GA4 完整對帳）・
+    <span style="color:#60a5fa">B 強歸因</span>（帳號或專屬連結，無單篇追蹤）・
+    <span style="color:#f59e42">D 推估</span>（時間 / 活動推估）
+  </div>`
+}
+
+function _ovAcctHealth() {
+  const el = document.getElementById('ga4ov-acct-health')
+  if (!el) return
+  const acts = DB.get('thread_activities') || []
+  const personas = allActors ? allActors() : []
+  const active = personas.filter(p => !p.raw?.accountStatus || p.raw?.accountStatus === 'active')
+  if (!active.length) { el.innerHTML='<p style="color:var(--text3);font-size:.8rem">尚無啟用角色</p>'; return }
+  const now = new Date()
+  const d30 = new Date(now); d30.setDate(d30.getDate()-30)
+  const d30s = d30.toISOString().slice(0,10)
+  const rows = active.map(p => {
+    const name = p.name
+    const aa = acts.filter(a => a.account===name && (a.date||'')>=d30s)
+    const cnt = aa.length
+    const views = aa.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
+    const likes = aa.reduce((s,a)=>s+(a.platformMetrics?.Threads?.likes||0),0)
+    const avgV = cnt ? Math.round(views/cnt) : 0
+    const engR = views ? likes/views : 0
+    const last = aa.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0]
+    const lastD = last?.date || null
+    const daysAgo = lastD ? Math.round((now-new Date(lastD))/86400000) : 999
+    let st='資料不足', sc='#94a3b8'
+    if (cnt===0||daysAgo>14) { st='長期未發布'; sc='#f87171' }
+    else if (avgV===0) { st='資料不足'; sc='#94a3b8' }
+    else if (engR<0.001) { st='有曝光無互動'; sc='#f59e42' }
+    else { st='正常'; sc='#34d399' }
+    return {name, cnt, avgV, engR, lastD, daysAgo, st, sc, plats:(p.raw?.platforms||[])}
+  }).sort((a,b)=>b.avgV-a.avgV)
+  el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.75rem">
+  <thead><tr style="border-bottom:2px solid var(--border);color:var(--text3);font-size:.67rem">
+    <th style="padding:6px 10px;text-align:left">帳號</th>
+    <th style="padding:6px 8px;text-align:left">平台</th>
+    <th style="padding:6px 8px;text-align:right">發文(30天)</th>
+    <th style="padding:6px 8px;text-align:right">平均曝光</th>
+    <th style="padding:6px 8px;text-align:right">互動率</th>
+    <th style="padding:6px 8px;text-align:right">最後發布</th>
+    <th style="padding:6px 8px;text-align:center">狀態</th>
+  </tr></thead>
+  <tbody>
+    ${rows.slice(0,20).map(r=>`<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:6px 10px;font-weight:600;font-size:.76rem">${r.name}</td>
+      <td style="padding:6px 8px;font-size:.67rem;color:var(--text3)">${r.plats.slice(0,3).join('/')}</td>
+      <td style="padding:6px 8px;text-align:right">${r.cnt}</td>
+      <td style="padding:6px 8px;text-align:right">${r.avgV>0?r.avgV.toLocaleString():'—'}</td>
+      <td style="padding:6px 8px;text-align:right">${r.engR>0?(r.engR*100).toFixed(2)+'%':'—'}</td>
+      <td style="padding:6px 8px;text-align:right;font-size:.67rem;color:${r.daysAgo>14?'#f87171':'var(--text3)'}">${r.lastD||'—'}</td>
+      <td style="padding:6px 8px;text-align:center"><span style="font-size:.63rem;padding:2px 7px;border-radius:8px;background:${r.sc}20;color:${r.sc}">${r.st}</span></td>
+    </tr>`).join('')}
+  </tbody>
+  </table></div>`
+}
+
+function _ovActions() {
+  const el = document.getElementById('ga4ov-actions')
+  if (!el) return
+  const ga4 = _ga4Data || {}
+  const k = ga4.kpis_7d||{}, kp = ga4.kpis_prev7d||{}
+  const {cur} = _ovDateRange()
+  const acts = (DB.get('thread_activities')||[]).filter(a=>(a.date||'')>=cur)
+  const amplify=[], stop=[], fix=[], test=[]
+  const sess=k.sessions||0, sessP=kp.sessions||0, cta=k.cta||0
+  const ctaR = sess>0?cta/sess:null
+
+  if (sess>0&&sessP>0&&sess/sessP>1.2&&cta>0)
+    amplify.push({obj:'整體導流策略',find:`進站較上週成長 ${((sess/sessP-1)*100).toFixed(0)}%`,data:`Sessions ${sess.toLocaleString()} vs 上週 ${sessP.toLocaleString()}`,act:'維持當前發文節奏，觀察能否維持 2 週以上'})
+
+  if (sess>50&&ctaR!=null&&ctaR<0.02)
+    fix.push({obj:'承接頁 CTA',find:`CTA 率 ${(ctaR*100).toFixed(1)}%（建議 ≥ 3%）`,data:`${sess.toLocaleString()} Sessions 僅 ${cta} CTA`,act:'檢查落地頁 CTA 位置、文案與頁面載入速度'})
+
+  const actAccts = new Set(acts.map(a=>a.account))
+  const allA = allActors ? allActors().filter(p=>!p.raw?.accountStatus||p.raw?.accountStatus==='active') : []
+  const inactive = allA.filter(p=>!actAccts.has(p.name))
+  if (inactive.length>0)
+    stop.push({obj:`${inactive.slice(0,3).map(p=>p.name).join('、')}${inactive.length>3?'…等':''}`,find:`${inactive.length} 個啟用角色 7 天未發文`,data:'發文紀錄為 0',act:'確認是策略性停更或需補排腳本'})
+
+  test.push({obj:'漏斗橋接：社群點擊→GA4',find:'社群連結點擊到 GA4 Sessions 的橋接數據缺失',data:'短連結有點擊但未與 GA4 Sessions 對應',act:'為每篇貼文建立帶 utm_content 短連結，完成漏斗②→③橋接'})
+
+  const noItems = '<div style="font-size:.75rem;color:var(--text3);padding:8px 0">本期數據尚不足以生成此類建議</div>'
+  const cat = (list,label,c,ico) => `<div style="margin-bottom:14px">
+    <div style="font-size:.75rem;font-weight:700;color:${c};margin-bottom:6px">${ico} ${label}</div>
+    ${list.length ? list.map(it=>`<div style="padding:9px 12px;background:var(--g2);border-left:3px solid ${c};border-radius:0 7px 7px 0;margin-bottom:5px">
+      <div style="font-size:.76rem;font-weight:600;color:var(--text)">${it.obj}</div>
+      <div style="font-size:.7rem;color:var(--text2);margin-top:2px">發現：${it.find}</div>
+      <div style="font-size:.67rem;color:var(--text3);margin-top:1px">依據：${it.data}</div>
+      <div style="font-size:.7rem;color:${c};margin-top:4px">→ ${it.act}</div>
+    </div>`).join('') : noItems}
+  </div>`
+  el.innerHTML = `<div class="g2">
+    <div>${cat(amplify,'放大','#34d399','🚀')}${cat(stop,'停止','#f87171','⛔')}</div>
+    <div>${cat(fix,'修正','#f59e42','🔧')}${cat(test,'測試','#60a5fa','🧪')}</div>
+  </div>`
+}
+
+function _ovDataHealth() {
+  const el = document.getElementById('ga4ov-health')
+  if (!el) return
+  const issues = []
+  const acts = DB.get('thread_activities') || []
+  const ga4 = _ga4Data || {}
+  const regs = DB.get('real_reg') || []
+  const k = ga4.kpis_7d || {}
+
+  const noUtm = acts.filter(a=>!a.utmContent&&!a.link_id)
+  if (noUtm.length) issues.push({n:'貼文缺少 UTM 標記',cnt:noUtm.length,sev:'high',impact:'無法識別單篇帶來的 GA4 流量',fix:'用 UTM 產生器為每篇貼文建立帶 utm_content 的短連結'})
+
+  const lu = ga4.lastUpdated
+  if (lu) {
+    const hAgo = (Date.now()-new Date(lu).getTime())/3600000
+    if (hAgo>48) issues.push({n:`GA4 資料超過 ${Math.round(hAgo)} 小時未更新`,cnt:1,sev:'high',impact:`最後更新 ${new Date(lu).toLocaleString()}`,fix:'確認 GitHub Actions 排程是否正常執行'})
+  } else {
+    issues.push({n:'GA4 資料未載入',cnt:1,sev:'critical',impact:'所有 GA4 數據無法顯示',fix:'確認 ga4-data.json 存在且格式正確'})
+  }
+
+  if ((k.cta||0)>0&&!regs.length)
+    issues.push({n:'有 CTA 數據但無後台登記記錄',cnt:1,sev:'medium',impact:'漏斗後段空白',fix:'在「數據輸入」手動填入本期真實註冊人數'})
+
+  const uts = acts.filter(a=>a.utmContent).map(a=>a.utmContent)
+  const dups = [...new Set(uts.filter((u,i)=>uts.indexOf(u)!==i))]
+  if (dups.length) issues.push({n:'utm_content 重複',cnt:dups.length,sev:'medium',impact:'GA4 數據無法對應到單篇貼文',fix:`重複值：${dups.slice(0,3).join(', ')}${dups.length>3?'…':''} — 重新產生唯一貼文編號`})
+
+  const noPath = acts.filter(a=>!a.path_id)
+  if (noPath.length) issues.push({n:'貼文缺少 path_id 標記',cnt:noPath.length,sev:'low',impact:'導流路徑分析無法啟用',fix:'新增 path_id 欄位並補標（PATH_01 ～ PATH_06）'})
+
+  const SC = {critical:'#f87171',high:'#f59e42',medium:'#60a5fa',low:'#94a3b8'}
+  const SL = {critical:'嚴重',high:'高',medium:'中',low:'低'}
+  if (!issues.length) { el.innerHTML='<div style="padding:11px;background:#34d39918;border-radius:8px;font-size:.8rem;color:#34d399">✅ 未偵測到明顯資料問題</div>'; return }
+  el.innerHTML = issues.map(iss=>`<div style="padding:9px 12px;border:1px solid ${SC[iss.sev]}40;border-left:3px solid ${SC[iss.sev]};border-radius:0 8px 8px 0;margin-bottom:7px">
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap">
+      <span style="font-size:.74rem;font-weight:700;color:var(--text)">${iss.n}</span>
+      <span style="font-size:.62rem;padding:1px 6px;border-radius:5px;background:${SC[iss.sev]}20;color:${SC[iss.sev]}">${SL[iss.sev]}</span>
+      ${iss.cnt>1?`<span style="font-size:.61rem;color:var(--text3)">${iss.cnt} 筆</span>`:''}
+    </div>
+    <div style="font-size:.68rem;color:var(--text2)">影響：${iss.impact}</div>
+    <div style="font-size:.68rem;color:var(--accent);margin-top:2px">修正：${iss.fix}</div>
+  </div>`).join('')
+}
+
 // 先讀 UTM 產生器的人設清單（CORS 已開）→ 讓 GA4 用中文名代稱 utm 碼；再載入成效數據
 let _ga4Data=null;
 function loadGA4Data(){
   fetch('./ga4-data.json?_=' + Date.now())
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-    .then(d=>{ _ga4Data=d; renderGA4(d); })
+    .then(d=>{ _ga4Data=d; renderGA4(d); try{renderGA4Overview();}catch(e){} })
     .catch(e=>{
       console.error('[GA4] 載入 ga4-data.json 失敗:', e);
       const u=document.getElementById('ga4Updated'); if(u) u.textContent='⚠ ga4-data.json 載入失敗：'+e.message;
+      try{renderGA4Overview();}catch(ex){}
     });
 }
-loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從社群水軍號即時建立
+loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從矩陣帳號即時建立
 </script>
 
 <!-- ===== PAGE: UTM 產生器（嵌入 ys89-utm.pages.dev，共用 D1）===== -->
