@@ -592,11 +592,40 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
   <!-- 單篇貼文成效（utm_content）-->
   <div class="card" style="border-left:3px solid #4ade80;margin-bottom:18px">
-    <div class="card-title">📝 單篇貼文成效 <span id="postTableLabel" style="font-size:.72rem;color:var(--text3);font-weight:400"></span></div>
-    <p class="tm" style="font-size:.75rem;margin-bottom:12px">依「UTM 產生器 ⑤ 貼文編號」拆分，看出是哪一則貼文帶的量。點一列可查看發文記錄與各區間 GA4 數字。</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+      <div class="card-title" style="margin-bottom:0">📝 單篇貼文成效 <span id="postTableLabel" style="font-size:.72rem;color:var(--text3);font-weight:400"></span></div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:.68rem;color:var(--text3)">排序：</span>
+        <select id="postSortSelect" onchange="resortPostTable()" style="font-size:.72rem;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text)">
+          <option value="sessions_desc">進站 ↓</option>
+          <option value="views_desc">曝光 ↓</option>
+          <option value="likes_desc">讚數 ↓</option>
+          <option value="er_desc">互動率 ↓</option>
+          <option value="cta_desc">CTA ↓</option>
+          <option value="cta_rate_desc">CTA率 ↓</option>
+          <option value="date_desc">日期 ↓</option>
+        </select>
+      </div>
+    </div>
+    <p class="tm" style="font-size:.74rem;margin-bottom:12px">GA4 + Threads 成效交叉對比 · 點一列展開詳細數據 · 歸因等級 A＝精準 B＝強 C＝弱 U＝未知</p>
     <div class="t-scroll" id="postTableWrap" style="display:none">
-      <table>
-        <thead><tr><th>貼文</th><th style="text-align:right">進站</th><th style="text-align:right">流量佔比</th><th style="text-align:right">CTA</th><th style="text-align:right">轉換率</th><th></th></tr></thead>
+      <table id="postTableEl" style="min-width:820px">
+        <thead><tr>
+          <th style="min-width:120px">貼文</th>
+          <th style="text-align:right;white-space:nowrap">日期</th>
+          <th style="text-align:center;white-space:nowrap">內容柱</th>
+          <th style="text-align:right;white-space:nowrap">曝光</th>
+          <th style="text-align:right;white-space:nowrap">讚</th>
+          <th style="text-align:right;white-space:nowrap">互動率</th>
+          <th style="text-align:right;white-space:nowrap">留言</th>
+          <th style="text-align:right;white-space:nowrap">轉發</th>
+          <th style="text-align:right;white-space:nowrap">進站</th>
+          <th style="text-align:right;white-space:nowrap">流量%</th>
+          <th style="text-align:right;white-space:nowrap">CTA</th>
+          <th style="text-align:right;white-space:nowrap">CTA率</th>
+          <th style="text-align:center;white-space:nowrap">歸因</th>
+          <th style="text-align:center;white-space:nowrap">漏斗</th>
+        </tr></thead>
         <tbody id="postTable"></tbody>
       </table>
     </div>
@@ -1440,30 +1469,100 @@ function renderExposurePanel(d, period) {
     </p>`;
 }
 
+// 儲存最近一次渲染的貼文資料，供排序用
+let _lastPostRows = []
+
 function renderPostTable(posts, label) {
   const pw=document.getElementById('postTableWrap'), pe=document.getElementById('postEmpty');
   const lbl=document.getElementById('postTableLabel');
   if(lbl) lbl.textContent = label ? `（${label}）` : '';
   if(!posts||!posts.length){ pw.style.display='none'; pe.style.display='block'; return; }
   pw.style.display='block'; pe.style.display='none';
-  const totalPost=posts.reduce((a,p)=>a+p.sessions,0)||1;
-  const savedLinks=(typeof DB!=='undefined'&&DB.get)?(DB.get('links')||[]):[];
-  document.getElementById('postTable').innerHTML = posts.slice(0,25).map(p=>{
-    const code=(p.content||'').split('-')[0];
-    const who=PERSONA_MAP[code]?`${PERSONA_MAP[code]} <span style="color:var(--text3);font-weight:400;font-size:.78em">${p.content}</span>`:p.content;
-    const lk=savedLinks.find(l=>l.utmContent===p.content);
-    const sub=lk?`<div style="font-size:.67rem;color:var(--text3);font-weight:400">${lk.entryName||''}</div>`:'';
-    const share=p.sessions/totalPost*100, conv=p.sessions?(p.cta/p.sessions*100):0;
-    const cc=p.cta>0?'b-green':'b-red';
+  const totalSess=posts.reduce((a,p)=>a+p.sessions,0)||1;
+  const acts=DB.get('thread_activities')||[];
+
+  // 歸因等級：有 utmContent + GA4 sessions > 0 = A, 有 utm 但 sessions=0 = B, 無 utm = U
+  const attrLevel = (p) => {
+    const a = acts.find(x=>x.utmContent===p.content)
+    if (!a) return 'U'
+    if (p.sessions>0 && a.platformMetrics?.Threads?.views!=null) return 'A'
+    if (p.sessions>0) return 'B'
+    if (a.url) return 'C'
+    return 'U'
+  }
+  const ATTR_C = {A:'#34d399',B:'#60a5fa',C:'#f59e42',U:'#94a3b8'}
+  const FUNNEL_L = {awareness:'曝光',interest:'興趣',consideration:'考慮',action:'行動',retention:'留存'}
+  const PILLAR_C = {'AI工具':'#818cf8','日常敘事':'#34d399','平台技巧':'#60a5fa','信任建立':'#f59e42','話題參與':'#f87171','產品推廣':'#a78bfa'}
+
+  // 合併資料
+  _lastPostRows = posts.map(p => {
+    const a = acts.find(x=>x.utmContent===p.content) || {}
+    const th = a.platformMetrics?.Threads || {}
+    const views = th.views ?? null
+    const likes = th.likes ?? null
+    const replies = th.replies ?? null
+    const reposts = (th.reposts||0)+(th.shares||0)
+    const er = (views!=null&&views>0&&likes!=null) ? (likes+(replies||0)+(reposts||0))/views : null
+    const ctaRate = p.sessions>0 ? p.cta/p.sessions : null
+    return { ...p, _a:a, _th:th, views, likes, replies, reposts, er, ctaRate, _attr:attrLevel(p) }
+  })
+
+  _renderPostRows(totalSess, ATTR_C, FUNNEL_L, PILLAR_C)
+}
+
+function resortPostTable() {
+  if (!_lastPostRows.length) return
+  const totalSess = _lastPostRows.reduce((a,p)=>a+p.sessions,0)||1
+  const ATTR_C = {A:'#34d399',B:'#60a5fa',C:'#f59e42',U:'#94a3b8'}
+  const FUNNEL_L = {awareness:'曝光',interest:'興趣',consideration:'考慮',action:'行動',retention:'留存'}
+  const PILLAR_C = {'AI工具':'#818cf8','日常敘事':'#34d399','平台技巧':'#60a5fa','信任建立':'#f59e42','話題參與':'#f87171','產品推廣':'#a78bfa'}
+  _renderPostRows(totalSess, ATTR_C, FUNNEL_L, PILLAR_C)
+}
+
+function _renderPostRows(totalSess, ATTR_C, FUNNEL_L, PILLAR_C) {
+  const sort = (document.getElementById('postSortSelect')?.value)||'sessions_desc'
+  const rows = _lastPostRows.slice().sort((a,b)=>{
+    if (sort==='sessions_desc') return b.sessions-a.sessions
+    if (sort==='views_desc') return (b.views??-1)-(a.views??-1)
+    if (sort==='likes_desc') return (b.likes??-1)-(a.likes??-1)
+    if (sort==='er_desc') return (b.er??-1)-(a.er??-1)
+    if (sort==='cta_desc') return b.cta-a.cta
+    if (sort==='cta_rate_desc') return (b.ctaRate??-1)-(a.ctaRate??-1)
+    if (sort==='date_desc') return (b._a.date||'').localeCompare(a._a.date||'')
+    return 0
+  })
+
+  document.getElementById('postTable').innerHTML = rows.slice(0,30).map(p => {
+    const code=(p.content||'').split('-')[0]
+    const who=PERSONA_MAP[code]?`${PERSONA_MAP[code]}<br><span style="color:var(--text3);font-weight:400;font-size:.72em">${p.content}</span>`:p.content
+    const share=(p.sessions/totalSess*100).toFixed(1)
+    const ctaR=p.ctaRate!=null?`<span style="${p.ctaRate>=0.03?'color:#34d399':p.ctaRate>=0.01?'color:#f59e42':'color:#f87171'}">${(p.ctaRate*100).toFixed(1)}%</span>`:'-'
+    const erStr=p.er!=null?`<span style="${p.er>=0.05?'color:#34d399':p.er>=0.01?'color:#f59e42':'color:#f87171'}">${(p.er*100).toFixed(1)}%</span>`:'-'
+    const ac = ATTR_C[p._attr]||'#94a3b8'
+    const pillar = p._a.content_pillar||''
+    const pc = PILLAR_C[pillar]||'var(--text3)'
+    const pillarBadge = pillar ? `<span style="font-size:.6rem;padding:1px 5px;border-radius:4px;background:${pc}20;color:${pc};white-space:nowrap">${pillar}</span>` : '-'
+    const funnel = p._a.funnel_stage||''
+    const funnelBadge = funnel ? `<span style="font-size:.6rem;padding:1px 5px;border-radius:4px;background:#81818120;color:var(--text3);white-space:nowrap">${FUNNEL_L[funnel]||funnel}</span>` : '-'
+    const dateStr = p._a.date||'-'
+
     return `<tr style="cursor:pointer" onclick="showGA4PostDetail('${(p.content||'').replace(/'/g,"\\'")}')">
-      <td><b>${who}</b>${sub}</td>
-      <td style="text-align:right">${fmt(p.sessions)}</td>
-      <td style="text-align:right;color:var(--accent);font-weight:700">${share.toFixed(1)}%</td>
-      <td style="text-align:right">${p.cta}</td>
-      <td style="text-align:right"><span class="${cc}">${conv.toFixed(1)}%</span></td>
-      <td style="text-align:right;font-size:.75rem;color:#60a5fa">🔍</td>
-    </tr>`;
-  }).join('');
+      <td style="font-size:.76rem"><b style="font-size:.78rem">${who}</b></td>
+      <td style="text-align:right;font-size:.7rem;white-space:nowrap">${dateStr}</td>
+      <td style="text-align:center">${pillarBadge}</td>
+      <td style="text-align:right;font-size:.78rem">${p.views!=null?p.views.toLocaleString():'-'}</td>
+      <td style="text-align:right;font-size:.78rem">${p.likes!=null?p.likes.toLocaleString():'-'}</td>
+      <td style="text-align:right;font-size:.78rem">${erStr}</td>
+      <td style="text-align:right;font-size:.78rem">${p.replies!=null?p.replies:'-'}</td>
+      <td style="text-align:right;font-size:.78rem">${p.reposts!=null?p.reposts:'-'}</td>
+      <td style="text-align:right;font-size:.78rem;color:var(--accent);font-weight:700">${fmt(p.sessions)}</td>
+      <td style="text-align:right;font-size:.78rem">${share}%</td>
+      <td style="text-align:right;font-size:.78rem">${p.cta||0}</td>
+      <td style="text-align:right;font-size:.78rem">${ctaR}</td>
+      <td style="text-align:center"><span style="font-size:.65rem;padding:2px 6px;border-radius:5px;background:${ac}20;color:${ac};font-weight:700">${p._attr}</span></td>
+      <td style="text-align:center">${funnelBadge}</td>
+    </tr>`
+  }).join('')
 }
 
 function showGA4PostDetail(content) {
@@ -1473,45 +1572,98 @@ function showGA4PostDetail(content) {
   const ga4Post=(_ga4Data?.contents||[]).find(p=>p.content===content)||{sessions:0,cta:0};
   const ga4Post3d=(_ga4Data?.contents_3d||[]).find(p=>p.content===content)||null;
   const ga4Post7d=(_ga4Data?.contents_7d||[]).find(p=>p.content===content)||null;
+  const a0 = ta[0]||{}  // 主發文記錄
+  const th = a0.platformMetrics?.Threads||{}
+
+  // 歸因等級
+  const hasUTM = !!content, hasSess = ga4Post.sessions>0, hasThMetrics = th.views!=null
+  const attr = (hasUTM&&hasSess&&hasThMetrics)?'A精準':(hasUTM&&hasSess)?'B強':(hasUTM)?'C弱':'U未知'
+  const attrC = attr.startsWith('A')?'#34d399':attr.startsWith('B')?'#60a5fa':attr.startsWith('C')?'#f59e42':'#94a3b8'
+
+  // Threads 彙總
+  const totalViews = ta.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
+  const totalLikes = ta.reduce((s,a)=>s+(a.platformMetrics?.Threads?.likes||0),0)
+  const totalReplies = ta.reduce((s,a)=>s+(a.platformMetrics?.Threads?.replies||0),0)
+  const totalReposts = ta.reduce((s,a)=>s+(a.platformMetrics?.Threads?.reposts||0)+(a.platformMetrics?.Threads?.shares||0),0)
+  const er = totalViews>0 ? ((totalLikes+totalReplies+totalReposts)/totalViews*100).toFixed(2)+'%' : '—'
+
+  const FUNNEL_L = {awareness:'曝光',interest:'興趣',consideration:'考慮',action:'行動',retention:'留存'}
+  const meta = [
+    ['內容柱',a0.content_pillar||'未標記'],
+    ['漏斗階段',FUNNEL_L[a0.funnel_stage]||a0.funnel_stage||'未標記'],
+    ['格式',a0.format||'未標記'],
+    ['Hook類型',a0.hook_type||'未標記'],
+    ['CTA類型',a0.cta_type||'未標記'],
+    ['主要目標',a0.primary_goal||'未標記'],
+  ].map(([k,v])=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:.7rem;color:var(--text3)">${k}</span><span style="font-size:.74rem;color:var(--text);font-weight:600">${v}</span></div>`).join('')
+
+  const kpiGrid = (items) => `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+    ${items.map(([l,v,c])=>`<div style="background:var(--g2);border-radius:8px;padding:8px 10px;text-align:center">
+      <div style="font-size:.63rem;color:var(--text3);margin-bottom:3px">${l}</div>
+      <div style="font-size:1rem;font-weight:800;color:${c||'var(--text)'}">${v}</div>
+    </div>`).join('')}
+  </div>`
 
   let rows='';
   ta.forEach(a=>{
     const v=a.platformMetrics?.Threads||{};
-    const link=a.url?`<a href="${escAttr(a.url)}" target="_blank" style="color:#60a5fa;font-size:.72rem">↗ Threads</a>`:'';
+    const er2=v.views>0?((v.likes||0)+(v.replies||0)+(v.reposts||0)+(v.shares||0))/v.views*100:null;
+    const link=a.url?`<a href="${escAttr(a.url)}" target="_blank" style="color:#60a5fa;font-size:.7rem">↗</a>`:'';
     rows+=`<tr>
-      <td>${a.date||''}</td>
-      <td>${a.strategy||''}</td>
-      <td style="max-width:160px;font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escAttr(a.content||'')}">${a.content||'（無文案）'}</td>
-      <td style="text-align:right">${v.views!=null?v.views:'—'}</td>
-      <td style="text-align:right">${v.likes!=null?v.likes:'—'}</td>
+      <td style="white-space:nowrap">${a.date||''}</td>
+      <td style="font-size:.7rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escAttr(a.content||'')}">${a.content||'（無文案）'}</td>
+      <td style="text-align:right;font-size:.78rem">${v.views!=null?v.views.toLocaleString():'—'}</td>
+      <td style="text-align:right;font-size:.78rem">${v.likes!=null?v.likes:'—'}</td>
+      <td style="text-align:right;font-size:.78rem">${v.replies!=null?v.replies:'—'}</td>
+      <td style="text-align:right;font-size:.78rem">${(v.reposts||0)+(v.shares||0)||'—'}</td>
+      <td style="text-align:right;font-size:.74rem;color:${er2!=null&&er2>=3?'#34d399':er2!=null&&er2>=1?'#f59e42':'#f87171'}">${er2!=null?er2.toFixed(1)+'%':'—'}</td>
       <td>${link}</td>
     </tr>`;
   });
 
   const ga4Rows=`
-    <tr><td>近 3 天</td><td>${ga4Post3d?fmt(ga4Post3d.sessions):'無資料'}</td><td>${ga4Post3d?ga4Post3d.cta:'—'}</td></tr>
-    <tr><td>近 7 天</td><td>${ga4Post7d?fmt(ga4Post7d.sessions):'無資料'}</td><td>${ga4Post7d?ga4Post7d.cta:'—'}</td></tr>
-    <tr><td>近 28 天</td><td>${fmt(ga4Post.sessions)}</td><td>${ga4Post.cta}</td></tr>`;
+    <tr><td>近 3 天</td><td style="text-align:right">${ga4Post3d?fmt(ga4Post3d.sessions):'—'}</td><td style="text-align:right">${ga4Post3d?ga4Post3d.cta:'—'}</td><td style="text-align:right">${ga4Post3d&&ga4Post3d.sessions?((ga4Post3d.cta/ga4Post3d.sessions)*100).toFixed(1)+'%':'—'}</td></tr>
+    <tr><td>近 7 天</td><td style="text-align:right">${ga4Post7d?fmt(ga4Post7d.sessions):'—'}</td><td style="text-align:right">${ga4Post7d?ga4Post7d.cta:'—'}</td><td style="text-align:right">${ga4Post7d&&ga4Post7d.sessions?((ga4Post7d.cta/ga4Post7d.sessions)*100).toFixed(1)+'%':'—'}</td></tr>
+    <tr><td>近 28 天</td><td style="text-align:right">${fmt(ga4Post.sessions)}</td><td style="text-align:right">${ga4Post.cta}</td><td style="text-align:right">${ga4Post.sessions?((ga4Post.cta/ga4Post.sessions)*100).toFixed(1)+'%':'—'}</td></tr>`;
 
   const html=`<div id="ga4detail-overlay" onclick="if(event.target===this)closeGA4Detail()" style="position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:flex-end;justify-content:center">
-  <div style="background:var(--bg);border-radius:16px 16px 0 0;padding:20px;width:100%;max-width:640px;max-height:80vh;overflow-y:auto">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+  <div style="background:var(--bg);border-radius:16px 16px 0 0;padding:20px;width:100%;max-width:680px;max-height:85vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
       <div>
         <div style="font-size:1rem;font-weight:800;color:var(--accent)">${personaName}</div>
-        <div style="font-size:.72rem;color:var(--text3)">${content}</div>
+        <div style="display:flex;gap:6px;align-items:center;margin-top:3px">
+          <span style="font-size:.68rem;color:var(--text3)">${content}</span>
+          <span style="font-size:.65rem;padding:2px 7px;border-radius:5px;background:${attrC}20;color:${attrC};font-weight:700">歸因 ${attr}</span>
+        </div>
       </div>
-      <button onclick="closeGA4Detail()" style="background:var(--g3);border:none;border-radius:50%;width:28px;height:28px;font-size:1rem;cursor:pointer;color:var(--text)">✕</button>
+      <button onclick="closeGA4Detail()" style="background:var(--g3);border:none;border-radius:50%;width:28px;height:28px;font-size:1rem;cursor:pointer;color:var(--text);flex-shrink:0">✕</button>
     </div>
+
+    ${kpiGrid([
+      ['Threads 曝光',totalViews?totalViews.toLocaleString():'—','var(--accent)'],
+      ['總讚數',totalLikes||'—','#f59e42'],
+      ['互動率',er,er==='—'?'var(--text3)':parseFloat(er)>=3?'#34d399':parseFloat(er)>=1?'#f59e42':'#f87171'],
+      ['GA4 進站（28d）',fmt(ga4Post.sessions),'#60a5fa'],
+      ['CTA 點擊',ga4Post.cta||0,'#a78bfa'],
+      ['CTA 率',ga4Post.sessions?((ga4Post.cta/ga4Post.sessions)*100).toFixed(1)+'%':'—',ga4Post.sessions&&ga4Post.cta/ga4Post.sessions>=0.03?'#34d399':'#f59e42'],
+      ['留言數',ta.reduce((s,a)=>s+(a.platformMetrics?.Threads?.replies||0),0)||'—','#94a3b8'],
+      ['轉發數',totalReposts||'—','#94a3b8'],
+    ])}
+
     <div style="font-size:.75rem;font-weight:700;color:var(--text2);margin-bottom:6px">📊 GA4 各區間成效</div>
     <div class="t-scroll" style="margin-bottom:14px"><table>
-      <thead><tr><th>區間</th><th style="text-align:right">進站</th><th style="text-align:right">CTA</th></tr></thead>
+      <thead><tr><th>區間</th><th style="text-align:right">進站</th><th style="text-align:right">CTA</th><th style="text-align:right">CTA率</th></tr></thead>
       <tbody>${ga4Rows}</tbody>
     </table></div>
+
+    <div style="font-size:.75rem;font-weight:700;color:var(--text2);margin-bottom:6px">🏷️ 內容元資料</div>
+    <div style="background:var(--g2);border-radius:8px;padding:6px 12px;margin-bottom:14px">${meta}</div>
+
     ${rows?`<div style="font-size:.75rem;font-weight:700;color:var(--text2);margin-bottom:6px">📝 Threads 發文記錄（${ta.length} 筆）</div>
     <div class="t-scroll"><table>
-      <thead><tr><th>日期</th><th>策略</th><th>內容</th><th style="text-align:right">瀏覽</th><th style="text-align:right">讚</th><th></th></tr></thead>
+      <thead><tr><th>日期</th><th>內容</th><th style="text-align:right">曝光</th><th style="text-align:right">讚</th><th style="text-align:right">留言</th><th style="text-align:right">轉發</th><th style="text-align:right">互動率</th><th></th></tr></thead>
       <tbody>${rows}</tbody>
-    </table></div>`:'<div style="color:var(--text3);font-size:.78rem">此 UTM 碼尚無 Threads 發文記錄。</div>'}
+    </table></div>`:'<div style="color:var(--text3);font-size:.78rem;padding:6px 0">此 UTM 碼尚無 Threads 發文記錄。</div>'}
   </div></div>`;
   const d=document.createElement('div'); d.id='ga4detail-wrap'; d.innerHTML=html; document.body.appendChild(d);
 }
