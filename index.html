@@ -194,7 +194,7 @@ tr:hover td{background:#0f0d0b}
   }
 }
 
-/* ── 短連結：水軍帳號手風琴（點擊展開，免左右滑）── */
+/* ── 短連結：角色帳號手風琴（點擊展開，免左右滑）── */
 .lk-acc{border-radius:10px}
 .lk-acc-head{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;border-radius:10px;user-select:none}
 .lk-acc.open .lk-acc-head{border-radius:10px 10px 0 0}
@@ -684,6 +684,67 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     </div>
   </div>
 
+  <!-- A/B 測試管理模組 -->
+  <div id="ga4-ab-test-wrap" class="card" style="border-left:3px solid #818cf8;margin-bottom:18px;display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div>
+        <div class="card-title" style="color:#818cf8;margin-bottom:3px">🧪 A/B 測試管理</div>
+        <div class="tm" style="font-size:.72rem">記錄貼文策略實驗，對比兩組差異、追蹤勝出方案</div>
+      </div>
+      <button onclick="openAddAbTest()" style="font-size:.78rem;padding:7px 14px;border-radius:8px;background:#818cf8;color:#fff;border:none;cursor:pointer;white-space:nowrap">＋ 新增測試</button>
+    </div>
+
+    <!-- 新增/編輯 A/B 測試表單（預設隱藏） -->
+    <div id="ab-form-wrap" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:.8rem;font-weight:700;color:#818cf8;margin-bottom:10px">📝 測試資訊</div>
+      <input type="hidden" id="ab-edit-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div class="fg" style="grid-column:1/-1"><label style="font-size:.72rem">測試名稱 *</label><input id="ab-name" placeholder="例：封面圖測試 #1" style="width:100%;box-sizing:border-box"></div>
+        <div class="fg"><label style="font-size:.72rem">開始日期</label><input type="date" id="ab-start" style="width:100%;box-sizing:border-box"></div>
+        <div class="fg"><label style="font-size:.72rem">結束日期</label><input type="date" id="ab-end" style="width:100%;box-sizing:border-box"></div>
+        <div class="fg"><label style="font-size:.72rem">主要衡量指標</label>
+          <select id="ab-metric" style="width:100%;box-sizing:border-box">
+            <option value="views">曝光數</option>
+            <option value="likes">讚數</option>
+            <option value="replies">留言數</option>
+            <option value="reposts">轉發</option>
+            <option value="cta_clicks">CTA 點擊</option>
+            <option value="landing_visits">落地頁訪問</option>
+            <option value="registrations">註冊數</option>
+          </select>
+        </div>
+        <div class="fg"><label style="font-size:.72rem">狀態</label>
+          <select id="ab-status" style="width:100%;box-sizing:border-box">
+            <option value="running">進行中</option>
+            <option value="paused">暫停</option>
+            <option value="done">已完成</option>
+            <option value="cancelled">取消</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div class="fg"><label style="font-size:.72rem">方案 A 描述 *</label><textarea id="ab-var-a" rows="3" placeholder="例：純文字貼文，強調折扣數字" style="width:100%;box-sizing:border-box;resize:vertical;font-size:.78rem"></textarea></div>
+        <div class="fg"><label style="font-size:.72rem">方案 B 描述 *</label><textarea id="ab-var-b" rows="3" placeholder="例：圖片貼文，強調視覺故事" style="width:100%;box-sizing:border-box;resize:vertical;font-size:.78rem"></textarea></div>
+      </div>
+      <div class="fg" style="margin-bottom:10px"><label style="font-size:.72rem">假設（預期哪方勝出，原因）</label><textarea id="ab-hypothesis" rows="2" placeholder="假設方案 B 圖片貼文的點擊率高出 20% 以上，因為目標族群對視覺刺激更敏感" style="width:100%;box-sizing:border-box;resize:vertical;font-size:.78rem"></textarea></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div class="fg"><label style="font-size:.72rem">方案 A 貼文 UTM（可選）</label><input id="ab-utm-a" placeholder="cc-0701-1" style="width:100%;box-sizing:border-box"></div>
+        <div class="fg"><label style="font-size:.72rem">方案 B 貼文 UTM（可選）</label><input id="ab-utm-b" placeholder="cc-0701-2" style="width:100%;box-sizing:border-box"></div>
+      </div>
+      <div class="fg" style="margin-bottom:10px"><label style="font-size:.72rem">結論 / 洞察（測試結束後填寫）</label><textarea id="ab-conclusion" rows="2" placeholder="方案 A 勝出：曝光數高出 35%，但 CTA 點擊率相近，結論：封面格式對轉化影響有限" style="width:100%;box-sizing:border-box;resize:vertical;font-size:.78rem"></textarea></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="document.getElementById('ab-form-wrap').style.display='none'" style="font-size:.78rem;padding:7px 14px;border-radius:8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);cursor:pointer">取消</button>
+        <button onclick="saveAbTest()" style="font-size:.78rem;padding:7px 16px;border-radius:8px;background:#818cf8;color:#fff;border:none;cursor:pointer">儲存</button>
+      </div>
+    </div>
+
+    <!-- 測試列表 -->
+    <div id="ab-list-wrap">
+      <div id="ab-empty" style="text-align:center;padding:24px 0;color:var(--text3);font-size:.78rem">尚無 A/B 測試紀錄，點擊「新增測試」開始第一個實驗</div>
+      <div id="ab-list"></div>
+    </div>
+  </div>
+
   <!-- Meta 廣告區（手填 Ads Manager 真實值，存 DB 同步）-->
   <div id="ga4-ads-wrap" class="card" style="border-left:3px solid var(--amber);margin-bottom:18px;display:none">
     <div class="card-title" style="color:var(--amber)">📣 Meta 廣告成效</div>
@@ -861,7 +922,7 @@ const pName  = name => PERSONA_MAP[(name||'').toLowerCase()] || name;           
 const pLabel = name => PERSONA_MAP[(name||'').toLowerCase()]                      // 顯示用：阿奇 (akki)
   ? `${PERSONA_MAP[(name||'').toLowerCase()]}<span style="color:var(--text3);font-weight:400;font-size:.78em"> ${name}</span>`
   : name;
-// 主檔＝社群水軍號（code→中文名），合併 akki/god fallback（舊流量）。在 render 時呼叫（此時 DB 已就緒）
+// 主檔＝矩陣帳號號（code→中文名），合併 akki/god fallback（舊流量）。在 render 時呼叫（此時 DB 已就緒）
 function buildPersonaMap(){
   PERSONA_MAP = {...PERSONA_FALLBACK};
   try{ allActors().forEach(a=>{ if(a.code) PERSONA_MAP[a.code]=a.name; }); }catch(e){}
@@ -1281,7 +1342,7 @@ function renderExposurePanel(d, period) {
     (rm.ga4 || []).forEach(a => { ga4Map[a.name] = a; });
   }
 
-  // 從社群炒群記錄篩出期間內有成效資料的活動
+  // 從社群互動記錄篩出期間內有成效資料的活動
   const ta = (typeof DB !== 'undefined' && DB.get) ? (DB.get('thread_activities') || []) : [];
   const inRange = ta.filter(a => {
     if (!a.date) return false;
@@ -1291,7 +1352,7 @@ function renderExposurePanel(d, period) {
   });
 
   if (!inRange.length) {
-    el.innerHTML = '<p style="color:var(--text3);font-size:.8rem;padding:6px 0">此期間無社群炒群發文記錄</p>';
+    el.innerHTML = '<p style="color:var(--text3);font-size:.8rem;padding:6px 0">此期間無社群互動發文記錄</p>';
     return;
   }
 
@@ -1632,10 +1693,10 @@ function renderInsights(sources, accts, k){
       `<b style="color:var(--accent)">${pName(ref.name)}</b>（${f(ref.sessions)}）未帶 utm_source，掉進 referral 分不出帳號，建議補標記。`));
   }
 
-  // ④ 社群水軍佔比
+  // ④ 矩陣帳號佔比
   const army=sources.filter(s=>s.cls==='army').reduce((a,s)=>a+s.sessions,0);
-  cards.push(insightCard('📊 社群水軍佔總流量',
-    `社群水軍約 <b style="color:var(--accent)">${f(army)}</b> 工作階段，佔總流量 <b style="color:var(--accent)">${(army/totalSess*100).toFixed(0)}%</b>，是流量主力。`));
+  cards.push(insightCard('📊 矩陣帳號佔總流量',
+    `矩陣帳號約 <b style="color:var(--accent)">${f(army)}</b> 工作階段，佔總流量 <b style="color:var(--accent)">${(army/totalSess*100).toFixed(0)}%</b>，是流量主力。`));
 
   el.innerHTML=cards.join('');
 }
@@ -2049,14 +2110,15 @@ function switchGA4Layer(layer) {
   })
   const MAP = {
     overview: ['ga4-layer-overview'],
-    analysis: ['ov-dashboard','ms-panel','ga4ComparePanel','ga4MainPanel','ga4-picks168-wrap'],
+    analysis: ['ov-dashboard','ms-panel','ga4ComparePanel','ga4MainPanel','ga4-picks168-wrap','ga4-ab-test-wrap'],
     input:    ['ga4-ads-wrap','ga4-daily-wrap','ga4-proxy-wrap']
   }
   const ALL = ['ga4-layer-overview','ov-dashboard','ms-panel','ga4ComparePanel','ga4MainPanel',
-               'ga4-picks168-wrap','ga4-ads-wrap','ga4-daily-wrap','ga4-proxy-wrap']
+               'ga4-picks168-wrap','ga4-ab-test-wrap','ga4-ads-wrap','ga4-daily-wrap','ga4-proxy-wrap']
   ALL.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none' })
   ;(MAP[layer]||[]).forEach(id => { const el=document.getElementById(id); if(el) el.style.display='' })
   if (layer === 'overview') renderGA4Overview()
+  if (layer === 'analysis') { try { renderAbTests() } catch(e){} }
 }
 
 function renderGA4Overview() {
@@ -2335,10 +2397,13 @@ function _ovDataHealth() {
   const ga4 = _ga4Data || {}
   const regs = DB.get('real_reg') || []
   const k = ga4.kpis_7d || {}
+  const today = new Date(); today.setHours(0,0,0,0)
 
+  // 1. 貼文缺少 UTM 標記
   const noUtm = acts.filter(a=>!a.utmContent&&!a.link_id)
   if (noUtm.length) issues.push({n:'貼文缺少 UTM 標記',cnt:noUtm.length,sev:'high',impact:'無法識別單篇帶來的 GA4 流量',fix:'用 UTM 產生器為每篇貼文建立帶 utm_content 的短連結'})
 
+  // 2. GA4 資料未更新 / 未載入
   const lu = ga4.lastUpdated
   if (lu) {
     const hAgo = (Date.now()-new Date(lu).getTime())/3600000
@@ -2347,20 +2412,78 @@ function _ovDataHealth() {
     issues.push({n:'GA4 資料未載入',cnt:1,sev:'critical',impact:'所有 GA4 數據無法顯示',fix:'確認 ga4-data.json 存在且格式正確'})
   }
 
+  // 3. 有 CTA 數據但無後台登記
   if ((k.cta||0)>0&&!regs.length)
-    issues.push({n:'有 CTA 數據但無後台登記記錄',cnt:1,sev:'medium',impact:'漏斗後段空白',fix:'在「數據輸入」手動填入本期真實註冊人數'})
+    issues.push({n:'有 CTA 數據但無後台登記記錄',cnt:1,sev:'medium',impact:'漏斗後段空白，無法計算轉化率',fix:'在「數據輸入」手動填入本期真實註冊人數'})
 
+  // 4. utm_content 重複
   const uts = acts.filter(a=>a.utmContent).map(a=>a.utmContent)
   const dups = [...new Set(uts.filter((u,i)=>uts.indexOf(u)!==i))]
   if (dups.length) issues.push({n:'utm_content 重複',cnt:dups.length,sev:'medium',impact:'GA4 數據無法對應到單篇貼文',fix:`重複值：${dups.slice(0,3).join(', ')}${dups.length>3?'…':''} — 重新產生唯一貼文編號`})
 
+  // 5. 貼文缺少 path_id 標記
   const noPath = acts.filter(a=>!a.path_id)
   if (noPath.length) issues.push({n:'貼文缺少 path_id 標記',cnt:noPath.length,sev:'low',impact:'導流路徑分析無法啟用',fix:'新增 path_id 欄位並補標（PATH_01 ～ PATH_06）'})
 
+  // 6. 內容柱 (content_pillar) 未標記
+  const noPillar = acts.filter(a=>!a.content_pillar)
+  if (noPillar.length>3) issues.push({n:'貼文缺少內容柱標記',cnt:noPillar.length,sev:'low',impact:'無法分析哪種內容主題效果最佳',fix:'在發文記錄編輯頁填入 content_pillar 欄位'})
+
+  // 7. 漏斗階段 (funnel_stage) 未標記
+  const noFunnel = acts.filter(a=>!a.funnel_stage)
+  if (noFunnel.length>3) issues.push({n:'貼文缺少漏斗階段標記',cnt:noFunnel.length,sev:'low',impact:'無法判斷內容在漏斗哪個環節發揮作用',fix:'在發文記錄編輯頁填入 funnel_stage 欄位'})
+
+  // 8. 有 Threads URL 但成效未抓取（狀態仍為「待記錄」）
+  const pendingMetrics = acts.filter(a=>{
+    const hasUrl = (a.url||'').includes('threads.')
+    const pm = a.platformMetrics?.Threads||{}
+    const isEmpty = !pm.views && !pm.likes && !pm.replies
+    return hasUrl && isEmpty && a.status==='待記錄'
+  })
+  if (pendingMetrics.length) issues.push({n:'Threads 成效待抓取',cnt:pendingMetrics.length,sev:'medium',impact:'貼文數據空白，無法計算互動率',fix:'到成效分析頁，對應貼文點「取得成效」或請 AI 直接更新'})
+
+  // 9. 成效瀏覽數為 0 且備注未標記
+  const zeroViewsNoNote = acts.filter(a=>{
+    const pm = a.platformMetrics?.Threads||{}
+    return (pm.views===0) && !(a.notes||'').includes('無法顯示瀏覽')
+  })
+  if (zeroViewsNoNote.length) issues.push({n:'瀏覽數為 0 但備注未標記',cnt:zeroViewsNoNote.length,sev:'low',impact:'可能是 Threads 未開放瀏覽數，需人工確認',fix:'備注加上「無法顯示瀏覽」以區分真實 0 與隱藏數據'})
+
+  // 10. 貼文日期為未來日期
+  const futureActs = acts.filter(a=>{
+    if (!a.date) return false
+    const d = new Date(a.date); d.setHours(0,0,0,0)
+    return d > today
+  })
+  if (futureActs.length) issues.push({n:'貼文日期為未來日期',cnt:futureActs.length,sev:'medium',impact:'排程貼文混入已發佈成效，影響數據準確性',fix:'確認是否為預排貼文；若已發佈請更新為實際日期'})
+
+  // 11. 落地頁 URL 缺失
+  const noLanding = acts.filter(a=>a.utmContent&&!a.landingUrl&&!a.url?.includes('picks168'))
+  if (noLanding.length>2) issues.push({n:'發文記錄缺少落地頁 URL',cnt:noLanding.length,sev:'low',impact:'無法驗證貼文指向的正確目標頁',fix:'在發文記錄補填 landing_url 欄位'})
+
+  // 12. platformMetrics key 大小寫異常（threads 非 Threads）
+  const badKey = acts.filter(a=>a.platformMetrics?.threads&&!a.platformMetrics?.Threads)
+  if (badKey.length) issues.push({n:'成效鍵名大小寫異常',cnt:badKey.length,sev:'high',impact:'JS 讀取 Threads 成效時為空（key 為小寫 threads）',fix:'執行 DB migration：將 platformMetrics.threads 正規化為 Threads'})
+
+  // 13. 測試貼文混入正式記錄
+  const testActs = acts.filter(a=>{
+    const u = (a.url||'').toLowerCase()
+    const utm = (a.utmContent||'').toLowerCase()
+    return u.includes('/test')||u.includes('@test')||utm.includes('test')||utm.includes('demo')
+  })
+  if (testActs.length) issues.push({n:'測試貼文混入正式記錄',cnt:testActs.length,sev:'medium',impact:'成效統計被測試資料稀釋',fix:`刪除或標記以下記錄：${testActs.slice(0,2).map(a=>a.utmContent||a.url||'?').join(', ')}`})
+
+  // 14. 近 7 天無任何新發文記錄
+  const d7ago = new Date(Date.now()-7*86400000)
+  const recent = acts.filter(a=>a.date && new Date(a.date)>=d7ago)
+  if (!recent.length && acts.length>0) issues.push({n:'近 7 天無新發文記錄',cnt:1,sev:'medium',impact:'社群活躍度資料斷層，無法計算本週互動指標',fix:'補填最近 7 天的發文記錄，或確認帳號是否暫停運作'})
+
   const SC = {critical:'#f87171',high:'#f59e42',medium:'#60a5fa',low:'#94a3b8'}
   const SL = {critical:'嚴重',high:'高',medium:'中',low:'低'}
-  if (!issues.length) { el.innerHTML='<div style="padding:11px;background:#34d39918;border-radius:8px;font-size:.8rem;color:#34d399">✅ 未偵測到明顯資料問題</div>'; return }
-  el.innerHTML = issues.map(iss=>`<div style="padding:9px 12px;border:1px solid ${SC[iss.sev]}40;border-left:3px solid ${SC[iss.sev]};border-radius:0 8px 8px 0;margin-bottom:7px">
+  if (!issues.length) { el.innerHTML='<div style="padding:11px;background:#34d39918;border-radius:8px;font-size:.8rem;color:#34d399">✅ 所有 14 項資料健康檢查通過，未偵測到問題</div>'; return }
+  const pass = 14 - issues.length
+  el.innerHTML = `<div style="font-size:.72rem;color:var(--text3);margin-bottom:8px">共 14 項檢查：${pass} 通過 / ${issues.length} 需注意</div>` +
+  issues.map(iss=>`<div style="padding:9px 12px;border:1px solid ${SC[iss.sev]}40;border-left:3px solid ${SC[iss.sev]};border-radius:0 8px 8px 0;margin-bottom:7px">
     <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap">
       <span style="font-size:.74rem;font-weight:700;color:var(--text)">${iss.n}</span>
       <span style="font-size:.62rem;padding:1px 6px;border-radius:5px;background:${SC[iss.sev]}20;color:${SC[iss.sev]}">${SL[iss.sev]}</span>
@@ -2384,6 +2507,157 @@ function loadGA4Data(){
     });
 }
 loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從矩陣帳號即時建立
+
+// ===== A/B 測試管理 =====
+const AB_KEY = 'ab_tests'
+
+function openAddAbTest() {
+  document.getElementById('ab-edit-id').value = ''
+  document.getElementById('ab-name').value = ''
+  document.getElementById('ab-start').value = new Date().toISOString().slice(0,10)
+  document.getElementById('ab-end').value = ''
+  document.getElementById('ab-metric').value = 'views'
+  document.getElementById('ab-status').value = 'running'
+  document.getElementById('ab-var-a').value = ''
+  document.getElementById('ab-var-b').value = ''
+  document.getElementById('ab-hypothesis').value = ''
+  document.getElementById('ab-utm-a').value = ''
+  document.getElementById('ab-utm-b').value = ''
+  document.getElementById('ab-conclusion').value = ''
+  document.getElementById('ab-form-wrap').style.display = ''
+  document.getElementById('ab-name').focus()
+}
+
+function openEditAbTest(id) {
+  const list = DB.get(AB_KEY) || []
+  const t = list.find(x=>x.id===id)
+  if (!t) return
+  const _sv = (eid, v) => { const el=document.getElementById(eid); if(el) el.value=v||'' }
+  _sv('ab-edit-id', t.id)
+  _sv('ab-name', t.name)
+  _sv('ab-start', t.startDate)
+  _sv('ab-end', t.endDate)
+  _sv('ab-metric', t.metric)
+  _sv('ab-status', t.status)
+  _sv('ab-var-a', t.varA)
+  _sv('ab-var-b', t.varB)
+  _sv('ab-hypothesis', t.hypothesis)
+  _sv('ab-utm-a', t.utmA)
+  _sv('ab-utm-b', t.utmB)
+  _sv('ab-conclusion', t.conclusion)
+  document.getElementById('ab-form-wrap').style.display = ''
+  document.getElementById('ab-name').focus()
+}
+
+function saveAbTest() {
+  const _gv = id => (document.getElementById(id)?.value||'').trim()
+  const name = _gv('ab-name')
+  if (!name) { alert('請填寫測試名稱'); return }
+  const id = _gv('ab-edit-id')
+  const obj = {
+    name,
+    startDate: _gv('ab-start'),
+    endDate: _gv('ab-end'),
+    metric: _gv('ab-metric'),
+    status: _gv('ab-status'),
+    varA: _gv('ab-var-a'),
+    varB: _gv('ab-var-b'),
+    hypothesis: _gv('ab-hypothesis'),
+    utmA: _gv('ab-utm-a'),
+    utmB: _gv('ab-utm-b'),
+    conclusion: _gv('ab-conclusion'),
+    updatedAt: new Date().toISOString()
+  }
+  const list = DB.get(AB_KEY) || []
+  if (id) {
+    const i = list.findIndex(x=>x.id===id)
+    if (i>=0) list[i] = {...list[i], ...obj}
+    else list.push({...obj, id: DB.id(), createdAt: new Date().toISOString()})
+  } else {
+    list.push({...obj, id: DB.id(), createdAt: new Date().toISOString()})
+  }
+  DB.set(AB_KEY, list)
+  DB.push(AB_KEY).catch(()=>{})
+  document.getElementById('ab-form-wrap').style.display = 'none'
+  renderAbTests()
+}
+
+function deleteAbTest(id) {
+  if (!confirm('確定刪除這筆 A/B 測試記錄？')) return
+  const list = (DB.get(AB_KEY)||[]).filter(x=>x.id!==id)
+  DB.set(AB_KEY, list)
+  DB.push(AB_KEY).catch(()=>{})
+  renderAbTests()
+}
+
+function renderAbTests() {
+  const list = DB.get(AB_KEY) || []
+  const empty = document.getElementById('ab-empty')
+  const wrap = document.getElementById('ab-list')
+  if (!wrap) return
+  if (!list.length) { if(empty) empty.style.display=''; wrap.innerHTML=''; return }
+  if(empty) empty.style.display='none'
+
+  const METRIC_L = {views:'曝光數',likes:'讚數',replies:'留言數',reposts:'轉發',cta_clicks:'CTA 點擊',landing_visits:'落地頁訪問',registrations:'註冊數'}
+  const ST_C = {running:'#34d399',paused:'#f59e42',done:'#818cf8',cancelled:'#94a3b8'}
+  const ST_L = {running:'進行中',paused:'暫停',done:'已完成',cancelled:'取消'}
+
+  // 取各 UTM 對應的 Threads 成效
+  const acts = DB.get('thread_activities') || []
+  const getMetricVal = (utm, metric) => {
+    if (!utm) return null
+    const a = acts.find(x=>x.utmContent===utm)
+    if (!a) return null
+    const pm = a.platformMetrics?.Threads || {}
+    return pm[metric] ?? null
+  }
+
+  wrap.innerHTML = list.slice().reverse().map(t => {
+    const sc = ST_C[t.status]||'#94a3b8'
+    const sl = ST_L[t.status]||t.status
+    const ml = METRIC_L[t.metric]||t.metric
+    const aVal = getMetricVal(t.utmA, t.metric)
+    const bVal = getMetricVal(t.utmB, t.metric)
+    const winner = (aVal!=null&&bVal!=null) ? (aVal>bVal?'A':'B') : null
+    const winnerColor = winner ? '#34d399' : 'var(--text3)'
+    const diff = (aVal!=null&&bVal!=null&&aVal>0) ? `${winner==='B'?'+':''}${Math.round((bVal-aVal)/aVal*100)}%` : ''
+
+    return `<div style="border:1px solid var(--border);border-radius:10px;padding:13px 15px;margin-bottom:10px;position:relative">
+      <div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:3px">${t.name}</div>
+          <div style="font-size:.68rem;color:var(--text3)">
+            ${t.startDate||''}${t.endDate?` → ${t.endDate}`:''} · 衡量指標：${ml}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+          <span style="font-size:.62rem;padding:2px 8px;border-radius:10px;background:${sc}20;color:${sc};font-weight:600">${sl}</span>
+          <button onclick="openEditAbTest('${t.id}')" style="font-size:.7rem;padding:4px 9px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;color:var(--text2)">編輯</button>
+          <button onclick="deleteAbTest('${t.id}')" style="font-size:.7rem;padding:4px 9px;border-radius:6px;background:#f8717120;border:1px solid #f8717140;cursor:pointer;color:#f87171">刪除</button>
+        </div>
+      </div>
+      ${t.hypothesis?`<div style="font-size:.72rem;color:var(--text2);margin-bottom:8px;padding:6px 10px;background:var(--bg2);border-radius:6px;border-left:2px solid #818cf8">💡 ${t.hypothesis}</div>`:''}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div style="padding:9px 11px;background:${winner==='A'?'#34d39912':'var(--bg2)'};border:1px solid ${winner==='A'?'#34d39940':'var(--border)'};border-radius:8px">
+          <div style="font-size:.68rem;font-weight:700;color:var(--text3);margin-bottom:4px">方案 A${winner==='A'?' 🏆':''}</div>
+          <div style="font-size:.75rem;color:var(--text)">${t.varA||'—'}</div>
+          ${t.utmA?`<div style="font-size:.63rem;color:var(--text3);margin-top:4px">UTM: ${t.utmA}</div>`:''}
+          ${aVal!=null?`<div style="font-size:.78rem;font-weight:700;color:${winner==='A'?'#34d399':'var(--text)'};margin-top:5px">${ml}：${aVal.toLocaleString()}</div>`:''}
+        </div>
+        <div style="padding:9px 11px;background:${winner==='B'?'#34d39912':'var(--bg2)'};border:1px solid ${winner==='B'?'#34d39940':'var(--border)'};border-radius:8px">
+          <div style="font-size:.68rem;font-weight:700;color:var(--text3);margin-bottom:4px">方案 B${winner==='B'?' 🏆':''}</div>
+          <div style="font-size:.75rem;color:var(--text)">${t.varB||'—'}</div>
+          ${t.utmB?`<div style="font-size:.63rem;color:var(--text3);margin-top:4px">UTM: ${t.utmB}</div>`:''}
+          ${bVal!=null?`<div style="font-size:.78rem;font-weight:700;color:${winner==='B'?'#34d399':'var(--text)'};margin-top:5px">${ml}：${bVal.toLocaleString()}</div>`:''}
+        </div>
+      </div>
+      ${(winner&&diff)?`<div style="font-size:.72rem;font-weight:700;color:${winnerColor};margin-bottom:6px">📊 方案 ${winner} 勝出 ${diff}</div>`:''}
+      ${t.conclusion?`<div style="font-size:.72rem;color:var(--text2);padding:6px 10px;background:var(--bg2);border-radius:6px;border-left:2px solid #34d399">📝 結論：${t.conclusion}</div>`:''}
+    </div>`
+  }).join('')
+}
+
+
 </script>
 
 <!-- ===== PAGE: UTM 產生器（嵌入 ys89-utm.pages.dev，共用 D1）===== -->
@@ -2391,12 +2665,12 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   <div class="fb" style="margin-bottom:14px">
     <div>
       <h2 style="font-size:1.2rem;font-weight:700">🏷️ 社群 UTM 連結產生器</h2>
-      <p class="tm" style="margin-top:3px">讀「社群水軍號」人設 → 產生帶追蹤的連結 → 一鍵存進短連結，GA4 成效用水軍中文名對帳</p>
+      <p class="tm" style="margin-top:3px">讀「矩陣帳號號」人設 → 產生帶追蹤的連結 → 一鍵存進短連結，GA4 成效用水軍中文名對帳</p>
     </div>
   </div>
   <div class="g2" style="align-items:start">
     <div class="card">
-      <div class="fg"><label>① 選水軍是誰 <span style="color:var(--text3);font-size:.72rem">utm_source（來自社群水軍號）</span></label>
+      <div class="fg"><label>① 選水軍是誰 <span style="color:var(--text3);font-size:.72rem">utm_source（來自矩陣帳號號）</span></label>
         <select id="u-persona" onchange="_utmPersonaChange()"></select></div>
       <div class="fr">
         <div class="fg"><label>② 貼在哪 <span style="color:var(--text3);font-size:.72rem">utm_medium</span></label>
@@ -2448,7 +2722,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
         <input type="text" id="u-title" placeholder="例：2026世界盃觀賽懶人包 / 世足倒數10天話題"></div>
       <div class="fg"><label>⑦ 發文分類 <span style="color:var(--text3);font-size:.72rem">存檔後自動記到對應分頁</span></label>
         <select id="u-usage" onchange="utmUsageChange()">
-          <option value="炒群">🔥 社群平台炒群</option>
+          <option value="互動">🔥 社群平台互動</option>
           <option value="匿名">📝 匿名社群發文</option>
           <option value="fb">📘 臉書社團/粉專</option>
           <option value="none">（只存短連結，不建發文記錄）</option>
@@ -2494,10 +2768,10 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     <div class="card">
       <div class="card-title">💡 怎麼運作（完整流程）</div>
       <div class="tm" style="font-size:.78rem;line-height:1.7">
-        <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">①</span><div>在這裡 <b>選水軍 → 選平台 → 選落地頁</b>，系統自動產生帶 <code>utm_source / utm_medium / utm_content</code> 的追蹤連結。水軍名單來自 <b style="color:var(--accent)">社群水軍號</b>，那邊改 utm 碼這裡即時同步。</div></div>
-        <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">②</span><div>填 <b>⑥標題</b>（這條給哪篇用）、<b>⑦用途</b>（文章發布／炒話題），把連結貼到 lihi 縮短後，<b>短連結貼回⑦下方欄</b>。</div></div>
-        <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">③</span><div>選 <b>⑦ 發文分類</b>（社群平台炒群／匿名社群發文／臉書社團粉專），按 <b style="color:var(--accent)">💾 儲存</b> → 同時存進短連結庫 <b>並自動到對應分頁建立一筆發文記錄</b>（標題・UTM碼・短連結・時間）。</div></div>
-        <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">④</span><div>之後到 <b style="color:var(--accent)">發文追蹤 / 炒話題追蹤</b> 記錄發文時，用「<b>📎 帶入已建的 UTM/短連結</b>」下拉，<b>一鍵帶入 UTM碼＋短連結＋標題</b>，不用重 key。</div></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">①</span><div>在這裡 <b>選水軍 → 選平台 → 選落地頁</b>，系統自動產生帶 <code>utm_source / utm_medium / utm_content</code> 的追蹤連結。水軍名單來自 <b style="color:var(--accent)">矩陣帳號號</b>，那邊改 utm 碼這裡即時同步。</div></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">②</span><div>填 <b>⑥標題</b>（這條給哪篇用）、<b>⑦用途</b>（文章發布／話題參與），把連結貼到 lihi 縮短後，<b>短連結貼回⑦下方欄</b>。</div></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">③</span><div>選 <b>⑦ 發文分類</b>（社群平台互動／匿名社群發文／臉書社團粉專），按 <b style="color:var(--accent)">💾 儲存</b> → 同時存進短連結庫 <b>並自動到對應分頁建立一筆發文記錄</b>（標題・UTM碼・短連結・時間）。</div></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">④</span><div>之後到 <b style="color:var(--accent)">發文追蹤 / 話題參與追蹤</b> 記錄發文時，用「<b>📎 帶入已建的 UTM/短連結</b>」下拉，<b>一鍵帶入 UTM碼＋短連結＋標題</b>，不用重 key。</div></div>
         <div style="display:flex;gap:8px"><span style="color:var(--accent);font-weight:800;flex-shrink:0">⑤</span><div>系統每天把這些碼寫進對外 <code>social-feed.json</code>，SEO 成效儀表板用 <code>utm_content</code> 接 GA4，自動算出「這篇貼文帶幾人進論壇」。GA4 分頁也會用水軍中文名顯示 utm_source。</div></div>
       </div>
       <div class="card-title" style="margin-top:16px">📌 此水軍已存的 UTM</div>
@@ -2844,7 +3118,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     <p class="tm" style="font-size:.82rem;line-height:1.8">所有角色集中在「角色主檔」，用 UTM 碼去重（同一人只一筆），分四類：</p>
     <ul style="font-size:.82rem;line-height:1.9;padding-left:20px;margin-top:4px">
       <li><b style="color:#f59e0b">🎯 專業導論壇主力</b>：排雷週記/財神/阿奇/蟹蟹/kk — 導流論壇文章</li>
-      <li><b style="color:#60a5fa">💬 社群水軍</b>：IG/Threads/FB 真人角色，炒群呼應</li>
+      <li><b style="color:#60a5fa">💬 矩陣帳號</b>：IG/Threads/FB 真人角色，互動呼應</li>
       <li><b style="color:#3b82f6">📘 FB社團角色</b>：阿埔、陳玉樺等</li>
       <li><b style="color:#a78bfa">📝 鋪文/匿名平台</b>：Medium/Pixnet/方格子/Dcard 等第三方帳號</li>
     </ul>
@@ -2856,7 +3130,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     <div style="overflow-x:auto"><table style="width:100%;font-size:.82rem;border-collapse:collapse">
       <thead><tr style="border-bottom:2px solid var(--border)"><th style="text-align:left;padding:7px">分頁</th><th style="text-align:left;padding:7px">放什麼</th></tr></thead>
       <tbody>
-        <tr style="border-bottom:1px solid var(--border)"><td style="padding:7px"><b>🔥 社群平台炒群</b></td><td style="padding:7px">IG/Threads/FB 炒話題、炒熱度</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:7px"><b>🔥 社群平台互動</b></td><td style="padding:7px">IG/Threads/FB 話題參與、炒熱度</td></tr>
         <tr style="border-bottom:1px solid var(--border)"><td style="padding:7px"><b>📝 匿名社群發文</b></td><td style="padding:7px">Medium/Pixnet/方格子/Dcard/PTT 等第三方部落格・論壇</td></tr>
         <tr><td style="padding:7px"><b>📘 臉書社團/粉專</b></td><td style="padding:7px">FB 社團經營、粉專貼文</td></tr>
       </tbody>
@@ -2870,7 +3144,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     <ol style="font-size:.82rem;line-height:1.9;padding-left:20px;margin-top:4px">
       <li>① 選角色（依類型分組）→ ② 選貼在哪 → ③ 活動 → ④ 落地頁 → ⑤ 自動產貼文編號</li>
       <li>⑥ 填<b>文章/貼文標題</b>（摘要）</li>
-      <li>⑦ 選<b style="color:var(--accent)">發文分類</b>：🔥社群平台炒群／📝匿名社群發文／📘臉書社團粉專</li>
+      <li>⑦ 選<b style="color:var(--accent)">發文分類</b>：🔥社群平台互動／📝匿名社群發文／📘臉書社團粉專</li>
       <li>把產生的連結縮短，<b>短連結貼回</b></li>
       <li>按 <b style="color:var(--accent)">💾 儲存</b> → 自動存進短連結庫，<b>並到對應分頁建立一筆發文記錄</b>（狀態「已發」）</li>
     </ol>
@@ -3076,12 +3350,12 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   <div id="todo-list"></div>
 </div>
 
-<!-- ===== PAGE: 炒話題追蹤 ===== -->
+<!-- ===== PAGE: 話題參與追蹤 ===== -->
 <div id="pg-threadtracker" class="page">
   <div class="fb" style="margin-bottom:18px">
     <div>
-      <h2 style="font-size:1.2rem;font-weight:700">🔥 社群平台炒群</h2>
-      <p class="tm" style="margin-top:3px">IG/Threads/FB 炒話題、炒熱度 · 隔日成效追蹤 · 連結速達</p>
+      <h2 style="font-size:1.2rem;font-weight:700">🔥 社群平台互動</h2>
+      <p class="tm" style="margin-top:3px">IG/Threads/FB 話題參與、炒熱度 · 隔日成效追蹤 · 連結速達</p>
     </div>
     <div class="flex">
       <select id="tt-filter-platform" style="width:110px" onchange="renderThreadTracker()">
@@ -3092,7 +3366,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <select id="tt-filter-status" style="width:100px" onchange="renderThreadTracker()">
         <option value="">全部狀態</option><option>待記錄</option><option>已記錄</option>
       </select>
-      <button class="btn btn-primary" onclick="openAddThreadActivity()">+ 新增炒話題</button>
+      <button class="btn btn-primary" onclick="openAddThreadActivity()">+ 新增話題參與</button>
       <button class="btn btn-outline" onclick="ttAutoBatchMetrics()" id="tt-auto-btn" title="自動讀取今日/昨日所有待記錄貼文的 Threads 公開數據">⚡ 今日成效</button>
       <button class="btn btn-outline" onclick="ttAutoBatchMetrics(true)" id="tt-auto-all-btn" title="批次更新所有待記錄貼文（含舊貼文）" style="border-color:var(--accent2);color:var(--accent2)">⚡ 更新全部待記錄</button>
     </div>
@@ -3703,10 +3977,10 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   </div>
 </div>
 
-<!-- 新增炒話題記錄 -->
+<!-- 新增話題參與記錄 -->
 <div id="modal-thread-activity" class="overlay">
   <div class="modal" style="max-width:560px">
-    <div class="mh"><div class="mt" id="ta-modal-title">新增炒話題記錄</div><button class="mc" onclick="closeModal('modal-thread-activity')">✕</button></div>
+    <div class="mh"><div class="mt" id="ta-modal-title">新增話題參與記錄</div><button class="mc" onclick="closeModal('modal-thread-activity')">✕</button></div>
     <input type="hidden" id="ta-id">
     <div class="fr">
       <div class="fg"><label>日期</label><input type="date" id="ta-date" onchange="taGenUtm()"></div>
@@ -3718,7 +3992,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
     <div class="fr">
       <div class="fg"><label>策略</label>
         <select id="ta-strategy">
-          <option>帶風向</option><option>引流/導到ys89</option><option>炒話題</option>
+          <option>帶風向</option><option>引流/導到ys89</option><option>話題參與</option>
           <option>品牌曝光</option><option>真人互動</option>
           <option>回覆</option><option>盲推註冊</option>
         </select>
@@ -3760,7 +4034,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <div class="tm" style="font-size:.68rem;margin-top:3px">把這串放進短連結的 utm_content，GA4 才能歸因到這篇貼文</div>
     </div>
     <div class="fg">
-      <label>🎯 導向網站（原始連結／落地頁）— 這篇炒話題導去哪</label>
+      <label>🎯 導向網站（原始連結／落地頁）— 這篇話題參與導去哪</label>
       <input id="ta-landing" list="ta-landing-list" placeholder="例：https://ys89.games/live-104">
       <datalist id="ta-landing-list"></datalist>
     </div>
@@ -3774,17 +4048,114 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
       <input id="ta-shortlink" type="url" placeholder="https://lihi2.me/...">
     </div>
     <div class="fg"><label>發文內容（選填，貼上腳本）</label><textarea id="ta-content" rows="3" placeholder="貼上實際發文內容"></textarea></div>
-    <div class="fb" style="margin-top:6px">
+
+    <!-- 內容分析欄位（可展開） -->
+    <details style="margin-top:6px;border:1px solid var(--border);border-radius:6px;padding:2px 10px 8px">
+      <summary style="cursor:pointer;font-size:.8rem;color:var(--text2);padding:6px 0;user-select:none">📊 內容分析欄位（選填，供成效分析用）</summary>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <div class="fg" style="margin:0">
+          <label style="font-size:.75rem">內容目標</label>
+          <select id="ta-primary-goal" style="font-size:.8rem">
+            <option value="">— 選擇 —</option>
+            <option value="awareness">曝光</option>
+            <option value="engagement">互動</option>
+            <option value="discussion">討論</option>
+            <option value="save">收藏</option>
+            <option value="share">分享</option>
+            <option value="follow">追蹤</option>
+            <option value="trust">信任</option>
+            <option value="traffic">導流</option>
+            <option value="conversion">轉化</option>
+            <option value="retention">留存</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label style="font-size:.75rem">漏斗階段</label>
+          <select id="ta-funnel-stage" style="font-size:.8rem">
+            <option value="">— 選擇 —</option>
+            <option value="awareness">認知</option>
+            <option value="interest">興趣</option>
+            <option value="consideration">考慮</option>
+            <option value="trust">信任</option>
+            <option value="action">行動</option>
+            <option value="retention">留存</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label style="font-size:.75rem">內容支柱</label>
+          <select id="ta-content-pillar" style="font-size:.8rem">
+            <option value="">— 選擇 —</option>
+            <option value="news">即時資訊</option>
+            <option value="education">知識科普</option>
+            <option value="data">數據分析</option>
+            <option value="opinion">觀點討論</option>
+            <option value="story">真人心得</option>
+            <option value="case">案例復盤</option>
+            <option value="tool">工具內容</option>
+            <option value="trust">品牌信任</option>
+            <option value="cta">轉化內容</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label style="font-size:.75rem">內容格式</label>
+          <select id="ta-format" style="font-size:.8rem">
+            <option value="">— 選擇 —</option>
+            <option value="threads_short">Threads 短文</option>
+            <option value="threads_thread">Threads 串文</option>
+            <option value="ig_single">IG 單圖</option>
+            <option value="ig_carousel">IG 輪播</option>
+            <option value="reels">Reels</option>
+            <option value="story">限時動態</option>
+            <option value="blog_short">部落格短文</option>
+            <option value="blog_long">部落格長文</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label style="font-size:.75rem">Hook 類型</label>
+          <select id="ta-hook-type" style="font-size:.8rem">
+            <option value="">— 選擇 —</option>
+            <option value="question">問題型</option>
+            <option value="controversy">爭議型</option>
+            <option value="data">數據型</option>
+            <option value="news">新聞型</option>
+            <option value="pain">痛點型</option>
+            <option value="story">心得型</option>
+            <option value="contrast">反差型</option>
+            <option value="list">清單型</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label style="font-size:.75rem">CTA 類型</label>
+          <select id="ta-cta-type" style="font-size:.8rem">
+            <option value="">— 選擇 —</option>
+            <option value="none">無 CTA</option>
+            <option value="comment">留言</option>
+            <option value="share">分享</option>
+            <option value="save">收藏</option>
+            <option value="follow">追蹤</option>
+            <option value="bio">看 Bio</option>
+            <option value="link_text">正文連結</option>
+            <option value="link_story">限動連結</option>
+            <option value="dm">私訊</option>
+            <option value="line">加入 LINE</option>
+            <option value="tool">使用工具</option>
+            <option value="register">註冊</option>
+          </select>
+        </div>
+      </div>
+    </details>
+
+    <div class="fb" style="margin-top:10px">
       <button class="btn btn-outline" onclick="closeModal('modal-thread-activity')">取消</button>
       <button class="btn btn-primary" onclick="saveThreadActivity()">儲存</button>
     </div>
   </div>
 </div>
 
-<!-- 記錄炒話題成效（分平台） -->
+<!-- 記錄話題參與成效（分平台） -->
 <div id="modal-thread-metrics" class="overlay">
   <div class="modal" style="max-width:480px">
-    <div class="mh"><div class="mt">📊 記錄炒話題成效</div><button class="mc" onclick="closeModal('modal-thread-metrics')">✕</button></div>
+    <div class="mh"><div class="mt">📊 記錄話題參與成效</div><button class="mc" onclick="closeModal('modal-thread-metrics')">✕</button></div>
     <input type="hidden" id="tm-id">
     <div id="tm-info" style="background:#0a0908;border:1px solid var(--border2);border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:.8rem;color:var(--text2)"></div>
     <!-- 自動取得列（有 URL 時顯示） -->
@@ -4012,10 +4383,10 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   </div>
 </div>
 
-<!-- 新增炒話題串 -->
+<!-- 新增話題參與串 -->
 <div id="modal-threads-reply" class="overlay">
   <div class="modal">
-    <div class="mh"><div class="mt" id="tr-title">新增炒話題串</div><button class="mc" onclick="closeModal('modal-threads-reply')">✕</button></div>
+    <div class="mh"><div class="mt" id="tr-title">新增話題參與串</div><button class="mc" onclick="closeModal('modal-threads-reply')">✕</button></div>
     <input type="hidden" id="tr-id">
     <div class="fg"><label>目標串 URL（選填）</label><input id="tr-url" placeholder="https://www.threads.net/..."></div>
     <div class="fg"><label>主題說明 ✦</label><textarea id="tr-summary" rows="2" placeholder="這個討論串的主題、關鍵字、背景說明"></textarea></div>
@@ -4024,7 +4395,7 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
         <select id="tr-dir"><option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option><option>百家樂</option><option>老虎機</option><option>捕魚機</option></select>
       </div>
       <div class="fg"><label>策略</label>
-        <select id="tr-strategy"><option>帶風向</option><option>引流/導到ys89</option><option>炒話題</option><option>真人互動</option></select>
+        <select id="tr-strategy"><option>帶風向</option><option>引流/導到ys89</option><option>話題參與</option><option>真人互動</option></select>
       </div>
     </div>
     <div class="fg"><label>狀態</label>
@@ -5222,7 +5593,7 @@ const DEFAULT_REPORT_POSTS=[
   {id:'rp1',date:"2026-06-03",role:"阿奇",topic:"世足賽賠率",site:"https://ys89.games/live-104",url:"https://www.threads.com/@noloxd6467/post/DZH8uzGGwSs?xmt=AQG062KYfO2mwjJsC9e15AdvP5wDrrogk0G0Hb63kgHiAiXvv1kAsjjLvE2Yyy7YxvRTnHiJ&slof=1"},
   {id:'rp2',date:"2026-06-03",role:"阿奇",topic:"回覆直播",site:"https://ys89.games/live-104",url:"https://www.threads.com/@ys89_com/post/DZIC4wNlHuW?xmt=AQG0EHpyfrXPYbq5_yV-I99yLq78wD7sp6ehyTO8Kgr-XA"},
   {id:'rp3',date:"2026-06-04",role:"miya",topic:"世界盃餐廳",site:"https://fifa-worldcups.tw",url:"https://www.threads.com/@miya.chen215/post/DZKKvj-ibmL?xmt=AQG0T4O5e4e4s1ZbT4Diw_7SyzILkwhitSF4XKZblPfaCBmWNpw8SdpCAju2h0j9--bwCS8&slof=1"},
-  {id:'rp4',date:"2026-06-04",role:"luna",topic:"炒話題",site:"https://ys89.games/live-104",url:"https://www.threads.com/@ooasj2356/post/DZKMKTLFAm1?xmt=AQG03yZUTsqMwNUzPdNpTFay1Dr12NAbwYvy-gyNgsXbrpMcl6IYOFkeR7HMJu2iXcoIphBS&slof=1"},
+  {id:'rp4',date:"2026-06-04",role:"luna",topic:"話題參與",site:"https://ys89.games/live-104",url:"https://www.threads.com/@ooasj2356/post/DZKMKTLFAm1?xmt=AQG03yZUTsqMwNUzPdNpTFay1Dr12NAbwYvy-gyNgsXbrpMcl6IYOFkeR7HMJu2iXcoIphBS&slof=1"},
   {id:'rp5',date:"2026-06-04",role:"排雷週記",topic:"直播",site:"https://ys89.info/live-104",url:""},
   {id:'rp6',date:"2026-06-04",role:"jason",topic:"引用阿奇直播",site:"https://ys89.games/live-104",url:""},
   {id:'rp7',date:"2026-06-05",role:"阿奇",topic:"直播",site:"https://ys89.games/live-104",url:"https://www.threads.com/@noloxd6467/post/DZMXqtOk5LU?xmt=AQG0UA9xxOHjFBOEIqZFHGsTsjhTzD_hw4xyS6lR0JA5IrelPvwt86TJU092UmJF2ffl8DkF&slof=1"},
@@ -5309,10 +5680,10 @@ const DEFAULT_COMMUNITY=[
   {id:'c19',name:'口瓜',          group:'A',code:'kougua',role:'老虎機評測 / 互動',     followers:32, handle:'froggyfrooo',     direction:'老虎機遊戲評測',persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
   {id:'c20',name:'路比',          group:'A',code:'lubi',  role:'老虎機評測 / 互動',     followers:62, handle:'loopyonchain',    direction:'老虎機遊戲評測',persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
   // 世足 AI 預測社群號
-  {id:'c21',name:'cc',            group:'A',code:'cc',    role:'AI世界盃預測 / 社群炒群', followers:0,  direction:'AI世界盃預測分析',  persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
-  {id:'c22',name:'波奇',          group:'A',code:'boqi',  role:'社群炒群 / 話題互動',     followers:0,  direction:'世足話題 / 社群互動',persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
-  {id:'c23',name:'陳亦強',        group:'A',code:'cyq',   role:'社群炒群 / 話題互動',     followers:0,  direction:'世足話題 / 社群互動',persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
-  {id:'c24',name:'小豪',          group:'A',code:'haogame',handle:'haogamediary',dir:'體育賽事',roleType:'真人',role:'社群炒群 / IG 水軍',followers:0,direction:'世足話題 / 社群互動',platforms:['IG'],persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
+  {id:'c21',name:'cc',            group:'A',code:'cc',    role:'AI世界盃預測 / 社群互動', followers:0,  direction:'AI世界盃預測分析',  persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
+  {id:'c22',name:'波奇',          group:'A',code:'boqi',  role:'社群互動 / 話題互動',     followers:0,  direction:'世足話題 / 社群互動',persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
+  {id:'c23',name:'陳亦強',        group:'A',code:'cyq',   role:'社群互動 / 話題互動',     followers:0,  direction:'世足話題 / 社群互動',persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
+  {id:'c24',name:'小豪',          group:'A',code:'haogame',handle:'haogamediary',dir:'體育賽事',roleType:'真人',role:'社群互動 / IG 水軍',followers:0,direction:'世足話題 / 社群互動',platforms:['IG'],persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
 ]
 
 async function initData(){
@@ -6179,7 +6550,7 @@ function renderPosts(){
 }
 function poToggle(el){ el.closest('.po-card')?.classList.toggle('open') }
 
-// ── 共用：UTM 追蹤碼 / 標題抓取（炒話題與發文追蹤共用）──
+// ── 共用：UTM 追蹤碼 / 標題抓取（話題參與與發文追蹤共用）──
 function _syncCopy(utmElId, copyBtnId){
   const v=document.getElementById(utmElId)?.value||''
   const b=document.getElementById(copyBtnId); if(b) b.setAttribute('data-cp',v)
@@ -6404,7 +6775,7 @@ function savePostUrl(){
     DB.set('thread_activities',list)
     closeModal('modal-set-posturl')
     renderThreadTracker()
-    toast(url?'🔗 炒話題連結已儲存':'連結已清除')
+    toast(url?'🔗 話題參與連結已儲存':'連結已清除')
     return
   }
   // 原本 post URL 儲存邏輯
@@ -6575,7 +6946,7 @@ function utmCode(name){
 }
 function commCode(a){ return (a&&a.code&&a.code.trim()) ? a.code.trim().toLowerCase() : utmCode(a&&a.name); }
 
-// ── 人設總線：發文角色 + 社群水軍號 → 統一來源，下游(UTM/GA4/短連結)都從這讀 ──
+// ── 人設總線：發文角色 + 矩陣帳號號 → 統一來源，下游(UTM/GA4/短連結)都從這讀 ──
 // 歷史 utm 碼對照：這些人設沿用既有碼（GA4 歷史數據都掛在這些碼上，不能改成拼音）
 const LEGACY_CODE={'阿奇':'akki','財神':'god','世足大財神':'god','大叔':'uncle','蟹蟹':'crab','kk':'kk','陳玉樺':'chen','世足排雷週記':'shizu','排雷週記':'shizu','龍哥':'dragon','Diego':'diego','YS主帳號':'ys','YS':'ys','cc':'cc','波奇':'boqi','陳亦強':'cyq'};
 function actorCode(a){
@@ -7935,7 +8306,7 @@ function showKpiWeek(week){
 
 // ===== THREADS SCRIPTS =====
 const ST_BADGE={草稿:'b-gray',備用:'b-yellow',已發布:'b-green',進行中:'b-warn',已完成:'b-green',已回覆:'b-green'}
-const STG_BADGE={帶風向:'b-red','引流/導到ys89':'b-green',炒話題:'b-warn',真人互動:'b-blue'}
+const STG_BADGE={帶風向:'b-red','引流/導到ys89':'b-green',話題參與:'b-warn',真人互動:'b-blue'}
 
 function renderThreads(){
   renderThreadsPosts()
@@ -7976,7 +8347,7 @@ function renderThreadsReplies(){
   const dir=document.getElementById('th-dir-filter')?.value
   const list=dir?all.filter(c=>c.dir===dir):all
   const wrap=document.getElementById('th-replies-list')
-  if(!list.length){wrap.innerHTML='<div class="card" style="text-align:center;padding:30px;color:var(--text3)">尚無回覆串<br><span style="font-size:.78rem">點右上角「+ 新增」建立炒話題計畫</span></div>';return}
+  if(!list.length){wrap.innerHTML='<div class="card" style="text-align:center;padding:30px;color:var(--text3)">尚無回覆串<br><span style="font-size:.78rem">點右上角「+ 新增」建立話題參與計畫</span></div>';return}
   wrap.innerHTML=list.slice().reverse().map(c=>`
     <div class="card" style="margin-bottom:10px">
       <div class="fb" style="margin-bottom:8px">
@@ -8073,7 +8444,7 @@ function delThreadsPost(id){
 
 function openAddThreadsReply(){
   document.getElementById('tr-id').value=''
-  document.getElementById('tr-title').textContent='新增炒話題串'
+  document.getElementById('tr-title').textContent='新增話題參與串'
   ;['tr-url','tr-summary'].forEach(i=>document.getElementById(i).value='')
   document.getElementById('tr-strategy').value='帶風向'
   document.getElementById('tr-status').value='草稿'
@@ -8083,7 +8454,7 @@ function openAddThreadsReply(){
 function openEditThreadsReply(id){
   const c=DB.get('threads_replies').find(x=>x.id===id);if(!c)return
   document.getElementById('tr-id').value=id
-  document.getElementById('tr-title').textContent='編輯炒話題串'
+  document.getElementById('tr-title').textContent='編輯話題參與串'
   document.getElementById('tr-url').value=c.threadUrl||''
   document.getElementById('tr-summary').value=c.summary||''
   document.getElementById('tr-dir').value=c.dir||'世足/運彩'
@@ -8749,8 +9120,8 @@ function setLinkTab(tab, el){
 
 // ===== 角色主檔（角色 × 管道能力）=====
 const PRO_CODES=['shizu','god','akki','crab','kk','xie2']
-const FB_CODES=['apu','chen']  // FB社團/FB角色（無 IG 炒群）
-const ROLE_CHANNELS=[{k:'social',label:'📱 社群平台'},{k:'buzz',label:'🔥 炒群'},{k:'fb',label:'📘 FB社團/FB角色'},{k:'seeding',label:'📣 鋪文'}]
+const FB_CODES=['apu','chen']  // FB社團/FB角色（無 IG 互動）
+const ROLE_CHANNELS=[{k:'social',label:'📱 社群平台'},{k:'buzz',label:'🔥 互動'},{k:'fb',label:'📘 FB社團/FB角色'},{k:'seeding',label:'📣 鋪文'}]
 function masterRoles(){
   const map=new Map()
   allActors().forEach(a=>{
@@ -8784,7 +9155,7 @@ function rolesForChannel(ch){ return masterRoles().filter(r=>roleChannels(r.code
 // 角色類型分類
 const ROLE_TYPES=[
   {k:'pro',label:'🎯 專業導論壇主力',desc:'排雷週記/財神/阿奇/蟹蟹/kk — 導流論壇文章為主'},
-  {k:'army',label:'💬 社群水軍',desc:'IG/Threads/FB 真人角色，Threads 呼應炒群'},
+  {k:'army',label:'💬 矩陣帳號',desc:'IG/Threads/FB 真人角色，Threads 呼應互動'},
   {k:'fb',label:'📘 FB社團角色',desc:'FB 社團經營（如阿埔、陳玉樺）'},
   {k:'seeding',label:'📝 鋪文/匿名平台',desc:'痞客邦/Medium/Dcard/PTT 等第三方'}
 ]
@@ -8844,7 +9215,7 @@ function renderRoles(){
   document.getElementById('roles-stats').innerHTML=[
     ['角色總數（去重）',roles.length,'var(--accent)'],
     ['📱 社群平台',cnt.social,'#60a5fa'],
-    ['🔥 炒群',cnt.buzz,'#f59e0b'],
+    ['🔥 互動',cnt.buzz,'#f59e0b'],
     ['📘 FB社團',cnt.fb,'#3b82f6'],
     ['📣 鋪文',cnt.seeding,'#a78bfa']
   ].map(([l,v,c])=>`<div class="card-sm" style="text-align:center;flex:1;min-width:118px"><div style="font-size:1.4rem;font-weight:700;color:${c}">${v}</div><div class="tm">${l}</div></div>`).join('')
@@ -9318,7 +9689,7 @@ function renderLinks(){
   }).join('')
 }
 
-// ── 原生 UTM 產生器（讀社群水軍號 → 存進短連結）──
+// ── 原生 UTM 產生器（讀矩陣帳號號 → 存進短連結）──
 function utmPersonas(){ return allActors().filter(a=>!a.raw||!a.raw.accountStatus||a.raw.accountStatus==='active'); }
 function utmInit(){
   const sel=document.getElementById('u-persona'); if(!sel) return;
@@ -9330,7 +9701,7 @@ function utmInit(){
   let html='';
   ROLE_TYPES.forEach(t=>{ if(!byT[t.k].length) return;
     html+=`<optgroup label="${t.label}">`+byT[t.k].map(a=>`<option value="${a.id}">${a.name}（${a.code}）</option>`).join('')+`</optgroup>`; });
-  sel.innerHTML=html||'<option value="">（請先到社群水軍號新增帳號）</option>';
+  sel.innerHTML=html||'<option value="">（請先到矩陣帳號號新增帳號）</option>';
   if(cur && utmPersonas().some(a=>a.id===cur)) sel.value=cur;
   utmFillLanding(); utmUsageChange(); _utmApplyPicksUrl(); utmGen();
   clearTimeout(_utmAutoTimer);  // 進頁面的自動產生不自動保存，等使用者實際操作才存
@@ -9391,10 +9762,10 @@ function _utmPersonaChange(){
   if(us){
     const med=document.getElementById('u-medium')?.value||'';
     let auto;
-    if(med.startsWith('th')||med.startsWith('ig')) auto='炒群';
+    if(med.startsWith('th')||med.startsWith('ig')) auto='互動';
     else if(med.startsWith('fb')) auto='fb';
     else if(med.startsWith('blog')||med.startsWith('forum')||med.startsWith('link')) auto='匿名';
-    else { const t=roleType(commCode(p)); auto=t==='seeding'?'匿名':t==='fb'?'fb':'炒群'; }
+    else { const t=roleType(commCode(p)); auto=t==='seeding'?'匿名':t==='fb'?'fb':'互動'; }
     us.value=auto; utmUsageChange();
   }
   _utmApplyPicksUrl(p);
@@ -9413,7 +9784,7 @@ function _utmApplyPicksUrl(p){
 }
 function utmGen(){
   const p=utmCurrentPersona(); const out=document.getElementById('u-out'); if(!out) return;
-  if(!p){ out.textContent='（請先在社群水軍號新增帳號）'; return; }
+  if(!p){ out.textContent='（請先在矩陣帳號號新增帳號）'; return; }
   const url=utmBuildUrl(p);
   const isPicks=url.includes('picks168.com');
   out.innerHTML=(isPicks?'<span style="display:inline-block;background:#a78bfa22;border:1px solid #a78bfa60;border-radius:4px;font-size:.67rem;color:#a78bfa;padding:1px 7px;margin-bottom:6px">🤖 GA4：picks168 追蹤</span><br>':'')+url.replace(/utm_source=([^&]*)/,'utm_source=<b style="color:var(--accent2)">$1</b>').replace(/utm_medium=([^&]*)/,'utm_medium=<b style="color:var(--accent2)">$1</b>').replace(/utm_content=([^&]*)/,'utm_content=<b style="color:#4ade80">$1</b>');
@@ -9486,7 +9857,7 @@ function utmSaveToLinks(){
   const p=utmCurrentPersona(); if(!p){ toast('請先選水軍','err'); return; }
   const url=utmBuildUrl(p), med=document.getElementById('u-medium').value, code=commCode(p);
   const ct=utmContentVal();
-  if(!ct || ct.startsWith('-') || !commCode(p)){ toast('⚠️ 此角色沒有有效的 UTM 代碼，請到社群水軍號設定 code 再存','err'); return; }
+  if(!ct || ct.startsWith('-') || !commCode(p)){ toast('⚠️ 此角色沒有有效的 UTM 代碼，請到矩陣帳號號設定 code 再存','err'); return; }
   const title=(document.getElementById('u-title')?.value||'').trim();
   const shorts=_utmGetShortlinks(); const shortUrl=shorts[0]||'';
   const usage=document.getElementById('u-usage')?.value||'其他';
@@ -9579,30 +9950,30 @@ function utmUsageChange(){
     }
   }
 }
-// 選「貼在哪」時自動切換發文分類（Threads/IG→炒群，FB→fb，部落格/論壇→匿名）
+// 選「貼在哪」時自動切換發文分類（Threads/IG→互動，FB→fb，部落格/論壇→匿名）
 function utmMedChange(){
   const med=document.getElementById('u-medium')?.value||'';
   const us=document.getElementById('u-usage');
   if(us){
-    if(med.startsWith('th')||med.startsWith('ig')) us.value='炒群';
+    if(med.startsWith('th')||med.startsWith('ig')) us.value='互動';
     else if(med.startsWith('fb')) us.value='fb';
     else if(med.startsWith('blog')||med.startsWith('forum')||med.startsWith('link')) us.value='匿名';
     utmUsageChange();
   }
   utmGen();
 }
-// 從 UTM 產生器建立發文記錄（炒群→thread_activities；匿名/fb→channel_posts）
+// 從 UTM 產生器建立發文記錄（互動→thread_activities；匿名/fb→channel_posts）
 function _utmCreateChannelRecord(usage, p, code, utmContent, title, shortUrl){
   const today=new Date().toISOString().split('T')[0], now=new Date().toISOString();
   const landingUrl=utmBuildUrl(p);
   const landingNote=(document.getElementById('u-landing-note')?.value||'').trim();
-  if(usage==='炒群'){
+  if(usage==='互動'){
     const med=document.getElementById('u-medium').value;
     const plat=_medPlatform(med);
     const list=DB.get('thread_activities')||[];
     list.push({id:DB.id(),date:today,personaId:'',personaName:p.name,platforms:[plat],strategy:'引流/導到ys89',dir:'',topic:title||'',url:'',content:'',utmContent,shortLink:shortUrl||'',urlTitle:title||'',landingUrl,landingNote,status:'待記錄',platformMetrics:{},notes:'UTM產生器建立',createdAt:now,updatedAt:now});
     DB.set('thread_activities',list);
-    return '記到社群平台炒群';
+    return '記到社群平台互動';
   }
   if(usage==='匿名'||usage==='fb'){
     const channel=usage==='fb'?'fb':'seeding';
@@ -9742,10 +10113,10 @@ ${url}
     </div>`
 }
 
-// ===== THREAD TRACKER（炒話題追蹤）=====
+// ===== THREAD TRACKER（話題參與追蹤）=====
 
 const TT_STRATEGY_COLOR = {
-  '帶風向':'#ef4444','引流/導到ys89':'#22c55e','炒話題':'#f59e0b',
+  '帶風向':'#ef4444','引流/導到ys89':'#22c55e','話題參與':'#f59e0b',
   '品牌曝光':'#3b82f6','真人互動':'#a78bfa',
   '回覆':'#60a5fa','盲推註冊':'#f97316'
 }
@@ -9762,7 +10133,7 @@ function renderThreadTracker(){
         ⏳ 世足開賽倒數 <b style="color:var(--accent);font-size:1.1em">${daysLeft > 0 ? daysLeft+'天' : '已開賽'}</b>
         &nbsp;·&nbsp; 今日：<b style="color:var(--text)">${today}</b>
       </div>
-      <div style="font-size:.75rem;color:var(--text3)">炒話題記錄後隔日點「記錄成效」填入數據</div>
+      <div style="font-size:.75rem;color:var(--text3)">話題參與記錄後隔日點「記錄成效」填入數據</div>
     </div>`
   }
 
@@ -9796,7 +10167,7 @@ function renderThreadTracker(){
 
   const wrap = document.getElementById('tt-table')
   if(!list.length){
-    wrap.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">尚無炒話題記錄<br><span style="font-size:.78rem">點右上角「+ 新增炒話題」開始記錄</span></div>'
+    wrap.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">尚無話題參與記錄<br><span style="font-size:.78rem">點右上角「+ 新增話題參與」開始記錄</span></div>'
     return
   }
 
@@ -10010,7 +10381,7 @@ function _setTmTab(plat){
   })
 }
 
-// 填充炒話題角色選單（所有 personas + community + 自訂）
+// 填充話題參與角色選單（所有 personas + community + 自訂）
 function _fillTaPersonaSel(sel, currentId, currentName){
   sel.innerHTML = '<option value="">選擇帳號</option>'
   // 世足角色
@@ -10023,7 +10394,7 @@ function _fillTaPersonaSel(sel, currentId, currentName){
     })
     sel.innerHTML += '</optgroup>'
   }
-  // 社群水軍
+  // 矩陣帳號
   const community = DB.get('community')||[]
   if(community.length){
     const byGroup={'A':[],'B':[],'C':[],'':[]};
@@ -10042,7 +10413,7 @@ function _fillTaPersonaSel(sel, currentId, currentName){
   sel.innerHTML += '<option value="custom|">＋ 自訂帳號名稱</option>'
 }
 
-// ── 炒話題：UTM 追蹤碼自動產生 ──
+// ── 話題參與：UTM 追蹤碼自動產生 ──
 function taPersonaCode(){
   const pval=document.getElementById('ta-persona').value
   let [pid,pname]=pval?pval.split('|'):['','']
@@ -10071,7 +10442,7 @@ function taGenUtm(force){
   taSyncUtmCopy()
 }
 
-// ── 炒話題：貼文連結標題預覽（貼上連結後顯示標題）──
+// ── 話題參與：貼文連結標題預覽（貼上連結後顯示標題）──
 let _taUrlTitle=''
 function taUrlLabel(url){
   try{ const u=new URL(url); const m=u.pathname.match(/@([^/]+)/); return (m?'@'+m[1]+' · ':'')+u.hostname.replace(/^www\./,'') }
@@ -10105,7 +10476,7 @@ async function taFetchTitle(url, el){
 
 function openAddThreadActivity(){
   document.getElementById('ta-id').value = ''
-  document.getElementById('ta-modal-title').textContent = '新增炒話題記錄'
+  document.getElementById('ta-modal-title').textContent = '新增話題參與記錄'
   document.getElementById('ta-date').value = new Date().toISOString().split('T')[0]
   document.getElementById('ta-url').value = ''
   document.getElementById('ta-topic').value = ''
@@ -10128,7 +10499,7 @@ function openAddThreadActivity(){
 function openEditThreadActivity(id){
   const a = (DB.get('thread_activities')||[]).find(x=>x.id===id); if(!a)return
   document.getElementById('ta-id').value = id
-  document.getElementById('ta-modal-title').textContent = '編輯炒話題記錄'
+  document.getElementById('ta-modal-title').textContent = '編輯話題參與記錄'
   document.getElementById('ta-date').value = a.date||''
   document.getElementById('ta-url').value = a.url||''
   document.getElementById('ta-topic').value = a.topic||''
@@ -10158,6 +10529,14 @@ function openEditThreadActivity(id){
   if(a.urlTitle) titleEl.textContent = '📄 '+a.urlTitle
   else if(a.url) titleEl.textContent = '🔗 '+taUrlLabel(a.url)
   else titleEl.textContent = ''
+  // 新欄位回填
+  const _sv = (id, val) => { const el=document.getElementById(id); if(el) el.value=val||'' }
+  _sv('ta-primary-goal', a.primary_goal)
+  _sv('ta-funnel-stage', a.funnel_stage)
+  _sv('ta-content-pillar', a.content_pillar)
+  _sv('ta-format', a.format)
+  _sv('ta-hook-type', a.hook_type)
+  _sv('ta-cta-type', a.cta_type)
   taSyncUtmCopy()
   _fillUtmPicker('ta-utm-pick', taPersonaCode())
   openModal('modal-thread-activity')
@@ -10180,35 +10559,43 @@ function saveThreadActivity(){
     personaName = document.getElementById('ta-persona-custom')?.value?.trim() || '自訂帳號'
   }
   const platforms = ['Threads','IG','FB'].filter(p=>document.getElementById('ta-plat-'+p)?.checked)
+  const _gv = id => (document.getElementById(id)?.value||'').trim()
   const obj = {
-    date: document.getElementById('ta-date').value,
+    date: _gv('ta-date'),
     personaId, personaName,
     platforms: platforms.length ? platforms : ['Threads'],
-    strategy: document.getElementById('ta-strategy').value,
-    dir: document.getElementById('ta-dir').value,
-    topic: document.getElementById('ta-topic').value.trim(),
-    url: document.getElementById('ta-url').value.trim(),
-    landingUrl: document.getElementById('ta-landing').value.trim(),
-    content: document.getElementById('ta-content').value.trim(),
-    utmContent: document.getElementById('ta-utm').value.trim(),
-    shortLink: document.getElementById('ta-shortlink').value.trim(),
-    urlTitle: (_taUrlTitle||'').trim() || (document.getElementById('ta-url').value.trim() ? taUrlLabel(document.getElementById('ta-url').value.trim()) : ''),
-    status: '待記錄',
-    platformMetrics: {},
-    notes:'', updatedAt: new Date().toISOString()
+    strategy: _gv('ta-strategy'),
+    dir: _gv('ta-dir'),
+    topic: _gv('ta-topic'),
+    url: _gv('ta-url'),
+    landingUrl: _gv('ta-landing'),
+    content: _gv('ta-content'),
+    utmContent: _gv('ta-utm'),
+    shortLink: _gv('ta-shortlink'),
+    urlTitle: (_taUrlTitle||'').trim() || (_gv('ta-url') ? taUrlLabel(_gv('ta-url')) : ''),
+    primary_goal: _gv('ta-primary-goal'),
+    funnel_stage: _gv('ta-funnel-stage'),
+    content_pillar: _gv('ta-content-pillar'),
+    format: _gv('ta-format'),
+    hook_type: _gv('ta-hook-type'),
+    cta_type: _gv('ta-cta-type'),
+    updatedAt: new Date().toISOString()
   }
   const list = DB.get('thread_activities')||[]
   if(id){
     const i=list.findIndex(x=>x.id===id)
-    if(i>=0) list[i]={...list[i],...obj, platformMetrics: list[i].platformMetrics||{}}
+    if(i>=0) list[i]={...list[i],...obj,
+      platformMetrics: list[i].platformMetrics||{},
+      status: list[i].status||'待記錄',
+      notes: list[i].notes||''}
   } else {
-    list.push({...obj, id:DB.id(), createdAt:new Date().toISOString()})
+    list.push({...obj, id:DB.id(), createdAt:new Date().toISOString(), status:'待記錄', platformMetrics:{}, notes:''})
   }
   DB.set('thread_activities', list)
   DB.push('thread_activities').catch(()=>{})
   closeModal('modal-thread-activity')
   renderThreadTracker()
-  toast(id?'炒話題記錄已更新':'炒話題記錄已新增')
+  toast(id?'話題參與記錄已更新':'話題參與記錄已新增')
 }
 
 function openThreadMetrics(id){
@@ -10429,7 +10816,7 @@ function saveTTReplyUrl(id, url){
 }
 
 function delThreadActivity(id){
-  if(!confirm('確定刪除這筆炒話題記錄？'))return
+  if(!confirm('確定刪除這筆話題參與記錄？'))return
   DB.set('thread_activities', (DB.get('thread_activities')||[]).filter(x=>x.id!==id))
   renderThreadTracker()
   toast('已刪除')
@@ -10564,7 +10951,7 @@ function renderCast(){
         </div>
         ${todayKpi?`<div style="font-size:.75rem;color:var(--text2);line-height:1.6">本週 KPI 已生成 · 總計 ${todayKpi.plan?todayKpi.plan.length:0} 項任務</div>`:`<div style="text-align:center;padding:10px;font-size:.77rem;color:var(--text3)">本週KPI未生成 → <button class="btn btn-xs btn-primary" onclick="generateWeeklyKpi()">⚡ 立即生成</button></div>`}
         ${ttActivities.length?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
-          <div style="font-size:.75rem;font-weight:700;color:#f59e0b;margin-bottom:6px">🔥 今日炒話題 ${ttActivities.length} 筆</div>
+          <div style="font-size:.75rem;font-weight:700;color:#f59e0b;margin-bottom:6px">🔥 今日話題參與 ${ttActivities.length} 筆</div>
           <div style="font-size:.7rem;color:var(--text3)">${ttActivities.map(a=>a.personaName+' · '+a.strategy).join(' · ')}</div>
         </div>`:''}
       </div>`
@@ -11266,7 +11653,7 @@ function applyQuickScript(){
   toast(`✅ 已加入 ${added} 項待辦`)
 }
 
-// ── 切換水軍支援對象（任務卡衝突解決）──────────────────────────
+// ── 切換角色支援對象（任務卡衝突解決）──────────────────────────
 function switchCastTask(id){
   const tasks=window._todayTasks?.[id]||[]
   if(tasks.length<=1)return
