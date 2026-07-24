@@ -6350,16 +6350,16 @@ function _migratePersonaCategories(){
 // ===== 成長概覽 =====
 function _ovSetPeriod(mode){
   const now = new Date()
-  let s, e = now.toISOString().split('T')[0]
+  let s, e = getTaipeiDateString(now)
   if(mode==='week'){
     const day=now.getDay(), diff=day===0?-6:1-day
     const mon=new Date(now); mon.setDate(now.getDate()+diff)
-    s=mon.toISOString().split('T')[0]
+    s=getTaipeiDateString(mon)
   } else if(mode==='lweek'){
     const day=now.getDay(), diff=day===0?-6:1-day
     const mon=new Date(now); mon.setDate(now.getDate()+diff-7)
     const sun=new Date(mon); sun.setDate(mon.getDate()+6)
-    s=mon.toISOString().split('T')[0]; e=sun.toISOString().split('T')[0]
+    s=getTaipeiDateString(mon); e=getTaipeiDateString(sun)
   } else if(mode==='month'){
     s=e.slice(0,7)+'-01'
   }
@@ -6382,16 +6382,16 @@ function renderGrowthOverview(){
   const allActs = DB.get('thread_activities')||[]
   const acts = allActs.filter(a=> a.date>=start && a.date<=end)
   const allReg = DB.get('real_reg')||[]
-  const regs = allReg.filter(r=> r.from<=end && r.to>=start)
+  const regs = allReg.filter(r=> r.from>=start && r.to<=end)
   const allMeta = DB.get('meta_ads')||[]
-  const metas = allMeta.filter(m=> m.from<=end && m.to>=start)
+  const metas = allMeta.filter(m=> m.from>=start && m.to<=end)
 
   // 計算期間長度（用於上期對比）
   const days = Math.ceil((new Date(end)-new Date(start))/86400000)+1
   const pEnd = new Date(start); pEnd.setDate(pEnd.getDate()-1)
   const pStart = new Date(pEnd); pStart.setDate(pEnd.getDate()-days+1)
-  const pe=pEnd.toISOString().split('T')[0], ps=pStart.toISOString().split('T')[0]
-  const prevRegs = allReg.filter(r=> r.from<=pe && r.to>=ps)
+  const pe=getTaipeiDateString(pEnd), ps=getTaipeiDateString(pStart)
+  const prevRegs = allReg.filter(r=> r.from>=ps && r.to<=pe)
 
   // ── 核心計算 ──────────────────────────────────────────────────────────
   const cReg=regs.reduce((s,r)=>s+(r.reg||0),0)
@@ -7177,7 +7177,7 @@ function poOnUrlChange(){
 
 function openAddPostModal(){
   renderTracker()
-  document.getElementById('po-date').value=new Date().toISOString().split('T')[0]
+  document.getElementById('po-date').value=getTaipeiDateString()
   document.getElementById('po-utm').value=''
   document.getElementById('po-shortlink').value=''
   document.getElementById('po-posturl-title').textContent=''
@@ -7414,7 +7414,7 @@ function renderArticles(){
 
 function openAddArticleModal(){
   ;['at-title','at-source','at-summary','at-url'].forEach(i=>document.getElementById(i).value='')
-  document.getElementById('at-date').value=new Date().toISOString().split('T')[0]
+  document.getElementById('at-date').value=getTaipeiDateString()
   openModal('modal-add-article')
 }
 
@@ -8296,7 +8296,7 @@ function _weekPlanDates(offset){
   const now=new Date(), day=now.getDay()
   const diffToMon=day===0?-6:1-day
   const mon=new Date(now); mon.setDate(now.getDate()+diffToMon+offset*7)
-  return Array.from({length:7},(_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d.toISOString().split('T')[0] })
+  return Array.from({length:7},(_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return getTaipeiDateString(d) })
 }
 function _getScripts(){ const r=DB.get('weekly_scripts'); return (r&&!Array.isArray(r)&&typeof r==='object')?r:{} }
 function openWeeklyScript(key,label,wkOverride){
@@ -8347,7 +8347,7 @@ function _monthCal(offset){
   const start=new Date(d1); start.setDate(1-back)
   const weeks=[], cur=new Date(start)
   for(let w=0;w<6;w++){
-    const dates=Array.from({length:7},(_,i)=>{ const c=new Date(cur); c.setDate(cur.getDate()+i); return c.toISOString().split('T')[0] })
+    const dates=Array.from({length:7},(_,i)=>{ const c=new Date(cur); c.setDate(cur.getDate()+i); return getTaipeiDateString(c) })
     const inMonth=dates.some(ds=>new Date(ds).getMonth()===mo)
     if(!inMonth&&weeks.length>0) break
     if(inMonth) weeks.push({wk:_wkKeyDate(dates[0]),dates})
@@ -8368,7 +8368,7 @@ function _wpActors(){
 function renderWeeklyCalendarView(){
   const el=document.getElementById('weekly-post-plan'); if(!el) return
   const {yr,mo,weeks}=_monthCal(_wpMonthOffset)
-  const today=new Date().toISOString().split('T')[0]
+  const today=getTaipeiDateString()
   const scripts=_getScripts()
   const actors=_wpActors()
   // 建立分類排序（同列表視圖）
@@ -8558,7 +8558,7 @@ let _wpSearch='', _wpCatFilter=null  // null = auto-pick first cat
 function renderWeeklyPostPlan(){
   const el=document.getElementById('weekly-post-plan'); if(!el) return
   const dates=_weekPlanDates(_weekPlanOffset)
-  const today=new Date().toISOString().split('T')[0]
+  const today=getTaipeiDateString()
   const WD=['一','二','三','四','五','六','日']
   const actors=allActors().filter(a=>{
     const raw=a.raw||{}
@@ -8692,7 +8692,7 @@ function renderWeeklyPostPlan(){
 function _quickUtmFromPersona(name,actorId,date){
   const utmTab=document.querySelector('.nav-tab[onclick*="\'utm\'"]')
   if(utmTab) nav(utmTab,'utm')
-  const todayStr=new Date().toISOString().split('T')[0]
+  const todayStr=getTaipeiDateString()
   setTimeout(()=>{
     const sel=document.getElementById('u-persona')
     if(sel&&actorId&&Array.from(sel.options).some(o=>o.value===actorId)){
@@ -9812,7 +9812,7 @@ function _rerenderChannels(){ try{renderChannelPosts()}catch(e){} try{renderChan
 function openAddChannelPost(preset){
   document.getElementById('cp-id').value=''
   document.getElementById('cp-modal-title').textContent='新增鋪文/社團記錄'
-  document.getElementById('cp-date').value=new Date().toISOString().split('T')[0]
+  document.getElementById('cp-date').value=getTaipeiDateString()
   document.getElementById('cp-channel').value=preset||'seeding'
   ;['cp-platform','cp-title','cp-utm','cp-shortlink','cp-url','cp-note'].forEach(i=>document.getElementById(i).value='')
   document.getElementById('cp-type').value='經驗分享'
@@ -10494,7 +10494,7 @@ function utmMedChange(){
 }
 // 從 UTM 產生器建立發文記錄（互動→thread_activities；匿名/fb→channel_posts）
 function _utmCreateChannelRecord(usage, p, code, utmContent, title, shortUrl){
-  const today=new Date().toISOString().split('T')[0], now=new Date().toISOString();
+  const today=getTaipeiDateString(), now=new Date().toISOString();
   const landingUrl=utmBuildUrl(p);
   const landingNote=(document.getElementById('u-landing-note')?.value||'').trim();
   if(usage==='互動'){
@@ -10652,7 +10652,7 @@ const TT_STRATEGY_COLOR = {
 }
 
 function renderThreadTracker(){
-  const today = new Date().toISOString().split('T')[0]
+  const today = getTaipeiDateString()
   const daysLeft = Math.ceil((new Date('2026-06-11T00:00:00+08:00') - new Date()) / (1000*60*60*24))
 
   // 世足倒數 banner
@@ -11007,7 +11007,7 @@ async function taFetchTitle(url, el){
 function openAddThreadActivity(){
   document.getElementById('ta-id').value = ''
   document.getElementById('ta-modal-title').textContent = '新增話題參與記錄'
-  document.getElementById('ta-date').value = new Date().toISOString().split('T')[0]
+  document.getElementById('ta-date').value = getTaipeiDateString()
   document.getElementById('ta-url').value = ''
   document.getElementById('ta-topic').value = ''
   document.getElementById('ta-content').value = ''
@@ -11247,8 +11247,8 @@ const TT_METRICS_API = 'http://localhost:5568'
 
 async function ttAutoBatchMetrics(all=false){
   const ta = DB.get('thread_activities') || []
-  const today = new Date().toISOString().split('T')[0]
-  const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0]
+  const today = getTaipeiDateString()
+  const yesterday = getTaipeiYesterday()
   const pending = ta.filter(a =>
     (all || a.date === today || a.date === yesterday) &&
     a.status !== '已記錄' &&
@@ -11448,7 +11448,7 @@ function renderCast(){
       const cal=WC_COUNTDOWN_CALENDAR[Math.max(daysLeft,0)]||WC_COUNTDOWN_CALENDAR[0]
       const si=PERSONA_SITES['YS主帳']||{}
       if(!cal)return'<div style="padding:10px;color:red">⚠ 日曆配置遺失</div>'
-      const today=now.toISOString().split('T')[0]
+      const today=getTaipeiDateString(now)
       const posts=DB.get('posts')||[]
       const ysPersona=(DB.get('personas')||[]).find(p=>p.name==='YS主帳')
       const todayPosted=ysPersona?posts.some(p=>p.personaId===ysPersona.id&&p.date===today):false
@@ -11474,7 +11474,7 @@ function renderCast(){
   // ── 水軍今日分工摘要卡 ──────────────────────────────────────
   function buildArmySummaryCard(){
     try{
-      const todayStr=now.toISOString().split('T')[0]
+      const todayStr=getTaipeiDateString(now)
       const kpis=DB.get('weekly_kpis')||[]
       const todayKpi=kpis.length>0?kpis[kpis.length-1]:null
       const ttActivities=(DB.get('thread_activities')||[]).filter(a=>a.date===todayStr)
@@ -11616,7 +11616,7 @@ function renderCast(){
     const posts=DB.get('posts')
     const persona=personas.find(p=>p.name===pname)
     if(!persona) return''
-    const today=new Date().toISOString().split('T')[0]
+    const today=getTaipeiDateString()
 
     // 今日是否已在發文追蹤記錄
     const todayPosts=posts.filter(p=>p.personaName===pname&&p.date===today)
@@ -11859,7 +11859,7 @@ const ACCOUNT_DEFAULT_ACTIONS = {
   '世足大財神-體育代理':{ group:'water_C', platform:'Threads', action:'體育活動/賠率推廣 1則' },
 }
 
-function getTodayStr(){ return new Date().toISOString().split('T')[0] }
+function getTodayStr(){ return getTaipeiDateString() }
 
 // 自動生成今日待辦（force=true 會重新生成，false 只在沒有時才生成）
 function initTodayTodos(force){
@@ -12254,7 +12254,7 @@ let _fpCheckData = null; // currently loaded check prediction
 function fpInit() {
   // set today's date
   const d = document.getElementById('fp-date');
-  if (d && !d.value) d.value = new Date().toISOString().split('T')[0];
+  if (d && !d.value) d.value = getTaipeiDateString();
   fpRenderHistory();
   fpRefreshCheckDates();
   if (_fpActiveIds.length === 0) fpAddGame();
@@ -12640,8 +12640,8 @@ function msToggleDrilldown(id) {
 function renderMsBizKpis(start, end) {
   const el = document.getElementById('ms-biz-kpis'); if (!el) return;
   const allReg = DB.get('real_reg') || [];
-  // 取日期重疊的對帳記錄
-  const cur = allReg.filter(r => r.from <= end && r.to >= start);
+  // 只取查詢區間完整涵蓋的對帳記錄（避免跨期重複計算）
+  const cur = allReg.filter(r => r.from >= start && r.to <= end);
   const cReg = cur.reduce((s,r) => s+(r.reg||0), 0);
   const cDep = cur.reduce((s,r) => s+(r.dep||0), 0);
   const cAmt = cur.reduce((s,r) => s+(r.amt||0), 0);
@@ -12650,8 +12650,8 @@ function renderMsBizKpis(start, end) {
   const days = Math.ceil((new Date(end)-new Date(start))/86400000)+1;
   const pEndD = new Date(start); pEndD.setDate(pEndD.getDate()-1);
   const pStartD = new Date(pEndD); pStartD.setDate(pEndD.getDate()-days+1);
-  const pe = pEndD.toISOString().split('T')[0], ps = pStartD.toISOString().split('T')[0];
-  const prev = allReg.filter(r => r.from <= pe && r.to >= ps);
+  const pe = getTaipeiDateString(pEndD), ps = getTaipeiDateString(pStartD);
+  const prev = allReg.filter(r => r.from >= ps && r.to <= pe);
   const pReg = prev.reduce((s,r)=>s+(r.reg||0),0);
   const pDep = prev.reduce((s,r)=>s+(r.dep||0),0);
   const pAmt = prev.reduce((s,r)=>s+(r.amt||0),0);
