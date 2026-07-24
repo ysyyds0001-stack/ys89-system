@@ -5336,6 +5336,12 @@ function _migrateThreadActivities(){
     if(!a.organic_paid){ a.organic_paid = 'organic'; changed = true }
     // post_id: 同 url 的記錄共用 post_id
     if(!a.post_id){ a.post_id = a.url ? btoa(a.url).replace(/[^a-z0-9]/gi,'').slice(0,12) : null; changed = true }
+    // 正規化 platformMetrics key（Python 寫 lowercase threads → JS 用 Threads）
+    if(a.platformMetrics?.threads && !a.platformMetrics?.Threads){
+      a.platformMetrics.Threads = a.platformMetrics.threads
+      delete a.platformMetrics.threads
+      changed = true
+    }
   })
   if(changed){ DB.set('thread_activities', list); console.log('[Migration] thread_activities 新欄位補齊完成') }
 }
