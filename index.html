@@ -3786,7 +3786,12 @@ loadGA4Data();  // 人設代稱表在 renderGA4() 內由 buildPersonaMap() 從�
   <div class="modal" style="max-width:480px">
     <div class="mh"><div class="mt">📊 記錄炒話題成效</div><button class="mc" onclick="closeModal('modal-thread-metrics')">✕</button></div>
     <input type="hidden" id="tm-id">
-    <div id="tm-info" style="background:#0a0908;border:1px solid var(--border2);border-radius:6px;padding:8px 10px;margin-bottom:12px;font-size:.8rem;color:var(--text2)"></div>
+    <div id="tm-info" style="background:#0a0908;border:1px solid var(--border2);border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:.8rem;color:var(--text2)"></div>
+    <!-- 自動取得列（有 URL 時顯示） -->
+    <div id="tm-auto-row" style="display:none;align-items:center;gap:8px;margin-bottom:10px;padding:7px 10px;background:#1a0f2e;border:1px solid #7c3aed30;border-radius:6px">
+      <button id="tm-auto-btn" class="btn btn-sm" style="background:#7c3aed;color:#fff;border:none;padding:5px 12px;font-size:.76rem;flex-shrink:0;border-radius:5px" onclick="ttAutoFetchOne()">🔄 自動取得</button>
+      <span id="tm-auto-status" style="font-size:.72rem;color:#a78bfa;flex:1">需本機 Python 已啟動（python threads_metrics.py）</span>
+    </div>
     <!-- 平台 tabs -->
     <div id="tm-tab-nav" style="display:flex;gap:0;margin-bottom:14px;border-bottom:1px solid var(--border)"></div>
     <!-- Threads -->
@@ -10181,6 +10186,14 @@ function openThreadMetrics(id){
     if(plat==='IG')    {fill('IG-likes',m.likes);fill('IG-comments',m.comments);fill('IG-saves',m.saves);fill('IG-shares',m.shares);fill('IG-reach',m.reach);fill('IG-views',m.views)}
     if(plat==='FB')    {fill('FB-likes',m.likes);fill('FB-comments',m.comments);fill('FB-shares',m.shares);fill('FB-reach',m.reach)}
   })
+  // 自動取得列：有 Threads URL 才顯示
+  const autoRow = document.getElementById('tm-auto-row')
+  const autoStatus = document.getElementById('tm-auto-status')
+  if(autoRow){
+    const hasUrl = !!(a.url && a.url.includes('/post/'))
+    autoRow.style.display = hasUrl ? 'flex' : 'none'
+    if(autoStatus) autoStatus.textContent = '需本機 Python 已啟動（python threads_metrics.py）'
+  }
   // 顯示第一個平台 tab
   _setTmTab(platforms[0])
   openModal('modal-thread-metrics')
@@ -10215,6 +10228,40 @@ function saveThreadMetrics(){
   closeModal('modal-thread-metrics')
   renderThreadTracker()
   toast('成效已記錄')
+}
+
+async function ttAutoFetchOne(){
+  const id = document.getElementById('tm-id').value
+  const a = (DB.get('thread_activities')||[]).find(x=>x.id===id)
+  if(!a || !a.url){ toast('此貼文無有效連結，請手動輸入','err'); return }
+  const statusEl = document.getElementById('tm-auto-status')
+  const btn = document.getElementById('tm-auto-btn')
+  if(statusEl) statusEl.textContent = '⏳ 取得中…'
+  if(btn) btn.disabled = true
+  try {
+    const isReply = a.strategy === '回覆'
+    const targetUrl = (isReply && a.replyUrl) ? a.replyUrl.split('?')[0] : a.url.split('?')[0]
+    const handleMap = {}
+    ;(DB.get('personas')||[]).forEach(p=>{ if(p.igUsername&&p.igUsername!=='undefined') handleMap[p.id]=p.igUsername })
+    const myHandle = handleMap[a.personaId]||''
+    let apiUrl = `${TT_METRICS_API}/metrics?url=${encodeURIComponent(targetUrl)}`
+    if(isReply && !a.replyUrl && myHandle) apiUrl += `&reply_handles=${encodeURIComponent(myHandle)}`
+    const resp = await fetch(apiUrl, {signal: AbortSignal.timeout(35000)})
+    const m = await resp.json()
+    if(m.error){ if(statusEl) statusEl.textContent='❌ '+m.error; return }
+    const fill=(fid,val)=>{ const el=document.getElementById('tm-'+fid); if(el) el.value=(val===null||val===undefined)?'':val }
+    fill('T-likes',m.likes); fill('T-replies',m.replies); fill('T-reposts',m.reposts)
+    fill('T-shares',m.shares); fill('T-follows',0)
+    fill('T-views', m.viewsAvailable===false ? '無法顯示瀏覽' : m.views)
+    if(m.viewsAvailable===false) document.getElementById('tm-notes').value='無法顯示瀏覽'
+    if(m.replyUrl){ const list=DB.get('thread_activities')||[]; const i=list.findIndex(x=>x.id===id); if(i>=0){list[i].replyUrl=m.replyUrl; DB.set('thread_activities',list)} }
+    if(statusEl) statusEl.innerHTML=`✅ 讚${m.likes} 回${m.replies} 轉${m.reposts} 瀏覽${m.viewsAvailable===false?'無法顯示':m.views} <span style="color:var(--text3);font-size:.68rem">確認後按「更新成效」儲存</span>`
+  } catch(e) {
+    const isCon = e.name==='TypeError'||e.message.includes('Failed to fetch')||e.message.includes('NetworkError')
+    if(statusEl) statusEl.textContent = isCon ? '❌ 無法連線，請先啟動 python threads_metrics.py' : '❌ '+e.message
+  } finally {
+    if(btn) btn.disabled = false
+  }
 }
 
 function openSetThreadUrl(id){
