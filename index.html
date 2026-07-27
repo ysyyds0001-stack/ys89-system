@@ -12714,8 +12714,8 @@ function msToggleDrilldown(id) {
 function renderMsBizKpis(start, end) {
   const el = document.getElementById('ms-biz-kpis'); if (!el) return;
   const allReg = DB.get('real_reg') || [];
-  // 只取查詢區間完整涵蓋的對帳記錄（避免跨期重複計算）
-  const cur = allReg.filter(r => r.from >= start && r.to <= end);
+  // overlap 過濾：只要記錄與查詢區間有重疊即計入
+  const cur = allReg.filter(r => { const rf=r.from||r.date||'', rt=r.to||r.date||r.from||''; return rf<=end && rt>=start; });
   const cReg = cur.reduce((s,r) => s+(r.qualified_registration_count??r.reg??0), 0);
   const cDep = cur.reduce((s,r) => s+(r.first_deposit_user_count??r.dep??0), 0);
   const cAmt = cur.reduce((s,r) => s+(r.first_deposit_amount??r.amt??0), 0);
@@ -12725,7 +12725,7 @@ function renderMsBizKpis(start, end) {
   const pEndD = new Date(start); pEndD.setDate(pEndD.getDate()-1);
   const pStartD = new Date(pEndD); pStartD.setDate(pEndD.getDate()-days+1);
   const pe = getTaipeiDateString(pEndD), ps = getTaipeiDateString(pStartD);
-  const prev = allReg.filter(r => r.from >= ps && r.to <= pe);
+  const prev = allReg.filter(r => { const rf=r.from||r.date||'', rt=r.to||r.date||r.from||''; return rf<=pe && rt>=ps; });
   const pReg = prev.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0);
   const pDep = prev.reduce((s,r)=>s+(r.first_deposit_user_count??r.dep??0),0);
   const pAmt = prev.reduce((s,r)=>s+(r.first_deposit_amount??r.amt??0),0);
