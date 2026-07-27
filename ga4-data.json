@@ -11,7 +11,7 @@
     {
       "name": "(direct)",
       "medium": "(none)",
-      "sessions": 300,
+      "sessions": 302,
       "cls": "direct",
       "tag": "直接/未知",
       "tcls": "t-direct"
@@ -137,20 +137,20 @@
       "tcls": "t-line"
     },
     {
-      "name": "(not set)",
-      "medium": "(not set)",
-      "sessions": 3,
-      "cls": "other",
-      "tag": "其他",
-      "tcls": "t-direct"
-    },
-    {
       "name": "ig",
       "medium": "social",
       "sessions": 3,
       "cls": "army",
       "tag": "社群水軍",
       "tcls": "t-army"
+    },
+    {
+      "name": "(not set)",
+      "medium": "(not set)",
+      "sessions": 2,
+      "cls": "other",
+      "tag": "其他",
+      "tcls": "t-direct"
     },
     {
       "name": "apu",
@@ -266,7 +266,7 @@
     },
     {
       "name": "(direct)",
-      "s": 300,
+      "s": 302,
       "cta": 13,
       "warn": false
     },
@@ -361,15 +361,15 @@
       "warn": false
     },
     {
-      "name": "(not set)",
-      "s": 3,
-      "cta": 0,
-      "warn": false
-    },
-    {
       "name": "ig",
       "s": 3,
       "cta": 2,
+      "warn": false
+    },
+    {
+      "name": "(not set)",
+      "s": 2,
+      "cta": 0,
       "warn": false
     },
     {
@@ -442,7 +442,7 @@
     },
     {
       "t": "2026 世界盃觀賽入口｜104場完整賽程・台灣時間・開賽提醒",
-      "v": 104
+      "v": 106
     },
     {
       "t": "2026世界盃賽程・分組・賠率・冠軍預測｜台灣最完整世界盃資訊站",
@@ -546,21 +546,27 @@
   "kpis": {
     "activeUsers": 1122,
     "sessions": 1250,
-    "eventCount": 4959,
+    "eventCount": 4965,
+    "engagedSessions": 416,
+    "socialClicks": 815,
     "cta": 311,
     "conversionRate": 24.88
   },
   "kpis_3d": {
     "activeUsers": 26,
     "sessions": 29,
-    "eventCount": 97,
+    "eventCount": 100,
+    "engagedSessions": 3,
+    "socialClicks": 4,
     "cta": 0,
     "conversionRate": 0.0
   },
   "kpis_7d": {
     "activeUsers": 52,
     "sessions": 60,
-    "eventCount": 188,
+    "eventCount": 194,
+    "engagedSessions": 8,
+    "socialClicks": 10,
     "cta": 0,
     "conversionRate": 0.0
   },
@@ -568,20 +574,24 @@
     "activeUsers": 340,
     "sessions": 353,
     "eventCount": 1471,
+    "engagedSessions": 125,
+    "socialClicks": 201,
     "cta": 79,
     "conversionRate": 22.38
   },
   "kpis_28d": {
     "activeUsers": 1071,
     "sessions": 1182,
-    "eventCount": 4697,
+    "eventCount": 4703,
+    "engagedSessions": 391,
+    "socialClicks": 762,
     "cta": 298,
     "conversionRate": 25.21
   },
   "accounts_3d": [
     {
       "name": "(direct)",
-      "s": 21,
+      "s": 22,
       "cta": 0
     },
     {
@@ -608,7 +618,7 @@
   "accounts_7d": [
     {
       "name": "(direct)",
-      "s": 43,
+      "s": 45,
       "cta": 0
     },
     {
@@ -617,13 +627,13 @@
       "cta": 0
     },
     {
-      "name": "(not set)",
+      "name": "akki",
       "s": 3,
       "cta": 0
     },
     {
-      "name": "akki",
-      "s": 3,
+      "name": "(not set)",
+      "s": 2,
       "cta": 0
     },
     {
@@ -667,7 +677,7 @@
     },
     {
       "name": "(direct)",
-      "s": 297,
+      "s": 299,
       "cta": 13
     },
     {
@@ -908,12 +918,6 @@
         "users": 3
       },
       {
-        "source": "(not set)",
-        "medium": "(not set)",
-        "sessions": 2,
-        "users": 2
-      },
-      {
         "source": "haogame",
         "medium": "th_post",
         "sessions": 2,
@@ -942,6 +946,12 @@
         "medium": "referral",
         "sessions": 2,
         "users": 2
+      },
+      {
+        "source": "(not set)",
+        "medium": "(not set)",
+        "sessions": 1,
+        "users": 1
       },
       {
         "source": "bing",
@@ -1036,12 +1046,6 @@
         "users": 3
       },
       {
-        "source": "(not set)",
-        "medium": "(not set)",
-        "sessions": 1,
-        "users": 1
-      },
-      {
         "source": "facebook.com",
         "medium": "referral",
         "sessions": 1,
@@ -1131,7 +1135,7 @@
         {
           "source": "cyq",
           "medium": "th_post",
-          "count": 59
+          "count": 60
         },
         {
           "source": "tg_ph",
@@ -1219,11 +1223,6 @@
           "count": 2
         },
         {
-          "source": "(not set)",
-          "medium": "(not set)",
-          "count": 1
-        },
-        {
           "source": "accounts.google.com.tw",
           "medium": "referral",
           "count": 1
@@ -1297,12 +1296,7 @@
         {
           "source": "cyq",
           "medium": "th_post",
-          "count": 2
-        },
-        {
-          "source": "(not set)",
-          "medium": "(not set)",
-          "count": 1
+          "count": 3
         },
         {
           "source": "cc",
@@ -1723,5 +1717,5 @@
       }
     ]
   },
-  "lastUpdated": "2026-07-27T04:36:56.327495"
+  "lastUpdated": "2026-07-27T08:03:03.489436"
 }

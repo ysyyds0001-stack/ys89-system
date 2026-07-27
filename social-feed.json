@@ -1,6 +1,36 @@
 {
-  "lastUpdated": "2026-07-27T04:36:59Z",
+  "lastUpdated": "2026-07-27T08:03:06Z",
   "posts": [
+    {
+      "date": "2026-07-24",
+      "persona": "god",
+      "personaName": "世足大財神",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/@wc_godofwealth/post/DbLJiDeEzzU?xmt=AQG0jRRie_S3pNRXuZ1s8ImC5NzQy3lF-977nhLK98ggiw",
+      "landingUrl": null,
+      "utmContent": "god-0724-1",
+      "impressions": 301,
+      "likes": 0,
+      "comments": 0,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-07-24",
+      "persona": null,
+      "personaName": "世足排雷週記",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/@uncle_wc/post/DbLJSNUCZ6i?xmt=AQG0jRRie_S3pNRXuZ1s8ImC5NzQy3lF-977nhLK98ggiw",
+      "landingUrl": null,
+      "utmContent": "shizu-0724-1",
+      "impressions": 117,
+      "likes": 0,
+      "comments": 0,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
     {
       "date": "2026-07-24",
       "persona": "akki",
@@ -9,9 +39,9 @@
       "postUrl": "https://www.threads.com/@noloxd6467/post/DbLHfn0E1VS?xmt=AQG0qsTkD0uP9Aij3yDTuM5MTnGgM3O6-X2uHjihPSOSSg",
       "landingUrl": null,
       "utmContent": "akki-0724-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 15,
+      "likes": 8,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": "賽事"
@@ -54,12 +84,12 @@
       "postUrl": "https://www.threads.com/@wc_ccai/post/DbH3IO-k07o?xmt=AQG0e9rs0LKG0kwbNL7-jVdVDMV53se0NRQE0WqkjZ4pg184aUMBU8d9zeJpcGpD_WIXNIY&slof=1",
       "landingUrl": "https://picks168.com/trust/?utm_source=cc&utm_medium=th_post&utm_campaign=wc2026&utm_content=cc-0723-1",
       "utmContent": "cc-0723-1",
-      "impressions": 3000,
-      "likes": 99,
-      "comments": 5,
+      "impressions": 0,
+      "likes": 430,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
-      "note": null
+      "note": "無法顯示瀏覽"
     },
     {
       "date": "2026-07-23",
@@ -834,9 +864,9 @@
       "postUrl": "https://www.threads.com/share/DaiVZb6mV/",
       "landingUrl": "https://picks168.com",
       "utmContent": "jack-0714-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 127,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -894,9 +924,9 @@
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DaxL1q0GVzq?xmt=AQG0h7lntdtnI_i0Vf4C2ioo3Z0Jfrg36ScWr1gRtTIK-aiRQCJPZw6TpMAkspzXxzRX-CS0&slof=1",
       "landingUrl": "https://picks168.com",
       "utmContent": "cyq-0714-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 0,
+      "likes": 1993,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -5799,9 +5829,9 @@
       "postUrl": "vhttps://www.threads.com/@zella24780/post/DZZ0JwNmieV?xmt=AQG055C-eYonpa39ElF4OT2jamqscoL32ZKnNuUQnniFcJmSI5ctKbfn_YLRIDD7tn9kS2Y&slof=1",
       "landingUrl": null,
       "utmContent": null,
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 270000,
+      "likes": 58,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -7295,13 +7325,13 @@
   "daily": [
     {
       "date": "2026-07-24",
-      "totalImpressions": null,
+      "totalImpressions": 433,
       "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-23",
-      "totalImpressions": 11496,
+      "totalImpressions": 8496,
       "totalLinkClicks": null,
       "totalRegistrations": null
     },
@@ -7349,7 +7379,7 @@
     },
     {
       "date": "2026-07-14",
-      "totalImpressions": 11887,
+      "totalImpressions": 12014,
       "totalLinkClicks": null,
       "totalRegistrations": null
     },
@@ -7541,7 +7571,7 @@
     },
     {
       "date": "2026-06-10",
-      "totalImpressions": 33413,
+      "totalImpressions": 303413,
       "totalLinkClicks": null,
       "totalRegistrations": null
     },
