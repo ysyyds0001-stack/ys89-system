@@ -6408,12 +6408,12 @@ function renderGrowthOverview(){
   const prevRegs = allReg.filter(r=> r.from>=ps && r.to<=pe)
 
   // ── 核心計算 ──────────────────────────────────────────────────────────
-  const cReg=regs.reduce((s,r)=>s+(r.reg||0),0)
-  const cDep=regs.reduce((s,r)=>s+(r.dep||0),0)
-  const cAmt=regs.reduce((s,r)=>s+(r.amt||0),0)
+  const cReg=regs.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0)
+  const cDep=regs.reduce((s,r)=>s+(r.first_deposit_user_count??r.dep??0),0)
+  const cAmt=regs.reduce((s,r)=>s+(r.first_deposit_amount??r.amt??0),0)
   const cRate=cReg>0?(cDep/cReg*100):0
-  const pReg=prevRegs.reduce((s,r)=>s+(r.reg||0),0)
-  const pDep=prevRegs.reduce((s,r)=>s+(r.dep||0),0)
+  const pReg=prevRegs.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0)
+  const pDep=prevRegs.reduce((s,r)=>s+(r.first_deposit_user_count??r.dep??0),0)
   const prevActs=allActs.filter(a=>a.date>=ps&&a.date<=pe)
   const nonDel=acts.filter(a=>(a.notes||'')!=='貼文已刪除')
   const totViews=nonDel.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
@@ -12662,9 +12662,9 @@ function renderMsBizKpis(start, end) {
   const allReg = DB.get('real_reg') || [];
   // 只取查詢區間完整涵蓋的對帳記錄（避免跨期重複計算）
   const cur = allReg.filter(r => r.from >= start && r.to <= end);
-  const cReg = cur.reduce((s,r) => s+(r.reg||0), 0);
-  const cDep = cur.reduce((s,r) => s+(r.dep||0), 0);
-  const cAmt = cur.reduce((s,r) => s+(r.amt||0), 0);
+  const cReg = cur.reduce((s,r) => s+(r.qualified_registration_count??r.reg??0), 0);
+  const cDep = cur.reduce((s,r) => s+(r.first_deposit_user_count??r.dep??0), 0);
+  const cAmt = cur.reduce((s,r) => s+(r.first_deposit_amount??r.amt??0), 0);
   const cRate = cReg > 0 ? (cDep/cReg*100) : 0;
   // 上期（等長天數往前）
   const days = Math.ceil((new Date(end)-new Date(start))/86400000)+1;
@@ -12672,9 +12672,9 @@ function renderMsBizKpis(start, end) {
   const pStartD = new Date(pEndD); pStartD.setDate(pEndD.getDate()-days+1);
   const pe = getTaipeiDateString(pEndD), ps = getTaipeiDateString(pStartD);
   const prev = allReg.filter(r => r.from >= ps && r.to <= pe);
-  const pReg = prev.reduce((s,r)=>s+(r.reg||0),0);
-  const pDep = prev.reduce((s,r)=>s+(r.dep||0),0);
-  const pAmt = prev.reduce((s,r)=>s+(r.amt||0),0);
+  const pReg = prev.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0);
+  const pDep = prev.reduce((s,r)=>s+(r.first_deposit_user_count??r.dep??0),0);
+  const pAmt = prev.reduce((s,r)=>s+(r.first_deposit_amount??r.amt??0),0);
   const pRate = pReg>0?(pDep/pReg*100):0;
   const hasPrev = prev.length>0;
   const fmt = n => n>=10000?(n/10000).toFixed(1)+'萬':n.toLocaleString('zh-TW');
