@@ -300,6 +300,8 @@ def fetch_content_performance(client):
     start_date, end_date = get_date_range()
     return fetch_content_range(client, start_date, end_date)
 
+SOCIAL_MEDIUMS = ["th_post", "th_bio", "ig_post", "ig_bio", "social", "post", "story", "comment", "bio"]
+
 def fetch_kpis_range(client, start_date, end_date):
     """拉取指定日期範圍的 KPI"""
 
@@ -309,6 +311,7 @@ def fetch_kpis_range(client, start_date, end_date):
             Metric(name="activeUsers"),
             Metric(name="sessions"),
             Metric(name="eventCount"),
+            Metric(name="engagedSessions"),
         ],
         date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
     )
@@ -319,8 +322,9 @@ def fetch_kpis_range(client, start_date, end_date):
     active_users = int(row.metric_values[0].value or 0)
     sessions = int(row.metric_values[1].value or 0)
     event_count = int(row.metric_values[2].value or 0)
+    engaged_sessions = int(row.metric_values[3].value or 0)
 
-    # CTA 數（用上面的邏輯）
+    # CTA 數
     cta_filter = FilterExpression(
         or_group={
             "expressions": [
@@ -341,12 +345,34 @@ def fetch_kpis_range(client, start_date, end_date):
     cta_response = client.run_report(cta_request)
     cta = int(cta_response.rows[0].metric_values[0].value or 0) if cta_response.rows else 0
 
+    # 社群連結點擊（social medium sessions）
+    social_filter = FilterExpression(
+        or_group={
+            "expressions": [
+                FilterExpression(
+                    filter=Filter(field_name="sessionMedium", string_filter={"value": m})
+                )
+                for m in SOCIAL_MEDIUMS
+            ]
+        }
+    )
+    social_request = RunReportRequest(
+        property=PROPERTY_FULL,
+        metrics=[Metric(name="sessions")],
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        dimension_filter=social_filter,
+    )
+    social_response = client.run_report(social_request)
+    social_clicks = int(social_response.rows[0].metric_values[0].value or 0) if social_response.rows else 0
+
     conversion_rate = (cta / sessions * 100) if sessions > 0 else 0
 
     return {
         "activeUsers": active_users,
         "sessions": sessions,
         "eventCount": event_count,
+        "engagedSessions": engaged_sessions,
+        "socialClicks": social_clicks,
         "cta": cta,
         "conversionRate": round(conversion_rate, 2),
     }

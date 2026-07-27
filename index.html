@@ -14175,9 +14175,9 @@ function renderMeeting() {
   document.getElementById('mtg-kpi-grid').innerHTML = [
     kpiCard('📝','發文數',cActs.length||null,pActs.length||null,'thread_activities'),
     kpiCard('👁','已追蹤曝光',totV||null,pTotV||null,`Th ${totThreads.toLocaleString()} IG ${totIG.toLocaleString()} FB ${totFB.toLocaleString()}`,(totIG===0&&totFB===0&&totThreads>0)?'僅 Threads，IG/FB 待補':''),
-    kpiCard('🔗','社群連結點擊',null,null,'尚未取得','需短連結點擊追蹤'),
+    kpiCard('🔗','社群連結點擊',kUse.socialClicks||null,null,'GA4 social medium'),
     kpiCard('📈','GA4 Sessions',kUse.sessions||null,kPrev.sessions||null,'GA4 自動同步'),
-    kpiCard('💬','Engaged Sessions',null,null,'GA4 Engagement','尚未取得'),
+    kpiCard('💬','Engaged Sessions',kUse.engagedSessions||null,null,'GA4 自動同步'),
     kpiCard('🎯','CTA Click',kUse.cta||null,kPrev.cta||null,'GA4 cta_click','非完成註冊'),
     kpiCard('✅','完成註冊',cReg.completed,null,'手動輸入',cReg.completed==null?'尚無資料，請至數據輸入填寫':''),
     kpiCard('🎖','有效註冊',cReg.reg,null,'手動輸入'),
@@ -14188,9 +14188,9 @@ function renderMeeting() {
   // 漏斗
   const fSteps = [
     {n:'① 社群曝光',v:totV||null,u:'次',s:'Threads+IG+FB'},
-    {n:'② 社群連結點擊',v:null,u:'次',s:'尚未取得'},
+    {n:'② 社群連結點擊',v:kUse.socialClicks||null,u:'次',s:'GA4 social medium'},
     {n:'③ GA4 Sessions',v:kUse.sessions||null,u:'次',s:'GA4'},
-    {n:'④ Engaged Sessions',v:null,u:'次',s:'尚未取得'},
+    {n:'④ Engaged Sessions',v:kUse.engagedSessions||null,u:'次',s:'GA4'},
     {n:'⑤ CTA Click',v:kUse.cta||null,u:'次',s:'GA4 cta_click'},
     {n:'⑥ 完成註冊',v:cReg.completed,u:'人',s:'手動輸入'},
     {n:'⑦ 有效註冊',v:cReg.reg,u:'人',s:'手動輸入'},
