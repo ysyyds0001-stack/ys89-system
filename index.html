@@ -4002,20 +4002,29 @@ function renderAbTests() {
   <!-- Tab: 有效註冊 & 首存 -->
   <div id="di-tab-reg">
     <div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
-      <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:10px">本期數字輸入</div>
+      <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:4px">後台數字輸入（區間彙總）</div>
+      <p style="font-size:.7rem;color:var(--text3);margin-bottom:12px">⚠ 區間資料無法拆日，查詢期間須完整涵蓋此區間才納入計算。完成儲存後可至「輸入紀錄」tab 檢視。</p>
       <div class="rr-form">
-        <div class="fg"><label>區間起（台北時間）</label><input type="date" id="rr-from"></div>
-        <div class="fg"><label>區間迄（台北時間）</label><input type="date" id="rr-to"></div>
-        <div class="fg"><label>完成註冊人數</label><input type="number" id="rr-completed-reg" placeholder="0" min="0"></div>
-        <div class="fg"><label>有效註冊人數</label><input type="number" id="rr-reg" placeholder="0" min="0"></div>
-        <div class="fg"><label>首存人數</label><input type="number" id="rr-dep" placeholder="0" min="0"></div>
-        <div class="fg"><label>首存金額 NT$</label><input type="number" id="rr-amt" placeholder="0" min="0"></div>
-        <div class="fg"><label>備註</label><input type="text" id="rr-note" placeholder="例：含補登優惠"></div>
+        <div class="fg"><label>區間起（台北時間）</label><input type="date" id="di-rr-from"></div>
+        <div class="fg"><label>區間迄（台北時間）</label><input type="date" id="di-rr-to"></div>
+        <div class="fg"><label>完成註冊人數</label><input type="number" id="di-rr-completed-reg" placeholder="0" min="0" title="帳號建立完成"></div>
+        <div class="fg"><label>有效註冊人數</label><input type="number" id="di-rr-qualified-reg" placeholder="0" min="0" title="後台確認有效"></div>
+        <div class="fg"><label>首存人數</label><input type="number" id="di-rr-fdep-users" placeholder="0" min="0" title="唯一首次儲值人數"></div>
+        <div class="fg"><label>首存次數</label><input type="number" id="di-rr-fdep-count" placeholder="0" min="0" title="首次儲值交易筆數"></div>
+        <div class="fg"><label>首存金額 NT$</label><input type="number" id="di-rr-fdep-amount" placeholder="0" min="0"></div>
+        <div class="fg"><label>確認收益 NT$</label><input type="number" id="di-rr-revenue" placeholder="0" min="0" title="代理/平台確認收益"></div>
+        <div class="fg"><label>資料來源</label><input type="text" id="di-rr-source" placeholder="例：ys89.bet 後台" style="font-size:.78rem"></div>
+        <div class="fg"><label>備註</label><input type="text" id="di-rr-note" placeholder="例：含補登優惠、阿奇地推週"></div>
       </div>
       <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
         <button class="btn btn-primary btn-sm" onclick="diSaveReg()">💾 儲存</button>
-        <span style="font-size:.72rem;color:var(--text3)">⚠ 區間數字無法拆日，查詢期間須完整涵蓋此區間才會納入計算</span>
+        <button class="btn btn-xs" onclick="diClearRegForm()" style="opacity:.6">清除</button>
       </div>
+    </div>
+    <!-- 舊格式遷移提示 -->
+    <div id="di-migrate-warn" style="display:none;background:#fbbf2415;border:1px solid #fbbf2440;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.72rem;color:#fbbf24">
+      ⚠ 偵測到 <b id="di-migrate-count">0</b> 筆舊格式記錄（dep 欄位定義不明）。請點「校正舊資料」逐筆確認 dep 代表人數或金額後轉換。
+      <button class="btn btn-xs" style="margin-left:8px;border-color:#fbbf24;color:#fbbf24" onclick="diShowMigrateTool()">校正舊資料</button>
     </div>
     <div id="di-reg-list" style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px">
       <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px">已輸入記錄</div>
@@ -13784,7 +13793,7 @@ async function saveSnapshot() {
     if (idx >= 0) snaps[idx] = snap; else snaps.push(snap);
     DB.set('meeting_snapshots', snaps);
 
-    showToast('快照「' + label + '」已儲存');
+    toast('快照「' + label + '」已儲存');
     document.getElementById('snap-good').value = '';
     document.getElementById('snap-bad').value = '';
     document.getElementById('snap-improve').value = '';
@@ -13874,7 +13883,7 @@ function saveSnapNotes(id) {
     improve: document.getElementById('sn-imp-'  + id)?.value.trim() || ''
   };
   DB.set('meeting_snapshots', snaps);
-  showToast('備忘已儲存');
+  toast('備忘已儲存');
   renderSnapshotList();
 }
 
@@ -14287,20 +14296,88 @@ function diSwitchTab(tab, btn) {
   if(tab==='history') diRenderHistory()
 }
 function diSaveReg() {
-  const from = document.getElementById('rr-from')?.value
-  const to = document.getElementById('rr-to')?.value
+  const g = id => document.getElementById(id)
+  const from = g('di-rr-from')?.value
+  const to   = g('di-rr-to')?.value
   if(!from||!to){ alert('請填寫區間起迄'); return }
-  const reg = parseInt(document.getElementById('rr-reg')?.value)||0
-  const dep = parseInt(document.getElementById('rr-dep')?.value)||0
-  const amt = parseInt(document.getElementById('rr-amt')?.value)||0
-  const completedReg = parseInt(document.getElementById('rr-completed-reg')?.value)||0
-  const note = document.getElementById('rr-note')?.value||''
+  const rec = {
+    from, to,
+    completed_registration_count: parseInt(g('di-rr-completed-reg')?.value)||null,
+    qualified_registration_count: parseInt(g('di-rr-qualified-reg')?.value)||null,
+    first_deposit_user_count:     parseInt(g('di-rr-fdep-users')?.value)||null,
+    first_deposit_count:          parseInt(g('di-rr-fdep-count')?.value)||null,
+    first_deposit_amount:         parseInt(g('di-rr-fdep-amount')?.value)||null,
+    revenue_amount:               parseInt(g('di-rr-revenue')?.value)||null,
+    source: g('di-rr-source')?.value||'',
+    note:   g('di-rr-note')?.value||'',
+    inputAt: getTaipeiDateString(),
+    _ver: 'v3'
+  }
+  // 向後相容：reg=qualified, dep=first_deposit_user_count, amt=first_deposit_amount
+  rec.reg = rec.qualified_registration_count
+  rec.dep = rec.first_deposit_user_count
+  rec.amt = rec.first_deposit_amount
   const regs = DB.get('real_reg')||[]
-  regs.push({from,to,reg,dep,amt,completedReg,note,inputAt:getTaipeiDateString(),_ver:'v2'})
+  regs.push(rec)
   DB.set('real_reg',regs)
   try{DB.push('real_reg')}catch(e){}
+  diClearRegForm()
   diRenderRegList()
-  showToast('✅ 已儲存')
+  diCheckMigrateWarning()
+  toast('✅ 已儲存')
+}
+function diClearRegForm() {
+  ['di-rr-from','di-rr-to','di-rr-completed-reg','di-rr-qualified-reg',
+   'di-rr-fdep-users','di-rr-fdep-count','di-rr-fdep-amount','di-rr-revenue',
+   'di-rr-source','di-rr-note'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value=''
+  })
+}
+function diCheckMigrateWarning() {
+  const regs = DB.get('real_reg')||[]
+  const oldCount = regs.filter(r=>!r._ver||r._ver==='v2').length
+  const warn = document.getElementById('di-migrate-warn')
+  const cnt  = document.getElementById('di-migrate-count')
+  if(!warn) return
+  if(oldCount>0){ warn.style.display='block'; if(cnt) cnt.textContent=oldCount }
+  else           { warn.style.display='none' }
+}
+function diShowMigrateTool() {
+  const regs = DB.get('real_reg')||[]
+  const old  = regs.filter(r=>!r._ver||r._ver==='v2')
+  if(!old.length){ alert('沒有需要校正的舊格式記錄'); return }
+  const r = old[0]
+  const choice = prompt(
+    `校正舊記錄（${r.from}～${r.to}）\n` +
+    `舊 dep=${r.dep}  amt=${r.amt}\n\n` +
+    `dep 代表什麼？\n輸入 1 = 首存人數（dep→first_deposit_user_count）\n` +
+    `輸入 2 = 首存金額（dep→first_deposit_amount）\n` +
+    `輸入 0 = 跳過（標記為待人工校正）`
+  )
+  if(choice===null) return
+  const all = DB.get('real_reg')||[]
+  const idx = all.findIndex(x=>x.from===r.from&&x.to===r.to&&!x._ver)
+  if(idx<0) return
+  if(choice==='1'){
+    all[idx].first_deposit_user_count = all[idx].dep
+    all[idx].first_deposit_amount     = all[idx].amt
+    all[idx].qualified_registration_count = all[idx].reg
+    all[idx]._ver = 'v3'; all[idx]._migrated = 'auto'
+    toast('✅ 已轉換（dep→首存人數）')
+  } else if(choice==='2'){
+    all[idx].first_deposit_amount     = all[idx].dep
+    all[idx].first_deposit_user_count = null
+    all[idx].qualified_registration_count = all[idx].reg
+    all[idx]._ver = 'v3'; all[idx]._migrated = 'auto'
+    toast('✅ 已轉換（dep→首存金額）')
+  } else {
+    all[idx]._ver = 'v3'; all[idx]._migrated = 'manual_needed'
+    toast('⚠ 已標記為待人工校正')
+  }
+  DB.set('real_reg',all)
+  try{DB.push('real_reg')}catch(e){}
+  diRenderRegList()
+  diCheckMigrateWarning()
 }
 function diSaveAd() {
   const from = document.getElementById('ad-from')?.value
@@ -14321,30 +14398,53 @@ function diSaveAd() {
   DB.set('ad_data', ads)
   try{DB.push('ad_data')}catch(e){}
   diRenderAdList()
-  showToast('✅ 廣告資料已儲存')
+  toast('✅ 廣告資料已儲存')
 }
 function diRenderRegList() {
   const el = document.getElementById('di-reg-table')
   if(!el) return
   const regs = (DB.get('real_reg')||[]).slice().reverse()
   if(!regs.length){ el.innerHTML='<div style="font-size:.75rem;color:var(--text3)">尚未輸入任何記錄</div>'; return }
-  el.innerHTML = `<table style="width:100%;font-size:.72rem;border-collapse:collapse">
+  const fmtN = v => (v==null||v==='')?'—':Number(v).toLocaleString()
+  const fmtAmt = v => (v==null||v==='')?'—':'NT$'+Number(v).toLocaleString()
+  const isOld = r => !r._ver || r._ver==='v2'
+  const statusChip = r => {
+    if(isOld(r) && r._migrated==='manual_needed') return '<span style="font-size:.6rem;padding:1px 5px;border-radius:3px;background:#ef444420;color:#ef4444;border:1px solid #ef444440">待校正</span>'
+    if(isOld(r)) return '<span style="font-size:.6rem;padding:1px 5px;border-radius:3px;background:#fbbf2420;color:#fbbf24;border:1px solid #fbbf2440">舊格式</span>'
+    if(r._migrated==='auto') return '<span style="font-size:.6rem;padding:1px 5px;border-radius:3px;background:#34d39920;color:#34d399;border:1px solid #34d39940">已遷移</span>'
+    return '<span style="font-size:.6rem;padding:1px 5px;border-radius:3px;background:#60a5fa20;color:#60a5fa;border:1px solid #60a5fa40">v3</span>'
+  }
+  el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;font-size:.72rem;border-collapse:collapse;min-width:600px">
     <thead><tr style="border-bottom:1px solid var(--border)">
       <th style="padding:5px 6px;text-align:left;color:var(--text3)">區間</th>
-      <th style="padding:5px 6px;text-align:right;color:var(--text3)">完成</th>
-      <th style="padding:5px 6px;text-align:right;color:var(--text3)">有效</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">完成註冊</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--accent)">有效註冊</th>
       <th style="padding:5px 6px;text-align:right;color:var(--text3)">首存人</th>
-      <th style="padding:5px 6px;text-align:right;color:var(--text3)">金額</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">首存筆</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">首存金額</th>
+      <th style="padding:5px 6px;text-align:right;color:var(--text3)">收益</th>
       <th style="padding:5px 6px;text-align:left;color:var(--text3)">備註</th>
+      <th style="padding:5px 6px;text-align:center;color:var(--text3)">狀態</th>
     </tr></thead><tbody>` +
-    regs.map(r=>`<tr style="border-bottom:1px solid var(--g3)">
-      <td style="padding:5px 6px;color:var(--text2)">${r.from} ～ ${r.to}</td>
-      <td style="padding:5px 6px;text-align:right">${r.completedReg??'—'}</td>
-      <td style="padding:5px 6px;text-align:right;color:var(--accent)">${r.reg??'—'}</td>
-      <td style="padding:5px 6px;text-align:right">${r.dep??'—'}</td>
-      <td style="padding:5px 6px;text-align:right">${r.amt?'NT$'+r.amt.toLocaleString():'—'}</td>
-      <td style="padding:5px 6px;color:var(--text3)">${r.note||''}</td>
-    </tr>`).join('') + '</tbody></table>'
+    regs.map(r=>{
+      const crc = r.completed_registration_count??r.completedReg
+      const qrc = r.qualified_registration_count??r.reg
+      const fdu = r.first_deposit_user_count??r.dep
+      const fdc = r.first_deposit_count
+      const fda = r.first_deposit_amount??r.amt
+      const rev = r.revenue_amount
+      return `<tr style="border-bottom:1px solid var(--g3)${isOld(r)?';opacity:.8':''}">
+        <td style="padding:5px 6px;color:var(--text2);white-space:nowrap">${r.from} ～ ${r.to}</td>
+        <td style="padding:5px 6px;text-align:right">${fmtN(crc)}</td>
+        <td style="padding:5px 6px;text-align:right;color:var(--accent);font-weight:600">${fmtN(qrc)}</td>
+        <td style="padding:5px 6px;text-align:right">${fmtN(fdu)}</td>
+        <td style="padding:5px 6px;text-align:right">${fmtN(fdc)}</td>
+        <td style="padding:5px 6px;text-align:right">${fmtAmt(fda)}</td>
+        <td style="padding:5px 6px;text-align:right;color:#34d399">${fmtAmt(rev)}</td>
+        <td style="padding:5px 6px;color:var(--text3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(r.note||'').replace(/"/g,'&quot;')}">${r.note||''}</td>
+        <td style="padding:5px 6px;text-align:center">${statusChip(r)}</td>
+      </tr>`
+    }).join('') + '</tbody></table></div>'
 }
 function diRenderAdList() {
   const el = document.getElementById('di-ad-table')
@@ -14386,14 +14486,23 @@ function diRenderHistory() {
 }
 function renderDataInput() {
   diRenderRegList()
-  // 自動填今天的日期範圍
-  const from = document.getElementById('rr-from')
-  const to = document.getElementById('rr-to')
+  diCheckMigrateWarning()
+  // 自動填預設日期區間
+  const from = document.getElementById('di-rr-from')
+  const to   = document.getElementById('di-rr-to')
   if(from && !from.value) {
     const d = new Date(); d.setDate(d.getDate()-6)
     from.value = getTaipeiDateString(d)
   }
   if(to && !to.value) to.value = getTaipeiYesterday()
+  // 廣告預設日期
+  const aFrom = document.getElementById('ad-from')
+  const aTo   = document.getElementById('ad-to')
+  if(aFrom && !aFrom.value) {
+    const d = new Date(); d.setDate(d.getDate()-6)
+    aFrom.value = getTaipeiDateString(d)
+  }
+  if(aTo && !aTo.value) aTo.value = getTaipeiYesterday()
 }
 
 // 會議模式 CSS
