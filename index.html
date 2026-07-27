@@ -10771,7 +10771,10 @@ function renderThreadTracker(){
       : ''
     return `<tr style="${rowStyle}" onclick="contentDetailClick(event,'${escAttr(a.id)}','thread')" class="cd-clickable">
       <td style="padding:8px 10px;vertical-align:middle">${anHtml}${slHtml}${topicHtml}</td>
-      <td style="padding:8px 10px;vertical-align:middle"><span style="font-size:10px;font-family:ui-monospace,monospace;color:#e86a1a">${escHtml(a.utmContent||'—')}</span>${ctx.isGroupFirst&&ctx.siblingCount>1?`<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.25);margin-left:6px;vertical-align:middle">×${ctx.siblingCount}</span>`:''}</td>
+      <td style="padding:8px 10px;vertical-align:middle">
+        <span style="font-size:10px;font-family:ui-monospace,monospace;color:#e86a1a">${escHtml(a.utmContent||'—')}</span>${ctx.isGroupFirst&&ctx.siblingCount>1?`<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.25);margin-left:6px;vertical-align:middle">×${ctx.siblingCount}</span>`:''}
+        ${(()=>{const lc={'A':'#4ade80','B':'#60a5fa','C':'#fbbf24','D':'#9ca3af','U':'#f87171'},ll={'A':'直接','B':'輔助','C':'間接','D':'時間','U':'未知'},lv=a.attribution_level;return lv?`<div style="margin-top:3px"><span style="font-size:9px;padding:1px 5px;border-radius:3px;background:${lc[lv]||'#6b7280'}22;color:${lc[lv]||'#6b7280'};border:1px solid ${lc[lv]||'#6b7280'}40">${lv} ${ll[lv]||''}</span></div>`:''})()}
+      </td>
       <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(isDel?null:views)}</td>
       <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(likes)}</td>
       <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(replies)}</td>
