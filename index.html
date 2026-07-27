@@ -3192,6 +3192,7 @@ function renderAbTests() {
       <div class="fg"><label>連結模式</label><select id="cp-linkmode" onchange="cpLinkModeChange()"><option value="link">可連結</option><option value="mention">純提及（不掛碼）</option></select></div>
     </div>
     <div class="fg"><label>標題 / 主題</label><input id="cp-title" placeholder="文章/貼文標題"></div>
+    <div class="fg"><label>引用文章庫（可選）</label><select id="cp-article" style="font-size:.8rem"><option value="">— 未引用文章庫 —</option></select></div>
     <div id="cp-utm-wrap">
       <div class="fg"><label>📎 帶入已建的 UTM/短連結</label><select id="cp-utm-pick" onchange="cpPickUtm()"><option value="">— 自動產生新碼，或帶入已建的 —</option></select></div>
       <div class="fg"><label>UTM 追蹤碼（自動產生，可改）</label>
@@ -7385,7 +7386,7 @@ function renderArticles(){
           ${(()=>{const alog=(DB.get('anon_pub_log')||{})[a.url||'']||{};const sa=(DB.get('seeding_accounts')||[]).filter(x=>!x.accountStatus||x.accountStatus==='active');const ad=sa.filter(x=>alog[x.id]?.done).length;const at=sa.length;return at?`<span style="background:${ad===at?'#16a34a18':'#6b728018'};color:${ad===at?'#4ade80':'#9ca3af'};border:1px solid ${ad===at?'#16a34a40':'#6b728040'};border-radius:4px;font-size:.65rem;padding:1px 7px">📝 ${ad}/${at}</span>`:''})()||''}
           <button class="btn btn-xs" style="background:#229ED9;color:#fff;border:none;cursor:pointer;padding:3px 8px;border-radius:4px;font-size:.78rem" onclick="syncArticleToMike(DB.get('articles').find(x=>x.id==='${a.id}'))">📤 mike</button>
           <button class="btn btn-xs btn-danger" onclick="delArticle('${a.id}')">刪除</button>
-          ${postCites.length?`<button class="btn btn-xs" style="background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.3);padding:2px 8px;cursor:pointer" onclick="showArticleCitations('${a.id}')">📌 ${postCites.length} 篇引用</button>`:''}
+          ${(postCites.length+cpUsed.length)>0?`<button class="btn btn-xs" style="background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.3);padding:2px 8px;cursor:pointer" onclick="showArticleCitations('${a.id}')">📌 ${postCites.length+cpUsed.length} 篇引用</button>`:''}
         </div>
       </div>
       ${needed.length?`
@@ -9826,6 +9827,11 @@ function cpLinkModeChange(){
   if(!mention) cpGenUtm()
 }
 function _rerenderChannels(){ try{renderChannelPosts()}catch(e){} try{renderChannelFb()}catch(e){} }
+function cpFillArticles(selectedId) {
+  const sel=document.getElementById('cp-article'); if(!sel) return
+  const arts=(DB.get('articles')||[]).slice().sort((a,b)=>(b.lastUsed||b.date||'').localeCompare(a.lastUsed||a.date||''))
+  sel.innerHTML='<option value="">— 未引用文章庫 —</option>'+arts.map(a=>`<option value="${escAttr(a.id)}"${a.id===selectedId?' selected':''}>${escHtml((a.title||'').slice(0,40))}</option>`).join('')
+}
 function openAddChannelPost(preset){
   document.getElementById('cp-id').value=''
   document.getElementById('cp-modal-title').textContent='新增鋪文/社團記錄'
@@ -9839,6 +9845,7 @@ function openAddChannelPost(preset){
   document.getElementById('cp-url-title').textContent=''; _cpUrlTitle=''
   const pick=document.getElementById('cp-utm-pick'); if(pick){pick.innerHTML='<option value="">— 自動產生新碼，或帶入已建的 —</option>';pick.value=''}
   cpFillRoles(document.getElementById('cp-channel').value); cpLinkModeChange()
+  cpFillArticles('')
   openModal('modal-channel-post')
 }
 function openEditChannelPost(id){
@@ -9862,6 +9869,7 @@ function openEditChannelPost(id){
   _cpUrlTitle=p.urlTitle||''
   document.getElementById('cp-url-title').textContent=p.urlTitle?('📄 '+p.urlTitle):(p.url?'🔗 '+taUrlLabel(p.url):'')
   _syncCopy('cp-utm','cp-utm-copy'); _fillUtmPicker('cp-utm-pick', p.role); cpLinkModeChange()
+  cpFillArticles(p.articleId||'')
   openModal('modal-channel-post')
 }
 function saveChannelPost(){
@@ -9885,6 +9893,7 @@ function saveChannelPost(){
     status:document.getElementById('cp-status').value,
     engaged:document.getElementById('cp-engaged').value,
     note:document.getElementById('cp-note').value.trim(),
+    articleId:document.getElementById('cp-article')?.value||null,
     updatedAt:new Date().toISOString()
   }
   const list=DB.get('channel_posts')||[]
@@ -14862,6 +14871,9 @@ function showArticleCitations(articleId) {
   if (!article) return
   const posts = DB.get('posts') || []
   const cited = posts.filter(p => p.articleId === articleId)
+  const cposts = DB.get('channel_posts') || []
+  const cpCited = cposts.filter(p => p.articleId === articleId)
+  const total = cited.length + cpCited.length
   const overlay = document.getElementById('content-detail-overlay')
   const drawer  = document.getElementById('content-detail-drawer')
   if (!overlay || !drawer) return
@@ -14878,10 +14890,10 @@ function showArticleCitations(articleId) {
     <button class="cd-close" onclick="closeContentDetail()">✕</button>
   </div>
   <div class="cd-body">
-    ${cited.length === 0
+    ${total === 0
       ? `<div style="text-align:center;padding:40px 0;color:var(--text3)">此文章尚無追蹤貼文引用</div>`
-      : `<div style="font-size:.72rem;color:var(--text3);margin-bottom:12px">共 <b style="color:var(--text)">${cited.length}</b> 篇貼文引用此文章</div>
-        <div style="display:flex;flex-direction:column;gap:8px">
+      : `<div style="font-size:.72rem;color:var(--text3);margin-bottom:12px">共 <b style="color:var(--text)">${total}</b> 筆引用${cited.length?`・追蹤 ${cited.length} 篇`:''}${cpCited.length?`・匿名鋪文 ${cpCited.length} 篇`:''}</div>
+        ${cited.length ? `<div style="display:flex;flex-direction:column;gap:8px">
           ${cited.map(p => `
           <div style="background:var(--g3,#283148);border-radius:8px;padding:10px 12px;cursor:pointer;border:1px solid var(--border,#2d3748)" onclick="openContentDetail('${p.id}','post')">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
@@ -14892,13 +14904,26 @@ function showArticleCitations(articleId) {
             <div style="font-size:.8rem;color:var(--text);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.topic||'（無主題）')}</div>
             ${p.utmContent ? `<div style="font-family:ui-monospace,monospace;font-size:.65rem;color:#e86a1a">🏷 ${escHtml(p.utmContent)}</div>` : ''}
             <div style="display:flex;gap:14px;margin-top:6px;font-size:.7rem;color:var(--text3)">
-              <span>📢 ${p.impressions||0}</span>
-              <span>👀 ${p.views||0}</span>
-              <span>👍 ${p.likes||0}</span>
-              <span>💬 ${p.comments||0}</span>
+              <span>📢 ${p.impressions||0}</span><span>👀 ${p.views||0}</span><span>👍 ${p.likes||0}</span><span>💬 ${p.comments||0}</span>
             </div>
           </div>`).join('')}
-        </div>`
+        </div>` : ''}
+        ${cpCited.length ? `
+        <div style="margin-top:${cited.length?'14px':'0'};margin-bottom:8px;font-size:.65rem;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase">匿名鋪文 (${cpCited.length})</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${cpCited.map(p => `
+          <div style="background:var(--g3,#283148);border-radius:8px;padding:10px 12px;border:1px solid var(--border,#2d3748)">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+              <span style="font-size:.72rem;color:var(--text3)">${p.date||'—'}</span>
+              <span style="font-size:.6rem;padding:1px 5px;border-radius:3px;background:var(--g2);color:var(--text3);border:1px solid var(--border)">${p.channel==='fb'?'FB社團':'鋪文'}</span>
+              ${p.platform?`<span style="font-size:.65rem;color:var(--text3)">${escHtml(p.platform)}</span>`:''}
+            </div>
+            <div style="font-size:.8rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.title||'（無主題）')}</div>
+            ${p.utmContent?`<div style="font-family:ui-monospace,monospace;font-size:.65rem;color:#e86a1a;margin-top:3px">🏷 ${escHtml(p.utmContent)}</div>`:''}
+            <div style="font-size:.65rem;color:var(--text3);margin-top:4px">${p.status||'—'}${p.engaged==='yes'?' · 有互動':p.engaged==='no'?' · 無互動':''}</div>
+          </div>`).join('')}
+        </div>` : ''}
+      `
     }
   </div>`
   overlay.style.display = ''
