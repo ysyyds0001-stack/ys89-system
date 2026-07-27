@@ -1820,12 +1820,14 @@ function realRegDel(id){
   renderRealReg();
 }
 function renderRealReg(){
-  const list=DB.get('real_reg').slice().sort((a,b)=>(b.from||'').localeCompare(a.from||''));
+  const _rrRaw=DB.get('real_reg'); const list=(Array.isArray(_rrRaw)?_rrRaw:[]).slice().sort((a,b)=>(b.from||'').localeCompare(a.from||''));
   const sumEl=document.getElementById('rr-summary'), listEl=document.getElementById('rr-list');
   if(!sumEl||!listEl) return;
   if(!list.length){ sumEl.innerHTML=''; listEl.innerHTML='<div style="font-size:.78rem;color:var(--text3);padding:6px 2px">尚無對帳記錄，填上面表單儲存第一筆。</div>'; return; }
-  const tReg=list.reduce((a,r)=>a+r.reg,0), tDep=list.reduce((a,r)=>a+r.dep,0);
-  const tAmt=list.reduce((a,r)=>a+r.amt,0), tPnl=list.reduce((a,r)=>a+r.pnl,0);
+  const tReg=list.reduce((a,r)=>a+(r.reg??r.qualified_registration_count??0),0);
+  const tDep=list.reduce((a,r)=>a+(r.dep??r.first_deposit_user_count??0),0);
+  const tAmt=list.reduce((a,r)=>a+(r.amt??r.first_deposit_amount??0),0);
+  const tPnl=list.reduce((a,r)=>a+(r.pnl??0),0);
   const depRate=tReg?(tDep/tReg*100):0;
   sumEl.innerHTML=`<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;background:#0d0b0a;border:1px solid var(--border);border-radius:8px;padding:10px 14px">
     <span>總註冊 <b style="color:var(--accent)">${tReg.toLocaleString()}</b></span>
@@ -1837,14 +1839,18 @@ function renderRealReg(){
   listEl.innerHTML=`<table>
     <thead><tr><th>區間</th><th style="text-align:right">註冊</th><th style="text-align:right">儲值</th><th style="text-align:right">儲值率</th><th style="text-align:right">儲值金額</th><th style="text-align:right">輸贏分</th><th>備註</th><th></th></tr></thead>
     <tbody>${list.map(r=>{
-      const rate=r.reg?(r.dep/r.reg*100):0;
+      const reg=r.reg??r.qualified_registration_count??0;
+      const dep=r.dep??r.first_deposit_user_count??0;
+      const amt=r.amt??r.first_deposit_amount??0;
+      const pnl=r.pnl??0;
+      const rate=reg?(dep/reg*100):0;
       return `<tr>
         <td style="white-space:nowrap;font-size:.78rem">${r.from}<br>～${r.to}</td>
-        <td style="text-align:right;font-weight:700;color:var(--accent)">${r.reg.toLocaleString()}</td>
-        <td style="text-align:right">${r.dep.toLocaleString()}</td>
+        <td style="text-align:right;font-weight:700;color:var(--accent)">${reg.toLocaleString()}</td>
+        <td style="text-align:right">${dep.toLocaleString()}</td>
         <td style="text-align:right;font-weight:700;color:${rate>=30?'#4ade80':'var(--text2)'}">${rate.toFixed(1)}%</td>
-        <td style="text-align:right">${r.amt.toLocaleString()}</td>
-        <td style="text-align:right;font-weight:700;color:${r.pnl>=0?'#4ade80':'#f87171'}">${r.pnl>=0?'+':''}${r.pnl.toLocaleString()}</td>
+        <td style="text-align:right">${amt.toLocaleString()}</td>
+        <td style="text-align:right;font-weight:700;color:${pnl>=0?'#4ade80':'#f87171'}">${pnl>=0?'+':''}${pnl.toLocaleString()}</td>
         <td style="font-size:.74rem;color:var(--text3);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.note||''}">${r.note||'—'}</td>
         <td><button class="btn btn-xs btn-danger" onclick="realRegDel('${r.id}')">✕</button></td>
       </tr>`;}).join('')}</tbody>
@@ -2365,7 +2371,7 @@ function _ovKpiGrid() {
   const _p = (typeof _ga4Period !== 'undefined') ? _ga4Period : '7d'
   const k = (_p==='3d' ? ga4.kpis_3d : _p==='28d'||_p==='cum' ? ga4.kpis_28d : _p==='custom' ? ga4.kpis_custom : null) || ga4.kpis_7d || {}
   const kp = (_p==='7d' ? ga4.kpis_prev7d : _p==='3d' ? ga4.kpis_7d : {}) || {}
-  const regs = DB.get('real_reg') || []
+  const regs = getMonthlyRegs()
   const sorted = regs.slice().sort((a,b)=>(b.from||'').localeCompare(a.from||''))
   const cReg = sorted.find(r=>(r.from||'')>=cur) || {}
   const pReg = sorted.find(r=>(r.from||'')>=prev&&(r.from||'')<cur) || {}
@@ -2398,7 +2404,7 @@ function _ovFunnel() {
   const acts = (DB.get('thread_activities')||[]).filter(a=>(a.date||'')>=cur)
   const ga4 = _ga4Data || {}
   const k = ga4.kpis_7d || {}
-  const regs = DB.get('real_reg') || []
+  const regs = getMonthlyRegs()
   const cReg = regs.slice().sort((a,b)=>(b.from||'').localeCompare(a.from||'')).find(r=>(r.from||'')>=cur) || {}
   const exposure = acts.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)||null
   const sessions = k.sessions||null
@@ -2654,7 +2660,7 @@ function _ovActions() {
   const amplify=[], stop=[], fix=[], test=[]
   const sess=k.sessions||0, sessP=kp.sessions||0, cta=k.cta||0
   const ctaR = sess>0?cta/sess:null
-  const regs = DB.get('real_reg')||[]
+  const regs = getMonthlyRegs()
 
   // ── 放大 ──────────────────────────────────────────────
   // 1. 整體導流成長
@@ -2773,7 +2779,7 @@ function _ovDataHealth() {
   const issues = []
   const acts = DB.get('thread_activities') || []
   const ga4 = _ga4Data || {}
-  const regs = DB.get('real_reg') || []
+  const regs = getMonthlyRegs()
   const k = ga4.kpis_7d || {}
   const today = new Date(); today.setHours(0,0,0,0)
 
@@ -5230,6 +5236,13 @@ const DB={
   },
   id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
 }
+// CF Worker /api/real_reg 目前回傳測試資料 {"test":1}，真實月度數據寫在未加前綴的 real_reg key
+// 此函式讓所有 KPI 渲染函式透過統一入口讀取，優先使用 DB（手動新增記錄），退而讀取原始 key
+function getMonthlyRegs(){
+  const v=DB.get('real_reg');
+  if(Array.isArray(v)&&v.length) return v;
+  try{const r=JSON.parse(localStorage.getItem('real_reg')||'null');return Array.isArray(r)?r:[];}catch{return[];}
+}
 
 // ===== MIKE BOT =====
 const MIKE_TOKEN='8795790357:AAGN9DBgcmlsV_sTs1697s_94X7uaxfLzvw'
@@ -6468,7 +6481,7 @@ function renderGrowthOverview(){
 
   const allActs = DB.get('thread_activities')||[]
   const acts = allActs.filter(a=> a.date>=start && a.date<=end)
-  const allReg = DB.get('real_reg')||[]
+  const allReg = getMonthlyRegs()
   const regs = allReg.filter(r=> r.from>=start && r.to<=end)
   const allMeta = DB.get('meta_ads')||[]
   const metas = allMeta.filter(m=> m.from>=start && m.to<=end)
@@ -12785,10 +12798,10 @@ function msToggleDrilldown(id) {
 // ── 商業成果總覽（來源：real_reg 後台對帳）─────────────────────────────────
 function renderMsBizKpis(start, end) {
   const el = document.getElementById('ms-biz-kpis'); if (!el) return;
-  const allReg = DB.get('real_reg') || [];
-  // P1修正：每日記錄(rf===rt)依date加總；區間記錄只有查詢範圍完整涵蓋才納入，部分重疊不計入以避免月資料虛增週報
-  const _regInRange = (r, s, e) => { const rf=r.from||r.date||'', rt=r.to||r.date||r.from||''; return !!rf && rf>=s && rt<=e; }
-  const _regPartial = (r, s, e) => { const rf=r.from||r.date||'', rt=r.to||r.date||r.from||''; return !!rf && rf<=e && rt>=s && !(rf>=s && rt<=e); }
+  const allReg = getMonthlyRegs();
+  // 任何與查詢區間重疊的記錄都計入；月度記錄橫跨或延伸時標記提示
+  const _regInRange = (r, s, e) => { const rf=r.from||r.date||'', rt=r.to||r.date||r.from||''; return !!rf && rf<=e && rt>=s; }
+  const _regPartial = (r, s, e) => { const rf=r.from||r.date||'', rt=r.to||r.date||r.from||''; return !!rf && rf<=e && rt>=s && (rf<s||rt>e); }
   const cur = allReg.filter(r => _regInRange(r, start, end));
   const partialCur = allReg.filter(r => _regPartial(r, start, end));
   const cReg = cur.reduce((s,r) => s+(r.qualified_registration_count??r.reg??0), 0);
@@ -14215,10 +14228,11 @@ function renderMeeting() {
   const k7 = ga4.kpis_7d||{}, k28 = ga4.kpis_28d||{}, kCum = ga4.kpis||{}
   const kUse = days<=3 ? (ga4.kpis_3d||k7) : days<=7 ? k7 : days<=28 ? k28 : kCum
   const kPrev = days<=7 ? (ga4.kpis_prev7d||{}) : {}
-  const regs = DB.get('real_reg')||[]
-  // P1修正：與 renderMsBizKpis 相同規則 — 完整涵蓋才納入，部分重疊略去
-  const cRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return !!rf&&rf>=from&&rt<=to})
-  const partialRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return !!rf&&rf<=to&&rt>=from&&!(rf>=from&&rt<=to)})
+  const regs = getMonthlyRegs()
+  // 任何與查詢區間重疊的記錄都計入；月度記錄橫跨查詢範圍或延伸至月底時標記提示
+  const cRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return !!rf&&rf<=to&&rt>=from})
+  const partialRegs = cRegs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return rf<from||rt>to})
+  const exceedRegs = cRegs.filter(r=>{const rt=r.to||r.date||r.from||'';return rt>to})
   const cReg = {
     completed: cRegs.reduce((s,r)=>s+(r.completed_registration_count??r.completedReg??0),0)||null,
     reg:       cRegs.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0)||null,
@@ -14307,8 +14321,10 @@ function renderMeeting() {
     PATH_04:{level:'B',color:'#60a5fa'},  // UTM + 貼文 URL（A 級需 P2/P3）
     PATH_05:{level:'D',color:'#fb923c'},  // 時間段推估
   }
-  const mtgPartialNote = partialRegs.length
-    ? `<div style="margin-top:6px;padding:6px 10px;background:#fb923c18;border:1px solid #fb923c55;border-radius:6px;font-size:.63rem;color:#fb923c">⚠️ 區間資料無法拆分：${partialRegs.map(r=>`${r.from||r.date}~${r.to||r.date||r.from}`).join('、')} 部分重疊查詢範圍，已略去。</div>` : ''
+  const mtgPartialNote = [
+    partialRegs.length ? `<div style="margin-top:6px;padding:6px 10px;background:#fb923c18;border:1px solid #fb923c55;border-radius:6px;font-size:.63rem;color:#fb923c">⚠️ 跨期資料已略去：${partialRegs.map(r=>`${r.from||r.date}~${r.to||r.date||r.from}`).join('、')} 開始於查詢範圍之前。</div>` : '',
+    exceedRegs.length ? `<div style="margin-top:6px;padding:6px 10px;background:#60a5fa18;border:1px solid #60a5fa55;border-radius:6px;font-size:.63rem;color:#60a5fa">📅 月度資料（已計入）：${exceedRegs.map(r=>`${r.from||r.date}~${r.to||r.date||r.from}`).join('、')} 為整月累計，非精確查詢期間數字。</div>` : '',
+  ].filter(Boolean).join('')
   document.getElementById('mtg-paths').innerHTML = `<table style="width:100%;font-size:.72rem;border-collapse:collapse">
     <thead><tr style="border-bottom:1px solid var(--border)">
       <th style="padding:5px 6px;text-align:left;color:var(--text3)">路徑</th>
@@ -14448,7 +14464,7 @@ function mtgEnterPresentMode() {
 // ===== 資料健康 =====
 function renderDataHealth() {
   const acts  = DB.get('thread_activities')||[]
-  const regs  = DB.get('real_reg')||[]
+  const regs  = getMonthlyRegs()
   const links = DB.get('links')||[]
   const posts = DB.get('posts')||[]
 
@@ -14583,7 +14599,7 @@ function diSaveReg() {
   rec.reg = rec.qualified_registration_count
   rec.dep = rec.first_deposit_user_count
   rec.amt = rec.first_deposit_amount
-  const regs = DB.get('real_reg')||[]
+  const regs = getMonthlyRegs()
   regs.push(rec)
   DB.set('real_reg',regs)
   try{DB.push('real_reg')}catch(e){}
@@ -14600,7 +14616,7 @@ function diClearRegForm() {
   })
 }
 function diCheckMigrateWarning() {
-  const regs = DB.get('real_reg')||[]
+  const regs = getMonthlyRegs()
   const oldCount = regs.filter(r=>!r._ver||r._ver==='v2').length
   const warn = document.getElementById('di-migrate-warn')
   const cnt  = document.getElementById('di-migrate-count')
@@ -14609,7 +14625,7 @@ function diCheckMigrateWarning() {
   else           { warn.style.display='none' }
 }
 function diShowMigrateTool() {
-  const regs = DB.get('real_reg')||[]
+  const regs = getMonthlyRegs()
   const old  = regs.filter(r=>!r._ver||r._ver==='v2')
   if(!old.length){ alert('沒有需要校正的舊格式記錄'); return }
   const r = old[0]
@@ -14621,7 +14637,7 @@ function diShowMigrateTool() {
     `輸入 0 = 跳過（標記為待人工校正）`
   )
   if(choice===null) return
-  const all = DB.get('real_reg')||[]
+  const all = getMonthlyRegs()
   const idx = all.findIndex(x=>x.from===r.from&&x.to===r.to&&!x._ver)
   if(idx<0) return
   if(choice==='1'){
@@ -14669,7 +14685,7 @@ function diSaveAd() {
 function diRenderRegList() {
   const el = document.getElementById('di-reg-table')
   if(!el) return
-  const regs = (DB.get('real_reg')||[]).slice().reverse()
+  const regs = getMonthlyRegs().slice().reverse()
   if(!regs.length){ el.innerHTML='<div style="font-size:.75rem;color:var(--text3)">尚未輸入任何記錄</div>'; return }
   const fmtN = v => (v==null||v==='')?'—':Number(v).toLocaleString()
   const fmtAmt = v => (v==null||v==='')?'—':'NT$'+Number(v).toLocaleString()
@@ -14738,7 +14754,7 @@ function diRenderAdList() {
 function diRenderHistory() {
   const el = document.getElementById('di-history-table')
   if(!el) return
-  const regs = (DB.get('real_reg')||[]).slice().reverse()
+  const regs = getMonthlyRegs().slice().reverse()
   const ads = (DB.get('ad_data')||[]).slice().reverse()
   const all = [...regs.map(r=>({...r,_type:'有效註冊'})), ...ads.map(r=>({...r,_type:'Meta廣告'}))]
     .sort((a,b)=>(b.inputAt||'').localeCompare(a.inputAt||''))
