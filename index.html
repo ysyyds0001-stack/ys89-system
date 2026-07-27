@@ -10802,14 +10802,15 @@ function renderThreadTracker(){
 
   // 桌機：單一 row
   const renderNewRow = (a, ctx={}) => {
-    const m = a.platformMetrics?.Threads || {}
+    const pm = a.platformMetrics||{}, mT=pm.Threads||{}, mI=pm.IG||{}, mF=pm.FB||{}
+    const hasM = pm.Threads!=null||pm.IG!=null||pm.FB!=null
     const nt = a.notes||''
     const isDel = nt==='貼文已刪除'
     const isUtmGen = nt==='UTM產生器建立'
     const isNoView = nt==='無法顯示瀏覽'
-    const views = m.views
-    const likes = m.likes
-    const replies = m.replies ?? m.comments
+    const views  = hasM ? (mT.views||0)+(mI.reach||0)+(mF.reach||0) : undefined
+    const likes  = hasM ? (mT.likes||0)+(mI.likes||0)+(mF.likes||0) : undefined
+    const replies = hasM ? ((mT.replies??mT.comments??0))+(mI.comments||0)+(mF.comments||0) : undefined
     let rowStyle = 'border-bottom:1px solid var(--border)'
     if(isDel) rowStyle += ';border-left:3px solid #dc2626;background:rgba(220,38,38,.04)'
     else if(isNoView) rowStyle += ';border-left:3px solid #e86a1a'
@@ -10848,10 +10849,13 @@ function renderThreadTracker(){
 
   // 手機：展開卡
   const renderNewCard = (a, ctx={}) => {
-    const m = a.platformMetrics?.Threads || {}
+    const pm = a.platformMetrics||{}, mT=pm.Threads||{}, mI=pm.IG||{}, mF=pm.FB||{}
+    const hasM = pm.Threads!=null||pm.IG!=null||pm.FB!=null
     const nt = a.notes||''
     const isDel = nt==='貼文已刪除'
-    const views = m.views, likes = m.likes, replies = m.replies ?? m.comments
+    const views  = hasM ? (mT.views||0)+(mI.reach||0)+(mF.reach||0) : undefined
+    const likes  = hasM ? (mT.likes||0)+(mI.likes||0)+(mF.likes||0) : undefined
+    const replies = hasM ? ((mT.replies??mT.comments??0))+(mI.comments||0)+(mF.comments||0) : undefined
     return `<div class="po-card"${ctx.isSibling?' style="border-left:3px solid rgba(167,139,250,.4)"':''}>
       <div class="po-head" onclick="poToggle(this)">
         <span class="po-chev">▸</span>
@@ -10897,10 +10901,10 @@ function renderThreadTracker(){
     const label = `${mm}/${dd} (${WD[dt.getDay()]})`
     let tvw=0, tlk=0, tcm=0
     rows.forEach(a=>{
-      const m=a.platformMetrics?.Threads||{}
-      if((a.notes||'')!=='貼文已刪除') tvw += +(m.views)||0
-      tlk += +(m.likes)||0
-      tcm += +(m.replies??m.comments??0)||0
+      const pm=a.platformMetrics||{}, mT=pm.Threads||{}, mI=pm.IG||{}, mF=pm.FB||{}
+      if((a.notes||'')!=='貼文已刪除') tvw += (mT.views||0)+(mI.reach||0)+(mF.reach||0)
+      tlk += (mT.likes||0)+(mI.likes||0)+(mF.likes||0)
+      tcm += (mT.replies??mT.comments??0)+(mI.comments||0)+(mF.comments||0)
     })
     return `<div style="margin-bottom:14px;border:1px solid var(--border);border-radius:8px;overflow:hidden">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#1a1d25;flex-wrap:wrap;gap:8px">
@@ -10918,9 +10922,9 @@ function renderThreadTracker(){
         <thead><tr>
           <th style="${thStyle};text-align:left">帳號</th>
           <th style="${thStyle};text-align:left">UTM 代碼</th>
-          <th style="${thStyle};text-align:right">曝光</th>
+          <th style="${thStyle};text-align:right">曝光/觸及</th>
           <th style="${thStyle};text-align:right">讚</th>
-          <th style="${thStyle};text-align:right">留言</th>
+          <th style="${thStyle};text-align:right">互動</th>
           <th style="${thStyle};text-align:left">備注</th>
           <th style="${thStyle};text-align:right">操作</th>
         </tr></thead>
