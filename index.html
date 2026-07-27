@@ -14137,7 +14137,7 @@ function renderMeeting() {
   const kUse = days<=3 ? (ga4.kpis_3d||k7) : days<=7 ? k7 : days<=28 ? k28 : kCum
   const kPrev = days<=7 ? (ga4.kpis_prev7d||{}) : {}
   const regs = DB.get('real_reg')||[]
-  const cRegs = regs.filter(r=>(r.from||'')>=from&&(r.to||'')<=to)
+  const cRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return rf<=to&&rt>=from})
   const cReg = {
     completed: cRegs.reduce((s,r)=>s+(r.completed_registration_count??r.completedReg??0),0)||null,
     reg:       cRegs.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0)||null,
