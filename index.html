@@ -7035,7 +7035,7 @@ function renderPosts(){
   if(!posts.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無發文記錄</div>';return}
   const deskHtml=`<div class="posts-desk" style="overflow-x:auto"><table>
     <thead><tr><th>日期</th><th>角色</th><th>平台</th><th>主題</th><th>引用文章</th><th>貼文連結</th><th>📢曝光</th><th>👀瀏覽</th><th>👁觸及</th><th>👍讚</th><th>💬留言</th><th>🔖儲存</th><th>🔄分享</th><th>🔗點擊</th><th>操作</th></tr></thead>
-    <tbody>${posts.map(p=>`<tr>
+    <tbody>${posts.map(p=>`<tr onclick="contentDetailClick(event,'${p.id}','post')" class="cd-clickable">
       <td style="white-space:nowrap">${p.date||'—'}</td>
       <td><span class="badge b-green">${p.personaName||'—'}</span></td>
       <td>${(p.platforms&&p.platforms.length?p.platforms:[p.platform]).filter(Boolean).map(pl=>`<span class="badge b-blue" style="margin-right:2px">${pl}</span>`).join('')||'—'}</td>
@@ -10766,7 +10766,7 @@ function renderThreadTracker(){
     const topicHtml = topicParts.length
       ? `<div style="font-size:9px;color:var(--text3);margin-top:3px;line-height:1.3">${topicParts.map(function(t){return escHtml(t)}).join(' · ')}</div>`
       : ''
-    return `<tr style="${rowStyle}">
+    return `<tr style="${rowStyle}" onclick="contentDetailClick(event,'${escAttr(a.id)}','thread')" class="cd-clickable">
       <td style="padding:8px 10px;vertical-align:middle">${anHtml}${slHtml}${topicHtml}</td>
       <td style="padding:8px 10px;vertical-align:middle"><span style="font-size:10px;font-family:ui-monospace,monospace;color:#e86a1a">${escHtml(a.utmContent||'—')}</span>${ctx.isGroupFirst&&ctx.siblingCount>1?`<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.25);margin-left:6px;vertical-align:middle">×${ctx.siblingCount}</span>`:''}</td>
       <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(isDel?null:views)}</td>
@@ -14521,8 +14521,218 @@ body.meeting-mode #mtg-kpi-grid { grid-template-columns: repeat(5,1fr) !importan
   body.meeting-mode .app-topbar { display: none }
   body.meeting-mode #pg-meeting { padding: 0 }
 }
+#content-detail-drawer.open { transform: translateX(0) !important }
+.cd-header { display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border,#2d3748);position:sticky;top:0;background:var(--g2,#1e2233);z-index:1 }
+.cd-title { font-size:.9rem;font-weight:700;color:var(--text,#f1f5f9) }
+.cd-close { background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--text3,#64748b);padding:4px 8px;border-radius:4px;line-height:1 }
+.cd-close:hover { background:var(--g3,#283148) }
+.cd-body { padding:16px 20px }
+.cd-section { margin-bottom:18px }
+.cd-section-title { font-size:.65rem;font-weight:700;color:var(--text3,#64748b);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border,#2d3748) }
+.cd-row { display:flex;gap:8px;align-items:baseline;margin-bottom:6px;font-size:.78rem }
+.cd-label { color:var(--text3,#64748b);flex-shrink:0;min-width:90px }
+.cd-value { color:var(--text,#f1f5f9);word-break:break-all;flex:1 }
+.cd-value a { color:#60a5fa;text-decoration:none }
+.cd-value a:hover { text-decoration:underline }
+.cd-metrics-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px }
+.cd-metric { background:var(--g3,#283148);border-radius:6px;padding:8px;text-align:center }
+.cd-metric-val { font-size:1.1rem;font-weight:700;color:var(--text,#f1f5f9);font-family:ui-monospace,monospace }
+.cd-metric-lbl { font-size:.62rem;color:var(--text3,#64748b);margin-top:3px }
+.cd-attr-badge { display:inline-block;padding:2px 8px;border-radius:4px;font-size:.72rem;font-weight:700 }
+.cd-attr-A { background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3) }
+.cd-attr-B { background:rgba(96,165,250,.15);color:#60a5fa;border:1px solid rgba(96,165,250,.3) }
+.cd-attr-C { background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3) }
+.cd-attr-D { background:rgba(156,163,175,.15);color:#9ca3af;border:1px solid rgba(156,163,175,.3) }
+.cd-attr-U { background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.3) }
+tr.cd-clickable:hover > td { background:rgba(255,255,255,.03);cursor:pointer }
 `
 document.head.appendChild(_mtgStyle)
+
+// ===== CONTENT DETAIL DRAWER =====
+function contentDetailClick(e, id, source) {
+  if (e.target.closest('button,a,input')) return
+  openContentDetail(id, source)
+}
+function openContentDetail(id, source) {
+  let rec = null
+  if (source === 'post') {
+    const posts = DB.get('posts') || []
+    rec = posts.find(p => p.id === id)
+    if (!rec) return
+    _renderPostDetail(rec)
+  } else {
+    const acts = DB.get('thread_activities') || []
+    rec = acts.find(a => a.id === id)
+    if (!rec) return
+    _renderThreadDetail(rec)
+  }
+  const overlay = document.getElementById('content-detail-overlay')
+  const drawer  = document.getElementById('content-detail-drawer')
+  if (!overlay || !drawer) return
+  overlay.style.display = ''
+  drawer.style.display  = ''
+  requestAnimationFrame(() => drawer.classList.add('open'))
+  document.addEventListener('keydown', _cdEscClose)
+}
+function closeContentDetail() {
+  const overlay = document.getElementById('content-detail-overlay')
+  const drawer  = document.getElementById('content-detail-drawer')
+  if (!overlay || !drawer) return
+  drawer.classList.remove('open')
+  setTimeout(() => { overlay.style.display = 'none'; drawer.style.display = 'none' }, 250)
+  document.removeEventListener('keydown', _cdEscClose)
+}
+function _cdEscClose(e) { if (e.key === 'Escape') closeContentDetail() }
+function _cdAttrBadge(level) {
+  const labels = { A:'A 直接歸因', B:'B 輔助歸因', C:'C 間接歸因', D:'D 時間歸因', U:'U 未知' }
+  return level
+    ? `<span class="cd-attr-badge cd-attr-${level}">${labels[level]||level}</span>`
+    : '<span style="color:var(--text3)">—</span>'
+}
+function _cdLink(url, label) {
+  if (!url) return '<span style="color:var(--text3)">—</span>'
+  const disp = label || url.replace(/^https?:\/\//,'').slice(0,52)
+  return `<a href="${escAttr(url)}" target="_blank" rel="noopener">${escHtml(disp)}</a>`
+}
+function _cdVal(v) {
+  return (v===null||v===undefined||v==='')?'<span style="color:var(--text3)">—</span>':`<span>${escHtml(String(v))}</span>`
+}
+function _cdNum(v) {
+  return (v===null||v===undefined)?'<span style="color:var(--text3)">—</span>':`<b style="font-family:ui-monospace,monospace">${Number(v).toLocaleString('zh-TW')}</b>`
+}
+function _renderPostDetail(p) {
+  const plats=(p.platforms&&p.platforms.length?p.platforms:[p.platform]).filter(Boolean)
+  document.getElementById('content-detail-inner').innerHTML=`
+  <div class="cd-header">
+    <div class="cd-title">📋 內容詳情</div>
+    <button class="cd-close" onclick="closeContentDetail()">✕</button>
+  </div>
+  <div class="cd-body">
+    <div class="cd-section">
+      <div class="cd-section-title">識別</div>
+      <div class="cd-row"><span class="cd-label">Content ID</span><span class="cd-value" style="font-family:ui-monospace,monospace;font-size:.7rem">${escHtml(p.id||'—')}</span></div>
+      <div class="cd-row"><span class="cd-label">UTM Content</span><span class="cd-value" style="font-family:ui-monospace,monospace;color:#e86a1a">${escHtml(p.utmContent||'—')}</span></div>
+      <div class="cd-row"><span class="cd-label">日期</span><span class="cd-value">${escHtml(p.date||'—')}</span></div>
+      <div class="cd-row"><span class="cd-label">平台</span><span class="cd-value">${plats.map(pl=>`<span class="badge b-blue" style="margin-right:3px;font-size:.65rem">${pl}</span>`).join('')||'—'}</span></div>
+      <div class="cd-row"><span class="cd-label">角色</span><span class="cd-value"><span class="badge b-green" style="font-size:.65rem">${escHtml(p.personaName||'—')}</span></span></div>
+    </div>
+    <div class="cd-section">
+      <div class="cd-section-title">內容</div>
+      <div class="cd-row"><span class="cd-label">主題</span><span class="cd-value">${_cdVal(p.topic)}</span></div>
+      <div class="cd-row"><span class="cd-label">引用文章</span><span class="cd-value">${_cdVal(p.articleTitle)}</span></div>
+    </div>
+    <div class="cd-section">
+      <div class="cd-section-title">連結</div>
+      <div class="cd-row"><span class="cd-label">貼文連結</span><span class="cd-value">${_cdLink(p.postUrl)}</span></div>
+      <div class="cd-row"><span class="cd-label">短連結</span><span class="cd-value">${_cdLink(p.shortLink)}</span></div>
+    </div>
+    <div class="cd-section">
+      <div class="cd-section-title">成效數據</div>
+      <div class="cd-metrics-grid">
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(p.impressions)}</div><div class="cd-metric-lbl">📢 曝光</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(p.views)}</div><div class="cd-metric-lbl">👀 瀏覽</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(p.reach)}</div><div class="cd-metric-lbl">👁 觸及</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(p.likes)}</div><div class="cd-metric-lbl">👍 讚</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(p.comments)}</div><div class="cd-metric-lbl">💬 留言</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(p.saves)}</div><div class="cd-metric-lbl">🔖 儲存</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(p.shares)}</div><div class="cd-metric-lbl">🔄 分享</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(p.linkclicks)}</div><div class="cd-metric-lbl">🔗 點擊</div></div>
+      </div>
+    </div>
+    <div class="cd-section">
+      <div class="cd-section-title">時間</div>
+      <div class="cd-row"><span class="cd-label">建立時間</span><span class="cd-value" style="font-size:.72rem">${_cdVal((p.createdAt||'').slice(0,19).replace('T',' '))}</span></div>
+      <div class="cd-row"><span class="cd-label">最後更新</span><span class="cd-value" style="font-size:.72rem">${_cdVal((p.updatedAt||p.createdAt||'').slice(0,19).replace('T',' '))}</span></div>
+    </div>
+  </div>`
+}
+function _renderThreadDetail(a) {
+  const m=a.platformMetrics||{}, mt=m.Threads||{}, mi=m.IG||{}, mf=m.FB||{}
+  const plats=(a.platforms||[]).filter(Boolean)
+  const hasMT=mt.likes!==undefined||mt.views!==undefined
+  const hasMI=mi.likes!==undefined||mi.reach!==undefined
+  const hasMF=mf.likes!==undefined||mf.reach!==undefined
+  document.getElementById('content-detail-inner').innerHTML=`
+  <div class="cd-header">
+    <div class="cd-title">📋 內容詳情</div>
+    <button class="cd-close" onclick="closeContentDetail()">✕</button>
+  </div>
+  <div class="cd-body">
+    <div class="cd-section">
+      <div class="cd-section-title">識別</div>
+      <div class="cd-row"><span class="cd-label">Content ID</span><span class="cd-value" style="font-family:ui-monospace,monospace;font-size:.7rem">${escHtml(a.id||'—')}</span></div>
+      <div class="cd-row"><span class="cd-label">Post ID</span><span class="cd-value" style="font-family:ui-monospace,monospace;font-size:.7rem;color:#a78bfa">${escHtml(a.post_id||'—')}</span></div>
+      <div class="cd-row"><span class="cd-label">UTM Content</span><span class="cd-value" style="font-family:ui-monospace,monospace;color:#e86a1a">${escHtml(a.utmContent||'—')}</span></div>
+      <div class="cd-row"><span class="cd-label">日期</span><span class="cd-value">${escHtml(a.date||'—')}</span></div>
+      <div class="cd-row"><span class="cd-label">平台</span><span class="cd-value">${plats.map(pl=>`<span class="badge b-blue" style="margin-right:3px;font-size:.65rem">${pl}</span>`).join('')||'—'}</span></div>
+      <div class="cd-row"><span class="cd-label">角色</span><span class="cd-value"><span class="badge b-green" style="font-size:.65rem">${escHtml(a.personaName||'—')}</span></span></div>
+    </div>
+    <div class="cd-section">
+      <div class="cd-section-title">內容</div>
+      <div class="cd-row"><span class="cd-label">方向</span><span class="cd-value">${_cdVal(a.dir)}</span></div>
+      <div class="cd-row"><span class="cd-label">主題</span><span class="cd-value">${_cdVal(a.topic)}</span></div>
+      <div class="cd-row"><span class="cd-label">策略</span><span class="cd-value">${_cdVal(a.strategy)}</span></div>
+      ${a.content?`<div class="cd-row"><span class="cd-label">文案</span><span class="cd-value" style="font-size:.72rem;line-height:1.5;white-space:pre-wrap">${escHtml(a.content)}</span></div>`:''}
+      <div class="cd-row"><span class="cd-label">漏斗階段</span><span class="cd-value">${_cdVal(a.funnel_stage)}</span></div>
+      <div class="cd-row"><span class="cd-label">內容柱</span><span class="cd-value">${_cdVal(a.content_pillar)}</span></div>
+      <div class="cd-row"><span class="cd-label">格式</span><span class="cd-value">${_cdVal(a.format)}</span></div>
+      <div class="cd-row"><span class="cd-label">Hook 類型</span><span class="cd-value">${_cdVal(a.hook_type)}</span></div>
+      <div class="cd-row"><span class="cd-label">CTA 類型</span><span class="cd-value">${_cdVal(a.cta_type)}</span></div>
+      <div class="cd-row"><span class="cd-label">目標</span><span class="cd-value">${_cdVal(a.primary_goal)}</span></div>
+    </div>
+    <div class="cd-section">
+      <div class="cd-section-title">連結</div>
+      <div class="cd-row"><span class="cd-label">貼文連結</span><span class="cd-value">${_cdLink(a.url)}</span></div>
+      <div class="cd-row"><span class="cd-label">短連結</span><span class="cd-value">${_cdLink(a.shortLink)}</span></div>
+      <div class="cd-row"><span class="cd-label">導流目標</span><span class="cd-value">${_cdLink(a.landingUrl)}</span></div>
+      ${a.replyUrl?`<div class="cd-row"><span class="cd-label">回覆連結</span><span class="cd-value">${_cdLink(a.replyUrl)}</span></div>`:''}
+    </div>
+    ${hasMT?`<div class="cd-section">
+      <div class="cd-section-title">Threads 成效</div>
+      <div class="cd-metrics-grid">
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mt.views)}</div><div class="cd-metric-lbl">👁 瀏覽</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mt.likes)}</div><div class="cd-metric-lbl">❤️ 讚</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mt.replies??mt.comments)}</div><div class="cd-metric-lbl">💬 回覆</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mt.reposts)}</div><div class="cd-metric-lbl">🔁 轉發</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mt.shares)}</div><div class="cd-metric-lbl">📤 分享</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mt.follows)}</div><div class="cd-metric-lbl">➕ 漲粉</div></div>
+      </div>
+    </div>`:''}
+    ${hasMI?`<div class="cd-section">
+      <div class="cd-section-title">IG 成效</div>
+      <div class="cd-metrics-grid">
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mi.reach)}</div><div class="cd-metric-lbl">👁 觸及</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mi.views)}</div><div class="cd-metric-lbl">📺 瀏覽</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mi.likes)}</div><div class="cd-metric-lbl">❤️ 讚</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mi.comments)}</div><div class="cd-metric-lbl">💬 留言</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mi.saves)}</div><div class="cd-metric-lbl">🔖 儲存</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mi.shares)}</div><div class="cd-metric-lbl">📤 分享</div></div>
+      </div>
+    </div>`:''}
+    ${hasMF?`<div class="cd-section">
+      <div class="cd-section-title">FB 成效</div>
+      <div class="cd-metrics-grid">
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mf.likes)}</div><div class="cd-metric-lbl">👍 讚</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mf.comments)}</div><div class="cd-metric-lbl">💬 留言</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mf.shares)}</div><div class="cd-metric-lbl">📤 分享</div></div>
+        <div class="cd-metric"><div class="cd-metric-val">${_cdNum(mf.reach)}</div><div class="cd-metric-lbl">👁 觸及</div></div>
+      </div>
+    </div>`:''}
+    <div class="cd-section">
+      <div class="cd-section-title">歸因與追蹤</div>
+      <div class="cd-row"><span class="cd-label">歸因等級</span><span class="cd-value">${_cdAttrBadge(a.attribution_level)}</span></div>
+      <div class="cd-row"><span class="cd-label">路徑類型</span><span class="cd-value">${_cdVal(a.path_type)}</span></div>
+      <div class="cd-row"><span class="cd-label">流量類型</span><span class="cd-value">${_cdVal(a.organic_paid)}</span></div>
+      <div class="cd-row"><span class="cd-label">狀態</span><span class="cd-value">${_cdVal(a.status)}</span></div>
+      ${a.notes?`<div class="cd-row"><span class="cd-label">備注</span><span class="cd-value" style="font-size:.72rem">${escHtml(a.notes)}</span></div>`:''}
+    </div>
+    <div class="cd-section">
+      <div class="cd-section-title">時間</div>
+      <div class="cd-row"><span class="cd-label">建立時間</span><span class="cd-value" style="font-size:.72rem">${_cdVal((a.createdAt||'').slice(0,19).replace('T',' '))}</span></div>
+      <div class="cd-row"><span class="cd-label">最後更新</span><span class="cd-value" style="font-size:.72rem">${_cdVal((a.updatedAt||a.createdAt||'').slice(0,19).replace('T',' '))}</span></div>
+    </div>
+  </div>`
+}
 
 // ===== INIT =====
 (async()=>{
@@ -15038,5 +15248,11 @@ function archiveTemplate(id){
 </script>
 <script src="assets/js/dashboard.js"></script>
 <script src="assets/js/app-shell.js"></script>
+
+<!-- 內容詳情側抽屜 -->
+<div id="content-detail-overlay" onclick="closeContentDetail()" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,.45)"></div>
+<div id="content-detail-drawer" style="display:none;position:fixed;top:0;right:0;bottom:0;width:min(440px,96vw);z-index:4001;background:var(--g2,#1e2233);border-left:1px solid var(--border,#2d3748);overflow-y:auto;box-shadow:-8px 0 32px rgba(0,0,0,.4);transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1)">
+  <div id="content-detail-inner"></div>
+</div>
 </body>
 </html>
