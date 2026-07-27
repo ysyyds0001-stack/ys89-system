@@ -14227,63 +14227,106 @@ function mtgEnterPresentMode() {
 
 // ===== 資料健康 =====
 function renderDataHealth() {
-  const acts = DB.get('thread_activities')||[]
-  const regs = DB.get('real_reg')||[]
+  const acts  = DB.get('thread_activities')||[]
+  const regs  = DB.get('real_reg')||[]
   const links = DB.get('links')||[]
+  const posts = DB.get('posts')||[]
 
   const issues = []
+  const sevColor = {high:'#f87171', medium:'#fbbf24', low:'#60a5fa'}
+  const sevLabel = {high:'嚴重', medium:'注意', low:'提示'}
+  const push = (sev, cat, msg, fix, auto=false, detail='') => issues.push({sev,cat,msg,fix,auto,detail})
 
-  // 掃描 thread_activities
-  let missingUrl=0, missingUtm=0, missingPath=0, zeroViews=0, noLandingPage=0
+  // ── 社群互動（thread_activities）掃描 ───────────────────────────
+  let missingUrl=0, missingUtm=0, missingPath=0, noLandingPage=0
+  let pendingRec=0, utmUpperCase=0, noMetricsAtAll=0
+  const utmSet=new Set(), utmDupSet=new Set()
   acts.forEach(a=>{
     if(!a.url&&!a.postUrl) missingUrl++
-    if(!a.utm_content&&!a.utmContent) missingUtm++
+    const utm=a.utm_content||a.utmContent||''
+    if(!utm) missingUtm++
+    else {
+      if(utmSet.has(utm)) utmDupSet.add(utm); else utmSet.add(utm)
+      if(utm !== utm.toLowerCase()) utmUpperCase++
+    }
     if(!a.path_id&&!a.path_type) missingPath++
-    if(!(a.platformMetrics?.Threads?.views)) zeroViews++
     if(!a.landingUrl) noLandingPage++
+    if(a.status==='待記錄') pendingRec++
+    const m=a.platformMetrics||{}
+    const hasAny=Object.values(m).some(pm=>Object.values(pm||{}).some(v=>v&&v>0))
+    if(!hasAny) noMetricsAtAll++
   })
 
-  const utmSet = new Set()
-  const utmDups = []
-  acts.forEach(a=>{ const u=a.utm_content||a.utmContent; if(u){ if(utmSet.has(u))utmDups.push(u); else utmSet.add(u) } })
+  // ── posts（發文追蹤）掃描 ────────────────────────────────────────
+  let postsMissingUrl=0, postsNoMetrics=0
+  posts.forEach(p=>{
+    if(!p.postUrl) postsMissingUrl++
+    const hasM=p.impressions||p.views||p.reach||p.likes||p.comments||p.saves||p.shares
+    if(!hasM) postsNoMetrics++
+  })
 
-  const ga4 = _ga4Data||{}
-  const lastSync = ga4.lastUpdated || null
-  const syncOld = lastSync ? (Date.now()-new Date(lastSync).getTime())>172800000 : true
+  // ── real_reg 格式掃描 ────────────────────────────────────────────
+  const regsOldFmt=regs.filter(r=>!r._ver||r._ver!=='v3').length
 
-  if(missingUrl>0) issues.push({sev:'high',cat:'貼文連結',msg:`${missingUrl} 篇缺少原貼文 URL`,fix:'手動填入原貼文網址',auto:false})
-  if(missingUtm>0) issues.push({sev:'medium',cat:'UTM',msg:`${missingUtm} 篇缺少 utm_content`,fix:'為每篇建立唯一 UTM Content',auto:false})
-  if(missingPath>0) issues.push({sev:'low',cat:'路徑歸因',msg:`${missingPath} 篇無 path_id（系統自動推算）`,fix:'可手動補標 path_id',auto:true})
-  if(zeroViews>0) issues.push({sev:'medium',cat:'曝光數據',msg:`${zeroViews} 篇 Threads Views = 0`,fix:'執行數據更新抓取',auto:false})
-  if(noLandingPage>0) issues.push({sev:'medium',cat:'落地頁',msg:`${noLandingPage} 篇缺少 landingUrl`,fix:'補填導流目標網址',auto:false})
-  if(utmDups.length>0) issues.push({sev:'high',cat:'UTM 重複',msg:`${utmDups.length} 個 UTM Content 重複使用`,fix:'確保每篇貼文使用唯一 UTM',auto:false})
-  if(regs.length===0) issues.push({sev:'medium',cat:'有效註冊',msg:'尚未輸入任何有效註冊 & 首存資料',fix:'前往數據輸入頁手動填入',auto:false})
-  if(syncOld) issues.push({sev:'high',cat:'GA4 同步',msg:`GA4 資料超過 48 小時未同步${lastSync?'（上次：'+lastSync+'）':'（從未同步）'}`,fix:'重新觸發 GitHub Actions GA4 同步',auto:false})
+  // ── GA4 同步 ─────────────────────────────────────────────────────
+  const ga4=_ga4Data||{}
+  const lastSync=ga4.lastUpdated||null
+  const syncOld=lastSync?(Date.now()-new Date(lastSync).getTime())>172800000:true
 
-  const sevColor = {high:'#f87171',medium:'#fbbf24',low:'#60a5fa'}
-  const sevLabel = {high:'嚴重',medium:'注意',low:'提示'}
+  // ── links 檢查 ───────────────────────────────────────────────────
+  const linksNoUrl=links.filter(l=>!l.url&&!l.destination&&!l.longUrl).length
 
-  const highN = issues.filter(i=>i.sev==='high').length
-  const midN = issues.filter(i=>i.sev==='medium').length
-  const lowN = issues.filter(i=>i.sev==='low').length
+  // ── 組裝 issues（嚴重 → 注意 → 提示）────────────────────────────
+  // 嚴重
+  if(missingUrl>0)          push('high',   '貼文連結',  `社群互動：${missingUrl} 篇缺少原貼文 URL`,            '手動填入原貼文網址（社群互動頁 ＋ 按鈕）')
+  if(utmDupSet.size>0)      push('high',   'UTM 重複',  `${utmDupSet.size} 個 UTM Content 被多篇貼文重複使用`, '確保每篇貼文使用唯一 UTM 值',                   false, [...utmDupSet].join('、'))
+  if(syncOld)               push('high',   'GA4 同步',  `GA4 資料 ${lastSync?'超過 48 小時未同步':'從未同步'}`, '重新觸發 GitHub Actions GA4 同步',              false, lastSync?`上次同步：${lastSync.slice(0,16).replace('T',' ')}`:'')
+  // 注意
+  if(missingUtm>0)          push('medium', 'UTM 缺失',  `社群互動：${missingUtm} 篇缺少 utm_content`,          '為每篇建立唯一 UTM Content（UTM 產生器）')
+  if(noMetricsAtAll>0)      push('medium', '無成效數據', `社群互動：${noMetricsAtAll} 篇完全無成效紀錄`,         '執行「今日成效」或「更新全部待記錄」')
+  if(pendingRec>0)          push('medium', '待補成效',  `社群互動：${pendingRec} 筆狀態仍為「待記錄」`,          '逐筆填入 Threads 成效數據')
+  if(utmUpperCase>0)        push('medium', 'UTM 大寫',  `${utmUpperCase} 個 UTM 含大寫字母（GA4 區分大小寫）`,  '統一使用全小寫 UTM Content 值')
+  if(noLandingPage>0)       push('medium', '落地頁',    `社群互動：${noLandingPage} 篇缺少 landingUrl`,         '補填導流目標網址')
+  if(regs.length===0)       push('medium', '有效註冊',  '尚未輸入任何有效註冊 & 首存資料',                      '前往數據輸入頁手動填入')
+  if(regsOldFmt>0)          push('medium', '資料格式',  `有效註冊：${regsOldFmt} 筆為舊格式（v1/v2）`,          '前往數據輸入 → 歷史記錄 → 校正舊資料',          false)
+  if(postsMissingUrl>0)     push('medium', '發文追蹤',  `發文追蹤：${postsMissingUrl} 篇缺少貼文連結`,          '在發文追蹤頁補填貼文連結')
+  if(postsNoMetrics>0)      push('medium', '發文成效',  `發文追蹤：${postsNoMetrics} 篇無洞察報告數據`,         '點擊「📊 填入」手動輸入成效')
+  if(linksNoUrl>0)          push('medium', '短連結',    `${linksNoUrl} 個短連結缺少目標 URL`,                   '在短連結頁補填目標網址')
+  // 提示
+  if(missingPath>0)         push('low',    '路徑歸因',  `社群互動：${missingPath} 篇無 path_type`,               '系統可自動推算，或手動補標',                    true)
 
-  document.getElementById('dh-summary').innerHTML = [
-    `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center"><div style="font-size:1.6rem;font-weight:700;color:#f87171">${highN}</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px">嚴重問題</div></div>`,
-    `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center"><div style="font-size:1.6rem;font-weight:700;color:#fbbf24">${midN}</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px">需注意</div></div>`,
-    `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center"><div style="font-size:1.6rem;font-weight:700;color:#60a5fa">${lowN}</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px">提示</div></div>`,
-    `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center"><div style="font-size:1.6rem;font-weight:700;color:#34d399">${acts.length}</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px">總發文記錄</div></div>`
-  ].join('')
+  // ── 摘要統計列 ──────────────────────────────────────────────────
+  const highN=issues.filter(i=>i.sev==='high').length
+  const midN =issues.filter(i=>i.sev==='medium').length
+  const lowN =issues.filter(i=>i.sev==='low').length
+  const statTile=(val,lbl,col)=>`<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+    <div style="font-size:1.6rem;font-weight:700;color:${col}">${val}</div>
+    <div style="font-size:.72rem;color:var(--text3);margin-top:2px">${lbl}</div>
+  </div>`
+  document.getElementById('dh-summary').innerHTML =
+    statTile(highN,'嚴重問題','#f87171') +
+    statTile(midN,'需注意','#fbbf24') +
+    statTile(lowN,'提示','#60a5fa') +
+    statTile(acts.length,'社群記錄','#34d399')
 
-  document.getElementById('dh-issues').innerHTML = issues.length===0
-    ? `<div style="text-align:center;padding:30px;color:#34d399;font-size:.85rem">✅ 未發現問題</div>`
-    : issues.map(i=>`<div style="background:var(--g2);border:1px solid var(--border);border-left:3px solid ${sevColor[i.sev]||'var(--border)'};border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start">
-        <span style="font-size:.65rem;padding:2px 6px;border-radius:4px;background:${sevColor[i.sev]}22;color:${sevColor[i.sev]};white-space:nowrap;margin-top:2px">${sevLabel[i.sev]}</span>
-        <div style="flex:1">
-          <div style="font-size:.75rem;font-weight:600;color:var(--text)">${i.cat}：${i.msg}</div>
-          <div style="font-size:.68rem;color:var(--text3);margin-top:3px">修正方式：${i.fix}</div>
-        </div>
-        ${i.auto?`<span style="font-size:.6rem;color:#34d399;white-space:nowrap">可自動</span>`:''}
-      </div>`).join('')
+  // ── 問題清單 ────────────────────────────────────────────────────
+  const ts = getTaipeiDateString()
+  document.getElementById('dh-issues').innerHTML = `
+    <div style="font-size:.68rem;color:var(--text3);text-align:right;margin-bottom:8px">掃描時間：${ts} · 社群互動 ${acts.length} 筆 · 發文追蹤 ${posts.length} 筆 · 有效註冊 ${regs.length} 筆 · 短連結 ${links.length} 筆</div>
+    ${issues.length===0
+      ? '<div style="text-align:center;padding:30px;color:#34d399;font-size:.85rem">✅ 未發現問題</div>'
+      : issues.map(i=>`<div style="background:var(--g2);border:1px solid var(--border);border-left:3px solid ${sevColor[i.sev]};border-radius:8px;padding:12px 14px;margin-bottom:8px">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="font-size:.65rem;padding:2px 6px;border-radius:4px;background:${sevColor[i.sev]}22;color:${sevColor[i.sev]};white-space:nowrap;margin-top:1px;flex-shrink:0">${sevLabel[i.sev]}</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:.75rem;font-weight:600;color:var(--text)">${i.cat}：${i.msg}</div>
+              <div style="font-size:.68rem;color:var(--text3);margin-top:3px">修正方式：${i.fix}</div>
+              ${i.detail?`<div style="font-size:.65rem;color:var(--text3);margin-top:2px;font-family:ui-monospace,monospace;opacity:.7">${escHtml(i.detail)}</div>`:''}
+            </div>
+            ${i.auto?'<span style="font-size:.6rem;color:#34d399;white-space:nowrap;flex-shrink:0">可自動</span>':''}
+          </div>
+        </div>`).join('')
+    }`
 }
 
 // ===== 數據輸入 =====
