@@ -1,0 +1,452 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>YS89 系統測試套件</title>
+<style>
+  body{font-family:ui-monospace,monospace;background:#0f1117;color:#e2e8f0;padding:24px;max-width:900px;margin:0 auto}
+  h1{font-size:1.1rem;color:#a78bfa;margin-bottom:4px}
+  .subtitle{font-size:.75rem;color:#64748b;margin-bottom:24px}
+  .suite{margin-bottom:28px}
+  .suite-title{font-size:.85rem;font-weight:700;color:#94a3b8;border-bottom:1px solid #1e2233;padding-bottom:6px;margin-bottom:10px}
+  .test{display:flex;gap:10px;align-items:flex-start;padding:5px 0;border-bottom:1px solid #1a1d25;font-size:.78rem}
+  .badge{flex-shrink:0;padding:1px 7px;border-radius:4px;font-size:.7rem;font-weight:700}
+  .pass{background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.25)}
+  .fail{background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.25)}
+  .skip{background:rgba(100,116,139,.15);color:#64748b;border:1px solid rgba(100,116,139,.2)}
+  .name{color:#e2e8f0;flex:1}
+  .detail{color:#64748b;font-size:.7rem;margin-top:2px}
+  .summary{padding:12px 16px;border-radius:8px;font-size:.82rem;margin-top:20px;border:1px solid}
+  .summary.all-pass{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.25);color:#34d399}
+  .summary.has-fail{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.25);color:#f87171}
+</style>
+
+<h1>YS89 系統測試套件</h1>
+<div class="subtitle">執行時間：<span id="ts"></span></div>
+<div id="root"></div>
+
+<script>
+// ── 複製自 index.html 的核心函式 ─────────────────────────────────────────────
+
+function getTaipeiDateString(date) {
+  const d = date || new Date()
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(d)
+  const m = Object.fromEntries(parts.filter(p=>p.type!=='literal').map(p=>[p.type,p.value]))
+  return `${m.year}-${m.month}-${m.day}`
+}
+function getTaipeiYesterday() {
+  const d = new Date(); d.setDate(d.getDate()-1); return getTaipeiDateString(d)
+}
+function getTaipeiWeekStart(offset) {
+  const now = new Date()
+  const taipeiNow = new Date(now.toLocaleString('en-US',{timeZone:'Asia/Taipei'}))
+  const day = taipeiNow.getDay(), diff = day===0?-6:1-day
+  const mon = new Date(taipeiNow); mon.setDate(taipeiNow.getDate()+diff+(offset||0)*7)
+  return getTaipeiDateString(mon)
+}
+function getTaipeiWeekEnd(offset) {
+  const mon = new Date(getTaipeiWeekStart(offset))
+  const sun = new Date(mon); sun.setDate(mon.getDate()+6)
+  return getTaipeiDateString(sun)
+}
+
+function _inferPathId(a) {
+  if (a.path_id) return a.path_id
+  if (a.path_type === 'bio') return 'PATH_03'
+  const url = (a.landingUrl || '').toLowerCase()
+  if (url.includes('picks168.com') || url.includes('t.me/picks168') || url.includes('t.me/pickhelp')) return 'PATH_02'
+  if (url.includes('lin.ee') || url.startsWith('line:')) return 'PATH_05'
+  if (url.includes('ys89.fun') || url.includes('ys89.games') || url.includes('ys89.info') ||
+      url.includes('ys89.bet') || url.includes('ys89.me') || url.includes('ys89.biz') ||
+      url.includes('haogamediary.blogspot') || url.includes('fifa-worldcups.tw')) return 'PATH_01'
+  return 'PATH_04'
+}
+
+// ── 測試框架 ─────────────────────────────────────────────────────────────────
+
+const suites = []
+let currentSuite = null
+
+function suite(title, fn) {
+  currentSuite = { title, tests: [] }
+  suites.push(currentSuite)
+  fn()
+}
+function test(name, fn) {
+  try {
+    fn()
+    currentSuite.tests.push({ name, status: 'pass' })
+  } catch(e) {
+    currentSuite.tests.push({ name, status: 'fail', detail: e.message })
+  }
+}
+function assert(condition, msg) {
+  if (!condition) throw new Error(msg || 'assertion failed')
+}
+function eq(a, b) {
+  if (a !== b) throw new Error(`expected ${JSON.stringify(b)}, got ${JSON.stringify(a)}`)
+}
+function dateRe(s) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) throw new Error(`not a valid YYYY-MM-DD date: ${JSON.stringify(s)}`)
+}
+
+// ── Suite 1: 台北時區工具 ─────────────────────────────────────────────────────
+
+suite('台北時區工具', () => {
+
+  test('getTaipeiDateString() 回傳 YYYY-MM-DD 格式', () => {
+    dateRe(getTaipeiDateString())
+  })
+
+  test('getTaipeiDateString(Date) 接受明確 Date 物件', () => {
+    // 2026-07-20 00:00 UTC = 2026-07-20 08:00 Taipei → should be 07-20
+    const d = new Date('2026-07-20T00:00:00Z')
+    eq(getTaipeiDateString(d), '2026-07-20')
+  })
+
+  test('跨午夜：UTC 23:00 = Taipei 次日 07:00', () => {
+    // 2026-07-19 23:00 UTC → 2026-07-20 07:00 Taipei
+    const d = new Date('2026-07-19T23:00:00Z')
+    eq(getTaipeiDateString(d), '2026-07-20')
+  })
+
+  test('跨午夜：UTC 15:59 = Taipei 23:59（同日）', () => {
+    // 2026-07-20 15:59 UTC → 2026-07-20 23:59 Taipei
+    const d = new Date('2026-07-20T15:59:00Z')
+    eq(getTaipeiDateString(d), '2026-07-20')
+  })
+
+  test('跨午夜：UTC 16:01 = Taipei 次日 00:01', () => {
+    // 2026-07-20 16:01 UTC → 2026-07-21 00:01 Taipei
+    const d = new Date('2026-07-20T16:01:00Z')
+    eq(getTaipeiDateString(d), '2026-07-21')
+  })
+
+  test('getTaipeiYesterday() 回傳 YYYY-MM-DD 格式', () => {
+    dateRe(getTaipeiYesterday())
+  })
+
+  test('昨天 < 今天', () => {
+    assert(getTaipeiYesterday() < getTaipeiDateString())
+  })
+
+  test('getTaipeiWeekStart() 回傳 YYYY-MM-DD 格式', () => {
+    dateRe(getTaipeiWeekStart(0))
+  })
+
+  test('本週開始 <= 今天', () => {
+    const ws = getTaipeiWeekStart(0), today = getTaipeiDateString()
+    assert(ws <= today, `weekStart(${ws}) should be <= today(${today})`)
+  })
+
+  test('週一是週的第一天（ISO 8601）', () => {
+    const ws = getTaipeiWeekStart(0)
+    const d = new Date(ws + 'T12:00:00+08:00')
+    eq(d.getDay(), 1) // 1 = Monday
+  })
+
+  test('週結束 = 週開始 + 6 天', () => {
+    const ws = getTaipeiWeekStart(0), we = getTaipeiWeekEnd(0)
+    const startMs = new Date(ws).getTime()
+    const endMs   = new Date(we).getTime()
+    eq((endMs - startMs) / 86400000, 6)
+  })
+
+  test('上週結束 = 本週開始 - 1 天', () => {
+    const lastWe = getTaipeiWeekEnd(-1)
+    const thisWs = getTaipeiWeekStart(0)
+    const diff = (new Date(thisWs) - new Date(lastWe)) / 86400000
+    eq(diff, 1)
+  })
+
+  test('getTaipeiWeekStart(-1) 早於 getTaipeiWeekStart(0)', () => {
+    assert(getTaipeiWeekStart(-1) < getTaipeiWeekStart(0))
+  })
+
+  test('月份邊界：12 月的週起始格式正確', () => {
+    const d = new Date('2025-12-29T12:00:00+08:00') // 台北週一
+    dateRe(getTaipeiDateString(d))
+    eq(getTaipeiDateString(d), '2025-12-29')
+  })
+
+})
+
+// ── Suite 2: v3 欄位 fallback 鏈 ─────────────────────────────────────────────
+
+suite('v3 欄位 fallback 鏈', () => {
+
+  const aggReg = records => records.reduce((s,r) => s + (r.qualified_registration_count ?? r.reg ?? 0), 0)
+  const aggDep = records => records.reduce((s,r) => s + (r.first_deposit_user_count ?? r.dep ?? 0), 0)
+  const aggAmt = records => records.reduce((s,r) => s + (r.first_deposit_amount ?? r.amt ?? 0), 0)
+
+  test('v3 欄位存在時直接使用', () => {
+    eq(aggReg([{qualified_registration_count:5}]), 5)
+    eq(aggDep([{first_deposit_user_count:3}]), 3)
+    eq(aggAmt([{first_deposit_amount:1000}]), 1000)
+  })
+
+  test('v3 欄位不存在時 fallback 到舊欄位', () => {
+    eq(aggReg([{reg:3}]), 3)
+    eq(aggDep([{dep:2}]), 2)
+    eq(aggAmt([{amt:500}]), 500)
+  })
+
+  test('v3 欄位為 null 時 fallback（null ?? 使用 ??）', () => {
+    eq(aggReg([{qualified_registration_count:null, reg:3}]), 3)
+    eq(aggDep([{first_deposit_user_count:null, dep:2}]), 2)
+  })
+
+  test('v3 欄位為 undefined 時 fallback', () => {
+    eq(aggReg([{qualified_registration_count:undefined, reg:4}]), 4)
+  })
+
+  test('v3 欄位為 0 時不 fallback（0 是有效值）', () => {
+    eq(aggReg([{qualified_registration_count:0, reg:5}]), 0)
+  })
+
+  test('兩筆記錄累加正確', () => {
+    eq(aggReg([{qualified_registration_count:3},{reg:2}]), 5)
+  })
+
+  test('全部欄位缺失時回傳 0', () => {
+    eq(aggReg([{}]), 0)
+    eq(aggDep([{}]), 0)
+    eq(aggAmt([{}]), 0)
+  })
+
+  test('v3 優先於舊欄位（不混用）', () => {
+    // v3 有值時，舊欄位被忽略
+    eq(aggReg([{qualified_registration_count:10, reg:3}]), 10)
+  })
+
+})
+
+// ── Suite 3: 路徑推算 _inferPathId ────────────────────────────────────────────
+
+suite('路徑推算 _inferPathId', () => {
+
+  test('path_id 明確設定時直接回傳', () => {
+    eq(_inferPathId({path_id:'PATH_01'}), 'PATH_01')
+    eq(_inferPathId({path_id:'PATH_03', landingUrl:'https://picks168.com/'}), 'PATH_03') // path_id 優先
+  })
+
+  test('picks168.com → PATH_02', () => {
+    eq(_inferPathId({landingUrl:'https://picks168.com/sign-up?ref=ys'}), 'PATH_02')
+  })
+
+  test('t.me/picks168 → PATH_02', () => {
+    eq(_inferPathId({landingUrl:'https://t.me/picks168'}), 'PATH_02')
+  })
+
+  test('t.me/pickhelp → PATH_02', () => {
+    eq(_inferPathId({landingUrl:'https://t.me/pickhelp_bot'}), 'PATH_02')
+  })
+
+  test('lin.ee 短連結 → PATH_05', () => {
+    eq(_inferPathId({landingUrl:'https://lin.ee/w1pIBtuZ'}), 'PATH_05')
+  })
+
+  test('line: 開頭 → PATH_05', () => {
+    eq(_inferPathId({landingUrl:'line://msg/...'}), 'PATH_05')
+  })
+
+  test('ys89.fun → PATH_01', () => {
+    eq(_inferPathId({landingUrl:'https://ys89.fun/promotions/'}), 'PATH_01')
+  })
+
+  test('ys89.games → PATH_01', () => {
+    eq(_inferPathId({landingUrl:'https://ys89.games/'}), 'PATH_01')
+  })
+
+  test('haogamediary.blogspot → PATH_01', () => {
+    eq(_inferPathId({landingUrl:'https://haogamediary.blogspot.com/post1'}), 'PATH_01')
+  })
+
+  test('path_type=bio → PATH_03', () => {
+    eq(_inferPathId({path_type:'bio', landingUrl:'https://ys89.me/landing'}), 'PATH_03')
+  })
+
+  test('未知 landingUrl → PATH_04 (Threads 單篇預設)', () => {
+    eq(_inferPathId({landingUrl:'https://unknown-site.com/'}), 'PATH_04')
+  })
+
+  test('沒有 landingUrl → PATH_04', () => {
+    eq(_inferPathId({}), 'PATH_04')
+  })
+
+  test('大小寫不敏感（URL 正規化）', () => {
+    eq(_inferPathId({landingUrl:'HTTPS://PICKS168.COM/'}), 'PATH_02')
+  })
+
+})
+
+// ── Suite 4: 跨平台曝光合計 ──────────────────────────────────────────────────
+
+suite('跨平台曝光合計', () => {
+
+  function computeExposure(acts) {
+    const totThreads = acts.reduce((s,a) => s + (a.platformMetrics?.Threads?.views || 0), 0)
+    const totIG      = acts.reduce((s,a) => s + (a.platformMetrics?.IG?.reach || 0), 0)
+    const totFB      = acts.reduce((s,a) => s + (a.platformMetrics?.FB?.reach || 0), 0)
+    return totThreads + totIG + totFB
+  }
+
+  test('單一 Threads 貼文', () => {
+    eq(computeExposure([{platformMetrics:{Threads:{views:1000}}}]), 1000)
+  })
+
+  test('單一 IG 貼文（IG.reach）', () => {
+    eq(computeExposure([{platformMetrics:{IG:{reach:500}}}]), 500)
+  })
+
+  test('單一 FB 貼文（FB.reach）', () => {
+    eq(computeExposure([{platformMetrics:{FB:{reach:300}}}]), 300)
+  })
+
+  test('三平台同一筆記錄合計', () => {
+    eq(computeExposure([{platformMetrics:{Threads:{views:100},IG:{reach:200},FB:{reach:50}}}]), 350)
+  })
+
+  test('多筆記錄跨平台合計', () => {
+    const acts = [
+      {platformMetrics:{Threads:{views:500}}},
+      {platformMetrics:{IG:{reach:300}}},
+      {platformMetrics:{FB:{reach:200}}}
+    ]
+    eq(computeExposure(acts), 1000)
+  })
+
+  test('platformMetrics 為空物件時回傳 0', () => {
+    eq(computeExposure([{platformMetrics:{}}]), 0)
+  })
+
+  test('沒有 platformMetrics 時回傳 0', () => {
+    eq(computeExposure([{}]), 0)
+  })
+
+  test('IG.likes 不計入曝光（只計 reach）', () => {
+    eq(computeExposure([{platformMetrics:{IG:{likes:999,reach:100}}}]), 100)
+  })
+
+  test('Threads.views=0 + IG.reach=0 + FB.reach=0 → 合計 0', () => {
+    eq(computeExposure([{platformMetrics:{Threads:{views:0},IG:{reach:0},FB:{reach:0}}}]), 0)
+  })
+
+})
+
+// ── Suite 5: 日期重疊偵測 ────────────────────────────────────────────────────
+
+suite('日期重疊偵測（real_reg 防重複）', () => {
+
+  function overlaps(a, b) {
+    // [a.from, a.to] overlaps [b.from, b.to] ?
+    return a.from <= b.to && a.to >= b.from
+  }
+
+  function detectOverlaps(regs) {
+    const issues = []
+    for (let i = 0; i < regs.length; i++) {
+      for (let j = i+1; j < regs.length; j++) {
+        if (overlaps(regs[i], regs[j])) {
+          issues.push([regs[i], regs[j]])
+        }
+      }
+    }
+    return issues
+  }
+
+  test('無重疊：相鄰日期範圍', () => {
+    const regs = [
+      {from:'2026-07-01',to:'2026-07-07'},
+      {from:'2026-07-08',to:'2026-07-14'}
+    ]
+    eq(detectOverlaps(regs).length, 0)
+  })
+
+  test('重疊偵測：部分重疊', () => {
+    const regs = [
+      {from:'2026-07-01',to:'2026-07-10'},
+      {from:'2026-07-08',to:'2026-07-14'}
+    ]
+    eq(detectOverlaps(regs).length, 1)
+  })
+
+  test('重疊偵測：完全包含', () => {
+    const regs = [
+      {from:'2026-07-01',to:'2026-07-31'},
+      {from:'2026-07-10',to:'2026-07-15'}
+    ]
+    eq(detectOverlaps(regs).length, 1)
+  })
+
+  test('邊界：to = from（單日）不與相鄰重疊', () => {
+    const regs = [
+      {from:'2026-07-01',to:'2026-07-01'},
+      {from:'2026-07-02',to:'2026-07-02'}
+    ]
+    eq(detectOverlaps(regs).length, 0)
+  })
+
+  test('邊界：相同日期算重疊', () => {
+    const regs = [
+      {from:'2026-07-01',to:'2026-07-01'},
+      {from:'2026-07-01',to:'2026-07-01'}
+    ]
+    eq(detectOverlaps(regs).length, 1)
+  })
+
+  test('三筆互不重疊', () => {
+    const regs = [
+      {from:'2026-06-01',to:'2026-06-07'},
+      {from:'2026-06-08',to:'2026-06-14'},
+      {from:'2026-06-15',to:'2026-06-21'}
+    ]
+    eq(detectOverlaps(regs).length, 0)
+  })
+
+  test('三筆中兩兩重疊', () => {
+    const regs = [
+      {from:'2026-06-01',to:'2026-06-10'},
+      {from:'2026-06-05',to:'2026-06-15'},
+      {from:'2026-06-01',to:'2026-06-10'}
+    ]
+    // pair(0,1) overlaps, pair(0,2) overlaps, pair(1,2) overlaps
+    eq(detectOverlaps(regs).length, 3)
+  })
+
+})
+
+// ── 渲染結果 ─────────────────────────────────────────────────────────────────
+
+document.getElementById('ts').textContent = new Date().toLocaleString('zh-TW',{timeZone:'Asia/Taipei'})
+
+let totalPass = 0, totalFail = 0
+const root = document.getElementById('root')
+
+suites.forEach(s => {
+  const div = document.createElement('div')
+  div.className = 'suite'
+  let html = `<div class="suite-title">${s.title}</div>`
+  s.tests.forEach(t => {
+    if (t.status === 'pass') totalPass++
+    else totalFail++
+    html += `<div class="test">
+      <span class="badge ${t.status}">${t.status === 'pass' ? 'PASS' : 'FAIL'}</span>
+      <div>
+        <div class="name">${t.name}</div>
+        ${t.detail ? `<div class="detail">⚠ ${t.detail}</div>` : ''}
+      </div>
+    </div>`
+  })
+  div.innerHTML = html
+  root.appendChild(div)
+})
+
+const summary = document.createElement('div')
+summary.className = `summary ${totalFail === 0 ? 'all-pass' : 'has-fail'}`
+summary.textContent = totalFail === 0
+  ? `✓ 全部 ${totalPass} 項測試通過`
+  : `✗ ${totalFail} 項失敗 / ${totalPass} 項通過 / 共 ${totalPass+totalFail} 項`
+root.appendChild(summary)
+</script>

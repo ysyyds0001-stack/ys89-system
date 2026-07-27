@@ -2417,13 +2417,13 @@ function _ovFunnel() {
 
 function _inferPathId(a) {
   if (a.path_id) return a.path_id
+  if (a.path_type === 'bio') return 'PATH_03'
   const url = (a.landingUrl || '').toLowerCase()
   if (url.includes('picks168.com') || url.includes('t.me/picks168') || url.includes('t.me/pickhelp')) return 'PATH_02'
   if (url.includes('lin.ee') || url.startsWith('line:')) return 'PATH_05'
   if (url.includes('ys89.fun') || url.includes('ys89.games') || url.includes('ys89.info') ||
       url.includes('ys89.bet') || url.includes('ys89.me') || url.includes('ys89.biz') ||
       url.includes('haogamediary.blogspot') || url.includes('fifa-worldcups.tw')) return 'PATH_01'
-  if (a.path_type === 'bio') return 'PATH_03'
   return 'PATH_04'
 }
 
