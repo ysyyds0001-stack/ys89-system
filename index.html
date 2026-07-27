@@ -14274,7 +14274,7 @@ function renderDataHealth() {
   const syncOld=lastSync?(Date.now()-new Date(lastSync).getTime())>172800000:true
 
   // ── links 檢查 ───────────────────────────────────────────────────
-  const linksNoUrl=links.filter(l=>!l.url&&!l.destination&&!l.longUrl).length
+  const linksNoUrl=links.filter(l=>!l.originalUrl&&!l.shortLinkUrl).length
 
   // ── 組裝 issues（嚴重 → 注意 → 提示）────────────────────────────
   // 嚴重
