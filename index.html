@@ -7346,6 +7346,7 @@ function renderArticles(){
   ].map(([l,v,c])=>`<div class="stat"><div class="stat-num ${c||''}">${v}</div><div class="stat-label">${l}</div></div>`).join('')
 
   const channelPosts=DB.get('channel_posts')||[]
+  const allPosts=DB.get('posts')||[]
   const wrap=document.getElementById('art-list')
   if(!articles.length){wrap.innerHTML='<div class="card" style="text-align:center;padding:40px;color:var(--text3)">尚無文章，點擊右上角新增</div>';return}
   wrap.innerHTML=articles.slice().reverse().map(a=>{
@@ -7355,6 +7356,7 @@ function renderArticles(){
     const todoList=needed.filter(p=>!done.includes(p.id))
     const doneList=needed.filter(p=>done.includes(p.id))
     const cpUsed=channelPosts.filter(p=>p.articleId===a.id)
+    const postCites=allPosts.filter(p=>p.articleId===a.id)
     const covPct=needed.length?Math.round(doneList.length/needed.length*100):0
     const covColor=covPct===100?'':covPct>=50?'warn':'danger'
     return`<div class="card" style="margin-bottom:12px">
@@ -7377,6 +7379,7 @@ function renderArticles(){
           ${(()=>{const alog=(DB.get('anon_pub_log')||{})[a.url||'']||{};const sa=(DB.get('seeding_accounts')||[]).filter(x=>!x.accountStatus||x.accountStatus==='active');const ad=sa.filter(x=>alog[x.id]?.done).length;const at=sa.length;return at?`<span style="background:${ad===at?'#16a34a18':'#6b728018'};color:${ad===at?'#4ade80':'#9ca3af'};border:1px solid ${ad===at?'#16a34a40':'#6b728040'};border-radius:4px;font-size:.65rem;padding:1px 7px">📝 ${ad}/${at}</span>`:''})()||''}
           <button class="btn btn-xs" style="background:#229ED9;color:#fff;border:none;cursor:pointer;padding:3px 8px;border-radius:4px;font-size:.78rem" onclick="syncArticleToMike(DB.get('articles').find(x=>x.id==='${a.id}'))">📤 mike</button>
           <button class="btn btn-xs btn-danger" onclick="delArticle('${a.id}')">刪除</button>
+          ${postCites.length?`<button class="btn btn-xs" style="background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.3);padding:2px 8px;cursor:pointer" onclick="showArticleCitations('${a.id}')">📌 ${postCites.length} 篇引用</button>`:''}
         </div>
       </div>
       ${needed.length?`
@@ -14732,6 +14735,57 @@ function _renderThreadDetail(a) {
       <div class="cd-row"><span class="cd-label">最後更新</span><span class="cd-value" style="font-size:.72rem">${_cdVal((a.updatedAt||a.createdAt||'').slice(0,19).replace('T',' '))}</span></div>
     </div>
   </div>`
+}
+
+function showArticleCitations(articleId) {
+  const articles = DB.get('articles') || []
+  const article = articles.find(a => a.id === articleId)
+  if (!article) return
+  const posts = DB.get('posts') || []
+  const cited = posts.filter(p => p.articleId === articleId)
+  const overlay = document.getElementById('content-detail-overlay')
+  const drawer  = document.getElementById('content-detail-drawer')
+  if (!overlay || !drawer) return
+  const platsHtml = p => {
+    const plats = (p.platforms && p.platforms.length ? p.platforms : [p.platform]).filter(Boolean)
+    return plats.map(pl => `<span class="badge b-blue" style="font-size:.6rem;margin-right:2px">${pl}</span>`).join('') || '—'
+  }
+  document.getElementById('content-detail-inner').innerHTML = `
+  <div class="cd-header">
+    <div>
+      <div class="cd-title">📌 引用清單</div>
+      <div style="font-size:.7rem;color:var(--text3);margin-top:2px;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(article.title)}</div>
+    </div>
+    <button class="cd-close" onclick="closeContentDetail()">✕</button>
+  </div>
+  <div class="cd-body">
+    ${cited.length === 0
+      ? `<div style="text-align:center;padding:40px 0;color:var(--text3)">此文章尚無追蹤貼文引用</div>`
+      : `<div style="font-size:.72rem;color:var(--text3);margin-bottom:12px">共 <b style="color:var(--text)">${cited.length}</b> 篇貼文引用此文章</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${cited.map(p => `
+          <div style="background:var(--g3,#283148);border-radius:8px;padding:10px 12px;cursor:pointer;border:1px solid var(--border,#2d3748)" onclick="openContentDetail('${p.id}','post')">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+              <span style="font-size:.72rem;color:var(--text3);flex-shrink:0">${p.date||'—'}</span>
+              <span class="badge b-green" style="font-size:.62rem;flex-shrink:0">${escHtml(p.personaName||'—')}</span>
+              ${platsHtml(p)}
+            </div>
+            <div style="font-size:.8rem;color:var(--text);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.topic||'（無主題）')}</div>
+            ${p.utmContent ? `<div style="font-family:ui-monospace,monospace;font-size:.65rem;color:#e86a1a">🏷 ${escHtml(p.utmContent)}</div>` : ''}
+            <div style="display:flex;gap:14px;margin-top:6px;font-size:.7rem;color:var(--text3)">
+              <span>📢 ${p.impressions||0}</span>
+              <span>👀 ${p.views||0}</span>
+              <span>👍 ${p.likes||0}</span>
+              <span>💬 ${p.comments||0}</span>
+            </div>
+          </div>`).join('')}
+        </div>`
+    }
+  </div>`
+  overlay.style.display = ''
+  drawer.style.display  = ''
+  requestAnimationFrame(() => drawer.classList.add('open'))
+  document.addEventListener('keydown', _cdEscClose)
 }
 
 // ===== INIT =====
