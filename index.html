@@ -616,7 +616,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
         </select>
       </div>
     </div>
-    <p class="tm" style="font-size:.74rem;margin-bottom:12px">GA4 + Threads 成效交叉對比 · 點一列展開詳細數據 · 歸因等級 A＝精準 B＝強 C＝弱 U＝未知</p>
+    <p class="tm" style="font-size:.74rem;margin-bottom:12px">GA4 + Threads 成效交叉對比 · 點一列展開詳細數據 · 歸因等級 B＝強 C＝輔助 D＝推估 U＝未知（A=精準 停用，需 P2/P3）</p>
     <div class="t-scroll" id="postTableWrap" style="display:none">
       <table id="postTableEl" style="min-width:820px">
         <thead><tr>
@@ -1492,10 +1492,11 @@ function renderPostTable(posts, label) {
   const acts=DB.get('thread_activities')||[];
 
   // ── P1 統一歸因等級定義（A 級暫停，需 P2/P3 完成後才啟用）──
-  // B：可確認帳號/活動/路徑，有 UTM + GA4 Sessions > 0
-  // C：可確認接觸社群/內容，有 UTM 但無 GA4 Sessions，或有貼文 URL 但無 UTM
-  // D：依時間/人工回報/活動區間推估，有日期但無 UTM 和 URL
-  // U：未知，無可歸因資訊
+  // 歸因等級（P1 統一 enum）：B=強 / C=輔助 / D=推估 / U=未知 / A=精準(停用需P2/P3)
+  // B 強：UTM + GA4 Sessions > 0，可確認社群帶進站
+  // C 輔助：有 UTM 或 URL 確認接觸，但轉化鏈不完整
+  // D 推估：依時間 / 活動區間推估，有日期但無 UTM 與 URL
+  // U 未知：無可歸因資訊
   const attrLevel = (p) => {
     const a = acts.find(x=>x.utmContent===p.content)
     const hasUTM = !!(p.content)
@@ -2465,12 +2466,12 @@ function _ovPaths() {
   const el = document.getElementById('ga4ov-paths')
   if (!el) return
   const PATHS = [
-    {id:'PATH_01',icon:'🗺️',label:'社群 → 論壇/部落格 → YS89 → 註冊',attr:'B 強歸因',ac:'#60a5fa',note:'來自 ys89.fun 或部落格 referral'},
-    {id:'PATH_02',icon:'🤖',label:'社群 → AI 預測工具 → picks168 → 進群',attr:'B 強歸因',ac:'#60a5fa',note:'流量至 picks168.com'},
-    {id:'PATH_03',icon:'📸',label:'Instagram → Bio → 承接頁 → 註冊',attr:'B 強歸因',ac:'#60a5fa',note:'IG 個人頁 Bio 連結'},
-    {id:'PATH_04',icon:'🧵',label:'Threads 單篇 → 承接頁 → 註冊',attr:'A 精準',ac:'#34d399',note:'Post ID + UTM + link_id = 完整歸因'},
-    {id:'PATH_05',icon:'💬',label:'私訊/LINE → 承接頁 → 註冊',attr:'D 推估',ac:'#f59e42',note:'時間段推估，需 conv_daily 補充'},
-    {id:'PATH_06',icon:'📣',label:'Meta 廣告 → 落地頁 → 註冊',attr:'B/C',ac:'#94a3b8',note:'需 Meta Ads 與 GA4 paid source 對帳'}
+    {id:'PATH_01',icon:'🗺️',label:'社群 → 論壇/部落格 → YS89 → 註冊',attr:'B 強',ac:'#60a5fa',note:'來自 ys89.fun 或部落格 referral，GA4 source 可確認'},
+    {id:'PATH_02',icon:'🤖',label:'社群 → AI 預測工具 → picks168 → 進群',attr:'B 強',ac:'#60a5fa',note:'picks168.com GA4 source 可確認'},
+    {id:'PATH_03',icon:'📸',label:'Instagram → Bio → 承接頁 → 註冊',attr:'C 輔助',ac:'#f59e42',note:'IG Bio 靜態連結，無法對應個別貼文'},
+    {id:'PATH_04',icon:'🧵',label:'Threads 單篇 → 承接頁 → 註冊',attr:'B 強',ac:'#60a5fa',note:'UTM + 貼文 URL 確認社群觸點（A 級需 P2/P3 link_id）'},
+    {id:'PATH_05',icon:'💬',label:'私訊/LINE → 承接頁 → 註冊',attr:'D 推估',ac:'#fb923c',note:'時間段推估，需 conv_daily 補充'},
+    {id:'PATH_06',icon:'📣',label:'Meta 廣告 → 落地頁 → 註冊',attr:'C 輔助',ac:'#f59e42',note:'需 Meta Ads 與 GA4 paid source 對帳才能升為 B'}
   ]
 
   // 從 thread_activities 依 landingUrl 推算路徑、累計曝光與發文數
@@ -2528,9 +2529,11 @@ function _ovPaths() {
   </table></div>
   <div style="margin-top:10px;padding:9px 12px;background:var(--g2);border-radius:7px;font-size:.67rem;color:var(--text3);line-height:1.7">
     ℹ️ 曝光由 <b>landingUrl</b> 自動推算路徑歸屬；Sessions/CTA 需完整 UTM 對帳後啟用。歸因等級：
-    <span style="color:#34d399">A 精準</span>（Post ID + UTM + GA4 完整對帳）・
-    <span style="color:#60a5fa">B 強歸因</span>（帳號或專屬連結）・
-    <span style="color:#f59e42">D 推估</span>（時間 / 活動推估）
+    <span style="color:#60a5fa">B 強</span>（帳號/UTM/GA4 source 可確認）・
+    <span style="color:#f59e42">C 輔助</span>（社群觸點確認，轉化鏈不完整）・
+    <span style="color:#fb923c">D 推估</span>（時間 / 活動推估）・
+    <span style="color:#94a3b8">U 未知</span>・
+    <span style="color:#34d399">A 精準</span>（停用，需 P2/P3：link_id + click_id + registration_id）
   </div>`
 }
 
@@ -6318,10 +6321,8 @@ function _migrateThreadActivities(){
       a.path_type = u.includes('ys89') ? 'trust' : u.includes('picks168') ? 'ai_tool' : u ? 'other' : 'bio'
       changed = true
     }
-    // P1 統一歸因等級：強制重新計算（移除舊 if(!a.attribution_level) 條件）
-    // 規則：B=有UTM且GA4Sessions>0（Migration階段無GA4，改用url+utmContent作B門檻）
-    //       C=有UTM但缺URL或無法確認流量；D=只有日期推估；U=無任何依據
-    // A 級已停用，需 P2/P3（link_id + click_id + registration_id）完成後才啟用
+    // P1 統一歸因等級（B=強/C=輔助/D=推估/U=未知，A=精準停用需P2/P3）
+    // Migration 情境無每篇 GA4 Sessions，以 utmContent+url 作 B 門檻（與 renderPostTable 的 B 定義相同層級，只是代理指標不同）
     {
       let lvl, reason, missing
       const hasUTM=!!a.utmContent, hasUrl=!!a.url
@@ -10901,7 +10902,7 @@ function renderThreadTracker(){
       <td style="padding:8px 10px;vertical-align:middle">${anHtml}${slHtml}${topicHtml}</td>
       <td style="padding:8px 10px;vertical-align:middle">
         <span style="font-size:10px;font-family:ui-monospace,monospace;color:#e86a1a">${escHtml(a.utmContent||'—')}</span>${ctx.isGroupFirst&&ctx.siblingCount>1?`<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.25);margin-left:6px;vertical-align:middle">×${ctx.siblingCount}</span>`:''}
-        ${(()=>{const lc={'A':'#34d399','B':'#60a5fa','C':'#f59e0b','D':'#fb923c','U':'#94a3b8'},ll={'A':'精準(停用)','B':'強歸因','C':'中等','D':'推估','U':'未知'},lv=a.attribution_level,lr=a.attribution_reason;return lv?`<div style="margin-top:3px"><span style="font-size:9px;padding:1px 5px;border-radius:3px;background:${lc[lv]||'#6b7280'}22;color:${lc[lv]||'#6b7280'};border:1px solid ${lc[lv]||'#6b7280'}40" title="${lr||''}">${lv} ${ll[lv]||''}</span></div>`:''})()}
+        ${(()=>{const lc={'A':'#34d399','B':'#60a5fa','C':'#f59e42','D':'#fb923c','U':'#94a3b8'},ll={'A':'精準(停用)','B':'強','C':'輔助','D':'推估','U':'未知'},lv=a.attribution_level,lr=a.attribution_reason;return lv?`<div style="margin-top:3px"><span style="font-size:9px;padding:1px 5px;border-radius:3px;background:${lc[lv]||'#6b7280'}22;color:${lc[lv]||'#6b7280'};border:1px solid ${lc[lv]||'#6b7280'}40" title="${lr||''}">${lv} ${ll[lv]||''}</span></div>`:''})()}
       </td>
       <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(isDel?null:views)}</td>
       <td style="padding:8px 10px;vertical-align:middle;text-align:right">${isUtmGen?dash():numFmt(likes)}</td>
@@ -12785,8 +12786,11 @@ function msToggleDrilldown(id) {
 function renderMsBizKpis(start, end) {
   const el = document.getElementById('ms-biz-kpis'); if (!el) return;
   const allReg = DB.get('real_reg') || [];
-  // overlap 過濾：只要記錄與查詢區間有重疊即計入
-  const cur = allReg.filter(r => { const rf=r.from||r.date||'', rt=r.to||r.date||r.from||''; return rf<=end && rt>=start; });
+  // P1修正：每日記錄(rf===rt)依date加總；區間記錄只有查詢範圍完整涵蓋才納入，部分重疊不計入以避免月資料虛增週報
+  const _regInRange = (r, s, e) => { const rf=r.from||r.date||'', rt=r.to||r.date||r.from||''; return !!rf && rf>=s && rt<=e; }
+  const _regPartial = (r, s, e) => { const rf=r.from||r.date||'', rt=r.to||r.date||r.from||''; return !!rf && rf<=e && rt>=s && !(rf>=s && rt<=e); }
+  const cur = allReg.filter(r => _regInRange(r, start, end));
+  const partialCur = allReg.filter(r => _regPartial(r, start, end));
   const cReg = cur.reduce((s,r) => s+(r.qualified_registration_count??r.reg??0), 0);
   const cDep = cur.reduce((s,r) => s+(r.first_deposit_user_count??r.dep??0), 0);
   const cAmt = cur.reduce((s,r) => s+(r.first_deposit_amount??r.amt??0), 0);
@@ -12796,7 +12800,7 @@ function renderMsBizKpis(start, end) {
   const pEndD = new Date(start); pEndD.setDate(pEndD.getDate()-1);
   const pStartD = new Date(pEndD); pStartD.setDate(pEndD.getDate()-days+1);
   const pe = getTaipeiDateString(pEndD), ps = getTaipeiDateString(pStartD);
-  const prev = allReg.filter(r => { const rf=r.from||r.date||'', rt=r.to||r.date||r.from||''; return rf<=pe && rt>=ps; });
+  const prev = allReg.filter(r => _regInRange(r, ps, pe));
   const pReg = prev.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0);
   const pDep = prev.reduce((s,r)=>s+(r.first_deposit_user_count??r.dep??0),0);
   const pAmt = prev.reduce((s,r)=>s+(r.first_deposit_amount??r.amt??0),0);
@@ -12817,13 +12821,17 @@ function renderMsBizKpis(start, end) {
       <div style="font-size:1.65rem;font-weight:800;color:${col};letter-spacing:-.02em;line-height:1">${val}</div>
       ${dHtml}
     </div>`;
+  const partialWarn = partialCur.length
+    ? `<div style="margin-top:10px;padding:8px 12px;background:#fb923c18;border:1px solid #fb923c55;border-radius:7px;font-size:.67rem;color:#fb923c;line-height:1.6">
+        ⚠️ 區間資料無法拆分：${partialCur.map(r=>`${r.from||r.date}~${r.to||r.date}`).join('、')} 與查詢範圍 ${start}~${end} 部分重疊，已略去以免數字虛增。請拆分為每日或對齊查詢區間後重新填入。
+      </div>` : '';
   if(!cur.length){
     el.innerHTML=`<div style="font-size:.82rem;font-weight:700;color:var(--accent);margin-bottom:10px">🏆 本期商業成果</div>
       <div style="background:#0d0b0a;border:1px dashed var(--border2);border-radius:10px;padding:16px;text-align:center;color:var(--text3);font-size:.76rem">
-        此期間尚無對帳記錄<br><span style="font-size:.68rem;opacity:.7">請在下方「🧾 真實註冊對帳」填入數字後點「更新報告」</span></div>`;
+        此期間尚無對帳記錄<br><span style="font-size:.68rem;opacity:.7">請在下方「🧾 真實註冊對帳」填入數字後點「更新報告」</span></div>${partialWarn}`;
     return;
   }
-  const srcNote = cur.map(r=>`${r.from}~${r.to}`).join('、');
+  const srcNote = cur.map(r=>`${r.from||r.date}~${r.to||r.date||r.from}`).join('、');
   el.innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
       <div style="font-size:.88rem;font-weight:700;color:var(--accent)">🏆 本期商業成果</div>
@@ -12834,7 +12842,7 @@ function renderMsBizKpis(start, end) {
       ${card('💳','儲值人數',fmt(cDep),diff(cDep,pDep,false),'#f59e0b')}
       ${card('💰','儲值金額',fmtAmt(cAmt),diff(cAmt,pAmt,false),'#a78bfa')}
       ${card('📊','儲值率',cRate.toFixed(1)+'%',diff(cRate,pRate,true),'#60a5fa')}
-    </div>`;
+    </div>${partialWarn}`;
 }
 
 function renderMsKpiRow(ga4Data, start, end, prevStart, prevEnd) {
@@ -14208,7 +14216,9 @@ function renderMeeting() {
   const kUse = days<=3 ? (ga4.kpis_3d||k7) : days<=7 ? k7 : days<=28 ? k28 : kCum
   const kPrev = days<=7 ? (ga4.kpis_prev7d||{}) : {}
   const regs = DB.get('real_reg')||[]
-  const cRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return rf<=to&&rt>=from})
+  // P1修正：與 renderMsBizKpis 相同規則 — 完整涵蓋才納入，部分重疊略去
+  const cRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return !!rf&&rf>=from&&rt<=to})
+  const partialRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return !!rf&&rf<=to&&rt>=from&&!(rf>=from&&rt<=to)})
   const cReg = {
     completed: cRegs.reduce((s,r)=>s+(r.completed_registration_count??r.completedReg??0),0)||null,
     reg:       cRegs.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0)||null,
@@ -14289,6 +14299,16 @@ function renderMeeting() {
     if(pathStats[pid]){ pathStats[pid].views+=(a.platformMetrics?.Threads?.views||0); pathStats[pid].posts++ }
   })
   const pathLabels={PATH_01:'論壇/部落格→YS89',PATH_02:'AI工具→picks168',PATH_03:'IG Bio→承接頁',PATH_04:'Threads單篇',PATH_05:'LINE/私訊'}
+  // 歸因等級依路徑類型動態計算（非硬編碼 B）
+  const PATH_ATTR_MAP={
+    PATH_01:{level:'B',color:'#60a5fa'},  // GA4 source referral 可確認
+    PATH_02:{level:'B',color:'#60a5fa'},  // picks168.com GA4 source 可確認
+    PATH_03:{level:'C',color:'#f59e42'},  // IG Bio 靜態連結，無個別貼文追蹤
+    PATH_04:{level:'B',color:'#60a5fa'},  // UTM + 貼文 URL（A 級需 P2/P3）
+    PATH_05:{level:'D',color:'#fb923c'},  // 時間段推估
+  }
+  const mtgPartialNote = partialRegs.length
+    ? `<div style="margin-top:6px;padding:6px 10px;background:#fb923c18;border:1px solid #fb923c55;border-radius:6px;font-size:.63rem;color:#fb923c">⚠️ 區間資料無法拆分：${partialRegs.map(r=>`${r.from||r.date}~${r.to||r.date||r.from}`).join('、')} 部分重疊查詢範圍，已略去。</div>` : ''
   document.getElementById('mtg-paths').innerHTML = `<table style="width:100%;font-size:.72rem;border-collapse:collapse">
     <thead><tr style="border-bottom:1px solid var(--border)">
       <th style="padding:5px 6px;text-align:left;color:var(--text3)">路徑</th>
@@ -14296,12 +14316,15 @@ function renderMeeting() {
       <th style="padding:5px 6px;text-align:right;color:var(--text3)">曝光</th>
       <th style="padding:5px 6px;text-align:right;color:var(--text3)">歸因</th>
     </tr></thead><tbody>` +
-    Object.entries(pathStats).map(([pid,d])=>`<tr style="border-bottom:1px solid var(--g3)">
-      <td style="padding:5px 6px;color:var(--text2)">${pathLabels[pid]||pid}</td>
-      <td style="padding:5px 6px;text-align:right;color:var(--text)">${d.posts}</td>
-      <td style="padding:5px 6px;text-align:right;color:var(--accent)">${d.views>999?(d.views/1000).toFixed(1)+'k':d.views}</td>
-      <td style="padding:5px 6px;text-align:right;color:#60a5fa">B</td>
-    </tr>`).join('') + `</tbody></table>`
+    Object.entries(pathStats).map(([pid,d])=>{
+      const pa=PATH_ATTR_MAP[pid]||{level:'U',color:'#94a3b8'}
+      return `<tr style="border-bottom:1px solid var(--g3)">
+        <td style="padding:5px 6px;color:var(--text2)">${pathLabels[pid]||pid}</td>
+        <td style="padding:5px 6px;text-align:right;color:var(--text)">${d.posts}</td>
+        <td style="padding:5px 6px;text-align:right;color:var(--accent)">${d.views>999?(d.views/1000).toFixed(1)+'k':d.views}</td>
+        <td style="padding:5px 6px;text-align:right"><span style="font-size:.65rem;padding:1px 5px;border-radius:4px;background:${pa.color}20;color:${pa.color}">${pa.level}</span></td>
+      </tr>`
+    }).join('') + `</tbody></table>${mtgPartialNote}`
 
   // Top / Bottom 5（Bottom 排除 3 天內新文，避免新文因時間不足被誤判為差文）
   const ranked = cActs.filter(a=>(a.platformMetrics?.Threads?.views||0)>0)
@@ -14841,7 +14864,7 @@ function closeContentDetail() {
 }
 function _cdEscClose(e) { if (e.key === 'Escape') closeContentDetail() }
 function _cdAttrBadge(level) {
-  const labels = { A:'A 直接歸因', B:'B 輔助歸因', C:'C 間接歸因', D:'D 時間歸因', U:'U 未知' }
+  const labels = { A:'A 精準(停用)', B:'B 強', C:'C 輔助', D:'D 推估', U:'U 未知' }
   return level
     ? `<span class="cd-attr-badge cd-attr-${level}">${labels[level]||level}</span>`
     : '<span style="color:var(--text3)">—</span>'
