@@ -6374,6 +6374,7 @@ function _ovSetPeriod(mode){
   }
   document.getElementById('ov-start').value=s
   document.getElementById('ov-end').value=e
+  _syncGlobalRange(s, e)
   renderGrowthOverview()
 }
 
@@ -6384,9 +6385,13 @@ function _ovAttrBadge(lv){ const c={A:'#22c55e',B:'#60a5fa',C:'#fbbf24',D:'#fb92
 function renderGrowthOverview(){
   // 初始化日期
   const si = document.getElementById('ov-start'), ei = document.getElementById('ov-end')
-  if(!si.value) _ovSetPeriod('week'), ''
+  if(!si.value) {
+    if(window.globalRange){ si.value=window.globalRange.from; ei.value=window.globalRange.to }
+    else { _ovSetPeriod('week'); return }
+  }
   const start = si?.value||'', end = ei?.value||''
   if(!start||!end) return
+  _syncGlobalRange(start, end)
 
   const allActs = DB.get('thread_activities')||[]
   const acts = allActs.filter(a=> a.date>=start && a.date<=end)
@@ -14037,6 +14042,7 @@ function mtgSetPeriod(mode) {
   else if (mode==='28d') { const d=new Date();d.setDate(d.getDate()-28); from=getTaipeiDateString(d); to=yest }
   document.getElementById('mtg-from').value = from
   document.getElementById('mtg-to').value = to
+  _syncGlobalRange(from, to)
   renderMeeting()
 }
 
@@ -14046,8 +14052,12 @@ function renderMeeting() {
   const toEl = document.getElementById('mtg-to')
   const today = getTaipeiDateString()
   const yest = getTaipeiYesterday()
-  if (!fromEl.value) { mtgSetPeriod('this_week'); return }
+  if (!fromEl.value) {
+    if(window.globalRange){ fromEl.value=window.globalRange.from; toEl.value=window.globalRange.to }
+    else { mtgSetPeriod('this_week'); return }
+  }
   const from = fromEl.value, to = toEl.value || yest
+  _syncGlobalRange(from, to)
   const days = Math.round((new Date(to)-new Date(from))/(86400000))+1
   const prevTo = new Date(from); prevTo.setDate(prevTo.getDate()-1)
   const prevFrom = new Date(prevTo); prevFrom.setDate(prevTo.getDate()-days+1)
@@ -14897,6 +14907,104 @@ function showArticleCitations(articleId) {
   document.addEventListener('keydown', _cdEscClose)
 }
 
+// ===== 全域日期選擇器 =====
+window.globalRange = (()=>{try{const s=localStorage.getItem('ys89_global_range');return s?JSON.parse(s):null}catch(e){return null}})()
+
+function _syncGlobalRange(from, to) {
+  window.globalRange = { from, to }
+  try { localStorage.setItem('ys89_global_range', JSON.stringify({from,to})) } catch(e) {}
+  const fb=document.getElementById('gdr-from'), tb=document.getElementById('gdr-to'), lb=document.getElementById('gdr-label')
+  if(fb) fb.value = from
+  if(tb) tb.value = to
+  if(lb) lb.textContent = `${from.slice(5)}～${to.slice(5)}`
+}
+
+function _applyGlobalRange(from, to) {
+  if(!from||!to) return
+  _syncGlobalRange(from, to)
+  const mf=document.getElementById('mtg-from'), mt=document.getElementById('mtg-to')
+  if(mf){mf.value=from; mt.value=to}
+  const of_=document.getElementById('ov-start'), ot=document.getElementById('ov-end')
+  if(of_){of_.value=from; ot.value=to}
+  const active=document.querySelector('.page.active')
+  if(!active) return
+  const pg=active.id.replace('pg-','')
+  if(pg==='meeting'&&typeof renderMeeting==='function') renderMeeting()
+  else if(pg==='ga4'&&typeof renderGrowthOverview==='function') renderGrowthOverview()
+  const pop=document.getElementById('gdr-popover')
+  if(pop){pop.style.display='none'; window._gdrPopoverOpen=false}
+}
+
+function gdrSetPreset(mode) {
+  const now=new Date(), today=getTaipeiDateString(), yest=getTaipeiYesterday()
+  let from, to
+  if(mode==='this_week'){
+    const day=now.getDay(), diff=day===0?-6:1-day
+    const mon=new Date(now); mon.setDate(now.getDate()+diff)
+    from=getTaipeiDateString(mon)
+    to = from>yest ? today : yest
+  } else if(mode==='last_week'){
+    const day=now.getDay(), diff=day===0?-6:1-day
+    const mon=new Date(now); mon.setDate(now.getDate()+diff-7)
+    const sun=new Date(mon); sun.setDate(mon.getDate()+6)
+    from=getTaipeiDateString(mon); to=getTaipeiDateString(sun)
+  } else if(mode==='7d'){
+    const d=new Date(); d.setDate(d.getDate()-7); from=getTaipeiDateString(d); to=yest
+  } else if(mode==='28d'){
+    const d=new Date(); d.setDate(d.getDate()-28); from=getTaipeiDateString(d); to=yest
+  }
+  if(from&&to) _applyGlobalRange(from,to)
+}
+
+function gdrApply() {
+  _applyGlobalRange(
+    document.getElementById('gdr-from')?.value,
+    document.getElementById('gdr-to')?.value
+  )
+}
+
+window._gdrPopoverOpen = false
+function toggleGdrPopover() {
+  const pop=document.getElementById('gdr-popover')
+  if(!pop) return
+  window._gdrPopoverOpen=!window._gdrPopoverOpen
+  pop.style.display=window._gdrPopoverOpen?'block':'none'
+}
+
+function _initGlobalDateBar() {
+  const modeBtn=document.getElementById('app-tb-mode')
+  if(!modeBtn||document.getElementById('gdr-widget')) return
+  const gr=window.globalRange
+  const lbl=gr?`${gr.from.slice(5)}～${gr.to.slice(5)}`:'--'
+  modeBtn.insertAdjacentHTML('beforebegin', `<div id="gdr-widget" style="display:flex;align-items:center;position:relative;margin-right:6px">
+    <button id="gdr-btn" onclick="toggleGdrPopover()" title="全域日期同步" style="display:flex;align-items:center;gap:5px;background:var(--g3,#283148);border:1px solid var(--border,#2d3748);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.73rem;color:var(--text3,#64748b);white-space:nowrap">
+      📅 <span id="gdr-label">${lbl}</span>
+    </button>
+    <div id="gdr-popover" style="display:none;position:absolute;top:calc(100%+8px);right:0;background:var(--g2,#1e2233);border:1px solid var(--border,#2d3748);border-radius:8px;padding:14px;z-index:5000;width:272px;box-shadow:0 8px 24px rgba(0,0,0,.5)">
+      <div style="font-size:.65rem;color:var(--text3);margin-bottom:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">全域日期同步</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+        <button onclick="gdrSetPreset('this_week')" class="btn btn-xs">本週</button>
+        <button onclick="gdrSetPreset('last_week')" class="btn btn-xs">上週</button>
+        <button onclick="gdrSetPreset('7d')" class="btn btn-xs">近7天</button>
+        <button onclick="gdrSetPreset('28d')" class="btn btn-xs">近28天</button>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px">
+        <input type="date" id="gdr-from" style="flex:1;background:var(--g3,#283148);border:1px solid var(--border,#2d3748);border-radius:4px;color:var(--text,#f1f5f9);padding:4px 6px;font-size:.73rem" value="${gr?.from||''}">
+        <span style="color:var(--text3);font-size:.7rem">～</span>
+        <input type="date" id="gdr-to" style="flex:1;background:var(--g3,#283148);border:1px solid var(--border,#2d3748);border-radius:4px;color:var(--text,#f1f5f9);padding:4px 6px;font-size:.73rem" value="${gr?.to||''}">
+      </div>
+      <button onclick="gdrApply()" style="width:100%;background:var(--accent,#6366f1);border:none;border-radius:6px;color:#fff;padding:6px;font-size:.75rem;cursor:pointer;font-weight:600">套用到全部頁面</button>
+    </div>
+  </div>`)
+  document.addEventListener('click', e=>{
+    if(window._gdrPopoverOpen && !e.target.closest('#gdr-widget')) {
+      window._gdrPopoverOpen=false
+      const pop=document.getElementById('gdr-popover')
+      if(pop) pop.style.display='none'
+    }
+  })
+}
+
 // ===== INIT =====
 (async()=>{
   await recoverLocalStorageData()
@@ -14908,6 +15016,7 @@ function showArticleCitations(articleId) {
     utmFillLanding()
   })
 })()
+setTimeout(_initGlobalDateBar, 200)
 
 // ===== 文案模板庫 =====
 
