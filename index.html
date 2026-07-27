@@ -6587,11 +6587,52 @@ function nav(el,page){
   document.getElementById('pg-'+page).classList.add('active')
   el.classList.add('active')
   const renders={overview:renderGrowthOverview,roles:renderRoles,channel:renderChannelPosts,channelfb:renderChannelFb,conv:renderConversions,personas:renderPersonas,tracker:renderTracker,articles:renderArticles,templates:renderTemplates,community:renderCommunity,threadtracker:renderThreadTracker,entrances:renderEntrances,links:renderLinks,cast:renderCast,meeting:renderMeeting,datahealth:renderDataHealth,datainput:renderDataInput,abtest:function(){
-    const c=document.getElementById('pg-abtest-content')
-    if(!c)return
-    const list=DB.get('ys89_ab_tests')||[]
-    if(!list.length){c.innerHTML='<div style="font-size:.8rem;color:var(--text3);padding:20px">尚未建立任何 A/B Test。前往「成效分析」→「成效分析」tab 可新增。</div>';return}
-    c.innerHTML=list.map(t=>`<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px"><div style="font-weight:600;font-size:.85rem">${t.name||'未命名測試'}</div><div style="font-size:.72rem;color:var(--text3);margin-top:4px">${t.start||'—'}～${t.end||'—'} · ${t.metric||'—'}</div></div>`).join('')
+    const c=document.getElementById('pg-abtest-content'); if(!c)return
+    const list=DB.get('ab_tests')||[]
+    const METRIC_L={views:'曝光數',likes:'讚數',replies:'留言數',reposts:'轉發',cta_clicks:'CTA 點擊',landing_visits:'落地頁訪問',registrations:'註冊數'}
+    const ST_C={running:'#34d399',paused:'#f59e42',done:'#818cf8',cancelled:'#94a3b8'}
+    const ST_L={running:'進行中',paused:'暫停',done:'已完成',cancelled:'取消'}
+    const acts=DB.get('thread_activities')||[]
+    const gv=(utm,metric)=>{if(!utm)return null;const a=acts.find(x=>x.utmContent===utm);return a?.platformMetrics?.Threads?.[metric]??null}
+    c.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:.8rem;color:var(--text3)">${list.length} 個測試</div>
+      <button class="btn btn-sm btn-primary" onclick="window._abtAddMode=true;AppShell.navPage('ga4');setTimeout(()=>{const w=document.getElementById('ga4-ab-test-wrap');if(w)w.style.display='';openAddAbTest()},80)">＋ 新增測試</button>
+    </div>${!list.length
+      ?`<div style="text-align:center;padding:40px;color:var(--text3)">尚未建立任何 A/B Test<br><span style="font-size:.75rem">點擊右上角「＋ 新增測試」開始</span></div>`
+      :list.slice().reverse().map(t=>{
+        const sc=ST_C[t.status]||'#94a3b8',sl=ST_L[t.status]||t.status,ml=METRIC_L[t.metric]||t.metric
+        const aVal=gv(t.utmA,t.metric),bVal=gv(t.utmB,t.metric)
+        const winner=(aVal!=null&&bVal!=null)?(aVal>bVal?'A':'B'):null
+        const diff=(aVal!=null&&bVal!=null&&aVal>0)?`${Math.round(Math.abs(bVal-aVal)/aVal*100)}%`:''
+        return`<div style="border:1px solid var(--border);border-radius:10px;padding:13px 15px;margin-bottom:10px">
+          <div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+            <div style="flex:1"><div style="font-size:.82rem;font-weight:700;color:var(--text)">${escHtml(t.name)}</div>
+              <div style="font-size:.68rem;color:var(--text3)">${t.startDate||''}${t.endDate?` → ${t.endDate}`:''} · ${ml}</div></div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <span style="font-size:.62rem;padding:2px 8px;border-radius:10px;background:${sc}20;color:${sc};font-weight:600">${sl}</span>
+              <button onclick="AppShell.navPage('ga4');setTimeout(()=>{const w=document.getElementById('ga4-ab-test-wrap');if(w)w.style.display='';openEditAbTest('${t.id}')},80)" style="font-size:.7rem;padding:4px 9px;border-radius:6px;background:var(--g3);border:1px solid var(--border);cursor:pointer;color:var(--text2)">編輯</button>
+            </div>
+          </div>
+          ${t.hypothesis?`<div style="font-size:.72rem;color:var(--text2);margin-bottom:8px;padding:6px 10px;background:var(--g3);border-radius:6px;border-left:2px solid #818cf8">💡 ${escHtml(t.hypothesis)}</div>`:''}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="padding:8px 10px;background:${winner==='A'?'#34d39912':'var(--g3)'};border:1px solid ${winner==='A'?'#34d39940':'var(--border)'};border-radius:8px">
+              <div style="font-size:.65rem;font-weight:700;color:var(--text3)">方案 A${winner==='A'?' 🏆':''}</div>
+              <div style="font-size:.72rem;color:var(--text);margin-top:3px">${escHtml(t.varA||'—')}</div>
+              ${t.utmA?`<div style="font-size:.6rem;color:var(--text3);margin-top:3px">UTM: ${escHtml(t.utmA)}</div>`:''}
+              ${aVal!=null?`<div style="font-size:.75rem;font-weight:700;color:${winner==='A'?'#34d399':'var(--text)'};margin-top:4px">${ml}：${aVal.toLocaleString()}</div>`:''}
+            </div>
+            <div style="padding:8px 10px;background:${winner==='B'?'#34d39912':'var(--g3)'};border:1px solid ${winner==='B'?'#34d39940':'var(--border)'};border-radius:8px">
+              <div style="font-size:.65rem;font-weight:700;color:var(--text3)">方案 B${winner==='B'?' 🏆':''}</div>
+              <div style="font-size:.72rem;color:var(--text);margin-top:3px">${escHtml(t.varB||'—')}</div>
+              ${t.utmB?`<div style="font-size:.6rem;color:var(--text3);margin-top:3px">UTM: ${escHtml(t.utmB)}</div>`:''}
+              ${bVal!=null?`<div style="font-size:.75rem;font-weight:700;color:${winner==='B'?'#34d399':'var(--text)'};margin-top:4px">${ml}：${bVal.toLocaleString()}</div>`:''}
+            </div>
+          </div>
+          ${(winner&&diff)?`<div style="font-size:.7rem;font-weight:700;color:#34d399;margin-top:8px">📊 方案 ${winner} 勝出 ${diff}</div>`:''}
+          ${t.conclusion?`<div style="font-size:.72rem;color:var(--text2);padding:6px 10px;background:var(--g3);border-radius:6px;border-left:2px solid #34d399;margin-top:8px">📝 ${escHtml(t.conclusion)}</div>`:''}
+        </div>`
+      }).join('')
+    }`
   }}
   if(page==='todo'){initTodayTodos(false);renderTodo()}
   else if(page==='ga4'){ if(typeof switchGA4Layer==='function') switchGA4Layer('overview'); else if(_ga4Data) renderGA4(_ga4Data); }
