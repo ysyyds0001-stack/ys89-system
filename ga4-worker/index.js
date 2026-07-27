@@ -15,31 +15,45 @@ const SCOPE        = "https://www.googleapis.com/auth/analytics.readonly";
 const CTA_EVENTS   = ["platform_register_click","line_click","line_oa_click","cta_click","purchase"];
 const CONV_EVENTS  = ["cta_click","subscribe_click"];
 
-const CORS = {
-  "Access-Control-Allow-Origin":  "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Content-Type": "application/json; charset=utf-8",
-};
+// P0 安全修正：CORS 限制至指定網域白名單，不再允許 *
+const ALLOWED_ORIGINS = [
+  "https://ysyyds0001-stack.github.io",
+  "https://ys89-seo-dashboard.pages.dev",
+  "https://ys89.fun",
+];
+
+function corsHeaders(origin) {
+  const allow = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin":  allow,
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Content-Type": "application/json; charset=utf-8",
+    "Vary": "Origin",
+  };
+}
 
 export default {
   async fetch(request, env) {
-    if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
+    const origin = request.headers.get("Origin") || "";
+    const cors = corsHeaders(origin);
+
+    if (request.method === "OPTIONS") return new Response(null, { headers: cors });
 
     const url = new URL(request.url);
     if (url.pathname !== "/api/ga4-custom")
-      return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: CORS });
+      return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: cors });
 
     const start = url.searchParams.get("start");
     const end   = url.searchParams.get("end");
     if (!start || !end)
-      return new Response(JSON.stringify({ error: "缺少 start 或 end" }), { status: 400, headers: CORS });
+      return new Response(JSON.stringify({ error: "缺少 start 或 end" }), { status: 400, headers: cors });
 
     try {
       const token = await getAccessToken(env.GA4_SA_EMAIL, env.GA4_SA_KEY);
       const data  = await fetchCustomRange(token, start, end);
-      return new Response(JSON.stringify(data), { headers: CORS });
+      return new Response(JSON.stringify(data), { headers: cors });
     } catch (e) {
-      return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: CORS });
+      return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: cors });
     }
   }
 };
