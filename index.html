@@ -330,7 +330,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 <div id="pg-dashboard" class="page active"></div>
 
 <!-- ===== PAGE: GA4 成效 ===== -->
-<div id="pg-ga4" class="page">
+<div id="pg-ga4" class="page active">
   <div class="fb" style="margin-bottom:12px">
     <div>
       <h2 style="font-size:1.2rem;font-weight:700">📊 成效分析</h2>
@@ -1062,8 +1062,8 @@ function renderGA4(d){
   const rrF=document.getElementById('rr-from');
   if(rrF && !rrF.value){
     const today=new Date(), wk=new Date(Date.now()-6*864e5);
-    rrF.value=wk.toISOString().slice(0,10);
-    document.getElementById('rr-to').value=today.toISOString().slice(0,10);
+    rrF.value=getTaipeiDateString(wk);
+    document.getElementById('rr-to').value=getTaipeiDateString(today);
   }
   renderRealReg();
 
@@ -1071,8 +1071,8 @@ function renderGA4(d){
   const adF=document.getElementById('ad-from');
   if(adF && !adF.value){
     const today2=new Date(), wk2=new Date(Date.now()-6*864e5);
-    adF.value=wk2.toISOString().slice(0,10);
-    document.getElementById('ad-to').value=today2.toISOString().slice(0,10);
+    adF.value=getTaipeiDateString(wk2);
+    document.getElementById('ad-to').value=getTaipeiDateString(today2);
   }
   renderMetaAds();
 
@@ -2061,16 +2061,16 @@ let _drExtras = []
 function drInit(){
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate()-1)
-  const yStr = yesterday.toISOString().slice(0,10)
+  const yStr = getTaipeiDateString(yesterday)
   const lookupEl = document.getElementById('dr-lookup-date')
   if(lookupEl && !lookupEl.value) lookupEl.value = yStr
 
   const monday = new Date()
   monday.setDate(monday.getDate() - monday.getDay() + 1)
-  const today = new Date().toISOString().slice(0,10)
+  const today = getTaipeiDateString()
   const fromEl = document.getElementById('dr-from')
   const toEl   = document.getElementById('dr-to')
-  if(fromEl && !fromEl.value) fromEl.value = monday.toISOString().slice(0,10)
+  if(fromEl && !fromEl.value) fromEl.value = getTaipeiDateString(monday)
   if(toEl   && !toEl.value)   toEl.value   = today
 
   // 帳號篩選下拉
@@ -2298,7 +2298,7 @@ function _ovDateRange() {
   const days = p === '3d' ? [3, 6] : (p === '28d' || p === 'cum') ? [28, 56] : [7, 14]
   const dCur = new Date(now); dCur.setDate(dCur.getDate() - days[0])
   const dPrev = new Date(now); dPrev.setDate(dPrev.getDate() - days[1])
-  return { cur: dCur.toISOString().slice(0,10), prev: dPrev.toISOString().slice(0,10) }
+  return { cur: getTaipeiDateString(dCur), prev: getTaipeiDateString(dPrev) }
 }
 
 function _ovKpiCard(label, cur, prev, source, icon, warn) {
@@ -2518,7 +2518,7 @@ function _ovAcctHealth() {
   })
   if (!personas.length) { el.innerHTML='<p style="color:var(--text3);font-size:.8rem">尚無角色</p>'; return }
   const now = new Date()
-  const mkDate = n => { const d=new Date(now); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10) }
+  const mkDate = n => { const d=new Date(now); d.setDate(d.getDate()-n); return getTaipeiDateString(d) }
   const d7s=mkDate(7), d14s=mkDate(14), d30s=mkDate(30)
 
   // 9 種健康狀態判斷
@@ -2855,7 +2855,7 @@ const AB_KEY = 'ab_tests'
 function openAddAbTest() {
   document.getElementById('ab-edit-id').value = ''
   document.getElementById('ab-name').value = ''
-  document.getElementById('ab-start').value = new Date().toISOString().slice(0,10)
+  document.getElementById('ab-start').value = getTaipeiDateString()
   document.getElementById('ab-end').value = ''
   document.getElementById('ab-metric').value = 'views'
   document.getElementById('ab-status').value = 'running'
@@ -3247,7 +3247,7 @@ function renderAbTests() {
 </div>
 
 <!-- ===== PAGE: 成長概覽 ===== -->
-<div id="pg-overview" class="page active">
+<div id="pg-overview" class="page">
   <!-- 標題列 + 日期選擇 -->
   <div class="fb" style="margin-bottom:16px;flex-wrap:wrap;gap:10px">
     <div>
@@ -3267,7 +3267,6 @@ function renderAbTests() {
       </div>
     </div>
   </div>
-
 </div>
 
 <!-- ===== PAGE: 使用說明 ===== -->
@@ -5248,7 +5247,7 @@ async function pollMikeForBlog(articleUrl){
         const acct=seedList.find(a=>commCode(a)===sc)
         if(acct){
           if(!log[articleUrl])log[articleUrl]={}
-          log[articleUrl][acct.id]={done:true,doneAt:new Date().toISOString().slice(0,10),via:'mike'}
+          log[articleUrl][acct.id]={done:true,doneAt:getTaipeiDateString(),via:'mike'}
           count++
         }
       }
@@ -9285,7 +9284,7 @@ function toggleAnonPub(url, accountId, btn){
   if(!log[url])log[url]={}
   const cur=!!(log[url][accountId]?.done)
   if(!cur){
-    log[url][accountId]={done:true,doneAt:new Date().toISOString().slice(0,10)}
+    log[url][accountId]={done:true,doneAt:getTaipeiDateString()}
     if(btn){btn.textContent='✅ 已發佈';btn.style.cssText='background:#16a34a20;color:#4ade80;border:1px solid #16a34a40;border-radius:5px;padding:2px 8px;font-size:.7rem;cursor:pointer'}
     toast('✅ 已標記發佈完成')
   }else{
@@ -10078,7 +10077,7 @@ function _fillConvRoles(cur){
 function openAddConv(){
   document.getElementById('cv-modal-title').textContent='新增每日轉化';
   document.getElementById('cv-id').value='';
-  document.getElementById('cv-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('cv-date').value=getTaipeiDateString();
   _fillConvRoles();
   document.getElementById('cv-inq').value='';
   document.getElementById('cv-reg').value='';
@@ -10419,7 +10418,7 @@ function utmSaveToLinks(){
       const log=DB.get('anon_pub_log')||{};
       if(!log[artUrl])log[artUrl]={}
       if(!log[artUrl][seedAcct.id]?.done){
-        log[artUrl][seedAcct.id]={done:true,doneAt:new Date().toISOString().slice(0,10),utmContent:ct}
+        log[artUrl][seedAcct.id]={done:true,doneAt:getTaipeiDateString(),utmContent:ct}
         DB.set('anon_pub_log',log)
         toast(`✅ 已標記：${seedAcct.name} → 「${art.title.slice(0,20)}…」完成發佈`)
       }
@@ -10455,7 +10454,7 @@ function scanUtmToAnonLog(){
     const artUrl=art.url||art.id;
     if(!log[artUrl])log[artUrl]={};
     if(!log[artUrl][acct.id]?.done){
-      log[artUrl][acct.id]={done:true,doneAt:(lk.updatedAt||lk.createdAt||'').slice(0,10)||new Date().toISOString().slice(0,10),utmContent:lk.utmContent,via:'scan'};
+      log[artUrl][acct.id]={done:true,doneAt:(lk.updatedAt||lk.createdAt||'').slice(0,10)||getTaipeiDateString(),utmContent:lk.utmContent,via:'scan'};
       count++;
     }
   });
@@ -12626,7 +12625,7 @@ function getMsSummaryDates() {
   const now = new Date(); now.setHours(0,0,0,0);
   const yesterday = new Date(now); yesterday.setDate(yesterday.getDate()-1);
   const start = new Date(yesterday); start.setDate(start.getDate()-(days-1));
-  const f = d=>d.toISOString().slice(0,10);
+  const f = d=>getTaipeiDateString(d);
   return { start:f(start), end:f(yesterday) };
 }
 
@@ -13421,7 +13420,7 @@ function renderMsNotes() {
 }
 
 function _msInitDates() {
-  const f = d => d.toISOString().slice(0,10);
+  const f = d => getTaipeiDateString(d);
   const cs = document.getElementById('ms-cur-start');
   if (!cs || cs.value) return;
   const today    = new Date();
