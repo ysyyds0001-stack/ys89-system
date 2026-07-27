@@ -14232,9 +14232,12 @@ function renderMeeting() {
       <td style="padding:5px 6px;text-align:right;color:#60a5fa">B</td>
     </tr>`).join('') + `</tbody></table>`
 
-  // Top / Bottom 5
+  // Top / Bottom 5（Bottom 排除 3 天內新文，避免新文因時間不足被誤判為差文）
   const ranked = cActs.filter(a=>(a.platformMetrics?.Threads?.views||0)>0)
     .sort((a,b)=>(b.platformMetrics?.Threads?.views||0)-(a.platformMetrics?.Threads?.views||0))
+  const cutoffDate = new Date(to); cutoffDate.setDate(cutoffDate.getDate()-3);
+  const cutoff = getTaipeiDateString(cutoffDate);
+  const rankedAged = ranked.filter(a=>(a.date||'')<=cutoff)
   function contentRow(a,idx) {
     const v = a.platformMetrics?.Threads?.views||0
     const url = a.url||''
@@ -14251,7 +14254,7 @@ function renderMeeting() {
     </div>`
   }
   document.getElementById('mtg-top5').innerHTML = ranked.slice(0,5).map((a,i)=>contentRow(a,i+1)).join('') || '<div style="font-size:.75rem;color:var(--text3);padding:8px">尚無資料</div>'
-  document.getElementById('mtg-bot5').innerHTML = ranked.slice(-5).reverse().map((a,i)=>contentRow(a,i+1)).join('') || '<div style="font-size:.75rem;color:var(--text3);padding:8px">尚無資料</div>'
+  document.getElementById('mtg-bot5').innerHTML = rankedAged.slice(-5).reverse().map((a,i)=>contentRow(a,i+1)).join('') || '<div style="font-size:.75rem;color:var(--text3);padding:8px">尚無資料（或近期文章皆在 3 天內）</div>'
 
   // 帳號排行（依曝光）
   const acctMap = {}
