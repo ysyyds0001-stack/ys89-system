@@ -14069,7 +14069,15 @@ function renderMeeting() {
   const kUse = days<=3 ? (ga4.kpis_3d||k7) : days<=7 ? k7 : days<=28 ? k28 : kCum
   const kPrev = days<=7 ? (ga4.kpis_prev7d||{}) : {}
   const regs = DB.get('real_reg')||[]
-  const cReg = regs.filter(r=>(r.from||'')>=from||(r.to||'')<=to).slice(-1)[0]||{}
+  const cRegs = regs.filter(r=>(r.from||'')>=from&&(r.to||'')<=to)
+  const cReg = {
+    completed: cRegs.reduce((s,r)=>s+(r.completed_registration_count??r.completedReg??0),0)||null,
+    reg:       cRegs.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0)||null,
+    dep:       cRegs.reduce((s,r)=>s+(r.first_deposit_user_count??r.dep??0),0)||null,
+    fdCount:   cRegs.reduce((s,r)=>s+(r.first_deposit_count??0),0)||null,
+    amt:       cRegs.reduce((s,r)=>s+(r.first_deposit_amount??r.amt??0),0)||null,
+    rev:       cRegs.reduce((s,r)=>s+(r.revenue_amount??0),0)||null,
+  }
   const totV = cActs.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
   const pTotV = pActs.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
 
@@ -14097,10 +14105,10 @@ function renderMeeting() {
     kpiCard('📈','GA4 Sessions',kUse.sessions||null,kPrev.sessions||null,'GA4 自動同步'),
     kpiCard('💬','Engaged Sessions',null,null,'GA4 Engagement','尚未取得'),
     kpiCard('🎯','CTA Click',kUse.cta||null,kPrev.cta||null,'GA4 cta_click','非完成註冊'),
-    kpiCard('✅','完成註冊',null,null,'需後台 API','GA4 只追到 CTA'),
-    kpiCard('🎖','有效註冊',cReg.reg||null,null,'手動輸入'),
-    kpiCard('💳','首存人數',cReg.dep||null,null,'手動輸入'),
-    kpiCard('💰','首存金額 NT$',cReg.amt||null,null,'手動輸入')
+    kpiCard('✅','完成註冊',cReg.completed,null,'手動輸入',cReg.completed==null?'尚無資料，請至數據輸入填寫':''),
+    kpiCard('🎖','有效註冊',cReg.reg,null,'手動輸入'),
+    kpiCard('💳','首存人數',cReg.dep,null,'手動輸入'),
+    kpiCard('💰','首存金額 NT$',cReg.amt,null,'手動輸入')
   ].join('')
 
   // 漏斗
@@ -14110,9 +14118,9 @@ function renderMeeting() {
     {n:'③ GA4 Sessions',v:kUse.sessions||null,u:'次',s:'GA4'},
     {n:'④ Engaged Sessions',v:null,u:'次',s:'尚未取得'},
     {n:'⑤ CTA Click',v:kUse.cta||null,u:'次',s:'GA4 cta_click'},
-    {n:'⑥ 完成註冊',v:null,u:'人',s:'需後台 API'},
-    {n:'⑦ 有效註冊',v:cReg.reg||null,u:'人',s:'手動輸入'},
-    {n:'⑧ 首存',v:cReg.dep||null,u:'人',s:'手動輸入'}
+    {n:'⑥ 完成註冊',v:cReg.completed,u:'人',s:'手動輸入'},
+    {n:'⑦ 有效註冊',v:cReg.reg,u:'人',s:'手動輸入'},
+    {n:'⑧ 首存',v:cReg.dep,u:'人',s:'手動輸入'}
   ]
   function convRate(a,b) { return (a&&b&&b>0)?((a/b)*100).toFixed(1)+'%':'—' }
   document.getElementById('mtg-funnel').innerHTML = fSteps.map((s,i)=>{
@@ -14196,6 +14204,41 @@ function renderMeeting() {
       <td style="padding:4px 6px;text-align:right;color:var(--accent)">${d.views>999?(d.views/1000).toFixed(1)+'k':d.views}</td>
       <td style="padding:4px 6px;text-align:right;color:var(--text3)">${d.posts?Math.round(d.views/d.posts).toLocaleString():'—'}</td>
     </tr>`).join('') + '</tbody></table>'
+
+  // 平台分布
+  const platMap = {
+    Threads:{posts:0,views:0,likes:0,replies:0},
+    IG:{posts:0,reach:0,likes:0,saves:0},
+    FB:{posts:0,reach:0,likes:0}
+  }
+  cActs.forEach(a=>{
+    const pm=a.platformMetrics||{}
+    ;(a.platforms||[a.platform]).filter(Boolean).forEach(pl=>{
+      if(platMap[pl]) platMap[pl].posts++
+    })
+    if(pm.Threads){platMap.Threads.views+=pm.Threads.views||0;platMap.Threads.likes+=pm.Threads.likes||0;platMap.Threads.replies+=(pm.Threads.replies||pm.Threads.comments||0)}
+    if(pm.IG){platMap.IG.reach+=pm.IG.reach||0;platMap.IG.likes+=pm.IG.likes||0;platMap.IG.saves+=pm.IG.saves||0}
+    if(pm.FB){platMap.FB.reach+=pm.FB.reach||0;platMap.FB.likes+=pm.FB.likes||0}
+  })
+  const platRows = [
+    ['Threads','#a78bfa',platMap.Threads.posts,`曝光 ${platMap.Threads.views>999?(platMap.Threads.views/1000).toFixed(1)+'k':platMap.Threads.views} · 讚 ${platMap.Threads.likes} · 回覆 ${platMap.Threads.replies}`],
+    ['IG','#ec4899',platMap.IG.posts,`觸及 ${platMap.IG.reach>999?(platMap.IG.reach/1000).toFixed(1)+'k':platMap.IG.reach} · 讚 ${platMap.IG.likes} · 儲存 ${platMap.IG.saves}`],
+    ['FB','#3b82f6',platMap.FB.posts,`觸及 ${platMap.FB.reach>999?(platMap.FB.reach/1000).toFixed(1)+'k':platMap.FB.reach} · 讚 ${platMap.FB.likes}`],
+  ]
+  document.getElementById('mtg-platform-table').innerHTML = `
+    <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px">平台分布</div>
+    <table style="width:100%;font-size:.72rem;border-collapse:collapse">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        <th style="padding:4px 6px;text-align:left;color:var(--text3)">平台</th>
+        <th style="padding:4px 6px;text-align:right;color:var(--text3)">篇</th>
+        <th style="padding:4px 6px;text-align:left;color:var(--text3)">成效</th>
+      </tr></thead>
+      <tbody>${platRows.map(([pl,col,cnt,metrics])=>`<tr style="border-bottom:1px solid var(--g3)">
+        <td style="padding:5px 6px"><span style="color:${col};font-weight:600">${pl}</span></td>
+        <td style="padding:5px 6px;text-align:right;color:var(--text)">${cnt}</td>
+        <td style="padding:5px 6px;color:var(--text3);font-size:.66rem">${metrics}</td>
+      </tr>`).join('')}</tbody>
+    </table>`
 
   // 本週決策（重用 _ovActions 如果存在）
   const actEl = document.getElementById('mtg-actions')
