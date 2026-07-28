@@ -14251,6 +14251,13 @@ function renderMeeting() {
     amt:       cRegs.reduce((s,r)=>s+(r.first_deposit_amount??r.amt??0),0)||null,
     rev:       cRegs.reduce((s,r)=>s+(r.revenue_amount??0),0)||null,
   }
+  const pRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return !!rf&&rf<=pTo&&rt>=pFrom})
+  const pReg = {
+    completed: pRegs.reduce((s,r)=>s+(r.completed_registration_count??r.completedReg??0),0)||null,
+    reg:       pRegs.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0)||null,
+    dep:       pRegs.reduce((s,r)=>s+(r.first_deposit_user_count??r.dep??0),0)||null,
+    amt:       pRegs.reduce((s,r)=>s+(r.first_deposit_amount??r.amt??0),0)||null,
+  }
   const totThreads = cActs.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
   const totIG      = cActs.reduce((s,a)=>s+(a.platformMetrics?.IG?.reach||0),0)
   const totFB      = cActs.reduce((s,a)=>s+(a.platformMetrics?.FB?.reach||0),0)
@@ -14284,10 +14291,10 @@ function renderMeeting() {
     kpiCard('📈','GA4 Sessions',kUse.sessions||null,kPrev.sessions||null,'GA4 自動同步'),
     kpiCard('💬','Engaged Sessions',kUse.engagedSessions||null,null,'GA4 自動同步'),
     kpiCard('🎯','CTA Click',kUse.cta||null,kPrev.cta||null,'GA4 cta_click','非完成註冊'),
-    kpiCard('✅','完成註冊',cReg.completed,null,'手動輸入',cReg.completed==null?'尚無資料，請至數據輸入填寫':''),
-    kpiCard('🎖','有效註冊',cReg.reg,null,'手動輸入'),
-    kpiCard('💳','首存人數',cReg.dep,null,'手動輸入'),
-    kpiCard('💰','首存金額 NT$',cReg.amt,null,'手動輸入')
+    kpiCard('✅','完成註冊',cReg.completed,pReg.completed,'手動輸入',cReg.completed==null?'尚無資料，請至數據輸入填寫':''),
+    kpiCard('🎖','有效註冊',cReg.reg,pReg.reg,'手動輸入'),
+    kpiCard('💳','首存人數',cReg.dep,pReg.dep,'手動輸入'),
+    kpiCard('💰','首存金額 NT$',cReg.amt,pReg.amt,'手動輸入')
   ].join('')
 
   // 漏斗
