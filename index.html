@@ -14221,7 +14221,7 @@ function renderMeeting() {
   document.getElementById('mtg-s-sync').textContent = ga4Updated
 
   // 資料
-  const acts = DB.get('thread_activities')||[]
+  const _rawActs = DB.get('thread_activities'); const acts = Array.isArray(_rawActs)?_rawActs:[]
   const cActs = acts.filter(a=>(a.date||'')>=from&&(a.date||'')<=completeTo)
   const pActs = acts.filter(a=>(a.date||'')>=pFrom&&(a.date||'')<=pTo)
   const ga4 = _ga4Data||{}
