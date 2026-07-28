@@ -3956,6 +3956,7 @@ function renderAbTests() {
       <span style="color:var(--text3);font-size:.8rem">～</span>
       <input type="date" id="mtg-to" style="background:var(--g3);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-size:.78rem">
       <button class="btn btn-primary btn-xs" onclick="renderMeeting()">查詢</button>
+      <button class="btn btn-xs" onclick="mtgRepairCache()" style="border-color:#f59e42;color:#f59e42" title="清除 CF 污染緩存並重新渲染">🔧 修復緩存</button>
       <button class="btn btn-xs" onclick="mtgEnterPresentMode()" style="border-color:var(--accent2);color:var(--accent2)">📽 會議模式</button>
       <button class="btn btn-xs" onclick="if(!document.body.classList.contains('meeting-mode')){mtgEnterPresentMode()}setTimeout(()=>window.print(),150)" style="border-color:#60a5fa;color:#60a5fa" title="列印前自動啟用會議模式">🖨 列印 PDF</button>
     </div>
@@ -14192,6 +14193,10 @@ function mtgSetPeriod(mode) {
   renderMeeting()
 }
 
+function mtgRepairCache() {
+  ['ys89_thread_activities','ys89_real_reg'].forEach(k=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');if(v!==null&&!Array.isArray(v)){localStorage.removeItem(k);console.log('[修復] 已清除污染的緩存：',k)}}catch(e){}})
+  renderMeeting()
+}
 // ===== 會議總覽 =====
 function renderMeeting() {
   const fromEl = document.getElementById('mtg-from')
@@ -14220,8 +14225,13 @@ function renderMeeting() {
   const ga4Updated = (_ga4Data||{}).lastUpdated || '尚未同步'
   document.getElementById('mtg-s-sync').textContent = ga4Updated
 
-  // 資料
-  const _rawActs = DB.get('thread_activities'); const acts = Array.isArray(_rawActs)?_rawActs:[]
+  // ── 渲染主體：任何錯誤都顯示訊息，不讓區塊空白 ──
+  try {
+
+  // 資料（防守：CF pull 可能寫入非陣列，需 Array.isArray 確保安全）
+  const _rawActs = DB.get('thread_activities')
+  if(!Array.isArray(_rawActs)&&_rawActs!=null){ try{localStorage.removeItem('ys89_thread_activities')}catch(e){} }
+  const acts = Array.isArray(_rawActs)?_rawActs:[]
   const cActs = acts.filter(a=>(a.date||'')>=from&&(a.date||'')<=completeTo)
   const pActs = acts.filter(a=>(a.date||'')>=pFrom&&(a.date||'')<=pTo)
   const ga4 = _ga4Data||{}
@@ -14443,6 +14453,13 @@ function renderMeeting() {
     else { try{_ovActions();actEl.innerHTML=origEl?.innerHTML||''}catch(e){actEl.innerHTML='<div style="font-size:.75rem;color:var(--text3)">尚未取得資料</div>'} }
   } else {
     actEl.innerHTML = '<div style="font-size:.75rem;color:var(--text3)">切換到成效分析後可生成本週決策</div>'
+  }
+
+  } catch(_mtgErr) {
+    // 任何未預期錯誤：顯示訊息並嘗試清除可能污染的緩存
+    console.error('[renderMeeting]', _mtgErr)
+    const _errHtml = `<div style="padding:10px 14px;background:#f871711a;border:1px solid #f87171;border-radius:8px;font-size:.75rem;color:#f87171">⚠ 載入失敗：${_mtgErr.message}<br><span style="color:#94a3b8;font-size:.65rem">已記錄錯誤。請按 F12 → Console 截圖，或點選「修復緩存」再重試。</span></div>`
+    ;['mtg-kpi-grid','mtg-funnel','mtg-paths','mtg-top5','mtg-bot5','mtg-acct-table','mtg-platform-table','mtg-actions'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.innerHTML.trim())el.innerHTML=_errHtml})
   }
 }
 
