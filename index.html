@@ -6356,6 +6356,22 @@ async function initData(){
   }
 }
 
+// 統一歸因等級計算（B=強/C=輔助/D=推估/U=未知，A=精準停用需P2/P3）
+// 供 migration 與編輯儲存共用，避免補資料後歸因欄位卡在舊值
+function _computeAttribution(a){
+  const hasUTM=!!a.utmContent, hasUrl=!!a.url
+  if(hasUTM&&hasUrl){
+    return {lvl:'B', reason:'有 UTM 與貼文 URL，可確認帳號/活動路徑', missing:'GA4 Sessions, Link ID, Click ID, Registration ID'}
+  }else if(hasUTM){
+    return {lvl:'C', reason:'有 UTM，但缺貼文 URL，轉化鏈不完整', missing:'貼文 URL, GA4 Sessions, Link ID, Click ID, Registration ID'}
+  }else if(hasUrl){
+    return {lvl:'C', reason:'有貼文 URL，但缺 UTM，無法確認流量歸因', missing:'UTM Content, GA4 Sessions, Link ID, Click ID, Registration ID'}
+  }else if(a.date){
+    return {lvl:'D', reason:'依貼文日期推估，無 UTM 或貼文 URL', missing:'UTM Content, 貼文 URL, GA4 Sessions, Link ID, Click ID, Registration ID'}
+  }
+  return {lvl:'U', reason:'無可歸因資訊', missing:'所有欄位'}
+}
+
 // ===== MIGRATION: 補齊 thread_activities 新欄位 =====
 function _migrateThreadActivities(){
   const list = DB.get('thread_activities')||[]
@@ -6367,22 +6383,9 @@ function _migrateThreadActivities(){
       a.path_type = u.includes('ys89') ? 'trust' : u.includes('picks168') ? 'ai_tool' : u ? 'other' : 'bio'
       changed = true
     }
-    // P1 統一歸因等級（B=強/C=輔助/D=推估/U=未知，A=精準停用需P2/P3）
-    // Migration 情境無每篇 GA4 Sessions，以 utmContent+url 作 B 門檻（與 renderPostTable 的 B 定義相同層級，只是代理指標不同）
+    // P1 統一歸因等級：與 saveThreadActivity() 共用 _computeAttribution，補資料後不再卡舊值
     {
-      let lvl, reason, missing
-      const hasUTM=!!a.utmContent, hasUrl=!!a.url
-      if(hasUTM&&hasUrl){
-        lvl='B'; reason='有 UTM 與貼文 URL，可確認帳號/活動路徑'; missing='GA4 Sessions, Link ID, Click ID, Registration ID'
-      }else if(hasUTM){
-        lvl='C'; reason='有 UTM，但缺貼文 URL，轉化鏈不完整'; missing='貼文 URL, GA4 Sessions, Link ID, Click ID, Registration ID'
-      }else if(hasUrl){
-        lvl='C'; reason='有貼文 URL，但缺 UTM，無法確認流量歸因'; missing='UTM Content, GA4 Sessions, Link ID, Click ID, Registration ID'
-      }else if(a.date){
-        lvl='D'; reason='依貼文日期推估，無 UTM 或貼文 URL'; missing='UTM Content, 貼文 URL, GA4 Sessions, Link ID, Click ID, Registration ID'
-      }else{
-        lvl='U'; reason='無可歸因資訊'; missing='所有欄位'
-      }
+      const {lvl,reason,missing} = _computeAttribution(a)
       if(a.attribution_level!==lvl||a.attribution_reason!==reason){
         a.attribution_level=lvl; a.attribution_reason=reason; a.missing_requirements=missing
         changed=true
@@ -11310,12 +11313,19 @@ function saveThreadActivity(){
   const list = DB.get('thread_activities')||[]
   if(id){
     const i=list.findIndex(x=>x.id===id)
-    if(i>=0) list[i]={...list[i],...obj,
-      platformMetrics: list[i].platformMetrics||{},
-      status: list[i].status||'待記錄',
-      notes: list[i].notes||''}
+    if(i>=0){
+      list[i]={...list[i],...obj,
+        platformMetrics: list[i].platformMetrics||{},
+        status: list[i].status||'待記錄',
+        notes: list[i].notes||''}
+      const {lvl,reason,missing}=_computeAttribution(list[i])
+      list[i].attribution_level=lvl; list[i].attribution_reason=reason; list[i].missing_requirements=missing
+    }
   } else {
-    list.push({...obj, id:DB.id(), createdAt:new Date().toISOString(), status:'待記錄', platformMetrics:{}, notes:''})
+    const created={...obj, id:DB.id(), createdAt:new Date().toISOString(), status:'待記錄', platformMetrics:{}, notes:''}
+    const {lvl,reason,missing}=_computeAttribution(created)
+    created.attribution_level=lvl; created.attribution_reason=reason; created.missing_requirements=missing
+    list.push(created)
   }
   DB.set('thread_activities', list)
   DB.push('thread_activities').catch(()=>{})
