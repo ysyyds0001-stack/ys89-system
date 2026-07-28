@@ -3979,6 +3979,10 @@ function renderAbTests() {
   <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">核心 KPI</div>
   <div id="mtg-kpi-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px"></div>
 
+  <!-- 第二區之二：路徑1/路徑2 實際達成對比（獨立分區，不與核心KPI卡片混放）-->
+  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">🛤️ 路徑實際達成對比</div>
+  <div id="mtg-path-compare" style="margin-bottom:20px"></div>
+
   <!-- 第三區：完整轉化漏斗 -->
   <div class="mtg-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
     <div>
@@ -14335,27 +14339,55 @@ function renderMeeting() {
     kpiCard('💬','Engaged Sessions',kUse.engagedSessions||null,null,'GA4 自動同步'),
     kpiCard('🎯','CTA Click',kUse.cta||null,kPrev.cta||null,'GA4 cta_click','非完成註冊'),
     kpiCard('✅','完成註冊（總計）',cReg.completed,pReg.completed,'手動輸入',cReg.completed==null?'尚無資料，請至數據輸入填寫':''),
-    kpiCard('🗺️','路徑1 完成註冊','論壇/部落格→YS89',null,'',''),
-    kpiCard('①','　└ 完成註冊',path1Completed,pPath1Completed,'real_reg path_id=PATH_01',path1Completed==null?'尚無資料':''),
-    kpiCard('🤖','路徑2 完成註冊','AI工具→picks168',null,'',''),
-    kpiCard('②','　└ 完成註冊',path2Completed,pPath2Completed,'real_reg path_id=PATH_02',path2Completed==null?'尚無資料':''),
     kpiCard('🎖','有效註冊','待補',null,'手動輸入','定義為「註冊且有儲值」，目前無首存人數資料來源，待後台補齊'),
     kpiCard('💳','首存人數',cReg.dep,pReg.dep,'手動輸入',cReg.dep==null?'請至「代理收益週報」填入各代理首存人數':''),
-    kpiCard('💰','首存金額 NT$',cReg.amt,pReg.amt,'手動輸入',cReg.amt==null?'請至「代理收益週報」填入各代理首存金額':''),
-    pkFunnel?`<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;grid-column:1/-1">
-      <div style="font-size:.65rem;color:var(--text3);margin-bottom:8px">🤖 路徑2 picks168 轉化漏斗（${pkFunnel.date} 讀取，人工匯入）</div>
-      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:baseline">
-        <div><b style="font-size:1.1rem;color:var(--accent)">${pkFunnel.bot_friends.toLocaleString()}</b><span style="font-size:.62rem;color:var(--text3)"> bot好友</span></div>
-        <span style="color:var(--text3)">→</span>
-        <div><b style="font-size:1.1rem;color:var(--accent)">${pkFunnel.applied_join.toLocaleString()}</b><span style="font-size:.62rem;color:var(--text3)"> 申請入群</span></div>
-        <span style="color:var(--text3)">→</span>
-        <div><b style="font-size:1.1rem;color:var(--accent)">${pkFunnel.approved_join.toLocaleString()}</b><span style="font-size:.62rem;color:var(--text3)"> 審核通過</span></div>
-        <span style="color:var(--text3)">→</span>
-        <div><b style="font-size:1.1rem;color:#34d399">${pkFunnel.ys89_registered.toLocaleString()}</b><span style="font-size:.62rem;color:var(--text3)"> 完成夜色註冊（真轉化）</span></div>
-        <div style="margin-left:auto"><b style="font-size:1rem;color:#f87171">${pkFunnel.blocked_total.toLocaleString()}</b><span style="font-size:.62rem;color:var(--text3)"> 已封鎖bot（DM可觸達 ${pkFunnel.dm_reachable}）</span></div>
-      </div>
-    </div>`:''
+    kpiCard('💰','首存金額 NT$',cReg.amt,pReg.amt,'手動輸入',cReg.amt==null?'請至「代理收益週報」填入各代理首存金額':'')
   ].join('')
+
+  // 路徑1/路徑2 實際達成對比：獨立分區並排呈現，不與核心KPI卡片混放
+  function pathDelta(cur,prev){
+    if(cur==null||prev==null||prev===0) return ''
+    const d=((cur-prev)/prev*100)
+    return `<span style="font-size:.68rem;padding:2px 6px;border-radius:4px;margin-left:6px;background:${d>=0?'#34d39920':'#f8717120'};color:${d>=0?'#34d399':'#f87171'}">${d>=0?'↑':'↓'}${Math.abs(d).toFixed(0)}%</span>`
+  }
+  const path1Html = `<div style="background:var(--g2);border:1px solid #60a5fa50;border-top:3px solid #60a5fa;border-radius:10px;padding:16px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span style="font-size:1.3rem">🗺️</span>
+      <div>
+        <div style="font-size:.85rem;font-weight:700;color:#60a5fa">路徑1</div>
+        <div style="font-size:.68rem;color:var(--text3)">論壇/部落格 → YS89 → 註冊</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem;color:var(--text3);margin-bottom:2px">實際完成註冊</div>
+    <div style="font-size:2rem;font-weight:800;color:#60a5fa;line-height:1.1">${path1Completed!=null?path1Completed.toLocaleString():'尚未取得資料'}${pathDelta(path1Completed,pPath1Completed)}</div>
+    ${pPath1Completed!=null?`<div style="font-size:.68rem;color:var(--text3);margin-top:4px">前期 ${pPath1Completed.toLocaleString()}</div>`:''}
+    <div style="font-size:.6rem;color:var(--text3);margin-top:10px;border-top:1px solid var(--border);padding-top:6px">來源：real_reg（path_id=PATH_01），fu001/002/005/008/009</div>
+  </div>`
+  const path2Html = `<div style="background:var(--g2);border:1px solid #a78bfa50;border-top:3px solid #a78bfa;border-radius:10px;padding:16px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span style="font-size:1.3rem">🤖</span>
+      <div>
+        <div style="font-size:.85rem;font-weight:700;color:#a78bfa">路徑2</div>
+        <div style="font-size:.68rem;color:var(--text3)">AI 預測工具 → picks168 → 進群</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem;color:var(--text3);margin-bottom:2px">實際完成註冊（夜色）</div>
+    <div style="font-size:2rem;font-weight:800;color:#a78bfa;line-height:1.1">${path2Completed!=null?path2Completed.toLocaleString():'尚未取得資料'}${pathDelta(path2Completed,pPath2Completed)}</div>
+    ${pPath2Completed!=null?`<div style="font-size:.68rem;color:var(--text3);margin-top:4px">前期 ${pPath2Completed.toLocaleString()}</div>`:''}
+    ${pkFunnel?`<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:.68rem">
+      <div><b style="color:var(--text)">${pkFunnel.bot_friends.toLocaleString()}</b> bot好友</div>
+      <span style="color:var(--text3)">→</span>
+      <div><b style="color:var(--text)">${pkFunnel.applied_join.toLocaleString()}</b> 申請入群</div>
+      <span style="color:var(--text3)">→</span>
+      <div><b style="color:var(--text)">${pkFunnel.approved_join.toLocaleString()}</b> 審核通過</div>
+      <span style="color:var(--text3)">→</span>
+      <div><b style="color:#34d399">${pkFunnel.ys89_registered.toLocaleString()}</b> 完成註冊</div>
+    </div>
+    <div style="font-size:.6rem;color:#f87171;margin-top:6px">⚠ ${pkFunnel.blocked_total.toLocaleString()} 人已封鎖 bot，DM 可觸達僅剩 ${pkFunnel.dm_reachable.toLocaleString()} 人</div>
+    <div style="font-size:.6rem;color:var(--text3);margin-top:6px">來源：picks168.com/admin 分析頁（${pkFunnel.date} 讀取，人工匯入）</div>`
+    :`<div style="font-size:.6rem;color:var(--text3);margin-top:10px;border-top:1px solid var(--border);padding-top:6px">來源：real_reg（path_id=PATH_02），fu007</div>`}
+  </div>`
+  document.getElementById('mtg-path-compare').innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">${path1Html}${path2Html}</div>`
 
   // 漏斗
   const fSteps = [
@@ -14526,7 +14558,7 @@ function renderMeeting() {
     // 任何未預期錯誤：顯示訊息並嘗試清除可能污染的緩存
     console.error('[renderMeeting]', _mtgErr)
     const _errHtml = `<div style="padding:10px 14px;background:#f871711a;border:1px solid #f87171;border-radius:8px;font-size:.75rem;color:#f87171">⚠ 載入失敗：${_mtgErr.message}<br><span style="color:#94a3b8;font-size:.65rem">已記錄錯誤。請按 F12 → Console 截圖，或點選「修復緩存」再重試。</span></div>`
-    ;['mtg-kpi-grid','mtg-funnel','mtg-paths','mtg-top5','mtg-bot5','mtg-acct-table','mtg-platform-table','mtg-actions'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.innerHTML.trim())el.innerHTML=_errHtml})
+    ;['mtg-kpi-grid','mtg-path-compare','mtg-funnel','mtg-paths','mtg-top5','mtg-bot5','mtg-acct-table','mtg-platform-table','mtg-actions'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.innerHTML.trim())el.innerHTML=_errHtml})
   }
 }
 
