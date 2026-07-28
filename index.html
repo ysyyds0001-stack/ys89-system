@@ -14284,7 +14284,9 @@ function renderMeeting() {
     amt:       cRegs.reduce((s,r)=>s+(r.first_deposit_amount??r.amt??0),0)||null,
     rev:       cRegs.reduce((s,r)=>s+(r.revenue_amount??0),0)||null,
   }
-  const pRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return !!rf&&rf<=pTo&&rt>=pFrom})
+  const pRegsRaw = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return !!rf&&rf<=pTo&&rt>=pFrom})
+  // 排除同時落在本週與前期的紀錄（如整月彙總），避免同一筆資料被重複計入兩期造成假的 0% 持平
+  const pRegs = pRegsRaw.filter(r=>!cRegs.includes(r))
   const pReg = {
     completed: pRegs.reduce((s,r)=>s+(r.completed_registration_count??r.completedReg??0),0)||null,
     reg:       pRegs.reduce((s,r)=>s+_regVal(r),0)||null,
@@ -14325,7 +14327,7 @@ function renderMeeting() {
     kpiCard('💬','Engaged Sessions',kUse.engagedSessions||null,null,'GA4 自動同步'),
     kpiCard('🎯','CTA Click',kUse.cta||null,kPrev.cta||null,'GA4 cta_click','非完成註冊'),
     kpiCard('✅','完成註冊',cReg.completed,pReg.completed,'手動輸入',cReg.completed==null?'尚無資料，請至數據輸入填寫':''),
-    kpiCard('🎖','有效註冊',cReg.reg,pReg.reg,'手動輸入',_hasPWData?'':'以後台注冊數代替，請至代理收益週報補填'),
+    kpiCard('🎖','有效註冊','待補',null,'手動輸入','定義為「註冊且有儲值」，目前無首存人數資料來源，待後台補齊'),
     kpiCard('💳','首存人數',cReg.dep,pReg.dep,'手動輸入',cReg.dep==null?'請至「代理收益週報」填入各代理首存人數':''),
     kpiCard('💰','首存金額 NT$',cReg.amt,pReg.amt,'手動輸入',cReg.amt==null?'請至「代理收益週報」填入各代理首存金額':'')
   ].join('')
