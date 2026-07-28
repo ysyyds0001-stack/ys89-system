@@ -7479,7 +7479,10 @@ function savePostUrl(){
     const list=DB.get('thread_activities')||[]
     const i=list.findIndex(x=>x.id===id); if(i<0)return
     list[i].url=url
+    const {lvl,reason,missing}=_computeAttribution(list[i])
+    list[i].attribution_level=lvl; list[i].attribution_reason=reason; list[i].missing_requirements=missing
     DB.set('thread_activities',list)
+    DB.push('thread_activities').catch(()=>{})
     closeModal('modal-set-posturl')
     renderThreadTracker()
     toast(url?'🔗 話題參與連結已儲存':'連結已清除')
@@ -10927,7 +10930,7 @@ function renderThreadTracker(){
     const hasM = pm.Threads!=null||pm.IG!=null||pm.FB!=null
     const nt = a.notes||''
     const isDel = nt==='貼文已刪除'
-    const isUtmGen = nt==='UTM產生器建立'
+    const isUtmGen = nt==='UTM產生器建立' && !a.url
     const isNoView = nt==='無法顯示瀏覽'
     const views  = hasM ? (mT.views||0)+(mI.reach||0)+(mF.reach||0) : undefined
     const likes  = hasM ? (mT.likes||0)+(mI.likes||0)+(mF.likes||0) : undefined
