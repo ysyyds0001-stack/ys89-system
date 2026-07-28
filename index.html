@@ -5241,8 +5241,32 @@ const DB={
 // 此函式讓所有 KPI 渲染函式透過統一入口讀取，優先使用 DB（手動新增記錄），退而讀取原始 key
 function getMonthlyRegs(){
   const v=DB.get('real_reg');
-  if(Array.isArray(v)&&v.length) return v;
-  try{const r=JSON.parse(localStorage.getItem('real_reg')||'null');return Array.isArray(r)?r:[];}catch{return[];}
+  const base=Array.isArray(v)&&v.length?v:(()=>{try{const r=JSON.parse(localStorage.getItem('real_reg')||'null');return Array.isArray(r)?r:[];}catch{return[];}})();
+  // 合併 proxy_weekly：將每筆週/月報的 row 加總，轉成可被 cRegs/pRegs 篩選的記錄
+  try{
+    const pw=DB.get('proxy_weekly');
+    if(Array.isArray(pw)&&pw.length){
+      const normDate=(d,end)=>{
+        if(!d)return d;
+        if(/^\d{4}-\d{2}$/.test(d)){
+          if(end){const[y,m]=d.split('-').map(Number);const ld=new Date(y,m,0).getDate();return `${d}-${String(ld).padStart(2,'0')}`;}
+          return d+'-01';
+        }
+        return d;
+      };
+      const synth=pw.map(rec=>{
+        const from=normDate(rec.from,false), to=normDate(rec.to||rec.from,true);
+        if(!from)return null;
+        const rows=Array.isArray(rec.rows)?rec.rows:[];
+        const reg=rows.reduce((s,r)=>s+(+r.reg||0),0)||null;
+        const dep=rows.reduce((s,r)=>s+(+r.dep||0),0)||null;
+        const amt=rows.reduce((s,r)=>s+(+r.amt||0),0)||null;
+        return{from,to,reg,dep,amt,qualified_registration_count:reg,first_deposit_user_count:dep,first_deposit_amount:amt,_source:'proxy_weekly'};
+      }).filter(Boolean);
+      return[...base,...synth];
+    }
+  }catch(e){}
+  return base;
 }
 
 // ===== MIKE BOT =====
