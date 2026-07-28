@@ -14267,9 +14267,14 @@ function renderMeeting() {
   const cRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return !!rf&&rf<=to&&rt>=from})
   const partialRegs = cRegs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return rf<from||rt>to})
   const exceedRegs = cRegs.filter(r=>{const rt=r.to||r.date||r.from||'';return rt>to})
+  // 有效登錄：優先用 qualified_registration_count / reg
+  // SEO 儀表板記錄的 qrc 固定為 0，改用 completed_registration_count 作 fallback
+  // 但若已有 proxy_weekly 合成記錄，停用 SEO fallback 避免重複計算
+  const _hasPWData = cRegs.some(r=>r._source==='proxy_weekly')
+  const _regVal = r => { const v = r.qualified_registration_count || r.reg; if(v!=null&&v!==undefined)return v; if(r.source==='seo_dashboard'&&!_hasPWData)return r.completed_registration_count||0; return 0; }
   const cReg = {
     completed: cRegs.reduce((s,r)=>s+(r.completed_registration_count??r.completedReg??0),0)||null,
-    reg:       cRegs.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0)||null,
+    reg:       cRegs.reduce((s,r)=>s+_regVal(r),0)||null,
     dep:       cRegs.reduce((s,r)=>s+(r.first_deposit_user_count??r.dep??0),0)||null,
     fdCount:   cRegs.reduce((s,r)=>s+(r.first_deposit_count??0),0)||null,
     amt:       cRegs.reduce((s,r)=>s+(r.first_deposit_amount??r.amt??0),0)||null,
@@ -14278,7 +14283,7 @@ function renderMeeting() {
   const pRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return !!rf&&rf<=pTo&&rt>=pFrom})
   const pReg = {
     completed: pRegs.reduce((s,r)=>s+(r.completed_registration_count??r.completedReg??0),0)||null,
-    reg:       pRegs.reduce((s,r)=>s+(r.qualified_registration_count??r.reg??0),0)||null,
+    reg:       pRegs.reduce((s,r)=>s+_regVal(r),0)||null,
     dep:       pRegs.reduce((s,r)=>s+(r.first_deposit_user_count??r.dep??0),0)||null,
     amt:       pRegs.reduce((s,r)=>s+(r.first_deposit_amount??r.amt??0),0)||null,
   }
@@ -14316,9 +14321,9 @@ function renderMeeting() {
     kpiCard('💬','Engaged Sessions',kUse.engagedSessions||null,null,'GA4 自動同步'),
     kpiCard('🎯','CTA Click',kUse.cta||null,kPrev.cta||null,'GA4 cta_click','非完成註冊'),
     kpiCard('✅','完成註冊',cReg.completed,pReg.completed,'手動輸入',cReg.completed==null?'尚無資料，請至數據輸入填寫':''),
-    kpiCard('🎖','有效註冊',cReg.reg,pReg.reg,'手動輸入'),
-    kpiCard('💳','首存人數',cReg.dep,pReg.dep,'手動輸入'),
-    kpiCard('💰','首存金額 NT$',cReg.amt,pReg.amt,'手動輸入')
+    kpiCard('🎖','有效註冊',cReg.reg,pReg.reg,'手動輸入',_hasPWData?'':'以後台注冊數代替，請至代理收益週報補填'),
+    kpiCard('💳','首存人數',cReg.dep,pReg.dep,'手動輸入',cReg.dep==null?'請至「代理收益週報」填入各代理首存人數':''),
+    kpiCard('💰','首存金額 NT$',cReg.amt,pReg.amt,'手動輸入',cReg.amt==null?'請至「代理收益週報」填入各代理首存金額':'')
   ].join('')
 
   // 漏斗
