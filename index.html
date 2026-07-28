@@ -6322,7 +6322,7 @@ async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
-    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads','role_channels','channel_posts','seeding_accounts','report_roles','report_posts','conversions','conv_daily','weekly_scripts','proxy_weekly'].map(k=>DB.pull(k)))
+    await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads','role_channels','channel_posts','seeding_accounts','report_roles','report_posts','conversions','conv_daily','weekly_scripts','proxy_weekly','picks168_funnel'].map(k=>DB.pull(k)))
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(!DB.get('seeding_accounts').length) DB.set('seeding_accounts',DEFAULT_SEEDING_ACCOUNTS)
@@ -14293,6 +14293,14 @@ function renderMeeting() {
     dep:       pRegs.reduce((s,r)=>s+(r.first_deposit_user_count??r.dep??0),0)||null,
     amt:       pRegs.reduce((s,r)=>s+(r.first_deposit_amount??r.amt??0),0)||null,
   }
+  // 路徑1/路徑2 拆分完成註冊（依 real_reg 各代理的 path_id）
+  const path1Completed = cRegs.filter(r=>r.path_id==='PATH_01').reduce((s,r)=>s+(r.completed_registration_count||0),0)||null
+  const path2Completed = cRegs.filter(r=>r.path_id==='PATH_02').reduce((s,r)=>s+(r.completed_registration_count||0),0)||null
+  const pPath1Completed = pRegs.filter(r=>r.path_id==='PATH_01').reduce((s,r)=>s+(r.completed_registration_count||0),0)||null
+  const pPath2Completed = pRegs.filter(r=>r.path_id==='PATH_02').reduce((s,r)=>s+(r.completed_registration_count||0),0)||null
+  // picks168 後台漏斗快照（人工讀取匯入，非自動同步）
+  const pkFunnelList = (DB.get('picks168_funnel')||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))
+  const pkFunnel = pkFunnelList[0]||null
   const totThreads = cActs.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
   const totIG      = cActs.reduce((s,a)=>s+(a.platformMetrics?.IG?.reach||0),0)
   const totFB      = cActs.reduce((s,a)=>s+(a.platformMetrics?.FB?.reach||0),0)
@@ -14326,10 +14334,27 @@ function renderMeeting() {
     kpiCard('📈','GA4 Sessions',kUse.sessions||null,kPrev.sessions||null,'GA4 自動同步'),
     kpiCard('💬','Engaged Sessions',kUse.engagedSessions||null,null,'GA4 自動同步'),
     kpiCard('🎯','CTA Click',kUse.cta||null,kPrev.cta||null,'GA4 cta_click','非完成註冊'),
-    kpiCard('✅','完成註冊',cReg.completed,pReg.completed,'手動輸入',cReg.completed==null?'尚無資料，請至數據輸入填寫':''),
+    kpiCard('✅','完成註冊（總計）',cReg.completed,pReg.completed,'手動輸入',cReg.completed==null?'尚無資料，請至數據輸入填寫':''),
+    kpiCard('🗺️','路徑1 完成註冊','論壇/部落格→YS89',null,'',''),
+    kpiCard('①','　└ 完成註冊',path1Completed,pPath1Completed,'real_reg path_id=PATH_01',path1Completed==null?'尚無資料':''),
+    kpiCard('🤖','路徑2 完成註冊','AI工具→picks168',null,'',''),
+    kpiCard('②','　└ 完成註冊',path2Completed,pPath2Completed,'real_reg path_id=PATH_02',path2Completed==null?'尚無資料':''),
     kpiCard('🎖','有效註冊','待補',null,'手動輸入','定義為「註冊且有儲值」，目前無首存人數資料來源，待後台補齊'),
     kpiCard('💳','首存人數',cReg.dep,pReg.dep,'手動輸入',cReg.dep==null?'請至「代理收益週報」填入各代理首存人數':''),
-    kpiCard('💰','首存金額 NT$',cReg.amt,pReg.amt,'手動輸入',cReg.amt==null?'請至「代理收益週報」填入各代理首存金額':'')
+    kpiCard('💰','首存金額 NT$',cReg.amt,pReg.amt,'手動輸入',cReg.amt==null?'請至「代理收益週報」填入各代理首存金額':''),
+    pkFunnel?`<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;grid-column:1/-1">
+      <div style="font-size:.65rem;color:var(--text3);margin-bottom:8px">🤖 路徑2 picks168 轉化漏斗（${pkFunnel.date} 讀取，人工匯入）</div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:baseline">
+        <div><b style="font-size:1.1rem;color:var(--accent)">${pkFunnel.bot_friends.toLocaleString()}</b><span style="font-size:.62rem;color:var(--text3)"> bot好友</span></div>
+        <span style="color:var(--text3)">→</span>
+        <div><b style="font-size:1.1rem;color:var(--accent)">${pkFunnel.applied_join.toLocaleString()}</b><span style="font-size:.62rem;color:var(--text3)"> 申請入群</span></div>
+        <span style="color:var(--text3)">→</span>
+        <div><b style="font-size:1.1rem;color:var(--accent)">${pkFunnel.approved_join.toLocaleString()}</b><span style="font-size:.62rem;color:var(--text3)"> 審核通過</span></div>
+        <span style="color:var(--text3)">→</span>
+        <div><b style="font-size:1.1rem;color:#34d399">${pkFunnel.ys89_registered.toLocaleString()}</b><span style="font-size:.62rem;color:var(--text3)"> 完成夜色註冊（真轉化）</span></div>
+        <div style="margin-left:auto"><b style="font-size:1rem;color:#f87171">${pkFunnel.blocked_total.toLocaleString()}</b><span style="font-size:.62rem;color:var(--text3)"> 已封鎖bot（DM可觸達 ${pkFunnel.dm_reachable}）</span></div>
+      </div>
+    </div>`:''
   ].join('')
 
   // 漏斗
