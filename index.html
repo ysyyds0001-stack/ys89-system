@@ -2030,9 +2030,9 @@ function proxySave(){
     tot:  +document.getElementById('pr-tot-'+p.code)?.value||0,
     note: document.getElementById('pr-note-'+p.code)?.value||''
   }))
-  const record = {from, to, rows, savedAt: new Date().toISOString()}
+  const record = {id: from+'_'+to, from, to, rows, savedAt: new Date().toISOString()}
   const hist = DB.get('proxy_weekly')||[]
-  const idx  = hist.findIndex(h=>h.from===from&&h.to===to)
+  const idx  = hist.findIndex(h=>(h.id||(h.from+'_'+h.to))===record.id)
   if(idx>=0) hist[idx]=record; else hist.unshift(record)
   DB.set('proxy_weekly', hist)
   DB.push('proxy_weekly').catch(()=>{})
@@ -5139,20 +5139,22 @@ const DB={
           const local=this.get(k)
           if(Array.isArray(d)&&Array.isArray(local)&&local.length){
             // 陣列：以 id 為主鍵合併，本機優先，防止 CF 舊資料蓋掉本機新寫入
+            // 無 id 的紀錄（如 proxy_weekly）改用 from+'_'+to 當備援 key，避免合併時被略過清空
+            const _key=item=>item?.id||((item?.from&&item?.to)?item.from+'_'+item.to:null)
             const map={}
             d.forEach(item=>{
-              if(!item?.id) return
+              const kid=_key(item); if(!kid) return
               // 正規化 CF 資料的 platformMetrics key（Python 寫 lowercase threads）
               if(item.platformMetrics?.threads && !item.platformMetrics?.Threads){
                 const pm={...item.platformMetrics, Threads:item.platformMetrics.threads}
                 delete pm.threads
                 item={...item, platformMetrics:pm}
               }
-              map[item.id]=item
+              map[kid]=item
             })
             local.forEach(item=>{
-              if(!item?.id) return
-              const cfItem=map[item.id]
+              const kid=_key(item); if(!kid) return
+              const cfItem=map[kid]
               if(cfItem){
                 const localPm=item.platformMetrics||{}
                 const cfPm=cfItem.platformMetrics||{}
@@ -5170,18 +5172,18 @@ const DB={
                     'revenue_amount','updated_at','source']
                   const merged={...item,...cfItem,platformMetrics:mergedPm}
                   SEO_KEYS.forEach(k=>{if(cfItem[k]!=null)merged[k]=cfItem[k]})
-                  map[item.id]=merged
+                  map[kid]=merged
                   // 衝突紀錄保留（讓 console 可查，不靜默覆蓋）
                   if(item.qualified_registration_count!=null&&cfItem.qualified_registration_count!=null&&
                      item.qualified_registration_count!==cfItem.qualified_registration_count){
-                    console.warn(`[DB.pull] real_reg 衝突 ${item.id}：本機 qreg=${item.qualified_registration_count}，CF qreg=${cfItem.qualified_registration_count}，CF 較新，採用 CF`)
+                    console.warn(`[DB.pull] real_reg 衝突 ${kid}：本機 qreg=${item.qualified_registration_count}，CF qreg=${cfItem.qualified_registration_count}，CF 較新，採用 CF`)
                   }
                 } else {
                   // 其他紀錄：本機優先（原有行為）
-                  map[item.id]={...cfItem,...item,platformMetrics:mergedPm}
+                  map[kid]={...cfItem,...item,platformMetrics:mergedPm}
                 }
               } else {
-                map[item.id]=item
+                map[kid]=item
               }
             })
             localStorage.setItem(K+k,JSON.stringify(Object.values(map)))
@@ -5206,28 +5208,29 @@ const DB={
     }catch(e){}
     const local=this.get(k);
     if(Array.isArray(local)&&local.length&&Array.isArray(base)&&base.length){
+      const _key=item=>item?.id||((item?.from&&item?.to)?item.from+'_'+item.to:null)
       const map={};
       base.forEach(item=>{
-        if(!item?.id) return
+        const kid=_key(item); if(!kid) return
         if(item.platformMetrics?.threads && !item.platformMetrics?.Threads){
           const pm={...item.platformMetrics, Threads:item.platformMetrics.threads}
           delete pm.threads
           item={...item, platformMetrics:pm}
         }
-        map[item.id]=item
+        map[kid]=item
       });
       local.forEach(item=>{
-        if(!item?.id) return
-        const cfItem=map[item.id]
+        const kid=_key(item); if(!kid) return
+        const cfItem=map[kid]
         if(cfItem){
           const localPm=item.platformMetrics||{}
           const cfPm=cfItem.platformMetrics||{}
           const localEmpty=Object.keys(localPm).length===0
           const cfHasData=Object.keys(cfPm).length>0
-          map[item.id]={...cfItem,...item,
+          map[kid]={...cfItem,...item,
             platformMetrics:(localEmpty&&cfHasData)?cfPm:localPm}
         } else {
-          map[item.id]=item
+          map[kid]=item
         }
       });
       const merged=Object.values(map);
