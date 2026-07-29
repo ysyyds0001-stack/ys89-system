@@ -7009,6 +7009,7 @@ function savePersona(){
   if(id){const i=personas.findIndex(x=>x.id===id);if(i>=0)personas[i]={...personas[i],...obj}}
   else personas.push({...obj,id:DB.id(),postPrompts:[],createdAt:new Date().toISOString()})
   DB.set('personas',personas)
+  DB.push('personas').catch(()=>{})
   closeModal('modal-add-persona')
   renderPersonas()
   actorsChanged()
@@ -7032,6 +7033,7 @@ function savePromptLog(){
   if(!personas[i].postPrompts)personas[i].postPrompts=[]
   personas[i].postPrompts.push({id:DB.id(),prompt,note:document.getElementById('lp-note').value,createdAt:new Date().toISOString()})
   DB.set('personas',personas)
+  DB.push('personas').catch(()=>{})
   closeModal('modal-log-prompt')
   toast('提示詞已儲存 ✅')
   try{renderCommunity()}catch(e){}
@@ -7743,6 +7745,7 @@ function saveCommunity(){
   if(id){const i=list.findIndex(x=>x.id===id);if(i>=0)list[i]={...list[i],...obj}}
   else list.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
   DB.set('community',list)
+  DB.push('community').catch(()=>{})
   closeModal('modal-community')
   renderCommunity()
   actorsChanged()
