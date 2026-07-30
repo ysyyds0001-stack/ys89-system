@@ -15350,6 +15350,16 @@ function _initGlobalDateBar() {
     try{renderPersonas();}catch(e){}
     try{renderGrowthOverview();}catch(e){}
     utmFillLanding()
+    // 修正競速問題：若使用者在雲端資料拉取完成「前」就已切到某分頁，該分頁會用拉取前的舊快取畫面，
+    // 拉取完成後不會自動重繪。這裡在拉取完成後對目前作用中的分頁重新觸發一次渲染。
+    try{
+      const activeEl = document.querySelector('.page.active')
+      if(activeEl){
+        const pid = activeEl.id.replace('pg-','')
+        const tab = document.querySelector(`.nav-tab[onclick*="'${pid}'"]`)
+        if(tab) nav(tab, pid)
+      }
+    }catch(e){}
   })
 })()
 setTimeout(_initGlobalDateBar, 200)
