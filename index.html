@@ -5183,8 +5183,11 @@ const DB={
                     console.warn(`[DB.pull] real_reg 衝突 ${kid}：本機 qreg=${item.qualified_registration_count}，CF qreg=${cfItem.qualified_registration_count}，CF 較新，採用 CF`)
                   }
                 } else {
-                  // 其他紀錄：本機優先（原有行為）
-                  map[kid]={...cfItem,...item,platformMetrics:mergedPm}
+                  // 其他紀錄：比較 updatedAt/savedAt，較新的一份整筆優先（含 platformMetrics）
+                  // 避免舊的本機存檔覆蓋掉剛從 CF 抓回來的較新資料（如成效讀取結果）
+                  const _ts=it=>it?.updatedAt||it?.savedAt||it?.updated_at||''
+                  const cfNewer2=_ts(cfItem)>_ts(item)
+                  map[kid]=cfNewer2?{...item,...cfItem}:{...cfItem,...item,platformMetrics:mergedPm}
                 }
               } else {
                 map[kid]=item
@@ -5231,8 +5234,11 @@ const DB={
           const cfPm=cfItem.platformMetrics||{}
           const localEmpty=Object.keys(localPm).length===0
           const cfHasData=Object.keys(cfPm).length>0
-          map[kid]={...cfItem,...item,
-            platformMetrics:(localEmpty&&cfHasData)?cfPm:localPm}
+          const mergedPm=(localEmpty&&cfHasData)?cfPm:localPm
+          // 比較 updatedAt/savedAt，較新的一份整筆優先，避免舊本機存檔推上去蓋掉 CF 較新資料
+          const _ts=it=>it?.updatedAt||it?.savedAt||it?.updated_at||''
+          const cfNewer2=_ts(cfItem)>_ts(item)
+          map[kid]=cfNewer2?{...item,...cfItem}:{...cfItem,...item,platformMetrics:mergedPm}
         } else {
           map[kid]=item
         }
