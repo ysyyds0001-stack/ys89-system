@@ -6419,7 +6419,12 @@ function _migrateThreadActivities(){
       changed = true
     }
   })
-  if(changed){ DB.set('thread_activities', list); console.log('[Migration] thread_activities 新欄位補齊完成') }
+  if(changed){
+    DB.set('thread_activities', list)
+    // 開機 migration 用 push（有 updatedAt 比較保護），不能直接覆蓋，否則會蓋掉其他裝置剛寫入的較新資料
+    DB.push('thread_activities').catch(()=>{})
+    console.log('[Migration] thread_activities 新欄位補齊完成')
+  }
 }
 
 // ===== MIGRATION: 角色分類與定位 =====
@@ -10703,6 +10708,7 @@ function _utmCreateChannelRecord(usage, p, code, utmContent, title, shortUrl){
     const list=DB.get('thread_activities')||[];
     list.push({id:DB.id(),date:today,personaId:'',personaName:p.name,platforms:[plat],strategy:'引流/導到ys89',dir:'',topic:title||'',url:'',content:'',utmContent,shortLink:shortUrl||'',urlTitle:title||'',landingUrl,landingNote,status:'待記錄',platformMetrics:{},notes:'UTM產生器建立',createdAt:now,updatedAt:now});
     DB.set('thread_activities',list);
+    DB.push('thread_activities').catch(()=>{})
     return '記到社群平台互動';
   }
   if(usage==='匿名'||usage==='fb'){
@@ -11439,7 +11445,7 @@ async function ttAutoFetchOne(){
     fill('T-shares',m.shares); fill('T-follows',0)
     fill('T-views', m.viewsAvailable===false ? '無法顯示瀏覽' : m.views)
     if(m.viewsAvailable===false) document.getElementById('tm-notes').value='無法顯示瀏覽'
-    if(m.replyUrl){ const list=DB.get('thread_activities')||[]; const i=list.findIndex(x=>x.id===id); if(i>=0){list[i].replyUrl=m.replyUrl; DB.set('thread_activities',list)} }
+    if(m.replyUrl){ const list=DB.get('thread_activities')||[]; const i=list.findIndex(x=>x.id===id); if(i>=0){list[i].replyUrl=m.replyUrl; DB.set('thread_activities',list); DB.push('thread_activities').catch(()=>{})} }
     if(statusEl) statusEl.innerHTML=`✅ 讚${m.likes} 回${m.replies} 轉${m.reposts} 瀏覽${m.viewsAvailable===false?'無法顯示':m.views} <span style="color:var(--text3);font-size:.68rem">確認後按「更新成效」儲存</span>`
   } catch(e) {
     const isCon = e.name==='TypeError'||e.message.includes('Failed to fetch')||e.message.includes('NetworkError')
@@ -11559,6 +11565,7 @@ function saveTTReplyUrl(id, url){
   list[i].replyUrl = url || ''
   list[i].updatedAt = new Date().toISOString()
   DB.set('thread_activities',list)
+  DB.push('thread_activities').catch(()=>{})
   renderThreadTracker()
   toast(url ? '↩ 回覆連結已儲存' : '回覆連結已清除')
 }
@@ -11566,6 +11573,7 @@ function saveTTReplyUrl(id, url){
 function delThreadActivity(id){
   if(!confirm('確定刪除這筆話題參與記錄？'))return
   DB.set('thread_activities', (DB.get('thread_activities')||[]).filter(x=>x.id!==id))
+  DB.push('thread_activities').catch(()=>{})
   renderThreadTracker()
   toast('已刪除')
 }
