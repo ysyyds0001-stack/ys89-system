@@ -3053,6 +3053,7 @@ function renderAbTests() {
       <p class="tm" style="margin-top:3px">讀「矩陣帳號號」人設 → 產生帶追蹤的連結 → 一鍵存進短連結，GA4 成效用水軍中文名對帳</p>
     </div>
   </div>
+  <div id="utm-sync-bar" style="margin-bottom:14px"></div>
   <div class="g2" style="align-items:start">
     <div class="card">
       <div class="fg"><label>① 選水軍是誰 <span style="color:var(--text3);font-size:.72rem">utm_source（來自矩陣帳號號）</span></label>
@@ -5126,11 +5127,50 @@ function renderAbTests() {
 const K='ys89_'
 const API='https://ys89-api.ysyyds0001.workers.dev'
 const DB={
+  _offline:false,
+  _syncErrorKeys:{},
+  // 雲端寫入失敗時呼叫：標記離線狀態、記錄錯誤 key、跳出可見提示（非僅 console）
+  _onSyncError(k,err){
+    this._offline = true
+    this._syncErrorKeys[k] = (err&&err.message)||'未知錯誤'
+    console.error('[DB] 雲端同步失敗 key='+k, err)
+    try{ if(typeof toast==='function') toast('⚠️ 「'+k+'」雲端同步失敗，已暫存本機（離線資料）','err') }catch(e){}
+    try{ window.dispatchEvent(new CustomEvent('ys89:syncerror',{detail:{key:k,error:err}})) }catch(e){}
+    try{ if(typeof renderSyncStatusBar==='function') renderSyncStatusBar() }catch(e){}
+  },
+  _onSyncOk(k){
+    this._offline = false
+    delete this._syncErrorKeys[k]
+    try{ if(typeof renderSyncStatusBar==='function') renderSyncStatusBar() }catch(e){}
+  },
+  // 為陣列型資料的每一筆標記同步狀態（不影響既有欄位，僅新增 _syncStatus/_syncAt）
+  _tagSynced(v,status){
+    if(Array.isArray(v)){
+      const now=new Date().toISOString()
+      v.forEach(it=>{
+        if(it&&typeof it==='object'){
+          if(status==='synced'){ it._syncStatus='synced'; it._syncAt=now }
+          else if(!it._syncStatus){ it._syncStatus='pending' } // 已確認同步過的舊資料不因單次失敗被降級
+        }
+      })
+    }
+    return v
+  },
   get(k){try{return JSON.parse(localStorage.getItem(K+k)||'[]')}catch{return[]}},
   set(k,v){
     localStorage.setItem(K+k,JSON.stringify(v))
     fetch(API+'/api/'+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(v)})
-      .catch(()=>{})
+      .then(r=>{
+        if(!r.ok) throw new Error('HTTP '+r.status)
+        this._tagSynced(v,'synced')
+        localStorage.setItem(K+k,JSON.stringify(v))
+        this._onSyncOk(k)
+      })
+      .catch(err=>{
+        this._tagSynced(v,'pending')
+        localStorage.setItem(K+k,JSON.stringify(v))
+        this._onSyncError(k,err)
+      })
   },
   async pull(k){
     try{
@@ -5201,9 +5241,15 @@ const DB={
             localStorage.setItem(K+k,JSON.stringify(d))
           }
         }
+        this._onSyncOk(k)
         return d
       }
-    }catch(e){}
+      throw new Error('HTTP '+r.status)
+    }catch(e){
+      // 讀取失敗：本機資料視為離線備援，標記讓 UI 知道現在顯示的不是雲端確認過的最新資料
+      this._offline = true
+      try{ if(typeof renderSyncStatusBar==='function') renderSyncStatusBar() }catch(e2){}
+    }
     return this.get(k)
   },
   async push(k){
@@ -5245,9 +5291,47 @@ const DB={
       });
       const merged=Object.values(map);
       localStorage.setItem(K+k,JSON.stringify(merged));
-      return fetch(API+'/api/'+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(merged)});
+      try{
+        const resp=await fetch(API+'/api/'+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(merged)});
+        if(!resp.ok) throw new Error('HTTP '+resp.status)
+        this._tagSynced(merged,'synced'); localStorage.setItem(K+k,JSON.stringify(merged)); this._onSyncOk(k)
+        return resp
+      }catch(err){
+        this._tagSynced(merged,'pending'); localStorage.setItem(K+k,JSON.stringify(merged)); this._onSyncError(k,err)
+        throw err
+      }
     }
-    return fetch(API+'/api/'+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(local)});
+    try{
+      const resp=await fetch(API+'/api/'+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(local)});
+      if(!resp.ok) throw new Error('HTTP '+resp.status)
+      this._tagSynced(local,'synced'); localStorage.setItem(K+k,JSON.stringify(local)); this._onSyncOk(k)
+      return resp
+    }catch(err){
+      this._tagSynced(local,'pending'); localStorage.setItem(K+k,JSON.stringify(local)); this._onSyncError(k,err)
+      throw err
+    }
+  },
+  // 計算指定 keys 的同步統計，供 UI 顯示「已同步 N / 未同步 M」
+  syncCounts(keys){
+    let synced=0, pending=0
+    keys.forEach(k=>{
+      const list=this.get(k)
+      if(Array.isArray(list)) list.forEach(it=>{
+        if(it&&typeof it==='object'){
+          if(it._syncStatus==='pending') pending++
+          else synced++ // 沒標記過的視為舊資料/已同步，避免舊資料全部誤判未同步
+        }
+      })
+    })
+    return {synced,pending}
+  },
+  // 手動觸發：對指定 keys 逐一重新 push，回報結果
+  async syncAllNow(keys){
+    const results={}
+    for(const k of keys){
+      try{ await this.push(k); results[k]='ok' }catch(e){ results[k]='fail:'+(e&&e.message) }
+    }
+    return results
   },
   id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
 }
@@ -7162,6 +7246,7 @@ function savePersonaTemplate(){
   personas[i].templates.push({id:DB.id(),title,body,type,createdAt:new Date().toISOString()})
   personas[i].updatedAt=new Date().toISOString()
   DB.set('personas',personas)
+  DB.push('personas').catch(()=>{})
   document.getElementById('pt-title-input').value=''
   document.getElementById('pt-body').value=''
   _renderPtList(id)
@@ -7175,6 +7260,7 @@ function deletePersonaTemplate(personaId,templateId){
   personas[i].templates=(personas[i].templates||[]).filter(t=>t.id!==templateId)
   personas[i].updatedAt=new Date().toISOString()
   DB.set('personas',personas)
+  DB.push('personas').catch(()=>{})
   _renderPtList(personaId)
   renderPersonas()
   toast('已刪除')
@@ -7979,6 +8065,7 @@ function initWaterArmyAccounts(){
     })
   })
   DB.set('community',list)
+  DB.push('community').catch(()=>{})
   renderCommunity()
   actorsChanged()
   toast(`✅ 完成：新增 ${added} 個、更新 ${updated} 個帳號`)
@@ -8174,7 +8261,7 @@ function saveAnonActor(){
     accountStatus:document.getElementById('anon-accountStatus').value}
   if(id){ const a=list.find(x=>x.id===id); if(a) Object.assign(a,rec) }
   else{ list.push({id:DB.id(),...rec}) }
-  DB.set('seeding_accounts',list); closeModal('modal-actor-anon'); actorsChanged(); renderCommunity()
+  DB.set('seeding_accounts',list); DB.push('seeding_accounts').catch(()=>{}); closeModal('modal-actor-anon'); actorsChanged(); renderCommunity()
   toast('✅ 已儲存')
 }
 
@@ -10426,6 +10513,33 @@ function renderLinks(){
 
 // ── 原生 UTM 產生器（讀矩陣帳號號 → 存進短連結）──
 function utmPersonas(){ return allActors().filter(a=>!a.raw||!a.raw.accountStatus||a.raw.accountStatus==='active'); }
+// 人設資料同步狀態列（personas/community/seeding_accounts 三個來源，UTM產生器下拉選單即讀這三個）
+const UTM_PERSONA_KEYS=['personas','community','seeding_accounts']
+function renderSyncStatusBar(){
+  const el=document.getElementById('utm-sync-bar'); if(!el) return
+  const {synced,pending}=DB.syncCounts(UTM_PERSONA_KEYS)
+  const offline=DB._offline
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 12px;border-radius:8px;background:${pending>0?'#f59e4218':'var(--g2)'};border:1px solid ${pending>0?'#f59e4255':'var(--border)'}">
+      <span style="font-size:.78rem;color:var(--text2)">☁️ 已同步 <b style="color:#34d399">${synced}</b> 筆</span>
+      <span style="font-size:.78rem;color:${pending>0?'#f59e42':'var(--text3)'}">${pending>0?'⚠️':'·'} 未同步 <b>${pending}</b> 筆</span>
+      ${offline?'<span style="font-size:.72rem;color:#f87171;font-weight:700">📴 目前為離線資料（雲端連線失敗，顯示的是本機暫存）</span>':''}
+      <button class="btn btn-xs btn-outline" style="margin-left:auto" onclick="utmSyncAllNow()" id="utm-sync-btn">🔄 立即同步全部到雲端</button>
+    </div>`
+}
+async function utmSyncAllNow(){
+  const btn=document.getElementById('utm-sync-btn')
+  if(btn){ btn.disabled=true; btn.textContent='同步中…' }
+  const results=await DB.syncAllNow(UTM_PERSONA_KEYS)
+  const fails=Object.entries(results).filter(([k,v])=>v!=='ok')
+  if(fails.length){
+    toast('⚠️ 部分同步失敗：'+fails.map(([k])=>k).join('、'),'err')
+  } else {
+    toast('✅ 已全部同步到雲端')
+  }
+  renderSyncStatusBar()
+  utmInit()
+}
 function utmInit(){
   const sel=document.getElementById('u-persona'); if(!sel) return;
   const cur=sel.value;
@@ -10440,6 +10554,7 @@ function utmInit(){
   if(cur && utmPersonas().some(a=>a.id===cur)) sel.value=cur;
   utmFillLanding(); utmUsageChange(); _utmApplyPicksUrl(); utmGen();
   clearTimeout(_utmAutoTimer);  // 進頁面的自動產生不自動保存，等使用者實際操作才存
+  renderSyncStatusBar();
 }
 // ④ 落地頁下拉直接讀「入口」分頁 → UTM 與入口形成閉環（要導哪入口都有紀載）
 function utmFillLanding(){
