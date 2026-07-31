@@ -7497,6 +7497,7 @@ function savePost(){
     createdAt:new Date().toISOString()
   })
   DB.set('posts',posts)
+  DB.push('posts').catch(()=>{})
   closeModal('modal-add-post')
   renderTracker()
   toast('發文記錄已儲存')
