@@ -3255,6 +3255,15 @@ function renderAbTests() {
       <div class="fg"><label>狀態</label><select id="cp-status"><option>已發(待回查)</option><option>存活</option><option>被刪</option></select></div>
       <div class="fg"><label>互動</label><select id="cp-engaged"><option value="">未回查</option><option value="yes">有互動</option><option value="no">無互動</option></select></div>
     </div>
+    <div style="font-size:.78rem;color:var(--text3);font-weight:600;margin:8px 0 6px">成效數據（回查後手動填入，會計入會議總覽曝光）</div>
+    <div class="fr">
+      <div class="fg"><label>👁 今日人氣/瀏覽</label><input type="number" id="cp-views" placeholder="0"></div>
+      <div class="fg"><label>📊 總人氣/瀏覽</label><input type="number" id="cp-totalViews" placeholder="0"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>💬 互動數</label><input type="number" id="cp-engagement" placeholder="0"></div>
+      <div class="fg"><label>📝 留言數</label><input type="number" id="cp-comments" placeholder="0"></div>
+    </div>
     <div class="fg"><label>備註</label><input id="cp-note"></div>
     <div class="fb" style="margin-top:6px"><button class="btn btn-outline" onclick="closeModal('modal-channel-post')">取消</button><button class="btn btn-primary" onclick="saveChannelPost()">儲存</button></div>
   </div>
@@ -4601,6 +4610,9 @@ function renderAbTests() {
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.83rem;user-select:none">
           <input type="checkbox" id="ta-plat-FB"> 📘 FB
         </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.83rem;user-select:none">
+          <input type="checkbox" id="ta-plat-Blog"> 📰 部落格/論壇
+        </label>
       </div>
     </div>
     <div class="fg">
@@ -4765,6 +4777,11 @@ function renderAbTests() {
     <div id="tm-sec-FB" class="tm-sec" style="display:none">
       <div class="fr"><div class="fg"><label>👍 按讚</label><input type="number" id="tm-FB-likes" placeholder="0"></div><div class="fg"><label>💬 留言</label><input type="number" id="tm-FB-comments" placeholder="0"></div></div>
       <div class="fr"><div class="fg"><label>🔁 分享</label><input type="number" id="tm-FB-shares" placeholder="0"></div><div class="fg"><label>👁 觸及</label><input type="number" id="tm-FB-reach" placeholder="0"></div></div>
+    </div>
+    <!-- Blog/論壇（如 Pixnet、Dcard 等站台自帶的人氣/互動計數）-->
+    <div id="tm-sec-Blog" class="tm-sec" style="display:none">
+      <div class="fr"><div class="fg"><label>👁 今日人氣</label><input type="number" id="tm-Blog-views" placeholder="0"></div><div class="fg"><label>📊 總人氣</label><input type="number" id="tm-Blog-totalViews" placeholder="0"></div></div>
+      <div class="fr"><div class="fg"><label>💬 互動</label><input type="number" id="tm-Blog-engagement" placeholder="0"></div><div class="fg"><label>📝 留言</label><input type="number" id="tm-Blog-comments" placeholder="0"></div></div>
     </div>
     <div class="fg" style="margin-top:6px"><label>備註</label><input id="tm-notes" placeholder="觀察"></div>
     <div style="background:#0d0b0a;border:1px solid var(--border2);border-radius:6px;padding:7px 10px;margin:8px 0;font-size:.72rem;color:var(--text3)">
@@ -10104,7 +10121,7 @@ function openAddChannelPost(preset){
   document.getElementById('cp-modal-title').textContent='新增鋪文/社團記錄'
   document.getElementById('cp-date').value=getTaipeiDateString()
   document.getElementById('cp-channel').value=preset||'seeding'
-  ;['cp-platform','cp-title','cp-utm','cp-shortlink','cp-url','cp-note'].forEach(i=>document.getElementById(i).value='')
+  ;['cp-platform','cp-title','cp-utm','cp-shortlink','cp-url','cp-note','cp-views','cp-totalViews','cp-engagement','cp-comments'].forEach(i=>document.getElementById(i).value='')
   document.getElementById('cp-type').value='經驗分享'
   document.getElementById('cp-linkmode').value='link'
   document.getElementById('cp-status').value='已發(待回查)'
@@ -10132,6 +10149,10 @@ function openEditChannelPost(id){
   document.getElementById('cp-url').value=p.url||''
   document.getElementById('cp-status').value=p.status||'已發(待回查)'
   document.getElementById('cp-engaged').value=p.engaged||''
+  document.getElementById('cp-views').value=p.views||''
+  document.getElementById('cp-totalViews').value=p.totalViews||''
+  document.getElementById('cp-engagement').value=p.engagement||''
+  document.getElementById('cp-comments').value=p.comments||''
   document.getElementById('cp-note').value=p.note||''
   _cpUrlTitle=p.urlTitle||''
   document.getElementById('cp-url-title').textContent=p.urlTitle?('📄 '+p.urlTitle):(p.url?'🔗 '+taUrlLabel(p.url):'')
@@ -10161,18 +10182,25 @@ function saveChannelPost(){
     engaged:document.getElementById('cp-engaged').value,
     note:document.getElementById('cp-note').value.trim(),
     articleId:document.getElementById('cp-article')?.value||null,
+    views:+document.getElementById('cp-views')?.value||0,
+    totalViews:+document.getElementById('cp-totalViews')?.value||0,
+    engagement:+document.getElementById('cp-engagement')?.value||0,
+    comments:+document.getElementById('cp-comments')?.value||0,
     updatedAt:new Date().toISOString()
   }
   const list=DB.get('channel_posts')||[]
   if(id){ const i=list.findIndex(x=>x.id===id); if(i>=0) list[i]={...list[i],...obj} }
   else list.push({...obj,id:DB.id(),createdAt:new Date().toISOString()})
   DB.set('channel_posts',list)
+  DB.push('channel_posts').catch(()=>{})
   closeModal('modal-channel-post'); _rerenderChannels()
   toast(id?'記錄已更新':'記錄已新增')
 }
 function delChannelPost(id){
   if(!confirm('刪除這筆記錄？'))return
-  DB.set('channel_posts',(DB.get('channel_posts')||[]).filter(x=>x.id!==id)); _rerenderChannels()
+  DB.set('channel_posts',(DB.get('channel_posts')||[]).filter(x=>x.id!==id))
+  DB.push('channel_posts').catch(()=>{})
+  _rerenderChannels()
 }
 function _renderChannel(scope, ids){
   const all=(DB.get('channel_posts')||[]).filter(p=>p.channel===scope)
@@ -11208,11 +11236,12 @@ function renderThreadTracker(){
 }
 
 // 平台顏色 / 欄位定義
-const TM_PLATFORM_COLORS = { Threads:'#a78bfa', IG:'#ec4899', FB:'#3b82f6' }
+const TM_PLATFORM_COLORS = { Threads:'#a78bfa', IG:'#ec4899', FB:'#3b82f6', Blog:'#f59e42' }
 const TM_PLATFORM_FIELDS = {
   Threads:[['T-likes','❤️ 按讚'],['T-replies','💬 回覆'],['T-reposts','🔁 轉發'],['T-shares','📤 分享'],['T-views','👁 瀏覽'],['T-follows','➕ 漲粉']],
   IG:     [['IG-likes','❤️ 按讚'],['IG-comments','💬 留言'],['IG-saves','🔖 儲存'],['IG-shares','📤 分享'],['IG-reach','👁 觸及'],['IG-views','📺 瀏覽']],
   FB:     [['FB-likes','👍 按讚'],['FB-comments','💬 留言'],['FB-shares','📤 分享'],['FB-reach','👁 觸及']],
+  Blog:   [['Blog-views','👁 今日人氣'],['Blog-totalViews','📊 總人氣'],['Blog-engagement','💬 互動'],['Blog-comments','📝 留言']],
 }
 window._tmActivePlatform = 'Threads'
 
@@ -11294,7 +11323,7 @@ function taGenUtm(force){
   const code=taPersonaCode()
   if(!code){ if(force) utmEl.value=''; taSyncUtmCopy(); return }
   // 平台後綴：單一平台且非 Threads 加後綴（-ig / -fb），Threads 不加保持相容
-  const selPlats=['Threads','IG','FB'].filter(p=>document.getElementById('ta-plat-'+p)?.checked)
+  const selPlats=['Threads','IG','FB','Blog'].filter(p=>document.getElementById('ta-plat-'+p)?.checked)
   const platSuffix=selPlats.length===1&&selPlats[0]!=='Threads'?'-'+selPlats[0].toLowerCase():''
   const prefix=code+platSuffix+'-'+_mmdd(document.getElementById('ta-date').value)+'-'
   utmEl.value=prefix+_nextUtmSeq(prefix)
@@ -11347,7 +11376,7 @@ function openAddThreadActivity(){
   document.getElementById('ta-url-title').textContent = ''
   _taUrlTitle=''
   const _tap=document.getElementById('ta-utm-pick'); if(_tap){ _tap.innerHTML='<option value="">— 自動產生新碼，或從這帶入已建的 —</option>'; _tap.value='' }
-  ;['Threads','IG','FB'].forEach(p=>{ const el=document.getElementById('ta-plat-'+p); if(el) el.checked=(p==='Threads') })
+  ;['Threads','IG','FB','Blog'].forEach(p=>{ const el=document.getElementById('ta-plat-'+p); if(el) el.checked=(p==='Threads') })
   const customEl = document.getElementById('ta-persona-custom')
   if(customEl){ customEl.value=''; customEl.style.display='none' }
   _fillTaPersonaSel(document.getElementById('ta-persona'), '', '')
@@ -11370,7 +11399,7 @@ function openEditThreadActivity(id){
   document.getElementById('ta-strategy').value = a.strategy||'帶風向'
   document.getElementById('ta-dir').value = a.dir||'世足/運彩'
   const platforms = a.platforms || ['Threads']
-  ;['Threads','IG','FB'].forEach(p=>{ const el=document.getElementById('ta-plat-'+p); if(el) el.checked=platforms.includes(p) })
+  ;['Threads','IG','FB','Blog'].forEach(p=>{ const el=document.getElementById('ta-plat-'+p); if(el) el.checked=platforms.includes(p) })
   const customEl = document.getElementById('ta-persona-custom')
   // 若 personaId 存在於 personas/community → 用 id|name 選中；否則顯示自訂欄
   const allAccounts=[...(DB.get('personas')||[]),...(DB.get('community')||[])]
@@ -11421,7 +11450,7 @@ function saveThreadActivity(){
     personaId = 'custom'
     personaName = document.getElementById('ta-persona-custom')?.value?.trim() || '自訂帳號'
   }
-  const platforms = ['Threads','IG','FB'].filter(p=>document.getElementById('ta-plat-'+p)?.checked)
+  const platforms = ['Threads','IG','FB','Blog'].filter(p=>document.getElementById('ta-plat-'+p)?.checked)
   const _gv = id => (document.getElementById(id)?.value||'').trim()
   const obj = {
     date: _gv('ta-date'),
@@ -11487,11 +11516,12 @@ function openThreadMetrics(id){
     </button>`).join('')
   // 預填各平台數值
   const fill=(fid, val)=>{ const el=document.getElementById('tm-'+fid); if(el) el.value=val||0 }
-  ;['Threads','IG','FB'].forEach(plat=>{
+  ;['Threads','IG','FB','Blog'].forEach(plat=>{
     const m=pm[plat]||{}
     if(plat==='Threads'){fill('T-likes',m.likes);fill('T-replies',m.replies);fill('T-reposts',m.reposts);fill('T-shares',m.shares);fill('T-views',m.views);fill('T-follows',m.follows)}
     if(plat==='IG')    {fill('IG-likes',m.likes);fill('IG-comments',m.comments);fill('IG-saves',m.saves);fill('IG-shares',m.shares);fill('IG-reach',m.reach);fill('IG-views',m.views)}
     if(plat==='FB')    {fill('FB-likes',m.likes);fill('FB-comments',m.comments);fill('FB-shares',m.shares);fill('FB-reach',m.reach)}
+    if(plat==='Blog')  {fill('Blog-views',m.views);fill('Blog-totalViews',m.totalViews);fill('Blog-engagement',m.engagement);fill('Blog-comments',m.comments)}
   })
   // 自動取得列：有 Threads URL 才顯示
   const autoRow = document.getElementById('tm-auto-row')
@@ -11522,6 +11552,7 @@ function saveThreadMetrics(){
     if(plat==='Threads') pm.Threads={likes:num('tm-T-likes'),replies:num('tm-T-replies'),reposts:num('tm-T-reposts'),shares:num('tm-T-shares'),views:numOrStr('tm-T-views'),follows:num('tm-T-follows')}
     if(plat==='IG')     pm.IG={likes:num('tm-IG-likes'),comments:num('tm-IG-comments'),saves:num('tm-IG-saves'),shares:num('tm-IG-shares'),reach:num('tm-IG-reach'),views:num('tm-IG-views')}
     if(plat==='FB')     pm.FB={likes:num('tm-FB-likes'),comments:num('tm-FB-comments'),shares:num('tm-FB-shares'),reach:num('tm-FB-reach')}
+    if(plat==='Blog')   pm.Blog={views:num('tm-Blog-views'),totalViews:num('tm-Blog-totalViews'),engagement:num('tm-Blog-engagement'),comments:num('tm-Blog-comments')}
   })
   list[i].platformMetrics = pm
   list[i].notes   = document.getElementById('tm-notes').value.trim()
@@ -14412,6 +14443,23 @@ function renderMeeting() {
   const acts = Array.isArray(_rawActs)?_rawActs:[]
   const cActs = acts.filter(a=>(a.date||'')>=from&&(a.date||'')<=completeTo)
   const pActs = acts.filter(a=>(a.date||'')>=pFrom&&(a.date||'')<=pTo)
+  // 併入「發文追蹤」(posts) 的篇數與觸及，用 postUrl/utmContent 去重避免跟社群互動重複計算
+  const _rawPosts = DB.get('posts')
+  const posts = Array.isArray(_rawPosts)?_rawPosts:[]
+  const _actsKeys = new Set(acts.flatMap(a=>[a.url,a.utmContent].filter(Boolean)))
+  const _dedupPosts = posts.filter(p=>!(_actsKeys.has(p.postUrl)||_actsKeys.has(p.utmContent)))
+  const cPosts = _dedupPosts.filter(p=>(p.date||'')>=from&&(p.date||'')<=completeTo)
+  const pPosts = _dedupPosts.filter(p=>(p.date||'')>=pFrom&&(p.date||'')<=pTo)
+  const cPostsReach = cPosts.reduce((s,p)=>s+(+p.reach||0),0)
+  const pPostsReach = pPosts.reduce((s,p)=>s+(+p.reach||0),0)
+  // 併入「匿名社群/Facebook」(channel_posts) 的篇數與人氣，同樣用 url/utmContent 去重
+  const _rawChannel = DB.get('channel_posts')
+  const channelPosts = Array.isArray(_rawChannel)?_rawChannel:[]
+  const _dedupChannel = channelPosts.filter(p=>!(_actsKeys.has(p.url)||_actsKeys.has(p.utmContent)))
+  const cChannel = _dedupChannel.filter(p=>(p.date||'')>=from&&(p.date||'')<=completeTo)
+  const pChannel = _dedupChannel.filter(p=>(p.date||'')>=pFrom&&(p.date||'')<=pTo)
+  const cChannelViews = cChannel.reduce((s,p)=>s+(+p.views||0),0)
+  const pChannelViews = pChannel.reduce((s,p)=>s+(+p.views||0),0)
   const ga4 = _ga4Data||{}
   const k7 = ga4.kpis_7d||{}, k28 = ga4.kpis_28d||{}, kCum = ga4.kpis||{}
   const kUse = days<=3 ? (ga4.kpis_3d||k7) : days<=7 ? k7 : days<=28 ? k28 : kCum
@@ -14454,11 +14502,13 @@ function renderMeeting() {
   const totThreads = cActs.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
   const totIG      = cActs.reduce((s,a)=>s+(a.platformMetrics?.IG?.reach||0),0)
   const totFB      = cActs.reduce((s,a)=>s+(a.platformMetrics?.FB?.reach||0),0)
-  const totV       = totThreads + totIG + totFB
+  const totBlog    = cActs.reduce((s,a)=>s+(a.platformMetrics?.Blog?.views||0),0)
+  const totV       = totThreads + totIG + totFB + totBlog + cPostsReach + cChannelViews
   const pTotThreads = pActs.reduce((s,a)=>s+(a.platformMetrics?.Threads?.views||0),0)
   const pTotIG      = pActs.reduce((s,a)=>s+(a.platformMetrics?.IG?.reach||0),0)
   const pTotFB      = pActs.reduce((s,a)=>s+(a.platformMetrics?.FB?.reach||0),0)
-  const pTotV       = pTotThreads + pTotIG + pTotFB
+  const pTotBlog    = pActs.reduce((s,a)=>s+(a.platformMetrics?.Blog?.views||0),0)
+  const pTotV       = pTotThreads + pTotIG + pTotFB + pTotBlog + pPostsReach + pChannelViews
 
   function kpiDelta(cur,prev) {
     if(cur==null||prev==null||prev===0) return ''
@@ -14478,8 +14528,8 @@ function renderMeeting() {
   }
 
   document.getElementById('mtg-kpi-grid').innerHTML = [
-    kpiCard('📝','發文數',cActs.length||null,pActs.length||null,'thread_activities'),
-    kpiCard('👁','已追蹤曝光',totV||null,pTotV||null,`Th ${totThreads.toLocaleString()} IG ${totIG.toLocaleString()} FB ${totFB.toLocaleString()}`,(totIG===0&&totFB===0&&totThreads>0)?'僅 Threads，IG/FB 待補':''),
+    kpiCard('📝','發文數',(cActs.length+cPosts.length+cChannel.length)||null,(pActs.length+pPosts.length+pChannel.length)||null,'社群互動+發文追蹤+匿名/FB',(cPosts.length||cChannel.length)?`含發文追蹤 ${cPosts.length} 篇、匿名/FB ${cChannel.length} 篇`:''),
+    kpiCard('👁','已追蹤曝光',totV||null,pTotV||null,`Th ${totThreads.toLocaleString()} IG ${totIG.toLocaleString()} FB ${totFB.toLocaleString()} 部落格 ${totBlog.toLocaleString()} 發文追蹤 ${cPostsReach.toLocaleString()} 匿名/FB ${cChannelViews.toLocaleString()}`,(totIG===0&&totFB===0&&totThreads>0)?'僅 Threads，IG/FB/部落格 待補':''),
     kpiCard('🔗','社群連結點擊',kUse.socialClicks||null,null,'GA4 social medium'),
     kpiCard('📈','GA4 Sessions',kUse.sessions||null,kPrev.sessions||null,'GA4 自動同步'),
     kpiCard('💬','Engaged Sessions',kUse.engagedSessions||null,null,'GA4 自動同步'),
