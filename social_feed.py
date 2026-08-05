@@ -32,6 +32,7 @@ for _stream in (sys.stdout, sys.stderr):
 SYS_API = "https://ys89-api.ysyyds0001.workers.dev/api"   # 發文管理系統資料
 UTM_API = "https://ys89-utm.pages.dev/api"                # UTM 產生器人設主檔
 OUTPUT_FILE = "social-feed.json"
+GA4_FILE = "ga4-data.json"   # 同 repo、同一個 workflow 裡 ga4_fetch.py 先跑產生的檔
 DAYS_WINDOW = 90  # posts 至少涵蓋最近 90 天
 
 # 平台正規化（輸出一律小寫）
@@ -193,6 +194,65 @@ def from_posts(rows, name_to_code):
     return out
 
 
+def load_ga4_link_clicks():
+    """讀同 repo 的 ga4-data.json，組出 utm_content → 進站數 的對照表。
+
+    **為什麼要讀本地檔不打 API**：ga4_fetch.py 跟這支在同一個 workflow 裡依序執行
+    （先 ga4_fetch.py 再 social_feed.py），檔案已經在硬碟上，重打一次 GA4 API 只是
+    多花配額跟時間，而且兩邊區間可能不一致。
+
+    **為什麼要合併兩個 Property**：貼文導流分散在兩個站——
+      - ys89.fun 站群 → ga4["contents"]
+      - picks168.com → ga4["picks168"]["contents_28d"]
+    只讀其中一個會漏掉另一邊。2026-08-05 實測：ys89.fun 的 contents 全期只有 4 筆
+    且最新停在 6/11，picks168 的 contents_28d 有 65 筆是活的——只讀 ys89.fun 會得到
+    「水軍帶進站 0」這個與事實不符的結論。
+
+    回傳 {utm_content: sessions}，同一個碼在兩邊都有就相加（不同站的進站是不同人次）。
+    """
+    try:
+        with open(GA4_FILE, encoding="utf-8") as f:
+            ga4 = json.load(f)
+    except FileNotFoundError:
+        print(f"   ⚠ 找不到 {GA4_FILE}，linkClicks 維持 null")
+        return {}
+    except Exception as e:
+        print(f"   ⚠ 讀取 {GA4_FILE} 失敗（{e}），linkClicks 維持 null")
+        return {}
+
+    clicks = {}
+    buckets = [
+        ("ys89.fun", ga4.get("contents") or []),
+        ("picks168", ((ga4.get("picks168") or {}).get("contents_28d")) or []),
+    ]
+    for site, rows in buckets:
+        for row in rows:
+            content = (row.get("content") or "").strip()
+            sessions = row.get("sessions")
+            if not content or content == "(not set)":
+                continue
+            if not isinstance(sessions, int) or sessions <= 0:
+                continue
+            clicks[content] = clicks.get(content, 0) + sessions
+    return clicks
+
+
+def apply_ga4_link_clicks(posts, clicks):
+    """以 utmContent 為主鍵把 GA4 進站數填進 linkClicks。
+
+    對不上就維持 None——**不要填 0**。0 的語意是「有追蹤到，結果是零次進站」，
+    None 是「這則沒有可用的歸因資料」，兩者在儀表板上代表完全不同的事，混用會讓
+    「還沒掛碼」看起來像「掛了碼但沒人點」。
+    """
+    hit = 0
+    for p in posts:
+        utm = p.get("utmContent")
+        if utm and utm in clicks:
+            p["linkClicks"] = clicks[utm]
+            hit += 1
+    return hit
+
+
 def from_channel_posts(rows, name_to_code):
     """匿名社群發文(seeding) + 臉書社團/粉專(fb) → 貼文。指標社群端不逐則記錄，僅帶 utmContent 供 GA4 join。"""
     out = []
@@ -318,6 +378,12 @@ def main():
     posts = within_window(posts, DAYS_WINDOW)
     posts.sort(key=lambda x: (x["date"], x.get("postUrl") or ""), reverse=True)
 
+    # GA4 逐則歸因：以 utmContent join 進 linkClicks
+    print("🔗 接上 GA4 逐則歸因...")
+    ga4_clicks = load_ga4_link_clicks()
+    ga4_hit = apply_ga4_link_clicks(posts, ga4_clicks)
+    print(f"   GA4 有進站紀錄的 utm_content: {len(ga4_clicks)} 個 → 對上本次 posts {ga4_hit} 則")
+
     # 移除內部欄位
     for p in posts:
         p.pop("_src", None)
@@ -342,7 +408,9 @@ def main():
     print(f"   utmContent 有值: {with_utm}/{total}（其餘 null）")
     print(f"   persona code 對上: {with_code}/{total}")
     print(f"   impressions 有值: {with_imp}/{total}")
-    print(f"   linkClicks / registrations: 系統未逐則記錄 → 全 null")
+    with_clk = sum(1 for p in posts if p["linkClicks"] is not None)
+    print(f"   linkClicks 有值: {with_clk}/{total}（來源 GA4 utm_content，對不上維持 null）")
+    print(f"   registrations: 後台未逐則記錄 → 全 null")
     return 0
 
 
