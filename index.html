@@ -5191,7 +5191,7 @@ const DB={
   },
   async pull(k){
     try{
-      const r=await fetch(API+'/api/'+k)
+      const r=await fetch(API+'/api/'+k,{cache:'no-store'})
       if(r.ok){
         const d=await r.json()
         // Only overwrite localStorage when API actually has data; never wipe with empty
@@ -5273,7 +5273,7 @@ const DB={
     // 先從雲端拉最新資料，以 id 為主鍵合併，再上傳，防止本機覆蓋雲端獨有的記錄
     let base=[];
     try{
-      const r=await fetch(API+'/api/'+k);
+      const r=await fetch(API+'/api/'+k,{cache:'no-store'});
       if(r.ok){const d=await r.json();if(Array.isArray(d)&&d.length)base=d;}
     }catch(e){}
     const local=this.get(k);
@@ -7303,7 +7303,7 @@ function renderTracker(){
   ].map(([l,v,c])=>`<div class="stat"><div class="stat-num" style="${c?'color:'+c:''}">${v}</div><div class="stat-label">${l}</div></div>`).join('')
   // populate selects
   const pSel=document.getElementById('po-persona')
-  pSel.innerHTML='<option value="">選擇角色</option>'+personas.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')
+  pSel.innerHTML='<option value="">選擇角色</option>'+_categoryOptionsHTML(personas,'','')
   const arts=DB.get('articles')
   const aSel=document.getElementById('po-article')
   aSel.innerHTML='<option value="">選擇文章</option>'+arts.map(a=>`<option value="${a.id}">${a.title}</option>`).join('')
@@ -9222,7 +9222,7 @@ function openAddThreadsPost(){
   ;['tp-ref-url','tp-ref-summary','tp-script','tp-note'].forEach(i=>document.getElementById(i).value='')
   document.getElementById('tp-status').value='草稿'
   const personas=DB.get('personas')
-  document.getElementById('tp-persona').innerHTML='<option value="">不指定</option>'+personas.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')
+  document.getElementById('tp-persona').innerHTML='<option value="">不指定</option>'+_categoryOptionsHTML(personas,'','')
   openModal('modal-threads-post')
 }
 
@@ -9232,7 +9232,7 @@ function openEditThreadsPost(id){
   document.getElementById('tp-title').textContent='編輯仿文腳本'
   document.getElementById('tp-dir').value=p.dir||'世足/運彩'
   const personas=DB.get('personas')
-  document.getElementById('tp-persona').innerHTML='<option value="">不指定</option>'+personas.map(pe=>`<option value="${pe.id}"${pe.id===p.personaId?' selected':''}>${pe.name}</option>`).join('')
+  document.getElementById('tp-persona').innerHTML='<option value="">不指定</option>'+_categoryOptionsHTML(personas,p.personaId,'')
   ;['tp-ref-url','tp-ref-summary','tp-script','tp-note'].forEach(i=>document.getElementById(i).value=p[i.replace('tp-','').replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]||'')
   document.getElementById('tp-ref-url').value=p.refUrl||''
   document.getElementById('tp-ref-summary').value=p.refSummary||''
@@ -9328,7 +9328,7 @@ function openAddReplyScript(campaignId){
   document.getElementById('tar-script').value=''
   document.getElementById('tar-status').value='草稿'
   const personas=DB.get('personas')
-  document.getElementById('tar-persona').innerHTML='<option value="">選擇角色</option>'+personas.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')
+  document.getElementById('tar-persona').innerHTML='<option value="">選擇角色</option>'+_categoryOptionsHTML(personas,'','')
   openModal('modal-threads-add-reply')
 }
 
@@ -9341,7 +9341,7 @@ function openEditReplyScript(campaignId,replyId){
   document.getElementById('tar-script').value=r.script||''
   document.getElementById('tar-status').value=r.status||'草稿'
   const personas=DB.get('personas')
-  document.getElementById('tar-persona').innerHTML='<option value="">選擇角色</option>'+personas.map(p=>`<option value="${p.id}"${p.id===r.personaId?' selected':''}>${p.name}</option>`).join('')
+  document.getElementById('tar-persona').innerHTML='<option value="">選擇角色</option>'+_categoryOptionsHTML(personas,r.personaId,'')
   openModal('modal-threads-add-reply')
 }
 
@@ -11270,35 +11270,33 @@ function _setTmTab(plat){
 }
 
 // 填充話題參與角色選單（所有 personas + community + 自訂）
+const CATEGORY_ORDER=['體育預測站','電子站','百家站','彩票站','未分類']
+
+// 依 category 欄位分組產生 <option>，valueFn 決定 option value 的組成方式
+function _categoryOptionsHTML(list, currentId, currentName, valueFn){
+  valueFn = valueFn || (p=>p.id)
+  const byCat={}
+  list.forEach(p=>{ const c=p.category||'未分類'; (byCat[c]=byCat[c]||[]).push(p) })
+  let html=''
+  const cats=[...CATEGORY_ORDER, ...Object.keys(byCat).filter(c=>!CATEGORY_ORDER.includes(c))]
+  cats.forEach(cat=>{
+    const accs=byCat[cat]; if(!accs||!accs.length) return
+    html+=`<optgroup label="${escHtml(cat)}">`
+    accs.forEach(p=>{
+      const val=valueFn(p)
+      const sel2=(p.id===currentId||p.name===currentName)?' selected':''
+      html+=`<option value="${escAttr(val)}"${sel2}>${escHtml(p.name)}</option>`
+    })
+    html+='</optgroup>'
+  })
+  return html
+}
+
 function _fillTaPersonaSel(sel, currentId, currentName){
+  const all=[...(DB.get('personas')||[]),...(DB.get('community')||[])]
   sel.innerHTML = '<option value="">選擇帳號</option>'
-  // 世足角色
-  const personas = DB.get('personas')||[]
-  if(personas.length){
-    sel.innerHTML += '<optgroup label="🎬 世足角色">'
-    personas.forEach(p=>{
-      const sel2 = (p.id===currentId||p.name===currentName)?' selected':''
-      sel.innerHTML += `<option value="${p.id}|${p.name}"${sel2}>${p.name}</option>`
-    })
-    sel.innerHTML += '</optgroup>'
-  }
-  // 矩陣帳號
-  const community = DB.get('community')||[]
-  if(community.length){
-    const byGroup={'A':[],'B':[],'C':[],'':[]};
-    community.forEach(a=>{(byGroup[a.group||'']||byGroup['']).push(a)})
-    const gLabel={'A':'A組 流量','B':'B組 轉接','C':'C組 推廣','':'未分組'}
-    Object.entries(byGroup).forEach(([g,accs])=>{
-      if(!accs.length)return
-      sel.innerHTML += `<optgroup label="🎯 水軍 ${gLabel[g]}">`
-      accs.forEach(a=>{
-        const sel2 = (a.id===currentId||a.name===currentName)?' selected':''
-        sel.innerHTML += `<option value="${a.id}|${a.name}"${sel2}>${a.name}</option>`
-      })
-      sel.innerHTML += '</optgroup>'
-    })
-  }
-  sel.innerHTML += '<option value="custom|">＋ 自訂帳號名稱</option>'
+    + _categoryOptionsHTML(all, currentId, currentName, p=>`${p.id}|${p.name}`)
+    + '<option value="custom|">＋ 自訂帳號名稱</option>'
 }
 
 // ── 話題參與：UTM 追蹤碼自動產生 ──
