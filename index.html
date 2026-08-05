@@ -8134,10 +8134,10 @@ function _actorStatusBadge(s){
   if(s==='banned') return '<span style="background:#ef444418;color:#f87171;border:1px solid #ef444440;border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">⚠ 停權</span>'
   return '<span style="background:#6b728018;color:#9ca3af;border:1px solid #6b728040;border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">停用</span>'
 }
-function _setActorDir(id, tableKey, newDir){
+function _setActorDir(id, tableKey, newCat){
   const list=DB.get(tableKey)||[]
   const a=list.find(x=>x.id===id); if(!a) return
-  a.dir=newDir
+  a.category=newCat
   DB.set(tableKey,list)
   DB.push(tableKey).catch(()=>{})
   renderCommunity()
@@ -8172,11 +8172,10 @@ function _actorCard(a,tableKey,opts){
         <div style="font-weight:700;font-size:1.02rem;margin-bottom:4px">${a.name}</div>
         <div style="font-size:.72rem;color:var(--text2)">${code?`<span style="color:var(--accent);font-family:monospace">${code}</span>`:''} ${(a.igUsername||a.handle)?`· <span style="color:#60a5fa">@${a.igUsername||a.handle}</span>`:''}</div>
         <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;align-items:center">
-          ${(()=>{const col=_CAT_COL[a.dir]||'#64748b';return `<select
+          ${(()=>{const cat=a.category||'未分類';const col=_CAT_COL[cat]||'#64748b';return `<select
             onchange="_setActorDir('${esc(a.id)}','${tableKey}',this.value)"
             style="background:${col}18;color:${col};border:1px solid ${col}44;border-radius:8px;font-size:.63rem;font-weight:600;padding:2px 7px;outline:none;cursor:pointer;max-width:150px">
-            ${Object.keys(_CAT_COL).map(c=>`<option value="${c}"${c===a.dir?' selected':''}>${c}</option>`).join('')}
-            ${!_CAT_COL[a.dir]?`<option value="${a.dir||''}" selected>${a.dir||'(未設定)'}</option>`:''}
+            ${Object.keys(_CAT_COL).map(c=>`<option value="${c}"${c===cat?' selected':''}>${c}</option>`).join('')}
           </select>`})()}
           ${(()=>{const ot=a.operationType||a.roleType||'';const c={'平台':'#3b82f6','真人':'#22c55e','人設+平台':'#a78bfa','真人+平台':'#f59e0b','真人回覆':'#8b5cf6'}[ot]||'';return ot&&c?`<span style="font-size:.65rem;padding:1px 7px;border-radius:3px;background:${c}18;color:${c};border:1px solid ${c}40;font-weight:600">${ot}</span>`:''})()}
         </div>
@@ -8285,40 +8284,52 @@ function saveAnonActor(){
 
 // ── 帳號類型分頁資料（版本 4，2026-07 共識清單，method 獨立欄位）──
 const _ACCT_DEFAULT = {
-  _version: 4,
+  _version: 5,
   ai: [
-    { name:'阿奇',           cat:'體育賽事',       method:'真人+平台', followsTh:86,  followsIg:null, note:'', landing:'' },
-    { name:'kk',             cat:'體育賽事',       method:'真人+平台', followsTh:124, followsIg:null, note:'threads無法使用', landing:'' },
-    { name:'體育賽事排番大叔', cat:'體育賽事',       method:'真人+平台', followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'財神',           cat:'體育賽事',       method:'真人+平台', followsTh:221, followsIg:null, note:'', landing:'' },
-    { name:'米亞運動賽事',    cat:'體育賽事',       method:'平台',      followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'全球球賽情報站',  cat:'體育賽事',       method:'平台',      followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'哈哈看球',        cat:'體育賽事',       method:'平台',      followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'AI體育賽事分析',  cat:'體育賽事',       method:'平台',      followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'陳亦強',          cat:'AI預測平台工具',  method:'真人',      followsTh:30,  followsIg:null, note:'', landing:'' },
-    { name:'小豪',            cat:'部落格真人角',   method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'小豪遊戲筆記',    cat:'部落格真人角',   method:'真人+平台', followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'魚池阿智',        cat:'捕魚',          method:'真人+平台', followsTh:null,followsIg:null, note:'', landing:'' },
-    { name:'捕魚老司機阿網',  cat:'捕魚',          method:'平台',      followsTh:95,  followsIg:null, note:'', landing:'' },
-    { name:'面具男',          cat:'百家樂',         method:'真人+平台', followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'戰術阿森',        cat:'百家樂',         method:'真人+平台', followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'華軒',            cat:'百家樂',         method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'詩涵',            cat:'百家樂',         method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'沐木Mu',          cat:'獎號通',         method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
-    { name:'昭涵',            cat:'獎號通',         method:'真人',      followsTh:0,   followsIg:null, note:'', landing:'' },
+    { name:'阿奇',           cat:'體育預測站', method:'真人+平台', followsTh:11,  followsIg:80,  note:'已封存', landing:'' },
+    { name:'KK',             cat:'體育預測站', method:'真人+平台', followsTh:null,followsIg:123, note:'', landing:'' },
+    { name:'財神',           cat:'體育預測站', method:'真人+平台', followsTh:2409,followsIg:null,note:'', landing:'' },
+    { name:'體育賽事排雷大叔', cat:'體育預測站', method:'真人+平台', followsTh:228, followsIg:null,note:'申訴中', landing:'' },
+    { name:'AI體育賽事分析',  cat:'體育預測站', method:'平台',      followsTh:56,  followsIg:5,   note:'', landing:'' },
+    { name:'米亞運動賽事',    cat:'體育預測站', method:'平台',      followsTh:0,   followsIg:2,   note:'申訴中', landing:'' },
+    { name:'陳亦強',          cat:'體育預測站', method:'真人+平台', followsTh:34,  followsIg:27,  note:'', landing:'' },
+    { name:'哈哈看球',        cat:'體育預測站', method:'平台',      followsTh:null,followsIg:17,  note:'', landing:'' },
+    { name:'魚池阿智',        cat:'電子站',    method:'真人+平台', followsTh:4,   followsIg:95,  note:'', landing:'' },
+    { name:'捕魚老司機阿網',  cat:'電子站',    method:'平台',      followsTh:null,followsIg:53,  note:'', landing:'' },
+    { name:'小豪遊戲筆記',    cat:'電子站',    method:'真人+平台', followsTh:8,   followsIg:4,   note:'', landing:'' },
+    { name:'小夜',            cat:'電子站',    method:'真人+平台', followsTh:2,   followsIg:9,   note:'', landing:'' },
+    { name:'戰術阿森',        cat:'電子站',    method:'真人+平台', followsTh:0,   followsIg:1,   note:'', landing:'' },
+    { name:'電子遊戲觀測所',  cat:'電子站',    method:'平台',      followsTh:0,   followsIg:1,   note:'', landing:'' },
+    { name:'美萱',            cat:'百家站',    method:'真人',      followsTh:null,followsIg:2,   note:'', landing:'' },
+    { name:'妤雅',            cat:'百家站',    method:'真人',      followsTh:0,   followsIg:0,   note:'', landing:'' },
+    { name:'百家樂觀測所',    cat:'百家站',    method:'平台',      followsTh:0,   followsIg:0,   note:'', landing:'' },
+    { name:'昭涵',            cat:'彩票站',    method:'真人',      followsTh:2,   followsIg:6,   note:'', landing:'' },
+    { name:'惠怡',            cat:'彩票站',    method:'真人',      followsTh:0,   followsIg:2,   note:'', landing:'' },
+    { name:'惠琪',            cat:'彩票站',    method:'真人',      followsTh:0,   followsIg:0,   note:'', landing:'' },
+    { name:'獎號通',          cat:'彩票站',    method:'平台',      followsTh:0,   followsIg:0,   note:'', landing:'' },
   ],
   forum: [
-    { name:'倪',          cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'Ian Lin',     cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'阿象',         cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'zahra',       cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'BS',          cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'愛羅絲',       cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'Anne',        cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'米恩',         cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'Jack是個柴迷', cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'Jason Chen',  cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
-    { name:'林家益',       cat:'真人回覆', method:'真人回覆', followsTh:0, followsIg:null, note:'', landing:'' },
+    { name:'波奇',        cat:'未分類', method:'真人回覆', followsTh:3,  followsIg:31, note:'', landing:'' },
+    { name:'倪',          cat:'未分類', method:'真人回覆', followsTh:17, followsIg:48, note:'', landing:'' },
+    { name:'lan Lin',     cat:'未分類', method:'真人回覆', followsTh:10, followsIg:56, note:'', landing:'' },
+    { name:'阿象',         cat:'未分類', method:'真人回覆', followsTh:9,  followsIg:53, note:'', landing:'' },
+    { name:'zahra',       cat:'未分類', method:'真人回覆', followsTh:8,  followsIg:59, note:'', landing:'' },
+    { name:'BS',          cat:'未分類', method:'真人回覆', followsTh:38, followsIg:169,note:'', landing:'' },
+    { name:'愛麗絲',       cat:'未分類', method:'真人回覆', followsTh:2,  followsIg:10, note:'', landing:'' },
+    { name:'Anne',        cat:'未分類', method:'真人回覆', followsTh:8,  followsIg:61, note:'', landing:'' },
+    { name:'米恩',         cat:'未分類', method:'真人回覆', followsTh:5,  followsIg:44, note:'', landing:'' },
+    { name:'柴柴看球',     cat:'未分類', method:'真人回覆', followsTh:10, followsIg:65, note:'暫停經營', landing:'' },
+    { name:'Jason Chen',  cat:'未分類', method:'真人回覆', followsTh:11, followsIg:43, note:'', landing:'' },
+    { name:'林家益',       cat:'未分類', method:'真人回覆', followsTh:6,  followsIg:32, note:'', landing:'' },
+    { name:'慧琪',         cat:'未分類', method:'真人回覆', followsTh:0,  followsIg:2,  note:'', landing:'' },
+    { name:'嘉晴',         cat:'未分類', method:'真人回覆', followsTh:0,  followsIg:0,  note:'', landing:'' },
+    { name:'嘉彤',         cat:'未分類', method:'真人回覆', followsTh:0,  followsIg:0,  note:'', landing:'' },
+    { name:'嘉瑜',         cat:'未分類', method:'真人回覆', followsTh:0,  followsIg:0,  note:'', landing:'' },
+    { name:'佳晴',         cat:'未分類', method:'真人回覆', followsTh:0,  followsIg:1,  note:'', landing:'' },
+    { name:'佳彤',         cat:'未分類', method:'真人回覆', followsTh:0,  followsIg:0,  note:'', landing:'' },
+    { name:'可妤',         cat:'未分類', method:'真人回覆', followsTh:null,followsIg:0, note:'', landing:'' },
+    { name:'靜柔',         cat:'未分類', method:'真人回覆', followsTh:0,  followsIg:0,  note:'', landing:'' },
+    { name:'思琳',         cat:'未分類', method:'真人回覆', followsTh:0,  followsIg:0,  note:'', landing:'' },
   ]
 };
 let _actTypeTab = 'ai', _acctCatFilter = null;
@@ -8533,16 +8544,15 @@ function renderCommunity(){
   // 判斷是否為匿名 SEO 部落格角色（不放進主分類卡片）
   const isBlogPersona=a=>{ const d=a.dir||''; return d.startsWith('匿名社群')||d==='數據分析/Blogger' }
 
-  // 依共識分類分組（所有社群型 personas + community）
-  const CAT_ORDER=['體育賽事','AI預測平台工具','捕魚','百家樂','獎號通','部落格真人角','電子遊戲','真人回覆','其他']
-  const catGroups={}; CAT_ORDER.forEach(c=>catGroups[c]=[])
+  // 依總表分類分組（所有社群型 personas + community）
+  const catGroups={}; CATEGORY_ORDER.forEach(c=>catGroups[c]=[])
 
   persList.filter(a=>!isBlogPersona(a)).forEach(a=>{
-    const cat=a.dir||''; const key=CAT_ORDER.includes(cat)?cat:'其他'
+    const key=CATEGORY_ORDER.includes(a.category)?a.category:'未分類'
     catGroups[key].push({a,tableKey:'personas',editFn:`openEditPersona('${esc(a.id)}')`,crossPlat:seedCodes.has(actorCode(a))})
   })
   commList.forEach(a=>{
-    const cat=a.dir||''; const key=CAT_ORDER.includes(cat)?cat:'其他'
+    const key=CATEGORY_ORDER.includes(a.category)?a.category:'未分類'
     catGroups[key].push({a,tableKey:'community',editFn:`openEditCommunity('${esc(a.id)}')`,crossPlat:seedCodes.has(actorCode(a))})
   })
 
@@ -8588,7 +8598,7 @@ function renderCommunity(){
     <div style="color:var(--text3);font-size:.8rem;padding:12px 0">尚無臉書角色 — 點右側新增</div>
   </div>`
 
-  body.innerHTML=CAT_ORDER.map(catSec).filter(Boolean).join('')+blogSec
+  body.innerHTML=CATEGORY_ORDER.map(catSec).filter(Boolean).join('')+blogSec
   renderWeeklyPostPlan()
 }
 
@@ -8630,8 +8640,7 @@ function saveWeeklyScript(){
 let _wpView='week', _wpMonthOffset=0
 
 const _CAT_COL={
-  '體育賽事':'#3b82f6','AI預測平台工具':'#6366f1','捕魚':'#22c55e','百家樂':'#f59e0b',
-  '獎號通':'#8b5cf6','部落格真人角':'#ec4899','電子遊戲':'#06b6d4','真人回覆':'#64748b','其他':'#94a3b8'
+  '體育預測站':'#3b82f6','電子站':'#06b6d4','百家站':'#f59e0b','彩票站':'#8b5cf6','未分類':'#94a3b8'
 }
 
 function _wkKeyDate(ds){
@@ -8675,7 +8684,8 @@ function renderWeeklyCalendarView(){
   const actors=_wpActors()
   // 建立分類排序（同列表視圖）
   const allCatOrder=[], allCatMap={}
-  actors.forEach(a=>{ const cat=a.raw?.dir||'其他'; if(!allCatMap[cat]){ allCatMap[cat]=[]; allCatOrder.push(cat) } allCatMap[cat].push(a) })
+  actors.forEach(a=>{ const cat=CATEGORY_ORDER.includes(a.raw?.category)?a.raw.category:'未分類'; if(!allCatMap[cat]){ allCatMap[cat]=[]; allCatOrder.push(cat) } allCatMap[cat].push(a) })
+  allCatOrder.sort((x,y)=>CATEGORY_ORDER.indexOf(x)-CATEGORY_ORDER.indexOf(y))
   if(_wpCatFilter===null) _wpCatFilter=allCatOrder[0]||''
   const cf=_wpCatFilter||''
   // 月曆只顯示選中分類的腳本 chip
@@ -8769,7 +8779,7 @@ function openMonthlyScriptEditor(){
   const {yr,mo,weeks}=_monthCal(_wpMonthOffset)
   const scripts=_getScripts()
   const actors=_wpActors()
-  const cats=[...(new Set(actors.map(a=>a.raw?.dir||'其他')))]
+  const cats=CATEGORY_ORDER.filter(cat=>actors.some(a=>(CATEGORY_ORDER.includes(a.raw?.category)?a.raw.category:'未分類')===cat))
   const MN=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
 
   window._mseCats=cats; window._mseWks=weeks.map(w=>w.wk)
@@ -8872,7 +8882,8 @@ function renderWeeklyPostPlan(){
 
   // 計算所有分類（未搜尋前）
   const allCatOrder=[], allCatMap={}
-  actors.forEach(a=>{ const cat=a.raw?.dir||'其他'; if(!allCatMap[cat]){ allCatMap[cat]=[]; allCatOrder.push(cat) } allCatMap[cat].push(a) })
+  actors.forEach(a=>{ const cat=CATEGORY_ORDER.includes(a.raw?.category)?a.raw.category:'未分類'; if(!allCatMap[cat]){ allCatMap[cat]=[]; allCatOrder.push(cat) } allCatMap[cat].push(a) })
+  allCatOrder.sort((x,y)=>CATEGORY_ORDER.indexOf(x)-CATEGORY_ORDER.indexOf(y))
 
   // 若尚未選分類，預設第一個
   if(_wpCatFilter===null) _wpCatFilter=allCatOrder[0]||''
@@ -8890,8 +8901,9 @@ function renderWeeklyPostPlan(){
   const cf=_wpCatFilter||''
 
   const curList=actors.filter(a=>{
-    if(sq) return a.name.toLowerCase().includes(sq)||(a.raw?.dir||'').toLowerCase().includes(sq)
-    return !cf||(a.raw?.dir||'其他')===cf
+    const cat=CATEGORY_ORDER.includes(a.raw?.category)?a.raw.category:'未分類'
+    if(sq) return a.name.toLowerCase().includes(sq)||cat.toLowerCase().includes(sq)
+    return !cf||cat===cf
   })
 
   const thS=`padding:7px 8px;font-size:.7rem;font-weight:600;text-align:center;color:var(--text3);background:var(--g2);border-bottom:1px solid var(--border);white-space:nowrap`
