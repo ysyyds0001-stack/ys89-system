@@ -4612,9 +4612,9 @@ function renderAbTests() {
           <option>回覆</option><option>盲推註冊</option>
         </select>
       </div>
-      <div class="fg"><label>方向</label>
+      <div class="fg"><label>分類</label>
         <select id="ta-dir">
-          <option>世足/運彩</option><option>金流/USDT</option><option>安全/法律</option><option>百家樂</option><option>老虎機</option><option>捕魚機</option>
+          <option>體育預測站</option><option>電子站</option><option>百家站</option><option>彩票站</option><option>未分類</option>
         </select>
       </div>
     </div>
@@ -11314,6 +11314,12 @@ function onTaPersonaChange(sel){
     custom.style.display = sel.value === 'custom|' ? '' : 'none'
     if(sel.value === 'custom|') custom.focus()
   }
+  const [pid]=sel.value?sel.value.split('|'):['']
+  const rec=[...(DB.get('personas')||[]),...(DB.get('community')||[])].find(x=>x.id===pid)
+  if(rec && CATEGORY_ORDER.includes(rec.category)){
+    const dirSel=document.getElementById('ta-dir')
+    if(dirSel) dirSel.value=rec.category
+  }
   taGenUtm()
   _fillUtmPicker('ta-utm-pick', taPersonaCode())
 }
@@ -11457,7 +11463,7 @@ function openEditThreadActivity(id){
   document.getElementById('ta-topic').value = a.topic||''
   document.getElementById('ta-content').value = a.content||''
   document.getElementById('ta-strategy').value = a.strategy||'帶風向'
-  document.getElementById('ta-dir').value = a.dir||'世足/運彩'
+  document.getElementById('ta-dir').value = a.dir||'體育預測站'
   const platforms = a.platforms || ['Threads']
   ;['Threads','IG','FB','Blog'].forEach(p=>{ const el=document.getElementById('ta-plat-'+p); if(el) el.checked=platforms.includes(p) })
   const customEl = document.getElementById('ta-persona-custom')
