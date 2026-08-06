@@ -1,6 +1,21 @@
 {
-  "lastUpdated": "2026-08-05T13:20:53Z",
+  "lastUpdated": "2026-08-06T04:13:24Z",
   "posts": [
+    {
+      "date": "2026-08-06",
+      "persona": null,
+      "personaName": "慧琪",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/IyUMDWV-w/",
+      "landingUrl": null,
+      "utmContent": "huiqi566-0806-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
     {
       "date": "2026-08-05",
       "persona": null,
@@ -27,7 +42,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": null,
+      "linkClicks": 5,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -1667,6 +1682,21 @@
       "note": null
     },
     {
+      "date": "2026-07-20",
+      "persona": null,
+      "personaName": "測試帳號",
+      "platform": "threads",
+      "postUrl": "https://example.com",
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": 1500,
+      "likes": 30,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
       "date": "2026-07-19",
       "persona": "god",
       "personaName": "世足大財神",
@@ -2622,7 +2652,7 @@
       "impressions": 0,
       "likes": 189,
       "comments": 0,
-      "linkClicks": 5,
+      "linkClicks": 1,
       "registrations": null,
       "note": "無法顯示瀏覽"
     },
@@ -2637,7 +2667,7 @@
       "impressions": 320,
       "likes": 6,
       "comments": 0,
-      "linkClicks": 13,
+      "linkClicks": 2,
       "registrations": null,
       "note": null
     },
@@ -2652,7 +2682,7 @@
       "impressions": 182,
       "likes": 2,
       "comments": 0,
-      "linkClicks": 3,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -2667,7 +2697,7 @@
       "impressions": 0,
       "likes": 213,
       "comments": 0,
-      "linkClicks": 5,
+      "linkClicks": 1,
       "registrations": null,
       "note": "AI預測"
     },
@@ -2742,7 +2772,7 @@
       "impressions": 0,
       "likes": 845,
       "comments": 0,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "無法顯示瀏覽"
     },
@@ -2847,7 +2877,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -2877,7 +2907,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 5,
+      "linkClicks": 1,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -2892,7 +2922,7 @@
       "impressions": 0,
       "likes": 12,
       "comments": 0,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "無法顯示瀏覽"
     },
@@ -2907,7 +2937,7 @@
       "impressions": 0,
       "likes": 102,
       "comments": 0,
-      "linkClicks": 2,
+      "linkClicks": null,
       "registrations": null,
       "note": "戰績回顧"
     },
@@ -2997,7 +3027,7 @@
       "impressions": 2905,
       "likes": 11,
       "comments": 10,
-      "linkClicks": 8,
+      "linkClicks": 6,
       "registrations": null,
       "note": null
     },
@@ -3387,7 +3417,7 @@
       "impressions": 133,
       "likes": 7,
       "comments": 0,
-      "linkClicks": 27,
+      "linkClicks": 29,
       "registrations": null,
       "note": null
     },
@@ -3522,7 +3552,7 @@
       "impressions": 646,
       "likes": 6,
       "comments": 0,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "AI預測"
     },
@@ -3582,7 +3612,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 4,
+      "linkClicks": 5,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -3597,7 +3627,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -6777,7 +6807,7 @@
       "impressions": 22000,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 58,
+      "linkClicks": 46,
       "registrations": null,
       "note": "世界盃��費觀賽資訊"
     },
@@ -6912,7 +6942,7 @@
       "impressions": 720,
       "likes": 5,
       "comments": 6,
-      "linkClicks": 14,
+      "linkClicks": 13,
       "registrations": null,
       "note": "6/12賽事提醒"
     },
@@ -8584,9 +8614,15 @@
   ],
   "daily": [
     {
-      "date": "2026-08-05",
+      "date": "2026-08-06",
       "totalImpressions": null,
       "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
+    {
+      "date": "2026-08-05",
+      "totalImpressions": null,
+      "totalLinkClicks": 5,
       "totalRegistrations": null
     },
     {
@@ -8656,6 +8692,12 @@
       "totalRegistrations": null
     },
     {
+      "date": "2026-07-20",
+      "totalImpressions": 1500,
+      "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
+    {
       "date": "2026-07-19",
       "totalImpressions": 3420,
       "totalLinkClicks": 5,
@@ -8712,19 +8754,19 @@
     {
       "date": "2026-07-08",
       "totalImpressions": 10220,
-      "totalLinkClicks": 33,
+      "totalLinkClicks": 5,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-07",
       "totalImpressions": 1208,
-      "totalLinkClicks": 3,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-06",
       "totalImpressions": 4420,
-      "totalLinkClicks": 8,
+      "totalLinkClicks": 6,
       "totalRegistrations": null
     },
     {
@@ -8748,13 +8790,13 @@
     {
       "date": "2026-07-02",
       "totalImpressions": 1519,
-      "totalLinkClicks": 27,
+      "totalLinkClicks": 29,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-01",
       "totalImpressions": 23179,
-      "totalLinkClicks": 8,
+      "totalLinkClicks": 7,
       "totalRegistrations": null
     },
     {
@@ -8874,7 +8916,7 @@
     {
       "date": "2026-06-11",
       "totalImpressions": 48280,
-      "totalLinkClicks": 72,
+      "totalLinkClicks": 59,
       "totalRegistrations": null
     },
     {
