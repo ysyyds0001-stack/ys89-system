@@ -3639,6 +3639,8 @@ function renderAbTests() {
     </div>
     <button class="btn btn-outline" id="actors-inactive-btn" onclick="actorsToggleInactive()" style="font-size:.78rem">👁 顯示停用/停權</button>
   </div>
+  <!-- D1 帳號主檔狀態 -->
+  <div id="d1-panel" style="margin-bottom:20px"></div>
   <!-- 帳號類型總覽分頁 -->
   <div class="card" style="margin-bottom:20px">
     <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:14px">
@@ -5165,6 +5167,18 @@ function renderAbTests() {
 // ===== DB =====
 const K='ys89_'
 const API='https://ys89-api.ysyyds0001.workers.dev'
+
+/* D1 帳號主檔（權威來源：YS89_帳號總表.xlsx）
+   分工：D1 管「身分」——顯示名稱、handle、分類、狀態、發文層級；
+        API 管「內容」——postPrompts、img、essence、tone 等人設素材。
+   兩邊以 masterId(=D1 的 persona_id) 串接。
+
+   為什麼要拆：名稱原本存在 API 的整包 JSON 裡，任何裝置帶著舊資料存檔就整包
+   覆蓋，實測反覆把 KK 打回 kk、財神打回世足大財神、體育賽事排雷大叔打回
+   世足排雷週記，筆數還會從 42 漲到 53。D1 有 primary key，Worker 只開放 GET，
+   蓋不掉。 */
+const D1_API='https://ys89-accounts.ysyyds0001.workers.dev'
+let _d1State={ok:false,count:0,fixed:0,extra:[],at:null,error:null}
 const DB={
   _offline:false,
   _syncErrorKeys:{},
@@ -6451,11 +6465,62 @@ const DEFAULT_COMMUNITY=[
   {id:'c24',name:'小豪',          group:'A',code:'haogame',handle:'haogamediary',dir:'體育賽事',roleType:'真人',role:'社群互動 / IG 水軍',followers:0,direction:'世足話題 / 社群互動',platforms:['IG'],persona:'人設待確立',prompt:'',weekTasks:'',status:'人設建立中'},
 ]
 
+/* 用 D1 校正角色的身分欄位。
+
+   只覆蓋身分（名稱／handle／分類／狀態／層級／粉絲數），
+   **不動 postPrompts、img、essence、tone 這些內容欄位**——那些是他們在
+   儀表板寫的素材，D1 沒有也不該有。
+
+   只在記憶體與 localStorage 校正，不回寫 API：回寫等於又製造一次整包覆蓋，
+   正是我們要避免的。每次開頁都會重新校正，所以就算 API 那邊被舊資料蓋掉，
+   畫面上看到的仍然是對的。 */
+async function syncFromD1(){
+  try{
+    const r=await fetch(D1_API+'/accounts',{cache:'no-store'})
+    if(!r.ok) throw new Error('HTTP '+r.status)
+    const j=await r.json()
+    const rows=j.accounts||[]
+    if(!rows.length) throw new Error('D1 回空的')
+    const byPid={}; rows.forEach(a=>byPid[a.persona_id]=a)
+
+    let fixed=0
+    ;['personas','community'].forEach(key=>{
+      const list=DB.get(key)||[]
+      list.forEach(x=>{
+        const d=byPid[x.masterId]
+        if(!d) return
+        const before=x.name
+        x.name=d.name
+        x.category=d.category
+        x.accountStatus=d.status
+        x.postMode=d.post_mode
+        if(d.handle){ if('igUsername' in x) x.igUsername=d.handle; else x.handle=d.handle }
+        if(d.ig_followers!=null||d.th_followers!=null)
+          x.followersD1={ig:d.ig_followers,th:d.th_followers}
+        if(before!==d.name) fixed++
+      })
+      localStorage.setItem(K+key,JSON.stringify(list))
+    })
+
+    // 線上有、但總表沒有的 → 幽靈資料，標出來讓人知道要清
+    const known=new Set(rows.map(a=>a.persona_id))
+    const extra=[...(DB.get('personas')||[]),...(DB.get('community')||[])]
+      .filter(x=>!x.masterId||!known.has(x.masterId)).map(x=>x.name)
+
+    _d1State={ok:true,count:rows.length,fixed,extra,at:new Date(),error:null}
+    if(fixed) console.info(`[D1] 已校正 ${fixed} 個角色名稱`)
+  }catch(e){
+    _d1State={ok:false,count:0,fixed:0,extra:[],at:new Date(),error:String(e.message||e)}
+    console.warn('[D1] 校正失敗，畫面沿用線上資料：',e)
+  }
+}
+
 async function initData(){
   const sync=document.getElementById('sync-status')
   if(sync) sync.textContent='同步中…'
   try{
     await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads','role_channels','channel_posts','seeding_accounts','report_roles','report_posts','conversions','conv_daily','weekly_scripts','proxy_weekly','picks168_funnel'].map(k=>DB.pull(k)))
+    await syncFromD1()
     if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
     if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
     if(!DB.get('seeding_accounts').length) DB.set('seeding_accounts',DEFAULT_SEEDING_ACCOUNTS)
@@ -8151,10 +8216,21 @@ function actorsToggleInactive(){
   if(btn) btn.textContent=window._actorsShowInactive?'👁 隱藏停用/停權':'👁 顯示停用/停權'
   renderCommunity()
 }
+/* 狀態徽章。D1 校正後用的是總表的中文狀態（現役／觀察中／申訴中／已封存），
+   舊資料則是英文 active/inactive/banned，兩種都要顯示得出來。 */
 function _actorStatusBadge(s){
-  if(!s||s==='active') return '<span style="background:#16a34a18;color:#4ade80;border:1px solid #16a34a40;border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">啟用</span>'
-  if(s==='banned') return '<span style="background:#ef444418;color:#f87171;border:1px solid #ef444440;border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">⚠ 停權</span>'
-  return '<span style="background:#6b728018;color:#9ca3af;border:1px solid #6b728040;border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">停用</span>'
+  const pill=(t,bg,fg)=>`<span style="background:${bg}18;color:${fg};border:1px solid ${bg}40;`+
+    `border-radius:4px;font-size:.63rem;padding:1px 7px;font-weight:600">${t}</span>`
+  if(!s||s==='active') return pill('啟用','#16a34a','#4ade80')
+  const MAP={
+    '現役':   ['現役','#16a34a','#4ade80'],
+    '觀察中': ['👁 觀察中','#eab308','#facc15'],
+    '申訴中': ['⚠ 申訴中','#f97316','#fb923c'],
+    '已封存': ['已封存','#6b7280','#9ca3af'],
+    'banned': ['⚠ 停權','#ef4444','#f87171'],
+  }
+  const m=MAP[s]
+  return m?pill(m[0],m[1],m[2]):pill('停用','#6b7280','#9ca3af')
 }
 function _setActorDir(id, tableKey, newCat){
   const list=DB.get(tableKey)||[]
@@ -8548,15 +8624,76 @@ function renderActTypeTab(){
   </div>`;
 }
 
+/* D1 主檔狀態面板。要讓人一眼看出「畫面上的名字可不可信」。 */
+function renderD1Panel(){
+  const el=document.getElementById('d1-panel'); if(!el) return
+  const s=_d1State
+  const all=[...(DB.get('personas')||[]),...(DB.get('community')||[])]
+  const cat={}; all.forEach(a=>{ if(a.masterId) cat[a.category||'未分類']=(cat[a.category||'未分類']||0)+1 })
+  const st={}; all.forEach(a=>{ if(a.masterId) st[a.accountStatus||'—']=(st[a.accountStatus||'—']||0)+1 })
+  const chip=(k,v,c)=>`<span style="display:inline-flex;align-items:center;gap:5px;background:${c}18;
+    border:1px solid ${c}44;color:${c};border-radius:99px;padding:3px 11px;font-size:.72rem;font-weight:600">
+    ${k}<b style="font-size:.8rem">${v}</b></span>`
+  const CC={'體育預測站':'#3b82f6','電子站':'#06b6d4','百家站':'#f59e0b','彩票站':'#8b5cf6','未分類':'#94a3b8'}
+  const SC={'現役':'#22c55e','觀察中':'#eab308','申訴中':'#f97316','已封存':'#94a3b8'}
+
+  if(!s.ok){
+    el.innerHTML=`<div class="card" style="border-color:#ef444455">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:.9rem;font-weight:700;color:#f87171">⚠ 帳號主檔（D1）連不上</span>
+      </div>
+      <div style="font-size:.78rem;color:var(--text2);line-height:1.7">
+        目前畫面上的角色名稱來自線上暫存，<b style="color:#f87171">可能是被其他裝置覆蓋過的舊名</b>。
+        ${s.error?`<br><span style="color:var(--text3)">錯誤：${escHtml(s.error)}</span>`:''}
+      </div>
+      <button class="btn btn-xs btn-outline" style="margin-top:9px" onclick="syncFromD1().then(()=>{renderD1Panel();renderCommunity()})">重試</button>
+    </div>`
+    return
+  }
+  el.innerHTML=`<div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:.9rem;font-weight:700">🗄️ 帳號主檔</span>
+        <span style="background:#22c55e18;border:1px solid #22c55e44;color:#4ade80;border-radius:99px;
+          padding:2px 9px;font-size:.66rem;font-weight:600">D1 已同步</span>
+        <span style="font-size:.72rem;color:var(--text3)">權威來源：YS89_帳號總表.xlsx</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:.7rem;color:var(--text3)">${s.at?s.at.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}):''}</span>
+        <button class="btn btn-xs btn-outline" onclick="syncFromD1().then(()=>{renderD1Panel();renderCommunity()})">重新校正</button>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px">
+      ${chip('主檔帳號',s.count,'#60a5fa')}
+      ${Object.entries(cat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>chip(k,v,CC[k]||'#94a3b8')).join('')}
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">
+      ${Object.entries(st).sort((a,b)=>b[1]-a[1]).map(([k,v])=>chip(k,v,SC[k]||'#94a3b8')).join('')}
+    </div>
+    ${s.fixed?`<div style="margin-top:10px;font-size:.75rem;color:#4ade80">
+      ✓ 本次校正了 ${s.fixed} 個被改回舊名的角色</div>`:''}
+    ${s.extra.length?`<div style="margin-top:10px;padding:9px 11px;background:#f9731618;
+      border:1px solid #f9731644;border-radius:7px;font-size:.75rem;color:#fb923c;line-height:1.7">
+      ⚠ <b>${s.extra.length} 筆不在總表裡</b>（其他裝置留下的舊資料，不會出現在主檔統計）：
+      ${escHtml(s.extra.slice(0,12).join('、'))}${s.extra.length>12?` …另 ${s.extra.length-12} 筆`:''}
+      </div>`:''}
+  </div>`
+}
+
 function renderCommunity(){
   const body=document.getElementById('actors-body'); if(!body) return
+  renderD1Panel()
   renderActTypeTab()
   try{ renderKpiBanner() }catch(e){}
   window._cmPrompts={}
   ;(DB.get('community')||[]).forEach(a=>{if(a.prompt)window._cmPrompts[a.id]=a.prompt})
 
   const showInactive=window._actorsShowInactive||false
-  const filter=a=>showInactive||!a.accountStatus||a.accountStatus==='active'
+  /* 停用判定要同時吃兩種寫法：舊資料是英文 active/inactive/banned，
+     D1 校正後是總表的中文狀態（現役／觀察中／申訴中／已封存）。
+     只認 'active' 的話，D1 一接上所有帳號都會被當成停用而整批消失。 */
+  const INACTIVE=new Set(['inactive','banned','已封存'])
+  const filter=a=>showInactive||!a.accountStatus||!INACTIVE.has(a.accountStatus)
   const seedList=(DB.get('seeding_accounts')||[]).filter(filter)
   const persList=(DB.get('personas')||[]).filter(filter)
   const commList=(DB.get('community')||[]).filter(filter)
