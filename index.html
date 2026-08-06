@@ -5178,7 +5178,11 @@ const API='https://ys89-api.ysyyds0001.workers.dev'
    世足排雷週記，筆數還會從 42 漲到 53。D1 有 primary key，Worker 只開放 GET，
    蓋不掉。 */
 const D1_API='https://ys89-accounts.ysyyds0001.workers.dev'
-let _d1State={ok:false,count:0,fixed:0,extra:[],at:null,error:null}
+let _d1State={ok:false,count:0,fixed:0,seeded:0,extra:[],at:null,error:null}
+
+/* 這兩份的權威來源是 D1，線上刪掉就該跟著消失，不保留本機殘留。
+   其他 key 不適用——那些本機獨有的可能是離線寫入，丟掉會遺失資料。 */
+const ACCOUNT_KEYS=new Set(['personas','community'])
 const DB={
   _offline:false,
   _syncErrorKeys:{},
@@ -5239,6 +5243,7 @@ const DB={
             // 無 id 的紀錄（如 proxy_weekly）改用 from+'_'+to 當備援 key，避免合併時被略過清空
             const _key=item=>item?.id||((item?.from&&item?.to)?item.from+'_'+item.to:null)
             const map={}
+            const dropped=[]
             d.forEach(item=>{
               const kid=_key(item); if(!kid) return
               // 正規化 CF 資料的 platformMetrics key（Python 寫 lowercase threads）
@@ -5283,9 +5288,19 @@ const DB={
                   map[kid]=cfNewer2?{...item,...cfItem}:{...cfItem,...item,platformMetrics:mergedPm}
                 }
               } else {
-                map[kid]=item
+                /* 線上沒有這筆、只有本機有。
+
+                   一般資料要保留——可能是離線期間寫的，丟掉會遺失。
+                   **但 personas/community 例外**：那兩份的權威來源是 D1，
+                   線上刪掉就該跟著消失。不排除的話，每台裝置的本機殘留都會
+                   在下次存檔時被推回雲端，刪掉的帳號永遠刪不乾淨——
+                   柔盈絲、社群號17、Miya、阿章這些就是這樣一直復活的。 */
+                if(ACCOUNT_KEYS.has(k)) dropped.push(item?.name||kid)
+                else map[kid]=item
               }
             })
+            if(dropped.length)
+              console.info(`[DB.pull] ${k}：移除 ${dropped.length} 筆線上已無的本機殘留 →`,dropped.join('、'))
             localStorage.setItem(K+k,JSON.stringify(Object.values(map)))
           } else if(!Array.isArray(d)&&!Array.isArray(local)&&typeof local==='object'&&Object.keys(local).length>0){
             // 物件：CF + local 合併，local 優先
@@ -6483,7 +6498,7 @@ async function syncFromD1(){
     if(!rows.length) throw new Error('D1 回空的')
     const byPid={}; rows.forEach(a=>byPid[a.persona_id]=a)
 
-    let fixed=0
+    let fixed=0, seeded=0
     ;['personas','community'].forEach(key=>{
       const list=DB.get(key)||[]
       list.forEach(x=>{
@@ -6502,12 +6517,38 @@ async function syncFromD1(){
       localStorage.setItem(K+key,JSON.stringify(list))
     })
 
+    /* 全新裝置（localStorage 空的）就直接用 D1 建 42 支。
+
+       以前這裡是塞寫死的 DEFAULT_PERSONAS / DEFAULT_COMMUNITY，那份是 6 月的
+       舊資料，裡面有柔盈絲、社群號17、Mark、面具男…等總表早就沒有的帳號。
+       只要有人用無痕視窗或清過快取的裝置開一次，那整包就被種回線上，
+       之後怎麼刪都會再出現——這才是幽靈帳號反覆復活的真正原因。 */
+    if(!(DB.get('personas')||[]).length && !(DB.get('community')||[]).length){
+      const mk=a=>({
+        id:'d1_'+a.persona_id, masterId:a.persona_id, name:a.name,
+        handle:a.handle||'', igUsername:a.handle||'', category:a.category,
+        accountStatus:a.status, postMode:a.post_mode, dir:a.category,
+        followers:a.ig_followers||0,
+        followersD1:{ig:a.ig_followers,th:a.th_followers},
+        postPrompts:[], platformMetrics:{},
+        persona:'人設待確立', prompt:'', weekTasks:'',
+        createdAt:new Date().toISOString(),
+      })
+      // 全部放 community：personas 是給有完整人設素材的角色用的，
+      // 從 D1 建出來的只有身分沒有內容，之後在儀表板補素材時再自然分流。
+      const seedList=rows.map(mk)
+      localStorage.setItem(K+'community',JSON.stringify(seedList))
+      localStorage.setItem(K+'personas',JSON.stringify([]))
+      seeded=seedList.length
+      console.info(`[D1] localStorage 是空的，已依主檔建立 ${seeded} 支帳號`)
+    }
+
     // 線上有、但總表沒有的 → 幽靈資料，標出來讓人知道要清
     const known=new Set(rows.map(a=>a.persona_id))
     const extra=[...(DB.get('personas')||[]),...(DB.get('community')||[])]
       .filter(x=>!x.masterId||!known.has(x.masterId)).map(x=>x.name)
 
-    _d1State={ok:true,count:rows.length,fixed,extra,at:new Date(),error:null}
+    _d1State={ok:true,count:rows.length,fixed,seeded,extra,at:new Date(),error:null}
     if(fixed) console.info(`[D1] 已校正 ${fixed} 個角色名稱`)
   }catch(e){
     _d1State={ok:false,count:0,fixed:0,extra:[],at:new Date(),error:String(e.message||e)}
@@ -6521,8 +6562,10 @@ async function initData(){
   try{
     await Promise.all(['personas','articles','posts','community','threads_posts','threads_replies','weekly_kpis','entrances','routing','links','thread_activities','daily_todos','real_reg','meta_ads','role_channels','channel_posts','seeding_accounts','report_roles','report_posts','conversions','conv_daily','weekly_scripts','proxy_weekly','picks168_funnel'].map(k=>DB.pull(k)))
     await syncFromD1()
-    if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
-    if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
+    // 角色資料不再用寫死的種子——syncFromD1() 已經負責建檔與校正。
+    // 舊的 DEFAULT_PERSONAS / DEFAULT_COMMUNITY 是 6 月的過期名單（含柔盈絲、
+    // 社群號17、Mark、面具男等總表沒有的帳號），只要新裝置開一次就被種回線上，
+    // 這是幽靈帳號反覆復活的根源。保留常數只為了舊資料遷移比對，不再寫入。
     if(!DB.get('seeding_accounts').length) DB.set('seeding_accounts',DEFAULT_SEEDING_ACCOUNTS)
     if(!DB.get('report_roles').length) DB.set('report_roles',DEFAULT_REPORT_ROLES)
     if(!DB.get('report_posts').length) DB.set('report_posts',DEFAULT_REPORT_POSTS)
@@ -6543,8 +6586,8 @@ async function initData(){
     if(sync) sync.textContent='已同步'
     setTimeout(()=>{if(sync)sync.textContent=''},2000)
   }catch(e){
-    if(!DB.get('personas').length) DB.set('personas',DEFAULT_PERSONAS)
-    if(!DB.get('community').length) DB.set('community',DEFAULT_COMMUNITY)
+    // 離線時同樣不種舊資料——寧可畫面空著，也不要塞一份過期名單進去，
+    // 因為連上線之後那份就會被推回雲端汙染主檔。
     if(!DB.get('seeding_accounts').length) DB.set('seeding_accounts',DEFAULT_SEEDING_ACCOUNTS)
     if(sync){sync.textContent='離線模式';sync.style.color='#fb923c'}
   }
@@ -8670,6 +8713,8 @@ function renderD1Panel(){
     <div style="display:flex;flex-wrap:wrap;gap:6px">
       ${Object.entries(st).sort((a,b)=>b[1]-a[1]).map(([k,v])=>chip(k,v,SC[k]||'#94a3b8')).join('')}
     </div>
+    ${s.seeded?`<div style="margin-top:10px;font-size:.75rem;color:#4ade80">
+      ✓ 這台裝置沒有角色資料，已依主檔建立 ${s.seeded} 支</div>`:''}
     ${s.fixed?`<div style="margin-top:10px;font-size:.75rem;color:#4ade80">
       ✓ 本次校正了 ${s.fixed} 個被改回舊名的角色</div>`:''}
     ${s.extra.length?`<div style="margin-top:10px;padding:9px 11px;background:#f9731618;
