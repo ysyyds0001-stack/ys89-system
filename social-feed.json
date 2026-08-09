@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-08T02:54:40Z",
+  "lastUpdated": "2026-08-09T03:02:35Z",
   "posts": [
     {
       "date": "2026-08-07",
@@ -2517,7 +2517,7 @@
       "impressions": 0,
       "likes": 8,
       "comments": 4,
-      "linkClicks": 5,
+      "linkClicks": null,
       "registrations": null,
       "note": "無法顯示瀏覽"
     },
@@ -2532,7 +2532,7 @@
       "impressions": 358,
       "likes": 4,
       "comments": 0,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -2832,7 +2832,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 9,
+      "linkClicks": 8,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -3642,7 +3642,7 @@
       "impressions": 133,
       "likes": 7,
       "comments": 0,
-      "linkClicks": 35,
+      "linkClicks": 34,
       "registrations": null,
       "note": null
     },
@@ -7032,7 +7032,7 @@
       "impressions": 22000,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 43,
+      "linkClicks": 36,
       "registrations": null,
       "note": "世界盃��費觀賽資訊"
     },
@@ -7167,7 +7167,7 @@
       "impressions": 720,
       "likes": 5,
       "comments": 6,
-      "linkClicks": 13,
+      "linkClicks": 11,
       "registrations": null,
       "note": "6/12賽事提醒"
     },
@@ -8967,7 +8967,7 @@
     {
       "date": "2026-07-11",
       "totalImpressions": 358,
-      "totalLinkClicks": 6,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -8979,7 +8979,7 @@
     {
       "date": "2026-07-09",
       "totalImpressions": 7601,
-      "totalLinkClicks": 9,
+      "totalLinkClicks": 8,
       "totalRegistrations": null
     },
     {
@@ -9021,7 +9021,7 @@
     {
       "date": "2026-07-02",
       "totalImpressions": 1519,
-      "totalLinkClicks": 35,
+      "totalLinkClicks": 34,
       "totalRegistrations": null
     },
     {
@@ -9147,7 +9147,7 @@
     {
       "date": "2026-06-11",
       "totalImpressions": 48280,
-      "totalLinkClicks": 56,
+      "totalLinkClicks": 47,
       "totalRegistrations": null
     },
     {
