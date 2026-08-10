@@ -11775,7 +11775,7 @@ function openThreadMetrics(id){
   const autoRow = document.getElementById('tm-auto-row')
   const autoStatus = document.getElementById('tm-auto-status')
   if(autoRow){
-    const hasUrl = !!(a.url && a.url.includes('/post/'))
+    const hasUrl = ttReadableUrl(a.url)
     autoRow.style.display = hasUrl ? 'flex' : 'none'
     if(autoStatus) autoStatus.textContent = '需本機 Python 已啟動（python threads_metrics.py）'
   }
@@ -11860,6 +11860,17 @@ function openSetThreadUrl(id){
 // ── 自動批次讀取 Threads 成效（呼叫本地 Python 伺服器）──
 const TT_METRICS_API = 'http://localhost:5568'
 
+// Threads 成效可讀的網址：/post/（電腦版點進貼文）與 /share/（分享鈕給的短網址）都算。
+// 同事日常複製到的多半是 /share/，原本只認 /post/，那些貼文永遠停在「待記錄」——
+// 2026-08-07 實測 13/19 筆是 /share/，全被濾掉。成效伺服器是用瀏覽器開頁的，
+// /share/ 會自己跟前端轉址，實測讀得到數據，所以放行。
+// IG 不列入：threads_metrics.py 只做 Threads，IG 沒有對應的公開數據來源。
+function ttReadableUrl(u){
+  if(!u || u.length <= 20) return false
+  if(!/threads\.(com|net)/.test(u)) return false
+  return u.includes('/post/') || u.includes('/share/')
+}
+
 async function ttAutoBatchMetrics(all=false){
   const ta = DB.get('thread_activities') || []
   const today = getTaipeiDateString()
@@ -11867,7 +11878,7 @@ async function ttAutoBatchMetrics(all=false){
   const pending = ta.filter(a =>
     (all || a.date === today || a.date === yesterday) &&
     a.status !== '已記錄' &&
-    a.url && a.url.length > 20 && a.url.includes('/post/')
+    ttReadableUrl(a.url)
   )
   const log = document.getElementById('tt-auto-log')
   log.style.display = 'block'
