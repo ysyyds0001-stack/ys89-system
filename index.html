@@ -10876,7 +10876,13 @@ function renderLinks(){
 }
 
 // ── 原生 UTM 產生器（讀矩陣帳號號 → 存進短連結）──
-function utmPersonas(){ return allActors().filter(a=>!a.raw||!a.raw.accountStatus||a.raw.accountStatus==='active'); }
+// 停用的才排除，其餘一律列出——不要用白名單。
+// 原本寫 accountStatus==='active'，但總表同步進來的是中文「現役」，
+// 60 支裡 46 支是「現役」全被濾掉，下拉只剩 8 支沒有這個欄位的舊帳號，
+// 看起來就像「角色不見了」。之後再多一種狀態值（例如「暫停經營」）
+// 也不會再無聲消失，頂多是多列出來看得到。
+const UTM_PERSONA_HIDDEN=['inactive','已封存','已停權','停權'];
+function utmPersonas(){ return allActors().filter(a=>!a.raw||!UTM_PERSONA_HIDDEN.includes(a.raw.accountStatus)); }
 // 人設資料同步狀態列（personas/community/seeding_accounts 三個來源，UTM產生器下拉選單即讀這三個）
 const UTM_PERSONA_KEYS=['personas','community','seeding_accounts']
 function renderSyncStatusBar(){
