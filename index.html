@@ -15033,9 +15033,9 @@ function renderMeeting() {
     document.getElementById('mtg-line-menu').innerHTML = menu.length
       ? table(menu.map(r=>`<tr style="border-bottom:1px solid var(--g3)">
           <td style="padding:5px 6px;color:var(--text2)">${itemOf(r.item)}</td>
-          <td style="padding:5px 6px;color:var(--text3)">${r.oa||''}</td>
+          <td style="padding:5px 6px;color:var(--text3)">${r.station||r.oa||''}</td>
           <td style="padding:5px 6px;text-align:right;color:#60a5fa">${r.sessions}</td>
-        </tr>`).join(''), '選單項目', '哪個 OA')
+        </tr>`).join(''), '選單項目', '哪一站')
       : empty('尚無資料。選單已上線，等有人點擊後 GA4 隔日回報。')
   })()
 

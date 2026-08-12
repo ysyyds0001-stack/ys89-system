@@ -26,6 +26,18 @@ PROPERTY_FULL = f"properties/{PROPERTY_ID}"
 PICKS168_ID = "541257936"
 PICKS168_FULL = f"properties/{PICKS168_ID}"
 
+# 四個站各有自己的 GA4 資源——LINE 圖文選單的點擊會落在該站自己的資源裡，
+# 不會匯到 picks168。要看「整體加 LINE 成效」就得四個都拉，不能只拉一個。
+# 2026-08-12 用服務帳號實測，四個都讀得到，主網域也都對得上：
+#   541257936 picks168.com(435) / 543041773 tsaishen888.com(108)
+#   543332819 dgcasnio.com(37)  / 543984577 lott168.com(19)     ※近 28 天工作階段
+STATION_PROPERTIES = {
+    "體育預測站": ("541257936", "picks168.com"),
+    "電子站":     ("543041773", "tsaishen888.com"),
+    "百家站":     ("543332819", "dgcasnio.com"),
+    "彩票站":     ("543984577", "lott168.com"),
+}
+
 # Service Account JSON 路徑（GitHub Actions 會注入為環境變數）
 SA_JSON_PATH = os.environ.get("GA4_SA_KEY_PATH", "./gsc-credentials.json")
 
@@ -313,6 +325,41 @@ def fetch_content_performance(client):
 #
 # 兩者的人完全不同層：①是還沒加好友的陌生流量，②是已經加了的既有好友。
 # 混在一起算會讓數字好看但失真。
+def fetch_line_contents(client, start_date, end_date):
+    """四個站的 utm_content 全部拉回來，每筆標上站別。
+
+    一站掛掉不影響其他站——某個資源沒權限或暫時失敗時，回報後跳過，
+    而不是整個 line 欄變空的（那樣看起來會像「沒人點」，是最糟的失敗方式）。
+    """
+    rows = []
+    for station, (pid, host) in STATION_PROPERTIES.items():
+        try:
+            resp = client.run_report(RunReportRequest(
+                property=f"properties/{pid}",
+                dimensions=[Dimension(name="sessionManualAdContent")],
+                metrics=[Metric(name="sessions"), Metric(name="activeUsers")],
+                date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+            ))
+            n = 0
+            for row in resp.rows:
+                content = row.dimension_values[0].value
+                s = int(row.metric_values[0].value or 0)
+                if not content or content == "(not set)" or s == 0:
+                    continue
+                rows.append({
+                    "content":  content,
+                    "sessions": s,
+                    "users":    int(row.metric_values[1].value or 0),
+                    "station":  station,
+                    "host":     host,
+                })
+                n += 1
+            print(f"   · {station} {host}：{n} 筆 utm_content")
+        except Exception as e:
+            print(f"   ⚠ {station}（{pid}）拉取失敗，跳過：{e}")
+    return rows
+
+
 def aggregate_line(contents):
     """把 contents 依 LINE 的兩條路徑分組。contents 已含所有 utm_content。"""
     join, menu = [], []
@@ -748,6 +795,10 @@ def main():
         "contents_7d":  fetch_picks168_by_content(client, *ranges["7d"]),
     }
 
+    print("💬 拉取四站的 LINE 數據（加好友管道 / 圖文選單）...")
+    line_data = aggregate_line(fetch_line_contents(client, p_start, p_end))
+    line_data["_期間"] = f"{p_start}~{p_end}"
+
     # 組合數據
     ga4_data = {
         "sources": sources,
@@ -766,11 +817,7 @@ def main():
         "accounts_prev7d": period_accts["prev7d"],
         "accounts_28d": period_accts["28d"],
         "ranges": {k: f"{v[0]}~{v[1]}" for k, v in ranges.items()},
-        # 讀 picks168 資源的 contents，不是上面 ys89 站群那個 contents。
-        # 轉址頁在 picks168.com/line/，點擊只會進 541257936；
-        # 拿 539393762 的 contents 去分組永遠是空的（該資源近 28 天
-        # 完全沒有 picks168.com 的流量，實測 0 工作階段）。
-        "line": aggregate_line(picks168_data["contents_28d"]),
+        "line": line_data,
         "picks168": picks168_data,
         "lastUpdated": datetime.now().isoformat(),
     }
