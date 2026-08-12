@@ -766,7 +766,11 @@ def main():
         "accounts_prev7d": period_accts["prev7d"],
         "accounts_28d": period_accts["28d"],
         "ranges": {k: f"{v[0]}~{v[1]}" for k, v in ranges.items()},
-        "line": aggregate_line(contents),
+        # 讀 picks168 資源的 contents，不是上面 ys89 站群那個 contents。
+        # 轉址頁在 picks168.com/line/，點擊只會進 541257936；
+        # 拿 539393762 的 contents 去分組永遠是空的（該資源近 28 天
+        # 完全沒有 picks168.com 的流量，實測 0 工作階段）。
+        "line": aggregate_line(picks168_data["contents_28d"]),
         "picks168": picks168_data,
         "lastUpdated": datetime.now().isoformat(),
     }
