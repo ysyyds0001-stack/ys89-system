@@ -3769,6 +3769,14 @@ function renderAbTests() {
     </div>
   </div>
   <div id="tt-today-banner" style="margin-bottom:16px"></div>
+  <!-- UTM 快速新增：臨時要發帶連結的貼文時，產連結＋建紀錄一次做完。
+       摺疊起來預設不佔版面，需要時才展開。 -->
+  <details style="margin-bottom:14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px">
+    <summary style="cursor:pointer;padding:10px 14px;font-size:.8rem;color:var(--text2)">
+      🔗 UTM 快速新增　<span style="color:var(--text3);font-size:.72rem">產連結＋建發文紀錄，一次做完</span>
+    </summary>
+    <div id="utm-quick" style="padding:0 14px 14px"></div>
+  </details>
   <div id="tt-auto-log" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.78rem;color:var(--text2);line-height:1.8"></div>
   <div id="tt-table"></div>
 </div>
@@ -4004,6 +4012,19 @@ function renderAbTests() {
     <div>
       <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">導流路徑比較</div>
       <div id="mtg-paths"></div>
+    </div>
+  </div>
+
+  <!-- LINE 兩條路徑：加好友（陌生流量）與圖文選單（既有好友），刻意分開不合計 -->
+  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">LINE 官方帳號</div>
+  <div class="mtg-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div>
+      <div style="font-size:.72rem;color:#06c755;margin-bottom:6px">👥 加好友管道（還沒加的人）</div>
+      <div id="mtg-line-join"></div>
+    </div>
+    <div>
+      <div style="font-size:.72rem;color:#60a5fa;margin-bottom:6px">📱 圖文選單（已經是好友的人）</div>
+      <div id="mtg-line-menu"></div>
     </div>
   </div>
 
@@ -4345,6 +4366,10 @@ function renderAbTests() {
     </div></div>
     <div class="fr"><div class="fg"><label>帳號名稱／發布主題</label><input id="ap-direction" placeholder="例：出金/USDT/流水"></div>
     <div class="fg"><label>Threads 帳號 Handle</label><input id="ap-ig-username" placeholder="例：meiyuecai4"></div></div>
+    <!-- UTM 代號：utm_source 用它，也是 utm_content 的前綴（cyq-0811-1）。
+         沒填的話這支不會出現在「UTM 快速新增」的下拉，也做不出逐則歸因。 -->
+    <div class="fg"><label>UTM 代號 <span style="color:var(--text3);font-weight:400;font-size:.9em">utm_source，例：cyq。留空則無法追蹤這支的成效</span></label>
+      <input id="ap-code" placeholder="例：cyq、god、hahaqiu"></div>
     <div class="fg"><label>核心氣質</label><input id="ap-essence" placeholder="例：書呆子感、專注、安靜"></div>
     <div class="fg"><label>語氣風格</label><textarea id="ap-tone" rows="2" placeholder="描述語氣與寫作風格"></textarea></div>
     <div class="fg"><label>適合主題</label><textarea id="ap-topics" rows="2"></textarea></div>
@@ -7196,6 +7221,69 @@ function openAddPersona(){
   openModal('modal-add-persona')
 }
 
+// ── 從 UTM 產生器一次補齊角色的 UTM 代號 ────────────────────────────
+// 沒有 code 的角色不會出現在「UTM 快速新增」的下拉，也做不出逐則歸因
+// （GA4 只認得 utm_source，而 utm_source 就是這個 code）。
+//
+// 對照優先序：先比名稱完全相同，再比歷史 utmContent 用過的前綴。
+// **不用猜的**——比不到就留空並列出來，讓人自己填。亂配的話成效會算到別支頭上。
+async function syncPersonaCodes(){
+  const btn = document.getElementById('sync-code-btn')
+  if(btn){ btn.disabled = true; btn.textContent = '比對中…' }
+  let lib = []
+  try{
+    const r = await fetch('https://ys89-utm.pages.dev/api/personas', {cache:'no-store'})
+    if(r.ok){ const d = await r.json(); lib = (d.personas||[]).filter(function(p){return p.code}) }
+  }catch(e){}
+  if(!lib.length){
+    toast('讀不到 UTM 產生器的角色庫','err')
+    if(btn){ btn.disabled=false; btn.textContent='🔗 從 UTM 產生器補齊代號' }
+    return
+  }
+  const byName = {}
+  lib.forEach(function(p){ byName[(p.name||'').trim()] = p.code })
+
+  // 歷史 utmContent 的前綴：<code>-MMDD-n
+  const byPersona = {}
+  ;(DB.get('thread_activities')||[]).forEach(function(a){
+    const uc = (a.utmContent||'').trim()
+    const m = uc.match(/^([a-z0-9_]+)-\d{4}-\d+$/i)
+    if(m && a.personaName){
+      byPersona[a.personaName] = byPersona[a.personaName] || {}
+      byPersona[a.personaName][m[1]] = (byPersona[a.personaName][m[1]]||0) + 1
+    }
+  })
+  function fromHistory(name){
+    const c = byPersona[name]; if(!c) return ''
+    return Object.keys(c).sort(function(x,y){return c[y]-c[x]})[0] || ''
+  }
+
+  const list = DB.get('personas')||[]
+  const filled = [], missed = [], changed = []
+  list.forEach(function(p){
+    const want = byName[(p.name||'').trim()] || fromHistory(p.name)
+    if(!want){ if(!p.code) missed.push(p.name); return }
+    if(p.code === want) return
+    if(p.code && p.code !== want) changed.push(p.name + '：' + p.code + ' → ' + want)
+    else filled.push(p.name + '（' + want + '）')
+    p.code = want
+  })
+  if(filled.length || changed.length){
+    DB.set('personas', list)
+    DB.push('personas').catch(function(){})
+    try{ renderPersonas() }catch(e){}
+  }
+  const msg = []
+  if(filled.length)  msg.push('補上 ' + filled.length + ' 支：' + filled.join('、'))
+  if(changed.length) msg.push('修正 ' + changed.length + ' 支：' + changed.join('、'))
+  if(missed.length)  msg.push('比不到、需手動填 ' + missed.length + ' 支：' + missed.join('、'))
+  if(!msg.length) msg.push('全部已經是最新，沒有要改的')
+  const box = document.getElementById('sync-code-log')
+  if(box){ box.style.display='block'; box.innerHTML = msg.join('<br>') }
+  toast(filled.length||changed.length ? '代號已更新' : '沒有需要更新的')
+  if(btn){ btn.disabled=false; btn.textContent='🔗 從 UTM 產生器補齊代號' }
+}
+
 function openEditPersona(id){
   const p=DB.get('personas').find(x=>x.id===id); if(!p)return
   document.getElementById('ap-id').value=id
@@ -7220,6 +7308,7 @@ function openEditPersona(id){
   document.getElementById('ap-picks-url').value=p.picksUrl||''
   document.getElementById('ap-operation-type').value=p.operationType||''
   document.getElementById('ap-ig-username').value=p.igUsername||''
+  document.getElementById('ap-code').value=p.code||''
   openModal('modal-add-persona')
 }
 
@@ -7247,6 +7336,8 @@ function savePersona(){
     picksUrl:document.getElementById('ap-picks-url').value.trim(),
     operationType:document.getElementById('ap-operation-type').value,
     igUsername:document.getElementById('ap-ig-username').value.trim(),
+    // 一律小寫英數：GA4 的 utm_source 區分大小寫，Diego 跟 diego 會被拆成兩筆
+    code:document.getElementById('ap-code').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,''),
   }
   if(id){const i=personas.findIndex(x=>x.id===id);if(i>=0)personas[i]={...personas[i],...obj}}
   else personas.push({...obj,id:DB.id(),postPrompts:[],createdAt:new Date().toISOString()})
@@ -11246,6 +11337,9 @@ const TT_STRATEGY_COLOR = {
 }
 
 function renderThreadTracker(){
+  // UTM 快速新增面板跟著這頁一起畫；它讀 personas 與 thread_activities，
+  // DB 就緒後才有內容，所以掛在這裡而不是開頁時。
+  try{ if(!document.getElementById('uq-code')) renderUtmQuick() }catch(e){}
   const today = getTaipeiDateString()
   const daysLeft = Math.ceil((new Date('2026-06-11T00:00:00+08:00') - new Date()) / (1000*60*60*24))
 
@@ -11869,6 +11963,162 @@ function ttReadableUrl(u){
   if(!u || u.length <= 20) return false
   if(!/threads\.(com|net)/.test(u)) return false
   return u.includes('/post/') || u.includes('/share/')
+}
+
+// ── UTM 快速新增 ──────────────────────────────────────────────────────
+// 臨時要發一則帶連結的貼文時用這個：產連結 ＋ 建發文紀錄一次做完。
+//
+// 為什麼要合在一起：GA4 的數字是靠 utm_content 對回 thread_activities 的。
+// 只產連結不建紀錄的話，GA4 那邊有點擊數，但會議總覽的貼文清單裡沒有這一則，
+// 曝光／讚／留言全部對不上，等於白追。
+//
+// 為什麼一定要在瀏覽器裡做：DB.set 會同時寫 localStorage 與 Cloudflare。
+// 從外部只寫 CF 的話，下次這台瀏覽器一存檔就會用本機那份整包蓋回去。
+const UTM_LANDINGS = [
+  {label:'picks168 今日賽事',      url:'https://picks168.com/sports/'},
+  {label:'picks168 MLB 分析',     url:'https://picks168.com/mlb-prediction/'},
+  {label:'picks168 NBA 分析',     url:'https://picks168.com/nba-prediction/'},
+  {label:'picks168 歷史戰績',      url:'https://picks168.com/track-record/'},
+  {label:'picks168 AI 怎麼分析',   url:'https://picks168.com/methodology/'},
+  {label:'ys89.fun 論壇',         url:'https://ys89.fun/forum'},
+  {label:'LINE 加好友（依人設帶）',  url:'__LINE__'}
+]
+const UTM_LINE_CH = {god:1, shizu:1, cc:1, miya:1, cyq:1, hahaqiu:1}
+const UTM_LINE_BASE = 'https://picks168.com/line/'
+
+function utmQuickSeq(code, mmdd){
+  // 序號取「已用過的最大值 +1」，不是「今天第幾則」——後者在有人手動建過時會撞號，
+  // 撞了 GA4 會把兩則的流量算在一起，事後救不回來。
+  const pre = code + '-' + mmdd + '-'
+  const used = new Set()
+  ;(DB.get('thread_activities')||[]).forEach(a=>{
+    const uc=(a.utmContent||'').trim()
+    if(uc.indexOf(pre)===0){ const t=uc.slice(pre.length); if(/^[0-9]+$/.test(t)) used.add(+t) }
+  })
+  let n=1; while(used.has(n)) n++
+  return n
+}
+
+function utmQuickBuild(){
+  const code = document.getElementById('uq-code').value
+  const med  = document.getElementById('uq-medium').value
+  const camp = (document.getElementById('uq-campaign').value||'wc2026').trim()
+  const land = document.getElementById('uq-landing').value
+  const mmdd = document.getElementById('uq-date').value.trim()
+  const seq  = Math.max(1, parseInt(document.getElementById('uq-seq').value,10)||1)
+  const content = code + '-' + mmdd + '-' + seq
+  let url
+  if(land === '__LINE__'){
+    if(!UTM_LINE_CH[code]){
+      document.getElementById('uq-link').innerHTML = '<span style="color:#f87171">這支還沒建 LINE 加好友管道</span>'
+      document.getElementById('uq-content').textContent = content
+      return null
+    }
+    const at = med.indexOf('bio')>=0 ? 'bio' : 'post'
+    url = UTM_LINE_BASE + '?ch=' + code + '&at=' + at + '&pid=' + content
+  } else {
+    const sep = land.indexOf('?')>=0 ? '&' : '?'
+    url = land + sep + 'utm_source=' + code + '&utm_medium=' + med
+        + '&utm_campaign=' + encodeURIComponent(camp) + '&utm_content=' + content
+  }
+  document.getElementById('uq-content').textContent = content
+  document.getElementById('uq-link').textContent = url
+  return {code:code, med:med, camp:camp, land:land, content:content, url:url, mmdd:mmdd}
+}
+
+function utmQuickReseq(){
+  const code=document.getElementById('uq-code').value
+  const mmdd=document.getElementById('uq-date').value.trim()
+  if(/^[0-9]{4}$/.test(mmdd)) document.getElementById('uq-seq').value = utmQuickSeq(code, mmdd)
+  utmQuickBuild()
+}
+
+function utmQuickCopy(){
+  const b=utmQuickBuild(); if(!b) return
+  navigator.clipboard.writeText(b.url).then(function(){toast('已複製連結')},function(){toast('複製失敗','err')})
+}
+
+function utmQuickCreate(){
+  const b=utmQuickBuild(); if(!b) return
+  const postUrl=(document.getElementById('uq-posturl').value||'').trim()
+  const p=(DB.get('personas')||[]).find(function(x){return x.code===b.code})
+  const y=new Date().getFullYear()
+  const date=y+'-'+b.mmdd.slice(0,2)+'-'+b.mmdd.slice(2)
+  const list=DB.get('thread_activities')||[]
+  if(list.some(function(a){return (a.utmContent||'')===b.content})){
+    toast('已經有一筆 '+b.content+'，沒有重複建立','err'); return
+  }
+  const created={
+    date:date, personaId:p?p.id:null, personaName:p?p.name:b.code,
+    platform: b.med.indexOf('ig')===0 ? 'IG' : (b.med.indexOf('fb')===0 ? 'FB' : 'Threads'),
+    url: postUrl, landingUrl: b.url, utmContent: b.content,
+    strategy: '引流/導到ys89', cta_type: 'medium', organic_paid: 'organic',
+    id: DB.id(), createdAt: new Date().toISOString(),
+    status: '待記錄', platformMetrics: {}, notes: ''
+  }
+  try{
+    const r=_computeAttribution(created)
+    created.attribution_level=r.lvl; created.attribution_reason=r.reason; created.missing_requirements=r.missing
+  }catch(e){}
+  list.push(created)
+  DB.set('thread_activities', list)
+  DB.push('thread_activities').catch(function(){})
+  toast('已建立發文紀錄 '+b.content)
+  try{ renderThreadTracker() }catch(e){}
+  utmQuickReseq()
+}
+
+async function renderUtmQuick(){
+  const el=document.getElementById('utm-quick'); if(!el) return
+  // 人設清單以 UTM 產生器的角色庫為準（44 支，utm_source 的權威來源）。
+  // 本地 personas 只有少數幾支填了 code，拿它當清單會漏掉大部分帳號。
+  let ps=[]
+  try{
+    const r=await fetch('https://ys89-utm.pages.dev/api/personas',{cache:'no-store'})
+    if(r.ok){ const d=await r.json(); ps=(d.personas||[]).filter(function(p){return p.code}) }
+  }catch(e){}
+  if(!ps.length) ps=(DB.get('personas')||[]).filter(function(p){return p.code})
+  ps.sort(function(a,b){return a.code.localeCompare(b.code)})
+  const d=new Date()
+  const mmdd=String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')
+  const meds=['th_post','th_bio','th_comment','ig_post','ig_bio','ig_comment','fb_post','comment','other']
+  el.innerHTML=
+   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:10px">'
+   +'<label style="font-size:.7rem;color:var(--text3)">誰發的 utm_source'
+   +'<select id="uq-code" onchange="utmQuickReseq()" style="width:100%">'
+   + ps.map(function(p){return '<option value="'+p.code+'">'+p.name+'（'+p.code+'）'+(UTM_LINE_CH[p.code]?' 🟢LINE':'')+'</option>'}).join('')
+   +'</select></label>'
+   +'<label style="font-size:.7rem;color:var(--text3)">貼在哪 utm_medium'
+   +'<select id="uq-medium" onchange="utmQuickBuild()" style="width:100%">'
+   + meds.map(function(m){return '<option>'+m+'</option>'}).join('')+'</select></label>'
+   +'<label style="font-size:.7rem;color:var(--text3)">導去哪'
+   +'<select id="uq-landing" onchange="utmQuickBuild()" style="width:100%">'
+   + UTM_LANDINGS.map(function(l){return '<option value="'+l.url+'">'+l.label+'</option>'}).join('')+'</select></label>'
+   +'<label style="font-size:.7rem;color:var(--text3)">活動 utm_campaign'
+   +'<input id="uq-campaign" value="wc2026" oninput="utmQuickBuild()" style="width:100%"></label>'
+   +'<label style="font-size:.7rem;color:var(--text3)">日期 MMDD'
+   +'<input id="uq-date" value="'+mmdd+'" oninput="utmQuickReseq()" style="width:100%"></label>'
+   +'<label style="font-size:.7rem;color:var(--text3)">序號（自動避開已用過的）'
+   +'<input id="uq-seq" type="number" min="1" value="1" oninput="utmQuickBuild()" style="width:100%"></label>'
+   +'<label style="font-size:.7rem;color:var(--text3);grid-column:1/-1">貼文網址（發完再補也可以）'
+   +'<input id="uq-posturl" placeholder="https://www.threads.com/..." style="width:100%"></label>'
+   +'</div>'
+   +'<div style="background:var(--g2);border:1px solid var(--border);border-radius:8px;padding:10px">'
+   +'<div style="font-size:.62rem;color:var(--text3)">utm_content</div>'
+   +'<div id="uq-content" style="font-family:monospace;font-size:.88rem;color:var(--accent);font-weight:700">—</div>'
+   +'<div style="font-size:.62rem;color:var(--text3);margin-top:8px">貼文用這條</div>'
+   +'<div id="uq-link" style="font-family:monospace;font-size:.68rem;word-break:break-all;line-height:1.6">—</div>'
+   +'<div style="display:flex;gap:8px;margin-top:10px">'
+   +'<button class="btn btn-outline" onclick="utmQuickCopy()">📋 複製連結</button>'
+   +'<button class="btn" onclick="utmQuickCreate()">＋ 同時建立發文紀錄</button>'
+   +'<button class="btn btn-outline" id="sync-code-btn" onclick="syncPersonaCodes()" '
+   +'title="角色沒有 UTM 代號就不會出現在上面的下拉，也做不出逐則歸因">🔗 從 UTM 產生器補齊代號</button></div>'
+   +'<div id="sync-code-log" style="display:none;font-size:.68rem;color:var(--text2);'
+   +'margin-top:8px;line-height:1.8;background:var(--bg2);padding:8px 10px;border-radius:6px"></div>'
+   +'<div style="font-size:.62rem;color:var(--text3);margin-top:8px">'
+   +'只複製連結的話，GA4 會有點擊數但會議總覽的貼文清單沒有這一則——曝光／讚／留言對不上。要進報表就按右邊那顆。'
+   +'</div></div>'
+  utmQuickReseq()
 }
 
 async function ttAutoBatchMetrics(all=false){
@@ -14905,6 +15155,45 @@ function renderMeeting() {
         <td style="padding:5px 6px;text-align:right"><span style="font-size:.65rem;padding:1px 5px;border-radius:4px;background:${pa.color}20;color:${pa.color}">${pa.level}</span></td>
       </tr>`
     }).join('') + `</tbody></table>${mtgPartialNote}`
+
+  // ── LINE 兩區 ────────────────────────────────────────────────────
+  // 資料來自 ga4-data.json 的 line 區塊（ga4_fetch.py 的 aggregate_line()）。
+  // 加好友＝經 picks168.com/line/ 轉址頁的陌生流量；圖文選單＝既有好友在 LINE 內點擊。
+  // 兩者的人不同層，刻意分成兩張表、不給合計，避免被加在一起當成「LINE 總成效」。
+  ;(function renderLine(){
+    const L = (_ga4Data && _ga4Data.line) || {}
+    // 用系統既有的 pName()：它從 UTM 產生器＋角色主檔動態建對照，
+    // 自己另外維護一份 code→中文名 會跟主檔不同步。
+    const nameOf = c => pName(c)
+    const itemOf = i => ({sports:'今日賽事',mlb:'MLB 分析',nba:'NBA 分析',
+      record:'歷史戰績',method:'AI 怎麼分析',forum:'玩家討論區'}[i] || i)
+    const empty = msg => `<div style="font-size:.68rem;color:var(--text3);padding:10px 6px;
+      border:1px dashed var(--border);border-radius:8px">${msg}</div>`
+    const table = (rows, c1, c2) => `<table style="width:100%;font-size:.72rem;border-collapse:collapse">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        <th style="padding:5px 6px;text-align:left;color:var(--text3)">${c1}</th>
+        <th style="padding:5px 6px;text-align:left;color:var(--text3)">${c2}</th>
+        <th style="padding:5px 6px;text-align:right;color:var(--text3)">點擊</th>
+      </tr></thead><tbody>${rows}</tbody></table>`
+
+    const join = L['加好友管道'] || []
+    document.getElementById('mtg-line-join').innerHTML = join.length
+      ? table(join.map(r=>`<tr style="border-bottom:1px solid var(--g3)">
+          <td style="padding:5px 6px;color:var(--text2)">${nameOf(r.channel)}</td>
+          <td style="padding:5px 6px;color:var(--text3)">${r.placement==='bio'?'個人簡介':'貼文'}</td>
+          <td style="padding:5px 6px;text-align:right;color:#06c755">${r.sessions}</td>
+        </tr>`).join(''), '帳號', '放在哪')
+      : empty('尚無資料。需先把 picks168.com/line/ 轉址頁上線，並在 bio 換成帶 ch 參數的連結。')
+
+    const menu = L['圖文選單'] || []
+    document.getElementById('mtg-line-menu').innerHTML = menu.length
+      ? table(menu.map(r=>`<tr style="border-bottom:1px solid var(--g3)">
+          <td style="padding:5px 6px;color:var(--text2)">${itemOf(r.item)}</td>
+          <td style="padding:5px 6px;color:var(--text3)">${r.oa||''}</td>
+          <td style="padding:5px 6px;text-align:right;color:#60a5fa">${r.sessions}</td>
+        </tr>`).join(''), '選單項目', '哪個 OA')
+      : empty('尚無資料。選單已上線，等有人點擊後 GA4 隔日回報。')
+  })()
 
   // Top / Bottom 5（Bottom 排除 3 天內新文，避免新文因時間不足被誤判為差文）
   const ranked = cActs.filter(a=>(a.platformMetrics?.Threads?.views||0)>0)
