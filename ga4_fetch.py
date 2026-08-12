@@ -300,6 +300,39 @@ def fetch_content_performance(client):
     start_date, end_date = get_date_range()
     return fetch_content_range(client, start_date, end_date)
 
+# ── LINE 相關流量的聚合 ────────────────────────────────────────────────
+# LINE 有兩條完全不同的路徑，報表上要分開看，不能混進「社群水軍」：
+#
+#   ① 加好友管道  utm_medium=line_addfriend
+#      IG bio / 貼文 → picks168.com/line/ 轉址頁 → LINE 加好友。
+#      utm_content 是 <persona code>_<bio|post>，分得出誰帶的、放在哪。
+#      注意：加好友網址本身在 line.me，GA4 追不到，所以才需要那個轉址頁。
+#
+#   ② 圖文選單    utm_medium=line_menu
+#      已經是好友的人在 LINE 裡點選單。utm_content 是 <line_站別>_<選單代碼>。
+#
+# 兩者的人完全不同層：①是還沒加好友的陌生流量，②是已經加了的既有好友。
+# 混在一起算會讓數字好看但失真。
+def aggregate_line(contents):
+    """把 contents 依 LINE 的兩條路徑分組。contents 已含所有 utm_content。"""
+    join, menu = [], []
+    for c in contents or []:
+        name = str(c.get("content") or "")
+        if name.endswith("_bio") or name.endswith("_post"):
+            code, _, at = name.rpartition("_")
+            join.append({**c, "channel": code, "placement": at})
+        elif name.startswith("line_"):
+            parts = name.split("_")
+            menu.append({**c, "oa": "_".join(parts[:2]), "item": parts[-1]})
+    key = lambda x: -x.get("sessions", 0)
+    return {
+        "加好友管道": sorted(join, key=key),
+        "圖文選單": sorted(menu, key=key),
+        "_說明": "加好友＝還沒加的陌生流量（經 picks168.com/line/ 轉址頁）；"
+                 "圖文選單＝已經是好友的人在 LINE 內點擊。兩者不可合計。",
+    }
+
+
 SOCIAL_MEDIUMS = ["th_post", "th_bio", "ig_post", "ig_bio", "social", "post", "story", "comment", "bio"]
 
 def fetch_kpis_range(client, start_date, end_date):
@@ -733,6 +766,7 @@ def main():
         "accounts_prev7d": period_accts["prev7d"],
         "accounts_28d": period_accts["28d"],
         "ranges": {k: f"{v[0]}~{v[1]}" for k, v in ranges.items()},
+        "line": aggregate_line(contents),
         "picks168": picks168_data,
         "lastUpdated": datetime.now().isoformat(),
     }
