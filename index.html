@@ -4007,6 +4007,11 @@ function renderAbTests() {
     </div>
   </div>
 
+  <!-- 誰帶進來的：五個 GA4 資源合計。同一支帳號會同時帶去多個站，
+       只看單一資源會低估（財神在 ys89 站群 51、在 picks168 45）。 -->
+  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">誰帶進來的</div>
+  <div id="mtg-accounts" style="margin-bottom:20px"></div>
+
   <!-- LINE 兩條路徑：加好友（陌生流量）與圖文選單（既有好友），刻意分開不合計 -->
   <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">LINE 官方帳號</div>
   <div class="mtg-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
@@ -15037,6 +15042,36 @@ function renderMeeting() {
           <td style="padding:5px 6px;text-align:right;color:#60a5fa">${r.sessions}</td>
         </tr>`).join(''), '選單項目', '哪一站')
       : empty('尚無資料。選單已上線，等有人點擊後 GA4 隔日回報。')
+
+    // ── 誰帶進來的 ────────────────────────────────────────────────
+    // 進站數是五個 GA4 資源合計，不是單一站。轉換率＝有 CTA 事件的工作階段／進站，
+    // 一定 ≤100%；若看到超過 100% 就是後端取成 eventCount 了（曾出現 333%）。
+    const A = (_ga4Data && _ga4Data.accounts_all) || {}
+    const accs = A['帳號'] || []
+    document.getElementById('mtg-accounts').innerHTML = accs.length
+      ? `<table style="width:100%;font-size:.72rem;border-collapse:collapse">
+          <thead><tr style="border-bottom:1px solid var(--border)">
+            <th style="padding:5px 6px;text-align:left;color:var(--text3)">帳號</th>
+            <th style="padding:5px 6px;text-align:right;color:var(--text3)">帶進站</th>
+            <th style="padding:5px 6px;text-align:right;color:var(--text3)">CTA</th>
+            <th style="padding:5px 6px;text-align:right;color:var(--text3)">轉換率</th>
+            <th style="padding:5px 6px;text-align:left;color:var(--text3)">導去哪幾站</th>
+          </tr></thead><tbody>${accs.map(r=>`
+          <tr style="border-bottom:1px solid var(--g3)">
+            <td style="padding:5px 6px;color:var(--text2)">${r.name||r.source}
+              <span style="color:var(--text3);font-size:.64rem">${r.source}</span></td>
+            <td style="padding:5px 6px;text-align:right;color:var(--accent);font-weight:700">${r.sessions}</td>
+            <td style="padding:5px 6px;text-align:right;color:var(--text2)">${r.cta}</td>
+            <td style="padding:5px 6px;text-align:right;color:${r.cta_rate>=25?'#34d399':'var(--text3)'}">${r.cta_rate}%</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:.66rem">${
+              Object.entries(r.by_station||{}).sort((a,b)=>b[1]-a[1])
+                .map(([k,v])=>k+' '+v).join('　')}</td>
+          </tr>`).join('')}</tbody></table>
+          <div style="font-size:.62rem;color:var(--text3);margin-top:6px">
+            進站數是 picks168／電子站／百家站／彩票站／ys89 站群五個 GA4 資源合計。
+            只看單一站會低估——財神在 ys89 站群 51、在 picks168 還有 45。
+          </div>`
+      : empty('尚無資料。等每日 09:00 排程跑過後出現。')
   })()
 
   // Top / Bottom 5（Bottom 排除 3 天內新文，避免新文因時間不足被誤判為差文）

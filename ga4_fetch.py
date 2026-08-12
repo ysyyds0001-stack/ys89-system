@@ -7,6 +7,7 @@ YS89 GA4 自動數據抓取腳本
 
 import json
 import os
+import urllib.request
 from datetime import datetime, timedelta
 from google.oauth2 import service_account
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
@@ -325,6 +326,119 @@ def fetch_content_performance(client):
 #
 # 兩者的人完全不同層：①是還沒加好友的陌生流量，②是已經加了的既有好友。
 # 混在一起算會讓數字好看但失真。
+def load_persona_codes():
+    """收集所有「是我們自己帳號」的 code。兩邊都要拿，因為兩邊都不完整。
+
+    實測 2026-08-12：
+      UTM 產生器 50 支，但少了 pdl / yezi / nightcat 這些 seeding 帳號
+      系統三個 key 聯集 40 支，但少了 shizu / crab / qiuqiusaizhan
+    兩邊都還在帶流量。只取一邊的話，少掉的那幾支會被當成外部來源丟掉，
+    帳號成效表上就整支消失（不是變成 0，是根本不出現，最難察覺）。
+
+    pages.dev 擋非瀏覽器 UA（回 error 1010），所以要帶瀏覽器 UA。
+    回傳 {code: 名稱}；先進來的名稱優先，UTM 產生器排最後所以不會蓋掉角色庫。
+    """
+    UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+          "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+    codes = {}
+
+    for key in ("personas", "community", "seeding_accounts"):
+        try:
+            req = urllib.request.Request(
+                f"https://ys89-api.ysyyds0001.workers.dev/api/{key}",
+                headers={"User-Agent": "ys89-army/1.0"})
+            with urllib.request.urlopen(req, timeout=30) as r:
+                rows = json.load(r)
+            rows = rows if isinstance(rows, list) else (rows.get("data") or [])
+            n = len(codes)
+            for x in rows:
+                c = (x.get("code") or "").strip()
+                if c:
+                    codes.setdefault(c, x.get("name") or c)
+            print(f"   · {key}：+{len(codes) - n} 支")
+        except Exception as e:
+            print(f"   ⚠ {key} 讀取失敗：{e}")
+
+    try:
+        req = urllib.request.Request("https://ys89-utm.pages.dev/api/personas",
+                                     headers={"User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            d = json.load(r)
+        n = len(codes)
+        for p in d.get("personas", []):
+            if p.get("code"):
+                codes.setdefault(p["code"], p.get("name") or p["code"])
+        print(f"   · UTM 產生器：+{len(codes) - n} 支")
+    except Exception as e:
+        print(f"   ⚠ 讀不到 UTM 產生器（{e}）")
+
+    print(f"   · 帳號 code 合計 {len(codes)} 支")
+    return codes
+
+
+def fetch_accounts_all(client, start_date, end_date, personas=None):
+    """「誰帶進來的」——把每支帳號在所有站的進站數合起來。
+
+    為什麼要合：同一支帳號會同時帶去多個站（財神在 ys89 站群有 80、在
+    picks168 有 54），各資源只看得到自己那一份。分開看會低估，而且
+    電子／百家／彩票三站原本完全沒拉，那些帳號帶進多少人都看不到。
+
+    CTA 分子用「有 CTA 事件的工作階段數」而不是 eventCount——用 eventCount
+    算過單帳號轉換率破百（曾出現 333%），分母是進站數，比值必須 ≤100%。
+    """
+    props = dict(STATION_PROPERTIES)
+    props["ys89站群"] = (PROPERTY_ID, "ys89.fun 等")
+
+    cta_filter = FilterExpression(or_group={"expressions": [
+        FilterExpression(filter=Filter(field_name="eventName",
+                                       string_filter={"value": e}))
+        for e in CTA_EVENTS]})
+
+    acc = {}   # source -> {sessions, users, cta, by_station:{}}
+    for station, (pid, host) in props.items():
+        prop = f"properties/{pid}"
+        try:
+            resp = client.run_report(RunReportRequest(
+                property=prop,
+                dimensions=[Dimension(name="sessionSource")],
+                metrics=[Metric(name="sessions"), Metric(name="activeUsers")],
+                date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+            ))
+            cta_resp = client.run_report(RunReportRequest(
+                property=prop,
+                dimensions=[Dimension(name="sessionSource")],
+                metrics=[Metric(name="sessions")],
+                date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+                dimension_filter=cta_filter,
+            ))
+            cta_map = {r.dimension_values[0].value: int(r.metric_values[0].value or 0)
+                       for r in cta_resp.rows}
+            n = 0
+            for row in resp.rows:
+                src = row.dimension_values[0].value
+                s = int(row.metric_values[0].value or 0)
+                if not src or s == 0:
+                    continue
+                a = acc.setdefault(src, {"source": src, "sessions": 0, "users": 0,
+                                         "cta": 0, "by_station": {}})
+                a["sessions"] += s
+                a["users"]    += int(row.metric_values[1].value or 0)
+                a["cta"]      += cta_map.get(src, 0)
+                a["by_station"][station] = a["by_station"].get(station, 0) + s
+                n += 1
+            print(f"   · {station:<8} {host:<18} {n} 個來源")
+        except Exception as e:
+            print(f"   ⚠ {station}（{pid}）失敗，跳過：{e}")
+
+    # 標出哪些是我們自己的帳號。personas 給不出來時就不標，**不要用猜的**——
+    # 猜錯會讓 google/bing 這種外部來源被當成水軍帳號算進成效裡。
+    codes = set(personas or [])
+    for a in acc.values():
+        a["is_account"] = a["source"] in codes if codes else None
+        a["cta_rate"] = round(a["cta"] / a["sessions"] * 100, 1) if a["sessions"] else 0
+    return sorted(acc.values(), key=lambda x: -x["sessions"])
+
+
 def fetch_line_contents(client, start_date, end_date):
     """四個站的 utm_content 全部拉回來，每筆標上站別。
 
@@ -799,6 +913,20 @@ def main():
     line_data = aggregate_line(fetch_line_contents(client, p_start, p_end))
     line_data["_期間"] = f"{p_start}~{p_end}"
 
+    print("👤 拉取「誰帶進來的」（五個資源合計）...")
+    persona_names = load_persona_codes()
+    accounts_all = fetch_accounts_all(client, p_start, p_end, list(persona_names))
+    for a in accounts_all:
+        a["name"] = persona_names.get(a["source"], a["source"])
+    accounts_all_data = {
+        "_期間": f"{p_start}~{p_end}",
+        "_說明": "每支帳號在所有站的進站合計。同一支會同時帶去多個站，"
+                 "各資源分開看會低估。CTA 用『有 CTA 事件的工作階段數』，"
+                 "轉換率＝CTA階段/進站，必 ≤100%。",
+        "帳號":     [a for a in accounts_all if a.get("is_account")],
+        "其他來源": [a for a in accounts_all if not a.get("is_account")][:20],
+    }
+
     # 組合數據
     ga4_data = {
         "sources": sources,
@@ -818,6 +946,7 @@ def main():
         "accounts_28d": period_accts["28d"],
         "ranges": {k: f"{v[0]}~{v[1]}" for k, v in ranges.items()},
         "line": line_data,
+        "accounts_all": accounts_all_data,
         "picks168": picks168_data,
         "lastUpdated": datetime.now().isoformat(),
     }
