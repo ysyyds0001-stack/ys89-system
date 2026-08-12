@@ -3769,14 +3769,6 @@ function renderAbTests() {
     </div>
   </div>
   <div id="tt-today-banner" style="margin-bottom:16px"></div>
-  <!-- UTM 快速新增：臨時要發帶連結的貼文時，產連結＋建紀錄一次做完。
-       摺疊起來預設不佔版面，需要時才展開。 -->
-  <details style="margin-bottom:14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px">
-    <summary style="cursor:pointer;padding:10px 14px;font-size:.8rem;color:var(--text2)">
-      🔗 UTM 快速新增　<span style="color:var(--text3);font-size:.72rem">產連結＋建發文紀錄，一次做完</span>
-    </summary>
-    <div id="utm-quick" style="padding:0 14px 14px"></div>
-  </details>
   <div id="tt-auto-log" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.78rem;color:var(--text2);line-height:1.8"></div>
   <div id="tt-table"></div>
 </div>
@@ -10895,7 +10887,11 @@ function renderSyncStatusBar(){
       <span style="font-size:.78rem;color:${pending>0?'#f59e42':'var(--text3)'}">${pending>0?'⚠️':'·'} 未同步 <b>${pending}</b> 筆</span>
       ${offline?'<span style="font-size:.72rem;color:#f87171;font-weight:700">📴 目前為離線資料（雲端連線失敗，顯示的是本機暫存）</span>':''}
       <button class="btn btn-xs btn-outline" style="margin-left:auto" onclick="utmSyncAllNow()" id="utm-sync-btn">🔄 立即同步全部到雲端</button>
-    </div>`
+      <button class="btn btn-xs btn-outline" onclick="syncPersonaCodes()" id="sync-code-btn"
+        title="角色沒有 UTM 代號就產不出連結，也做不出逐則歸因">🔗 從 UTM 產生器補齊代號</button>
+    </div>
+    <div id="sync-code-log" style="display:none;font-size:.68rem;color:var(--text2);margin-top:8px;
+      line-height:1.8;background:var(--bg2);padding:8px 10px;border-radius:6px"></div>`
 }
 async function utmSyncAllNow(){
   const btn=document.getElementById('utm-sync-btn')
@@ -11343,9 +11339,6 @@ const TT_STRATEGY_COLOR = {
 }
 
 function renderThreadTracker(){
-  // UTM 快速新增面板跟著這頁一起畫；它讀 personas 與 thread_activities，
-  // DB 就緒後才有內容，所以掛在這裡而不是開頁時。
-  try{ if(!document.getElementById('uq-code')) renderUtmQuick() }catch(e){}
   const today = getTaipeiDateString()
   const daysLeft = Math.ceil((new Date('2026-06-11T00:00:00+08:00') - new Date()) / (1000*60*60*24))
 
@@ -11971,161 +11964,6 @@ function ttReadableUrl(u){
   return u.includes('/post/') || u.includes('/share/')
 }
 
-// ── UTM 快速新增 ──────────────────────────────────────────────────────
-// 臨時要發一則帶連結的貼文時用這個：產連結 ＋ 建發文紀錄一次做完。
-//
-// 為什麼要合在一起：GA4 的數字是靠 utm_content 對回 thread_activities 的。
-// 只產連結不建紀錄的話，GA4 那邊有點擊數，但會議總覽的貼文清單裡沒有這一則，
-// 曝光／讚／留言全部對不上，等於白追。
-//
-// 為什麼一定要在瀏覽器裡做：DB.set 會同時寫 localStorage 與 Cloudflare。
-// 從外部只寫 CF 的話，下次這台瀏覽器一存檔就會用本機那份整包蓋回去。
-const UTM_LANDINGS = [
-  {label:'picks168 今日賽事',      url:'https://picks168.com/sports/'},
-  {label:'picks168 MLB 分析',     url:'https://picks168.com/mlb-prediction/'},
-  {label:'picks168 NBA 分析',     url:'https://picks168.com/nba-prediction/'},
-  {label:'picks168 歷史戰績',      url:'https://picks168.com/track-record/'},
-  {label:'picks168 AI 怎麼分析',   url:'https://picks168.com/methodology/'},
-  {label:'ys89.fun 論壇',         url:'https://ys89.fun/forum'},
-  {label:'LINE 加好友（依人設帶）',  url:'__LINE__'}
-]
-const UTM_LINE_CH = {god:1, shizu:1, cc:1, miya:1, cyq:1, hahaqiu:1}
-const UTM_LINE_BASE = 'https://picks168.com/line/'
-
-function utmQuickSeq(code, mmdd){
-  // 序號取「已用過的最大值 +1」，不是「今天第幾則」——後者在有人手動建過時會撞號，
-  // 撞了 GA4 會把兩則的流量算在一起，事後救不回來。
-  const pre = code + '-' + mmdd + '-'
-  const used = new Set()
-  ;(DB.get('thread_activities')||[]).forEach(a=>{
-    const uc=(a.utmContent||'').trim()
-    if(uc.indexOf(pre)===0){ const t=uc.slice(pre.length); if(/^[0-9]+$/.test(t)) used.add(+t) }
-  })
-  let n=1; while(used.has(n)) n++
-  return n
-}
-
-function utmQuickBuild(){
-  const code = document.getElementById('uq-code').value
-  const med  = document.getElementById('uq-medium').value
-  const camp = (document.getElementById('uq-campaign').value||'wc2026').trim()
-  const land = document.getElementById('uq-landing').value
-  const mmdd = document.getElementById('uq-date').value.trim()
-  const seq  = Math.max(1, parseInt(document.getElementById('uq-seq').value,10)||1)
-  const content = code + '-' + mmdd + '-' + seq
-  let url
-  if(land === '__LINE__'){
-    if(!UTM_LINE_CH[code]){
-      document.getElementById('uq-link').innerHTML = '<span style="color:#f87171">這支還沒建 LINE 加好友管道</span>'
-      document.getElementById('uq-content').textContent = content
-      return null
-    }
-    const at = med.indexOf('bio')>=0 ? 'bio' : 'post'
-    url = UTM_LINE_BASE + '?ch=' + code + '&at=' + at + '&pid=' + content
-  } else {
-    const sep = land.indexOf('?')>=0 ? '&' : '?'
-    url = land + sep + 'utm_source=' + code + '&utm_medium=' + med
-        + '&utm_campaign=' + encodeURIComponent(camp) + '&utm_content=' + content
-  }
-  document.getElementById('uq-content').textContent = content
-  document.getElementById('uq-link').textContent = url
-  return {code:code, med:med, camp:camp, land:land, content:content, url:url, mmdd:mmdd}
-}
-
-function utmQuickReseq(){
-  const code=document.getElementById('uq-code').value
-  const mmdd=document.getElementById('uq-date').value.trim()
-  if(/^[0-9]{4}$/.test(mmdd)) document.getElementById('uq-seq').value = utmQuickSeq(code, mmdd)
-  utmQuickBuild()
-}
-
-function utmQuickCopy(){
-  const b=utmQuickBuild(); if(!b) return
-  navigator.clipboard.writeText(b.url).then(function(){toast('已複製連結')},function(){toast('複製失敗','err')})
-}
-
-function utmQuickCreate(){
-  const b=utmQuickBuild(); if(!b) return
-  const postUrl=(document.getElementById('uq-posturl').value||'').trim()
-  const p=(DB.get('personas')||[]).find(function(x){return x.code===b.code})
-  const y=new Date().getFullYear()
-  const date=y+'-'+b.mmdd.slice(0,2)+'-'+b.mmdd.slice(2)
-  const list=DB.get('thread_activities')||[]
-  if(list.some(function(a){return (a.utmContent||'')===b.content})){
-    toast('已經有一筆 '+b.content+'，沒有重複建立','err'); return
-  }
-  const created={
-    date:date, personaId:p?p.id:null, personaName:p?p.name:b.code,
-    platform: b.med.indexOf('ig')===0 ? 'IG' : (b.med.indexOf('fb')===0 ? 'FB' : 'Threads'),
-    url: postUrl, landingUrl: b.url, utmContent: b.content,
-    strategy: '引流/導到ys89', cta_type: 'medium', organic_paid: 'organic',
-    id: DB.id(), createdAt: new Date().toISOString(),
-    status: '待記錄', platformMetrics: {}, notes: ''
-  }
-  try{
-    const r=_computeAttribution(created)
-    created.attribution_level=r.lvl; created.attribution_reason=r.reason; created.missing_requirements=r.missing
-  }catch(e){}
-  list.push(created)
-  DB.set('thread_activities', list)
-  DB.push('thread_activities').catch(function(){})
-  toast('已建立發文紀錄 '+b.content)
-  try{ renderThreadTracker() }catch(e){}
-  utmQuickReseq()
-}
-
-async function renderUtmQuick(){
-  const el=document.getElementById('utm-quick'); if(!el) return
-  // 人設清單以 UTM 產生器的角色庫為準（44 支，utm_source 的權威來源）。
-  // 本地 personas 只有少數幾支填了 code，拿它當清單會漏掉大部分帳號。
-  let ps=[]
-  try{
-    const r=await fetch('https://ys89-utm.pages.dev/api/personas',{cache:'no-store'})
-    if(r.ok){ const d=await r.json(); ps=(d.personas||[]).filter(function(p){return p.code}) }
-  }catch(e){}
-  if(!ps.length) ps=(DB.get('personas')||[]).filter(function(p){return p.code})
-  ps.sort(function(a,b){return a.code.localeCompare(b.code)})
-  const d=new Date()
-  const mmdd=String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')
-  const meds=['th_post','th_bio','th_comment','ig_post','ig_bio','ig_comment','fb_post','comment','other']
-  el.innerHTML=
-   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:10px">'
-   +'<label style="font-size:.7rem;color:var(--text3)">誰發的 utm_source'
-   +'<select id="uq-code" onchange="utmQuickReseq()" style="width:100%">'
-   + ps.map(function(p){return '<option value="'+p.code+'">'+p.name+'（'+p.code+'）'+(UTM_LINE_CH[p.code]?' 🟢LINE':'')+'</option>'}).join('')
-   +'</select></label>'
-   +'<label style="font-size:.7rem;color:var(--text3)">貼在哪 utm_medium'
-   +'<select id="uq-medium" onchange="utmQuickBuild()" style="width:100%">'
-   + meds.map(function(m){return '<option>'+m+'</option>'}).join('')+'</select></label>'
-   +'<label style="font-size:.7rem;color:var(--text3)">導去哪'
-   +'<select id="uq-landing" onchange="utmQuickBuild()" style="width:100%">'
-   + UTM_LANDINGS.map(function(l){return '<option value="'+l.url+'">'+l.label+'</option>'}).join('')+'</select></label>'
-   +'<label style="font-size:.7rem;color:var(--text3)">活動 utm_campaign'
-   +'<input id="uq-campaign" value="wc2026" oninput="utmQuickBuild()" style="width:100%"></label>'
-   +'<label style="font-size:.7rem;color:var(--text3)">日期 MMDD'
-   +'<input id="uq-date" value="'+mmdd+'" oninput="utmQuickReseq()" style="width:100%"></label>'
-   +'<label style="font-size:.7rem;color:var(--text3)">序號（自動避開已用過的）'
-   +'<input id="uq-seq" type="number" min="1" value="1" oninput="utmQuickBuild()" style="width:100%"></label>'
-   +'<label style="font-size:.7rem;color:var(--text3);grid-column:1/-1">貼文網址（發完再補也可以）'
-   +'<input id="uq-posturl" placeholder="https://www.threads.com/..." style="width:100%"></label>'
-   +'</div>'
-   +'<div style="background:var(--g2);border:1px solid var(--border);border-radius:8px;padding:10px">'
-   +'<div style="font-size:.62rem;color:var(--text3)">utm_content</div>'
-   +'<div id="uq-content" style="font-family:monospace;font-size:.88rem;color:var(--accent);font-weight:700">—</div>'
-   +'<div style="font-size:.62rem;color:var(--text3);margin-top:8px">貼文用這條</div>'
-   +'<div id="uq-link" style="font-family:monospace;font-size:.68rem;word-break:break-all;line-height:1.6">—</div>'
-   +'<div style="display:flex;gap:8px;margin-top:10px">'
-   +'<button class="btn btn-outline" onclick="utmQuickCopy()">📋 複製連結</button>'
-   +'<button class="btn" onclick="utmQuickCreate()">＋ 同時建立發文紀錄</button>'
-   +'<button class="btn btn-outline" id="sync-code-btn" onclick="syncPersonaCodes()" '
-   +'title="角色沒有 UTM 代號就不會出現在上面的下拉，也做不出逐則歸因">🔗 從 UTM 產生器補齊代號</button></div>'
-   +'<div id="sync-code-log" style="display:none;font-size:.68rem;color:var(--text2);'
-   +'margin-top:8px;line-height:1.8;background:var(--bg2);padding:8px 10px;border-radius:6px"></div>'
-   +'<div style="font-size:.62rem;color:var(--text3);margin-top:8px">'
-   +'只複製連結的話，GA4 會有點擊數但會議總覽的貼文清單沒有這一則——曝光／讚／留言對不上。要進報表就按右邊那顆。'
-   +'</div></div>'
-  utmQuickReseq()
-}
 
 async function ttAutoBatchMetrics(all=false){
   const ta = DB.get('thread_activities') || []
