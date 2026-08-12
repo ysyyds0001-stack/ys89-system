@@ -3079,9 +3079,13 @@ function renderAbTests() {
           </select></div>
         <div class="fg"><label>③ 活動 <span style="color:var(--text3);font-size:.72rem">utm_campaign</span></label>
           <select id="u-campaign" onchange="utmCampChange()">
-            <option value="wc2026">wc2026（世界盃·通用）</option><option value="wc2026_live">wc2026_live（直播主打）</option>
-            <option value="wc2026_odds">wc2026_odds（賠率投注）</option><option value="wc2026_schedule">wc2026_schedule（賽程）</option>
-            <option value="wc2026_group">wc2026_group（分組/賽前）</option><option value="wc2026_final">wc2026_final（決賽衝刺）</option>
+            <!-- 只留實際用過的。2026-08-13 查 GA4 近 90 天三個資源：
+                 wc2026 用了 12373 次、wc2026_live 33 次；
+                 wc2026_odds / wc2026_schedule / wc2026_group / wc2026_final
+                 一次都沒出現過，留著只是讓人多花時間選。要用再按自訂。 -->
+            <option value="wc2026">wc2026（世界盃·通用）</option>
+            <option value="wc2026_live">wc2026_live（直播主打）</option>
+            <option value="oa_join">oa_join（LINE 加好友）</option>
             <option value="__custom__">✏️ 自訂…</option>
           </select>
           <input type="text" id="u-campaign-custom" placeholder="自訂活動名（英數底線）" style="margin-top:8px;display:none" oninput="utmGen()"></div>
@@ -10966,9 +10970,37 @@ function utmSuggestContent(p){
   return prefix+(Math.max(0,...used)+1);
 }
 function utmNewContent(){ const p=utmCurrentPersona(); if(!p) return; document.getElementById('u-content').value=utmSuggestContent(p); utmGen(); }
+// ── LINE 加好友：依角色自動帶到「該站自己的」轉址頁 ──────────────────
+// 為什麼不做成兩個落地頁選項讓人自己挑：挑錯站會壞得很安靜。
+// 電子站的角色配到 picks168 的轉址頁 → 轉去體育站的官方帳號（加錯好友），
+// 而且點擊記進體育站的 GA4 資源 → 會議總覽的站別跟著標錯，數字全歪。
+// 落地頁只留一個 __LINE_AUTO__，站別由角色決定，選不錯。
+const LINE_REDIRECT_BASE={
+  '體育預測站':'https://picks168.com/line/',
+  '電子站':'https://tsaishen888.com/line/'
+  // 百家站／彩票站的官方帳號還沒建，建好再加一行即可
+}
+// 有開專屬加入好友管道的角色。沒在這裡的角色選 LINE 落地頁會被擋下來，
+// 而不是產一條轉去預設帳號的連結——那種連結看起來正常，但成效歸不到人。
+const LINE_ROUTES={
+  god:'體育預測站', shizu:'體育預測站', cc:'體育預測站',
+  miya:'體育預測站', cyq:'體育預測站', hahaqiu:'體育預測站',
+  yuchiazhi:'電子站', fishdriver:'電子站', haogame:'電子站',
+  zhansen:'電子站', egameobs:'電子站'
+}
+function utmLineBase(code){
+  const st=LINE_ROUTES[code];
+  return st ? LINE_REDIRECT_BASE[st] : '';
+}
+
 function utmBuildUrl(p){
   let base=document.getElementById('u-landing').value;
   if(base==='__custom__') base=document.getElementById('u-landing-custom').value.trim()||'https://';
+  if(base==='__LINE_AUTO__'){
+    const b=utmLineBase(commCode(p));
+    if(!b) return '__NO_LINE__';
+    base=b;
+  }
   const med=document.getElementById('u-medium').value;
   const sep=base.includes('?')?'&':'?';
   let url=`${base}${sep}utm_source=${commCode(p)}&utm_medium=${med}&utm_campaign=${encodeURIComponent(utmCampVal())}`;
@@ -11007,6 +11039,14 @@ function utmGen(){
   const p=utmCurrentPersona(); const out=document.getElementById('u-out'); if(!out) return;
   if(!p){ out.textContent='（請先在矩陣帳號號新增帳號）'; return; }
   const url=utmBuildUrl(p);
+  if(url==='__NO_LINE__'){
+    out.innerHTML='<span style="color:#f87171">這支還沒開 LINE 加好友管道，產不出可追蹤的連結。</span>'
+      +'<div style="font-size:.68rem;color:var(--text3);margin-top:6px">'
+      +'先到 LINE 後台「加入好友管道」開一個（管道欄填 <b>'+commCode(p)+'</b>），把拿到的 lin.ee 給我登記。<br>'
+      +'現在硬用共用網址的話，連結看起來正常但成效歸不到這支帳號。</div>';
+    document.getElementById('u-copy-btn').setAttribute('data-cp','');
+    return;
+  }
   const isPicks=url.includes('picks168.com');
   out.innerHTML=(isPicks?'<span style="display:inline-block;background:#a78bfa22;border:1px solid #a78bfa60;border-radius:4px;font-size:.67rem;color:#a78bfa;padding:1px 7px;margin-bottom:6px">🤖 GA4：picks168 追蹤</span><br>':'')+url.replace(/utm_source=([^&]*)/,'utm_source=<b style="color:var(--accent2)">$1</b>').replace(/utm_medium=([^&]*)/,'utm_medium=<b style="color:var(--accent2)">$1</b>').replace(/utm_content=([^&]*)/,'utm_content=<b style="color:#4ade80">$1</b>');
   document.getElementById('u-copy-btn').setAttribute('data-cp',url);
