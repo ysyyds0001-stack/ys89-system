@@ -1,62 +1,197 @@
 {
-  "lastUpdated": "2026-08-11T03:04:27Z",
+  "lastUpdated": "2026-08-12T03:23:44Z",
   "posts": [
     {
-      "date": "2026-08-10",
+      "date": "2026-08-11",
+      "persona": "uncle",
+      "personaName": "體育賽事排雷大叔",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/_0iootNNj/",
+      "landingUrl": null,
+      "utmContent": "uncle-0811-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-11",
+      "persona": "linjiayi",
+      "personaName": "林家益",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/Oh7S1mHNt/",
+      "landingUrl": null,
+      "utmContent": "linjiayi-0811-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-11",
       "persona": null,
+      "personaName": "惠琪",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/HyZ57UzWv/",
+      "landingUrl": null,
+      "utmContent": "huiqi3034-0811-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-11",
+      "persona": "zhansen",
+      "personaName": "戰術阿森",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/GVG93fyVn/",
+      "landingUrl": null,
+      "utmContent": "zhansen-0811-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-11",
+      "persona": null,
+      "personaName": "妤雅",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/GIyv_K1QY/",
+      "landingUrl": null,
+      "utmContent": "yuya89223-0811-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-11",
+      "persona": "hahaqiu",
+      "personaName": "哈哈看球",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/FiAla-Rvd/",
+      "landingUrl": null,
+      "utmContent": "hahaqiu-0811-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-11",
+      "persona": "cc",
+      "personaName": "AI體育賽事分析",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/DUqZPXBSi/",
+      "landingUrl": null,
+      "utmContent": "cc-0811-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-11",
+      "persona": null,
+      "personaName": "電子遊戲觀測所",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/DScoE3J_m/",
+      "landingUrl": null,
+      "utmContent": "siyuhan739-0811-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-11",
+      "persona": "jasonchen",
+      "personaName": "Jason Chen",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/Bh6Te0Bl3q/",
+      "landingUrl": null,
+      "utmContent": "jasonchen-0811-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-10",
+      "persona": "haogame",
       "personaName": "小豪遊戲筆記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/_fEuwN3kg/",
       "landingUrl": null,
       "utmContent": "haogame-0810-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 62,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
     },
     {
       "date": "2026-08-10",
-      "persona": null,
+      "persona": "xiaoye",
       "personaName": "小夜",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/HbiV840tY/",
       "landingUrl": null,
       "utmContent": "xiao-0810-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 0,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
     },
     {
       "date": "2026-08-10",
-      "persona": null,
+      "persona": "huiyi6430",
       "personaName": "惠怡",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/GkMy4Eaqx/",
       "landingUrl": null,
       "utmContent": "huiyi6430-0810-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 27,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
     },
     {
       "date": "2026-08-10",
-      "persona": null,
+      "persona": "zhansen",
       "personaName": "戰術阿森",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/FqGq7FHrR/",
       "landingUrl": null,
       "utmContent": "zhansen-0810-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 885,
+      "likes": 2,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -69,54 +204,54 @@
       "postUrl": "https://www.threads.com/share/BAVFOYyYYV/",
       "landingUrl": null,
       "utmContent": "god-0810-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 85,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
     },
     {
       "date": "2026-08-10",
-      "persona": null,
+      "persona": "zhaohan",
       "personaName": "昭涵",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@zhaohan221/post/Db3AhNsEzSw?xmt=AQG04nuaaYzD-WMwXI2ICLlIvJ_W5a5z0Xtgp2VItFmLOw",
       "landingUrl": null,
       "utmContent": "zhaohan-0810-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 9,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
     },
     {
       "date": "2026-08-10",
-      "persona": null,
+      "persona": "cc",
       "personaName": "AI體育賽事分析",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/Db3CuQUEykT?xmt=AQG04QyLrJh8cdNHNcdULv7g_wSvd0f6zWYnwsS24rko-g",
       "landingUrl": null,
       "utmContent": "cc-0810-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 446,
+      "likes": 1,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
     },
     {
       "date": "2026-08-10",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@baoxinyi824h/post/Db3CCaME6r2?xmt=AQG0eGCWk0TcLon64hwh_5UW8iLawllrAnaYIPvtV5SUDg",
       "landingUrl": null,
       "utmContent": "hahaqiu-0810-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 223,
+      "likes": 5,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -138,7 +273,7 @@
     },
     {
       "date": "2026-08-07",
-      "persona": null,
+      "persona": "zhansen",
       "personaName": "戰術阿森",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/H6ayoVFMP/",
@@ -153,7 +288,7 @@
     },
     {
       "date": "2026-08-07",
-      "persona": null,
+      "persona": "xiaoye",
       "personaName": "小夜",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/DypAf393l/",
@@ -168,7 +303,7 @@
     },
     {
       "date": "2026-08-07",
-      "persona": null,
+      "persona": "haogame",
       "personaName": "小豪遊戲筆記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/BAUN1Cd0v8/",
@@ -183,7 +318,7 @@
     },
     {
       "date": "2026-08-07",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DbvN2rxmSqK?xmt=AQG0S6P-kan8m99pLbU3vcRhHvhtB1GdEA_Cu83RGuLl5w",
@@ -198,7 +333,7 @@
     },
     {
       "date": "2026-08-07",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@baoxinyi824h/post/Dbu4Xhqkdt8?xmt=AQG0iCXEwgGs05EIoO4vZgOIvnE2ceGRwx7SOamCniLmLQ",
@@ -228,7 +363,7 @@
     },
     {
       "date": "2026-08-06",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/QCQa0OiR1/",
@@ -243,7 +378,7 @@
     },
     {
       "date": "2026-08-06",
-      "persona": null,
+      "persona": "huiqi566",
       "personaName": "慧琪",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/IyUMDWV-w/",
@@ -258,7 +393,7 @@
     },
     {
       "date": "2026-08-06",
-      "persona": null,
+      "persona": "huiyi6430",
       "personaName": "惠怡",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/IO5pDaesi/",
@@ -273,7 +408,7 @@
     },
     {
       "date": "2026-08-06",
-      "persona": null,
+      "persona": "huiyi6430",
       "personaName": "惠怡",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/FsuPITjXu/",
@@ -288,7 +423,7 @@
     },
     {
       "date": "2026-08-06",
-      "persona": null,
+      "persona": "xiaoye",
       "personaName": "小夜",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/FT3cXl7lr/",
@@ -303,7 +438,7 @@
     },
     {
       "date": "2026-08-06",
-      "persona": null,
+      "persona": "xiaoye",
       "personaName": "小夜",
       "platform": "blog",
       "postUrl": "https://www.threads.com/share/FT3cXl7lr/",
@@ -318,7 +453,7 @@
     },
     {
       "date": "2026-08-06",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DbsXlXZmbeF?xmt=AQG0bCGcYSzq1XReYQK7vJ7K0RY4mXqutzVKd440aRJXEw",
@@ -348,7 +483,7 @@
     },
     {
       "date": "2026-08-05",
-      "persona": null,
+      "persona": "zhaohan",
       "personaName": "昭涵",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/HhgKCwoSF/",
@@ -363,7 +498,7 @@
     },
     {
       "date": "2026-08-05",
-      "persona": null,
+      "persona": "zhansen",
       "personaName": "戰術阿森",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/H0HynP1zs/",
@@ -378,7 +513,7 @@
     },
     {
       "date": "2026-08-05",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/E3QvPPf2N/",
@@ -393,7 +528,7 @@
     },
     {
       "date": "2026-08-05",
-      "persona": null,
+      "persona": "yuchiazhi",
       "personaName": "魚池阿智",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/E1rZcjlpk/",
@@ -408,7 +543,7 @@
     },
     {
       "date": "2026-08-05",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/Dv8q6URgI/",
@@ -423,7 +558,7 @@
     },
     {
       "date": "2026-08-05",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/BBjsy0ZQU7/",
@@ -438,7 +573,7 @@
     },
     {
       "date": "2026-08-05",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DbpjHeDGb0s?xmt=AQG0eoVN3m3022ful3Ekb2SIx9j5ZtlywlDDQejXuin2ew",
@@ -453,7 +588,7 @@
     },
     {
       "date": "2026-08-05",
-      "persona": null,
+      "persona": "yuchiazhi",
       "personaName": "魚池阿智",
       "platform": "threads",
       "postUrl": "https://www.instagram.com/p/DbppcoBk2pK/",
@@ -468,7 +603,7 @@
     },
     {
       "date": "2026-08-05",
-      "persona": null,
+      "persona": "meixuan4846",
       "personaName": "美萱",
       "platform": "threads",
       "postUrl": "https://www.instagram.com/p/DbpkwLjkghp/",
@@ -483,7 +618,7 @@
     },
     {
       "date": "2026-08-04",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/LNYTPwgL_/",
@@ -513,7 +648,7 @@
     },
     {
       "date": "2026-08-04",
-      "persona": null,
+      "persona": "zhansen",
       "personaName": "戰術阿森",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/EYSR-4h-2/",
@@ -528,7 +663,7 @@
     },
     {
       "date": "2026-08-04",
-      "persona": null,
+      "persona": "jasonchen",
       "personaName": "Jason Chen",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/E49LNie53/",
@@ -543,7 +678,7 @@
     },
     {
       "date": "2026-08-04",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/BAPlt3BTEZ",
@@ -558,7 +693,7 @@
     },
     {
       "date": "2026-08-04",
-      "persona": null,
+      "persona": "xiaoye",
       "personaName": "小夜",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@zhaoqing145/post/Dbm5ZKTjw9r",
@@ -573,7 +708,7 @@
     },
     {
       "date": "2026-08-04",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DbnWJs3GVUv?xmt=AQG0JNs1flRJO1vTZ-VUQelN0KGCWAz_MqXYeOdNwFIp-A",
@@ -588,7 +723,7 @@
     },
     {
       "date": "2026-08-04",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@baoxinyi824h/post/DbnZJWCk8Wg?xmt=AQG09jnD6zaL_qr61ye4FkojsgfBKuHb_5NomHKx5w-jdA",
@@ -618,7 +753,7 @@
     },
     {
       "date": "2026-08-03",
-      "persona": null,
+      "persona": "zhansen",
       "personaName": "戰術阿森",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/Hvq8J-U9Q/",
@@ -633,7 +768,7 @@
     },
     {
       "date": "2026-08-03",
-      "persona": null,
+      "persona": "jasonchen",
       "personaName": "Jason Chen",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/GUOLIR0_4/",
@@ -648,7 +783,7 @@
     },
     {
       "date": "2026-08-03",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/FlbEeW1O2/",
@@ -663,7 +798,7 @@
     },
     {
       "date": "2026-08-03",
-      "persona": null,
+      "persona": "linjiayi",
       "personaName": "林家益",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/Et63VgPMO/",
@@ -678,7 +813,7 @@
     },
     {
       "date": "2026-08-03",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/DxcLk_bmA/",
@@ -693,7 +828,7 @@
     },
     {
       "date": "2026-08-03",
-      "persona": null,
+      "persona": "alisi",
       "personaName": "愛麗絲",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/BBpN88RomZ/",
@@ -708,7 +843,7 @@
     },
     {
       "date": "2026-08-03",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/BAbjWLs2c1/",
@@ -732,7 +867,7 @@
       "impressions": 1337,
       "likes": 4,
       "comments": 2,
-      "linkClicks": 11,
+      "linkClicks": 13,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -768,7 +903,7 @@
     },
     {
       "date": "2026-07-31",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/_-Gsa8NCo/",
@@ -783,7 +918,7 @@
     },
     {
       "date": "2026-07-31",
-      "persona": null,
+      "persona": "zhansen",
       "personaName": "戰術阿森",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/IUxiCOo3N/",
@@ -828,7 +963,7 @@
     },
     {
       "date": "2026-07-31",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/FfBvR4eDs/",
@@ -843,7 +978,7 @@
     },
     {
       "date": "2026-07-31",
-      "persona": null,
+      "persona": "linjiayi",
       "personaName": "林家益",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/DQF7k59UE/",
@@ -858,7 +993,7 @@
     },
     {
       "date": "2026-07-31",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/D1l5AuWEh/",
@@ -873,7 +1008,7 @@
     },
     {
       "date": "2026-07-31",
-      "persona": null,
+      "persona": "boqi",
       "personaName": "波奇",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/Bhpn6zcuTn/",
@@ -888,7 +1023,7 @@
     },
     {
       "date": "2026-07-31",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DbcZJBVmboW?xmt=AQG0ybvRZR0pC8r58JGBPoeY7Np9QJoIOxf0XpSxScvJ3A",
@@ -918,7 +1053,7 @@
     },
     {
       "date": "2026-07-31",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "ig",
       "postUrl": null,
@@ -933,7 +1068,7 @@
     },
     {
       "date": "2026-07-31",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": null,
@@ -963,7 +1098,7 @@
     },
     {
       "date": "2026-07-30",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/FlAHe2EOt/",
@@ -993,7 +1128,7 @@
     },
     {
       "date": "2026-07-30",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/DuuM5ojnP/",
@@ -1008,7 +1143,7 @@
     },
     {
       "date": "2026-07-30",
-      "persona": null,
+      "persona": "qiuqiusaizhan",
       "personaName": "全球球賽情報站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/DLzg9UP7X/",
@@ -1038,7 +1173,7 @@
     },
     {
       "date": "2026-07-30",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/BAQ-kSQEKY/",
@@ -1053,7 +1188,7 @@
     },
     {
       "date": "2026-07-30",
-      "persona": null,
+      "persona": "linjiayi",
       "personaName": "林家益",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@jjja790808/post/DbawYHin0Vs?xmt=AQG0ybvRZR0pC8r58JGBPoeY7Np9QJoIOxf0XpSxScvJ3A",
@@ -1113,7 +1248,7 @@
     },
     {
       "date": "2026-07-29",
-      "persona": null,
+      "persona": "bs",
       "personaName": "BS",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/_4UfdQ1vz/",
@@ -1128,7 +1263,7 @@
     },
     {
       "date": "2026-07-29",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/KWYZM-ejv/",
@@ -1143,7 +1278,7 @@
     },
     {
       "date": "2026-07-29",
-      "persona": null,
+      "persona": "boqi",
       "personaName": "波奇",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/GIHbyakWu/",
@@ -1158,7 +1293,7 @@
     },
     {
       "date": "2026-07-29",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/E7XV789n8/",
@@ -1173,7 +1308,7 @@
     },
     {
       "date": "2026-07-29",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/DnZhNfsTu/",
@@ -1203,7 +1338,7 @@
     },
     {
       "date": "2026-07-29",
-      "persona": null,
+      "persona": "qiuqiusaizhan",
       "personaName": "全球球賽情報站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/BijaGyiiGb/",
@@ -1233,7 +1368,7 @@
     },
     {
       "date": "2026-07-29",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/BATQA3TSBx/",
@@ -1263,7 +1398,7 @@
     },
     {
       "date": "2026-07-29",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DbX4ZN3kb3x/?img_index=1",
@@ -1338,7 +1473,7 @@
     },
     {
       "date": "2026-07-28",
-      "persona": null,
+      "persona": "qiuqiusaizhan",
       "personaName": "全球球賽情報站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/HTfu3wFgU/",
@@ -1353,7 +1488,7 @@
     },
     {
       "date": "2026-07-28",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DbVINL3CUFV?xmt=AQG0vEw-0SBnFaymhaCIS7xneKXuCVPOE2sT1qXM59sn2Aa4IPZ2P9226YCHBXd1ORz5zVbq&slof=1",
@@ -1398,7 +1533,7 @@
     },
     {
       "date": "2026-07-28",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@baoxinyi824h/post/DbVJnCCkcPG?xmt=AQG0JXTUY2a8BJo89OFctRrNJy_s7QlVxLVtNDRFwF00eA",
@@ -1413,7 +1548,7 @@
     },
     {
       "date": "2026-07-28",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.instagram.com/p/DbVR2TFEchk/?img_index=1",
@@ -1428,7 +1563,7 @@
     },
     {
       "date": "2026-07-28",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DbVR2TFEchk/?img_index=1",
@@ -1458,7 +1593,7 @@
     },
     {
       "date": "2026-07-27",
-      "persona": null,
+      "persona": "zhaohan",
       "personaName": "昭涵",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@zhaohan221/post/DbS5i9HE5OG?xmt=AQG04yvTaEyytk7CZSnULzRP7nYj0VPjOyt6LewwrPFRiQ",
@@ -1488,7 +1623,7 @@
     },
     {
       "date": "2026-07-27",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DbS2MYRCSbE?xmt=AQG0YzaQ7Em_KPpWEGi4l2WLwf04K8IM10_jPGm26CnvFPTRyIbmK3HhUbs-FsrNP5rLlV4A&slof=1",
@@ -1533,7 +1668,7 @@
     },
     {
       "date": "2026-07-27",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@baoxinyi824h/post/DbS3cysk_pB?xmt=AQG0YrVVYIXQtYOFKY0BNu-jIr9H_tem0Uems1ep9aHjqw",
@@ -1548,7 +1683,7 @@
     },
     {
       "date": "2026-07-27",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.instagram.com/p/DbS4uYhkfxm/?img_index=1https://www.instagram.com/p/DbS4uYhkfxm/?img_index=1",
@@ -1578,7 +1713,7 @@
     },
     {
       "date": "2026-07-24",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DbLJSNUCZ6i?xmt=AQG0jRRie_S3pNRXuZ1s8ImC5NzQy3lF-977nhLK98ggiw",
@@ -1638,7 +1773,7 @@
     },
     {
       "date": "2026-07-23",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DbH3IO-k07o?xmt=AQG0e9rs0LKG0kwbNL7-jVdVDMV53se0NRQE0WqkjZ4pg184aUMBU8d9zeJpcGpD_WIXNIY&slof=1",
@@ -1653,7 +1788,7 @@
     },
     {
       "date": "2026-07-23",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DbIW8PzCWp4?xmt=AQG0NnZZbqn6qtHP3S4UcqGSHlKT4e57k8YNaCGKkI0QZb3DODWIhiaZtITa9f_NiVst3Pa2&slof=1",
@@ -1668,7 +1803,7 @@
     },
     {
       "date": "2026-07-23",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DbH531YmX3-?xmt=AQG0hZPWrNni4TIhnGcEd1Zdfw3qHcVloFhwEb3esvT8vMT97zqSP9pDrWQk7jmQudcJk_gb&slof=1",
@@ -1698,7 +1833,7 @@
     },
     {
       "date": "2026-07-23",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@baoxinyi824h/post/DbIZ1D2EV2W?xmt=AQG0_fYQA9hS55bkzVTyEgmdmcksiq6rAIUl8mX0HyR3lw",
@@ -1713,7 +1848,7 @@
     },
     {
       "date": "2026-07-23",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.instagram.com/p/DbIbaSfEX8H/?img_index=1",
@@ -1758,7 +1893,7 @@
     },
     {
       "date": "2026-07-22",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DbFozi9CQ9k?xmt=AQG0EhmGx6Gj-_fRwunm4QLYJazx4S0RQEI0oJyX9WOqJhQe6zWgAOxdAJv1yicoRHs63No&slof=1",
@@ -1818,7 +1953,7 @@
     },
     {
       "date": "2026-07-22",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@baoxinyi824h/post/DbGHz3yk12n?xmt=AQG0TxwoCnTXoflUDtC-AGLFnRs1RF-JOKSljINkE4QV9A",
@@ -1833,7 +1968,7 @@
     },
     {
       "date": "2026-07-22",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DbGGqdRk4Zl/?img_index=1",
@@ -1893,7 +2028,7 @@
     },
     {
       "date": "2026-07-21",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DbDLZpKE9Zs?xmt=AQG02WLcsZTfWZMhrTLxRJJjFplAK9yEsBg-xP_zi_rCawYLQy1ewvh3QHCZYE6KQp16rH2m&slof=1",
@@ -1908,7 +2043,7 @@
     },
     {
       "date": "2026-07-21",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DbDOZKLCbri?xmt=AQG0LKpTNxL-sVbnkG5XjQtC0kAQ8QnqAX2Vgwzm4_Y8MYKeJv5xvKyIAgFdOggyaLBMJwE&slof=1",
@@ -1923,7 +2058,7 @@
     },
     {
       "date": "2026-07-21",
-      "persona": null,
+      "persona": "qiuqiusaizhan",
       "personaName": "全球球賽情報站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qingyu7907/post/DbDWddWkvxn?xmt=AQG0EMYZgdvNAXObqnIyfiFGhqfJkExk5w4l7tv_HcK_Mw",
@@ -1938,7 +2073,7 @@
     },
     {
       "date": "2026-07-21",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DbDJv9AmZrO?xmt=AQG0p5Joo6mqlzzSjcFWvGlTX1D70D0uxwcUpFbhUzaNBviZPehNuq1Kf7HrJvKRK6EGja0&slof=1",
@@ -1983,7 +2118,7 @@
     },
     {
       "date": "2026-07-21",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@baoxinyi824h/post/DbDExiHkZLA?xmt=AQG0pQXcv0oqy8c5Omj_V0bHw8rWqGhBL3F0wH-UN4XNMg",
@@ -1998,7 +2133,7 @@
     },
     {
       "date": "2026-07-21",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@baoxinyi824h/post/DbDExiHkZLA?xmt=AQG0KwsnvxR65q3Vtiv1PUjUXRMIQY6D9KBhlm3mJNSjGg",
@@ -2013,7 +2148,7 @@
     },
     {
       "date": "2026-07-21",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.instagram.com/p/DbDJNqfkY2V/?img_index=1",
@@ -2058,7 +2193,7 @@
     },
     {
       "date": "2026-07-19",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/Da9o9HGk6ht?xmt=AQG0SnMZ8tTAHmsp2Dsm-XPShHPWCDGzssOAposn-iYVGg",
@@ -2073,7 +2208,7 @@
     },
     {
       "date": "2026-07-18",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/Da5OeWhk4Vb?xmt=AQG0-JMRxDvpG_QM3BhTWgCYzTlizp9eaM4SwGQz_LIfUQ",
@@ -2088,7 +2223,7 @@
     },
     {
       "date": "2026-07-17",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/Da5OeZJE02A?xmt=AQG0r1NPQYysuOFyquX0aEMUeHi79IvVx5WFycrxZrs_xFfR5VuGIf09z8ccrTgZdLN7GSk&slof=1",
@@ -2103,7 +2238,7 @@
     },
     {
       "date": "2026-07-17",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/Da4eM56Cagv?xmt=AQG08A7DA7bk-tW6Gde3-29_PbvfaFJh-mL2Fa4sUZgT-NlkpaanNarqZC2R7_BAnJ8yDHV_&slof=1",
@@ -2118,7 +2253,7 @@
     },
     {
       "date": "2026-07-17",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/Da5Ra4cGb2b?xmt=AQG0We6x-8CYae5H8inUl6CJ3NUCGeV4drV4QayXb4Cd5li3Ig9QzAkHrQ2W73Eo_iU1_1JA&slof=1",
@@ -2133,7 +2268,7 @@
     },
     {
       "date": "2026-07-17",
-      "persona": null,
+      "persona": "xiaoqiu",
       "personaName": "小悠學看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@pinyu3294/post/Da4t0Nwiexy?xmt=AQG0rEPHh74HZCMbuGkWD2PsZTBWA_7EAOTipSHDJAGdSg",
@@ -2223,7 +2358,7 @@
     },
     {
       "date": "2026-07-16",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/Da1_5uCk4n7?xmt=AQG06H-W81cna4Jkf8QhF7lh6EcfHbC_lu-ams-OXkfhKKUN6phS-soElkVlzU-X3aMy1v1D&slof=1",
@@ -2238,7 +2373,7 @@
     },
     {
       "date": "2026-07-16",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/Da2c0P4CZX0?xmt=AQG04EmDMm1BWjMkRujs-_6QgqDyZYbmBejIbTmNE9v2jQ",
@@ -2253,7 +2388,7 @@
     },
     {
       "date": "2026-07-16",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/Da2B6g7mR-6?xmt=AQG01QTs-dg9F9QKvhU1ZZ1wat3bgWF7vbOM0s4tblLRbjjaq505LK5dZPL4BFvEfJ7fWfwP&slof=1",
@@ -2283,7 +2418,7 @@
     },
     {
       "date": "2026-07-16",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@baoxinyi824h/post/Da2DmnzEWx6?xmt=AQG04gkzdiTQX0OTY2Nnc6rxVxj_XSTv5ab0r-sp5cx0Jw",
@@ -2298,7 +2433,7 @@
     },
     {
       "date": "2026-07-16",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.instagram.com/p/Da2M8DqESow/?img_index=1",
@@ -2388,7 +2523,7 @@
     },
     {
       "date": "2026-07-15",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DazVsteE1Li?xmt=AQG03L9eWfIWAoVvICPAELDIaZmcAIzlDOweAofJFTszeq7CysEXs8aQgjg5wFVgUfgj5dk8&slof=1",
@@ -2403,7 +2538,7 @@
     },
     {
       "date": "2026-07-15",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/Daz-rOEEzes?xmt=AQG0GYm5Xqpp-Xk7xc_vPGJpz8AJtFHhg2O2Srxs8G_r2sjhKVv1oGcbpYxPVw3nAwSYd_0&slof=1",
@@ -2418,7 +2553,7 @@
     },
     {
       "date": "2026-07-15",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/Da0BcDHGYmK?xmt=AQG06HV9nEBrejWjR2U68TkRPHjsTpH-JzV50QdLGGNiqSsD3mfvtM0F7IOFacNB_51xatWj&slof=1",
@@ -2433,7 +2568,7 @@
     },
     {
       "date": "2026-07-15",
-      "persona": null,
+      "persona": "huaxuan",
       "personaName": "華軒",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@pintong444/post/Da0B0lcFEIR?xmt=AQG0JgJfF6dBHWlcbV9D28LKKTS38iTVcWSO5XhPl7t9qQ",
@@ -2493,7 +2628,7 @@
     },
     {
       "date": "2026-07-14",
-      "persona": null,
+      "persona": "jack",
       "personaName": "Jack是個柴迷",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/DaiVZb6mV/",
@@ -2517,13 +2652,13 @@
       "impressions": 1452,
       "likes": 1,
       "comments": 0,
-      "linkClicks": 4,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
     {
       "date": "2026-07-14",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DaxKuUlk56K?xmt=AQG0D5UOMJj7Y_YjAaMJIOtqZ_rk0TWAFWYSAppDOJgH5B2jeOaVhksiORUa390lya9LVAmx&slof=1",
@@ -2532,13 +2667,13 @@
       "impressions": 197,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 5,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
     {
       "date": "2026-07-14",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DaxCGEhCfgA?xmt=AQG0sUehqaJo5QnZPKdeua_aIunV3EAK__i_HDAKuLQ8bC5f-mPowkvHuHT5Ku9Nbfub6yLO&slof=1",
@@ -2553,7 +2688,7 @@
     },
     {
       "date": "2026-07-14",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DaxL1q0GVzq?xmt=AQG0h7lntdtnI_i0Vf4C2ioo3Z0Jfrg36ScWr1gRtTIK-aiRQCJPZw6TpMAkspzXxzRX-CS0&slof=1",
@@ -2598,7 +2733,7 @@
     },
     {
       "date": "2026-07-14",
-      "persona": null,
+      "persona": "hahaqiu",
       "personaName": "哈哈看球",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@baoxinyi824h/post/DaxQaI8kTOl?xmt=AQG0L1tLXKavjNBI3wT9bfnW-KVW3f0LtF36kDEBMAMdNg",
@@ -2613,7 +2748,7 @@
     },
     {
       "date": "2026-07-14",
-      "persona": null,
+      "persona": "zhaohan",
       "personaName": "昭涵",
       "platform": "threads",
       "postUrl": null,
@@ -2643,7 +2778,7 @@
     },
     {
       "date": "2026-07-11",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DapSAvCk3rt?xmt=AQG0QFkhs9FAaRpstpGNh6ss2xDjq4n2GYbgQyPoWwKcHw",
@@ -2658,7 +2793,7 @@
     },
     {
       "date": "2026-07-11",
-      "persona": null,
+      "persona": "ianlin",
       "personaName": "Ian Lin",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ugrsrbs53/post/DapVgwuEf9O?xmt=AQG0QFkhs9FAaRpstpGNh6ss2xDjq4n2GYbgQyPoWwKcHw",
@@ -2703,7 +2838,7 @@
     },
     {
       "date": "2026-07-10",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/Damxt36E5xH?xmt=AQG0xzuB0yEuGqY0VKhQG5E1UTGPR7_qQI-TLEDqIWudVw",
@@ -2718,7 +2853,7 @@
     },
     {
       "date": "2026-07-10",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DamkmuAk_rn?xmt=AQG0AF57HaVmgNQS0jKb8SIfbEzS3Dk38qZN6ivt_w6nIA",
@@ -2733,7 +2868,7 @@
     },
     {
       "date": "2026-07-10",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DamfI01k8Fs?xmt=AQG0AF57HaVmgNQS0jKb8SIfbEzS3Dk38qZN6ivt_w6nIA",
@@ -2748,7 +2883,7 @@
     },
     {
       "date": "2026-07-10",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/Damw3QdiXcS?xmt=AQG0A4oyXP1jeHwDYCm5JBpwqavR5ikhqkeN92ZvTt9e7Rot-_DNwZ_Bx_AUCKnThiUTNwW3&slof=1",
@@ -2778,7 +2913,7 @@
     },
     {
       "date": "2026-07-10",
-      "persona": null,
+      "persona": "laok",
       "personaName": "老K娛樂筆記",
       "platform": "blog",
       "postUrl": "https://oldkplaynotes.pixnet.net/blog/posts/916280217214009207",
@@ -2868,7 +3003,7 @@
     },
     {
       "date": "2026-07-09",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DakXuRhk26H?xmt=AQG0MvckwxQTOkXikVfqw-FUDonjNqO7rWuXGpIkjB0dq2hdp6UbCjzwcG5lMT00vqYUPx_b&slof=1",
@@ -2883,7 +3018,7 @@
     },
     {
       "date": "2026-07-09",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DakZRaviYqK?xmt=AQG0oze8a86yjovauq-k6FfP_4UugMpYxSjdEY7yMg8tIUQOW4W-uMASCkaFTK-nEf6_MrUI&slof=1",
@@ -2928,7 +3063,7 @@
     },
     {
       "date": "2026-07-09",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": null,
@@ -2943,7 +3078,7 @@
     },
     {
       "date": "2026-07-09",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": null,
@@ -2952,13 +3087,13 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 4,
+      "linkClicks": 5,
       "registrations": null,
       "note": "UTM產生器建立"
     },
     {
       "date": "2026-07-08",
-      "persona": null,
+      "persona": "axiang",
       "personaName": "阿象",
       "platform": "threads",
       "postUrl": "ttps://www.threads.com/@qiang_no_blind/post/Dah8YqdmXVk?xmt=AQG0J2tOBS_YrFZfCREb5L1jl5y81lIT3i1bggUmdZzDBwx2I8UUiPJpKSrXo8VIwqK7Fqg&slof=1",
@@ -3003,7 +3138,7 @@
     },
     {
       "date": "2026-07-08",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DahsO8_EzpA?xmt=AQG0mD511hZZPU4Ndsv0T7z3xaHAmH8EVWhLqDacvKWHZoEmmbyxjJ9BOdDMFc5CvtgDe_E&slof=1",
@@ -3018,7 +3153,7 @@
     },
     {
       "date": "2026-07-08",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/Dahz8mliVeH?xmt=AQG0qMrdo7U6_xciiKJEyP8D_KrrJziY1vaMXD49RzJKijsnUkpirXyso-aqNvlbQ8CFWwVl&slof=1",
@@ -3033,7 +3168,7 @@
     },
     {
       "date": "2026-07-08",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/Dah8YqdmXVk?xmt=AQG0J2tOBS_YrFZfCREb5L1jl5y81lIT3i1bggUmdZzDBwx2I8UUiPJpKSrXo8VIwqK7Fqg&slof=1",
@@ -3078,7 +3213,7 @@
     },
     {
       "date": "2026-07-08",
-      "persona": null,
+      "persona": "linjiayi",
       "personaName": "林家益",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@jjja790808/post/DaiBdoIH4Dw?xmt=AQG0r9G3lKst7nESSMvfBRK4SF9Z0kwxU6ir6pSgPmYcgokcCHMQhoadtFVZ-X4y1UcDxXk6&slof=1",
@@ -3108,7 +3243,7 @@
     },
     {
       "date": "2026-07-08",
-      "persona": "crab",
+      "persona": "xie2",
       "personaName": "蟹蟹觀測站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@froggyfrooo/post/Dah9M3dGg-z?xmt=AQG0dhFZL6bzhS8IicJ6k6wzuRqgQcmNpfU875FI_pwXHg",
@@ -3123,7 +3258,7 @@
     },
     {
       "date": "2026-07-08",
-      "persona": null,
+      "persona": "axiang",
       "personaName": "阿象",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@elephph8/post/Dah74kimkLU?xmt=AQG0oQI6YMIE3MKoCxuD7_C-2NWS9Q3YmjjMgErgABKjwg",
@@ -3138,7 +3273,7 @@
     },
     {
       "date": "2026-07-08",
-      "persona": null,
+      "persona": "anne",
       "personaName": "Anne",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@aaanne_v/post/Dah-rdQkz4v?xmt=AQG0KOx0MeU6GrbSwMeHTs-I4iu7eEUNwaG_xqE54UZMMSJPATD4MMZ-2q9bVf2jl1yw0Ecn&slof=1",
@@ -3228,7 +3363,7 @@
     },
     {
       "date": "2026-07-08",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": null,
@@ -3243,7 +3378,7 @@
     },
     {
       "date": "2026-07-08",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": null,
@@ -3273,7 +3408,7 @@
     },
     {
       "date": "2026-07-07",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DaezTtDFFYv?xmt=AQG0-yUdPfUCYmQ2tzgh1jt0DUeC4inqhJLDD75CJeWFdg",
@@ -3288,7 +3423,7 @@
     },
     {
       "date": "2026-07-07",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/Dae_d9CFPJv?xmt=AQG0qXUxHHJayVNVak5BrWWY45Z9-6Eh5epC2w9azfxkoOz4gm5vR8KDmn540kBdt7CKxX2d&slof=1",
@@ -3303,7 +3438,7 @@
     },
     {
       "date": "2026-07-07",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DafGBDDiYg3?xmt=AQG0zSeyjAylgeWuHTDeS8TVhLmR0DdACes2HSJrb7qQbghyLoq2tDbSYDE1mS-FVhEy6gJK&slof=1",
@@ -3318,7 +3453,7 @@
     },
     {
       "date": "2026-07-07",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DafglPzmU37?xmt=AQG0qi-HeY0jf0OJFvdFW29uJ3QGioYGhwP-880IjtDb_DtJAf3AA6tEE0LXBRE-oeX6efmV&slof=1",
@@ -3348,7 +3483,7 @@
     },
     {
       "date": "2026-07-07",
-      "persona": "crab",
+      "persona": "xie2",
       "personaName": "蟹蟹觀測站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@froggyfrooo/post/DafLV4YmkWC?xmt=AQG0uu2TKXT6ObNZWmDn0AphwRsYczH3W8s7S4tKXcO-TA",
@@ -3378,7 +3513,7 @@
     },
     {
       "date": "2026-07-06",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DacNIzxE-hb?xmt=AQG0NyBsD5rWl8Ze7cC4gcjiEbGFUBCWDUuOqMCN7c-gNw_Ol-PcOvWBzhWE4fyMiiALiITu&slof=1",
@@ -3393,7 +3528,7 @@
     },
     {
       "date": "2026-07-06",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DachiZmmWjE?xmt=AQG0590kHu9BryFdt2TnKM7NCk0s8MU91iBuhJKt4c0xhA",
@@ -3438,7 +3573,7 @@
     },
     {
       "date": "2026-07-06",
-      "persona": "crab",
+      "persona": "xie2",
       "personaName": "蟹蟹觀測站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@froggyfrooo/post/Dacgh2vGnPX?xmt=AQG02xEcufGWltW5QpEfkgVm2MyxvHEUK_PbvDKIwvs5zA",
@@ -3453,7 +3588,7 @@
     },
     {
       "date": "2026-07-06",
-      "persona": "crab",
+      "persona": "xie2",
       "personaName": "蟹蟹觀測站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@froggyfrooo/post/DacgKFqmlVa?xmt=AQG02xEcufGWltW5QpEfkgVm2MyxvHEUK_PbvDKIwvs5zA",
@@ -3468,7 +3603,7 @@
     },
     {
       "date": "2026-07-06",
-      "persona": null,
+      "persona": "stevenc",
       "personaName": "Steven.C",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@anya8347pf/post/DaciYLDAcW2?xmt=AQG0CCX7F39aJXIDqJTyO2D26mgCKPmubCh0U9E4UvU_4O5gtlNJLJ3cmXaqemVoeLT0Duw&slof=1",
@@ -3543,7 +3678,7 @@
     },
     {
       "date": "2026-07-03",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DaUr5lMk8gs?xmt=AQG0kTNh9jcQx-G_vIzc_-5ndKQVKhLELvCvCE3trfTEfpnFvkx2az1RRohdgEZAlIFw5GFv&slof=1",
@@ -3558,7 +3693,7 @@
     },
     {
       "date": "2026-07-03",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DaUjhZVCd7u?xmt=AQG0_eDcqqrXjC4hDP3UhWWH2GEpC5w8AlQaViHedyZ_lgdpPYj0dJf4AEpRE6PCp0Hyv7bE&slof=1",
@@ -3573,7 +3708,7 @@
     },
     {
       "date": "2026-07-03",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DaUf1C5GSXQ?xmt=AQG0H4GGm-7Dme2WgMXetDDXMw4Esr4KInye_ew4mH4hyQ",
@@ -3603,7 +3738,7 @@
     },
     {
       "date": "2026-07-03",
-      "persona": null,
+      "persona": "jack",
       "personaName": "Jack是個柴迷",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@jackpopmm/post/DaVANczn8hR?xmt=AQG0YVpJhazW1wy3EVNXEDIOZSOnkFYWwlHkmZPP3brnYA",
@@ -3633,7 +3768,7 @@
     },
     {
       "date": "2026-07-03",
-      "persona": "crab",
+      "persona": "xie2",
       "personaName": "蟹蟹觀測站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@froggyfrooo/post/DaUkXqkGtzc?xmt=AQG0JPeENOy2yyoaRphfI6WbEy_QvbihYXUpwVEnWu8Tig",
@@ -3648,7 +3783,7 @@
     },
     {
       "date": "2026-07-03",
-      "persona": null,
+      "persona": "stevenc",
       "personaName": "Steven.C",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@anya8347pf/post/DaUzpm6Aa0E?xmt=AQG0XrFDmEKLqLW0WnRPTChUmB7V77B6QsGeyARo9GILzIh5GK8x49NDX_nLdLOX0cU5xbIM&slof=1",
@@ -3663,7 +3798,7 @@
     },
     {
       "date": "2026-07-03",
-      "persona": null,
+      "persona": "jasonchen",
       "personaName": "Jason Chen",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@3ixyw0144/post/DaU0jLGEqeW?xmt=AQG0APJO-pD2Ylchb757Y-HeybcdzYVbq_a-wFXvRfA8PG_hXb4NfM7NCIu0PNy9SyfA8pQ&slof=1",
@@ -3753,7 +3888,7 @@
     },
     {
       "date": "2026-07-02",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DaSEJlhkwc8?xmt=AQG04QGIhubnN4SuK4FExeJkBss_FWiBIwJo4Gc3etYadQ",
@@ -3762,13 +3897,13 @@
       "impressions": 133,
       "likes": 7,
       "comments": 0,
-      "linkClicks": 30,
+      "linkClicks": 34,
       "registrations": null,
       "note": null
     },
     {
       "date": "2026-07-02",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DaSE4XnE7GF?xmt=AQG04QGIhubnN4SuK4FExeJkBss_FWiBIwJo4Gc3etYadQ",
@@ -3783,7 +3918,7 @@
     },
     {
       "date": "2026-07-02",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DaSRG25CQSG?xmt=AQG02w9dLrI7tEuoLYswYZ05-NKsCC0fcfpll3_aYHzI9voQxMpOQbueylfsTrpJ7taaSR3E&slof=1",
@@ -3798,7 +3933,7 @@
     },
     {
       "date": "2026-07-02",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DaSI_ItGXwS?xmt=AQG0KRMp0q7QXvs39QF7dSC5pgMri0Y3rUKdJz1mHsn6OA",
@@ -3843,7 +3978,7 @@
     },
     {
       "date": "2026-07-02",
-      "persona": "crab",
+      "persona": "xie2",
       "personaName": "蟹蟹觀測站",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@froggyfrooo/post/DaST2o_mvDh?xmt=AQG0kBMeKBNZ4craHDqiMzGicjGi6Inm6EU3KRWM9D37Tg",
@@ -3873,7 +4008,7 @@
     },
     {
       "date": "2026-07-01",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DaPoEkCk3Cm?xmt=AQG0Fjh5yS_ZuvCCQLtLONw4NOHmryDKvvUvtfWN22rmRQ",
@@ -3888,7 +4023,7 @@
     },
     {
       "date": "2026-07-01",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DaPqDtimUD_?xmt=AQG0Cnz2AQeYn1sVXwlmUtfgQcMy-aO_Sh5fw5d7lDVJyg",
@@ -3933,7 +4068,7 @@
     },
     {
       "date": "2026-07-01",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": null,
@@ -3948,7 +4083,7 @@
     },
     {
       "date": "2026-07-01",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": null,
@@ -3957,13 +4092,13 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 8,
+      "linkClicks": 9,
       "registrations": null,
       "note": "UTM產生器建立"
     },
     {
       "date": "2026-07-01",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": null,
@@ -4023,7 +4158,7 @@
     },
     {
       "date": "2026-06-30",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DaM5UrDEyfa?xmt=AQG0_A-xU1LogvNrFZR74yE_njujh2psW5xe2Cj8HI5iKQ",
@@ -4038,7 +4173,7 @@
     },
     {
       "date": "2026-06-30",
-      "persona": null,
+      "persona": "bianbian",
       "personaName": "扁扁",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qt8755123fd/post/DaNeJoJE4-7?xmt=AQG0-jNSTWUwRk3iA0AT9dIaffPyh-ntcbTtM8PTdaRvsg",
@@ -4053,7 +4188,7 @@
     },
     {
       "date": "2026-06-30",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DaMyYRYmWlr?xmt=AQG0tjUFGvJ8L4Obzz1qs7DaoXB_02crkPUzbq8j9wVCEA",
@@ -4188,7 +4323,7 @@
     },
     {
       "date": "2026-06-30",
-      "persona": null,
+      "persona": "bianbian",
       "personaName": "扁扁",
       "platform": "ig",
       "postUrl": null,
@@ -4203,7 +4338,7 @@
     },
     {
       "date": "2026-06-30",
-      "persona": null,
+      "persona": "bianbian",
       "personaName": "扁扁",
       "platform": "threads",
       "postUrl": null,
@@ -4263,7 +4398,7 @@
     },
     {
       "date": "2026-06-29",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DaKm35oE8DF?xmt=AQG08XZTX9wYR8KWclJfgFM6OC4s_gfskdH-n20dvYEewA",
@@ -4278,7 +4413,7 @@
     },
     {
       "date": "2026-06-29",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DaC2PhJGStG?xmt=AQG06y5kWANyE_gooG__7u3FzXAOX9AXajR2l3ZrpWGAqw",
@@ -4308,7 +4443,7 @@
     },
     {
       "date": "2026-06-29",
-      "persona": null,
+      "persona": "haogame",
       "personaName": "haogamediary",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@haogamediary/post/DaK7vX2Gjat?xmt=AQG0AKNqNKHYJi0Q9vH47Sg6_J4XpMHDrzK_EtK8ykGOcK_UhHqW3MyXgCv8AL_b1GskCS0x&slof=1",
@@ -4413,7 +4548,7 @@
     },
     {
       "date": "2026-06-26",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DaDBbI-k8WC?xmt=AQG0KU5yzjLDKLCgLwQo4P6ThW4pEYNr0R8kkRh67SENfg",
@@ -4428,7 +4563,7 @@
     },
     {
       "date": "2026-06-26",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DaC2PhJGStG",
@@ -4503,7 +4638,7 @@
     },
     {
       "date": "2026-06-26",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": null,
@@ -4548,7 +4683,7 @@
     },
     {
       "date": "2026-06-25",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DaAZUEtE7FV?xmt=AQG0j7djKM4E_caXqibeWm-piYr4xqmB6w2FdkY4dRew0Q",
@@ -4563,7 +4698,7 @@
     },
     {
       "date": "2026-06-25",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DaAqyH9CVLH?xmt=AQG0wLnfeCQ54Pw5bOgsQuxlcGwKvGxrEC-PangaFogrxQ",
@@ -4578,7 +4713,7 @@
     },
     {
       "date": "2026-06-25",
-      "persona": null,
+      "persona": "cyq",
       "personaName": "陳亦強",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@qiang_no_blind/post/DaAOWhgGXiJ?xmt=AQG0x1ZNe6B7cii1mQrVbExFtyqH-Zf8tdHYI6dMWxovRqyn4UhhWwHWP0E6OjXaJ45oUWlh&slof=1",
@@ -4593,7 +4728,7 @@
     },
     {
       "date": "2026-06-25",
-      "persona": null,
+      "persona": "luna",
       "personaName": "Luna",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ooasj2356/post/DaAbDHclOXZ?xmt=AQG0mU0B0TDXfYwiNIjKziWlnVHJ_QisJ39R8DfoWce6ag",
@@ -4623,7 +4758,7 @@
     },
     {
       "date": "2026-06-25",
-      "persona": null,
+      "persona": "boqi",
       "personaName": "波奇",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@mj_proki/post/DaAUzVvlNq9?xmt=AQG0Dz5jW8ryuogIEcZee2_Sy9Tb1VeVdTM5lMn55l6jFw",
@@ -4653,7 +4788,7 @@
     },
     {
       "date": "2026-06-25",
-      "persona": null,
+      "persona": "jasonchen",
       "personaName": "Jason Chen",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@3ixyw0144/post/DaAWRSOEiEo?xmt=AQG0_oqWQXDRlC8Qyld8unFNFL1HmgShrkK75rsJSmr-xhOASGzv5d0XZCxnAUywS0yId41Q&slof=1",
@@ -4758,7 +4893,7 @@
     },
     {
       "date": "2026-06-24",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DZ-EBXck0fI?xmt=AQG0trwreaHyy-g9VVubcxgsMB5mgm9tMHOvYAoor1nUw0k",
@@ -4773,7 +4908,7 @@
     },
     {
       "date": "2026-06-24",
-      "persona": null,
+      "persona": "cc",
       "personaName": "cc",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@wc_ccai/post/DZ-CiOqkyVD?xmt=AQG0VszAUhbEgi_F-Oc4G3jKlF6qbIJmLAm_xt_WEgpab2E",
@@ -4788,7 +4923,7 @@
     },
     {
       "date": "2026-06-24",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DZ9w1GkiXvx?xmt=AQG0H_dmJfi8PFvOGiOlHGC_f_1sb6L10feGMb93xvkf5Q",
@@ -4863,7 +4998,7 @@
     },
     {
       "date": "2026-06-24",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DZ9wjNFkVUU/",
@@ -4923,7 +5058,7 @@
     },
     {
       "date": "2026-06-24",
-      "persona": null,
+      "persona": "ys",
       "personaName": "YS主帳號",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DZ9neBekkhZ/",
@@ -4998,7 +5133,7 @@
     },
     {
       "date": "2026-06-24",
-      "persona": null,
+      "persona": "ys",
       "personaName": "YS主帳號",
       "platform": "threads",
       "postUrl": null,
@@ -5043,7 +5178,7 @@
     },
     {
       "date": "2026-06-23",
-      "persona": null,
+      "persona": "ys",
       "personaName": "YS主帳號",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ys89_com/post/DZ7QO4DlFeV?xmt=AQG0AqvWuz5FCG1ZiAehL5lcvcxYQri4z2KOAZXVC5p_1T8",
@@ -5088,7 +5223,7 @@
     },
     {
       "date": "2026-06-23",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DZ6yQT7ieEU",
@@ -5118,7 +5253,7 @@
     },
     {
       "date": "2026-06-23",
-      "persona": null,
+      "persona": "bam",
       "personaName": "Bam班",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@mn12aksj/post/DZ6lozmoGh3?xmt=AQG0wnOTQQ_ozf9WwSRlzasA13NcNt4KowT0Qsrp6W08hGzNj1C1Xhb3QVE3U4lqrSoMhmk",
@@ -5178,7 +5313,7 @@
     },
     {
       "date": "2026-06-23",
-      "persona": null,
+      "persona": "ys",
       "personaName": "YS主帳號",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DZ7QJEskkMf/",
@@ -5193,7 +5328,7 @@
     },
     {
       "date": "2026-06-23",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DZ6yApJkjk2/",
@@ -5313,7 +5448,7 @@
     },
     {
       "date": "2026-06-22",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DZ45dt4CX3o?xmt=AQG0sfGCWzJRFMAtBSw1Te6f2mukQ5Znd0Wkc9XgYmDxtw",
@@ -5343,7 +5478,7 @@
     },
     {
       "date": "2026-06-22",
-      "persona": null,
+      "persona": "bam",
       "personaName": "Bam班",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@mn12aksj/post/DZ4GxDFIE4X?xmt=AQG0zEfkbvLBwPe_IYN9Hi-DTy6h05QIesaK6zy49MuwtCFBrzWD5GvE6t98fQ6v30BdDoR6&slof=1",
@@ -5388,7 +5523,7 @@
     },
     {
       "date": "2026-06-22",
-      "persona": null,
+      "persona": "mien",
       "personaName": "米恩",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@benoreily664/post/DZ49oqsEzOS?xmt=AQG0wnOTQQ_ozf9WwSRlzasA13NcNt4KowT0Qsrp6W08hGzNj1C1Xhb3QVE3U4lqrSoMhmk&slof=1",
@@ -5418,7 +5553,7 @@
     },
     {
       "date": "2026-06-22",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DZ45WPTj0Wi/?img_index=1",
@@ -5493,7 +5628,7 @@
     },
     {
       "date": "2026-06-21",
-      "persona": null,
+      "persona": "bam",
       "personaName": "Bam班",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@mn12aksj/post/DZ1npkEIGqs?xmt=AQG0-XZWhnXFrFb3VDTYMX5sddOaw9pB1GMKod5rnJsosDOfDTjMst0-c70RDduE5cViyOM",
@@ -5523,7 +5658,7 @@
     },
     {
       "date": "2026-06-21",
-      "persona": null,
+      "persona": "diego",
       "personaName": "diego",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@dddgo0805/post/DZ1lmjXD5T6",
@@ -5568,7 +5703,7 @@
     },
     {
       "date": "2026-06-20",
-      "persona": null,
+      "persona": "bam",
       "personaName": "Bam班",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@mn12aksj/post/DZzgvqooH2Q?xmt=AQG0-XZWhnXFrFb3VDTYMX5sddOaw9pB1GMKod5rnJsosDOfDTjMst0-c70RDduE5cViyOM",
@@ -5628,7 +5763,7 @@
     },
     {
       "date": "2026-06-19",
-      "persona": null,
+      "persona": "bam",
       "personaName": "Bam班",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@mn12aksj/post/DZw6_MFIIAI?xmt=AQG00BCFNyvaMS_yb-Y22pYNtikSPAQ06-33FDdHrkSNUsyOw5UXChSZ8ZzFfC7m81_ecoUc&slof=1",
@@ -5643,7 +5778,7 @@
     },
     {
       "date": "2026-06-19",
-      "persona": null,
+      "persona": "bam",
       "personaName": "Bam班",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@mn12aksj/post/DZw6_MFIIAI?xmt=AQG0-XZWhnXFrFb3VDTYMX5sddOaw9pB1GMKod5rnJsosDOfDTjMst0-c70RDduE5cViyOM",
@@ -5673,7 +5808,7 @@
     },
     {
       "date": "2026-06-19",
-      "persona": null,
+      "persona": "diego",
       "personaName": "diego",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@dddgo0805/post/DZw-XHCD5YQ?xmt=AQG0NUVz7BTyXXoQ503HIHQnE2pKbp39uMN0j6sOW62dAhkXMX0PPaz682JKpZF3QT2MIPA&slof=1",
@@ -5703,7 +5838,7 @@
     },
     {
       "date": "2026-06-18",
-      "persona": null,
+      "persona": "ys",
       "personaName": "YS",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ys89_com/post/DZuKqNwlC9h?xmt=AQG03PRR3T7jAz8Q8UsHFmBRbMkbBT1jk-qlVpml3E_RBw",
@@ -5718,7 +5853,7 @@
     },
     {
       "date": "2026-06-18",
-      "persona": null,
+      "persona": "bam",
       "personaName": "Bam班",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@weizon/post/DZs0axbk5nD?xmt=AQG0nz9rw6gqRW_3CQPF5pH4QMXQufZG4jMCeKtjxZSG7JkcPfBSpFtELBS-DXQ0tWF-TyzJ&slof=1",
@@ -5748,7 +5883,7 @@
     },
     {
       "date": "2026-06-18",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DZuMni9CTSn?xmt=AQG01hEtdWFg4C7EkVxsyhjirMlMPiLxegrehiShsQzTrQ",
@@ -5778,7 +5913,7 @@
     },
     {
       "date": "2026-06-18",
-      "persona": null,
+      "persona": "bam",
       "personaName": "Bam班",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@mn12aksj/post/DZt5F1OIOKN?xmt=AQG0tZpHXRpd8SzbSMxAYznBAoB_vMs3r7xdMqWpKDGYm1hZM89s17l9Fd_MRpH4t6hE8v0&slof=1",
@@ -5808,7 +5943,7 @@
     },
     {
       "date": "2026-06-18",
-      "persona": null,
+      "persona": "bam",
       "personaName": "Bam班",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@didi678d2.0/post/DZsuSnFEjWs?xmt=AQG0EPTf_qQaFgnOpuHIa5UMq0zdDQ7CO53xxK2HLTSQBRSh7wbMn2cT3ZgccO7qhdMr5ND0&slof=1",
@@ -5823,7 +5958,7 @@
     },
     {
       "date": "2026-06-18",
-      "persona": null,
+      "persona": "diego",
       "personaName": "diego",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@dddgo0805/post/DZulV02j_iM?xmt=AQG0-XZWhnXFrFb3VDTYMX5sddOaw9pB1GMKod5rnJsosDOfDTjMst0-c70RDduE5cViyOM&slof=1",
@@ -5898,7 +6033,7 @@
     },
     {
       "date": "2026-06-17",
-      "persona": null,
+      "persona": "bianbian",
       "personaName": "扁扁",
       "platform": "ig",
       "postUrl": "https://ys89.fun/casino-blacklist-2026-complete/",
@@ -5943,7 +6078,7 @@
     },
     {
       "date": "2026-06-17",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DZrOCBkiSQo?xmt=AQG0LOaAhdMiAk2KRNvJZMMi4kvPh8q733PfpQXuWvS8Tw",
@@ -5988,7 +6123,7 @@
     },
     {
       "date": "2026-06-17",
-      "persona": null,
+      "persona": "bam",
       "personaName": "Bam班",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@mn12aksj/post/DZrnGxYIMw3?xmt=AQG0SYAdROBl5DoaD3Et83F6Fa2008Osk5hieJlDPCMR7TWPHPtAhREu2j0xxfJkyP27tjy0&slof=1  T",
@@ -6033,7 +6168,7 @@
     },
     {
       "date": "2026-06-17",
-      "persona": null,
+      "persona": "diego",
       "personaName": "diego",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@dddgo0805/post/DZrtMr-Dz-i?xmt=AQG08wUq422cQyByp8TN6ipM2UAlvG9kwfXDguoACN5OXbSQl5acHEDNqu3kNymmmVVmrmE&slof=1",
@@ -6108,7 +6243,7 @@
     },
     {
       "date": "2026-06-17",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DZrNxJWEZpp/?img_index=1",
@@ -6228,7 +6363,7 @@
     },
     {
       "date": "2026-06-16",
-      "persona": null,
+      "persona": "bam",
       "personaName": "Bam班",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@cola4cc/post/DZpUwWLCdZ_?xmt=AQG05MBUOl080oIzxmjI508y1bDVaFqM6KLmxmRB45tMEXxb5O3W-qMCyt1Xi8HP6Tfx63T4&slof=1",
@@ -6303,7 +6438,7 @@
     },
     {
       "date": "2026-06-16",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DZogvVQEWyY/?img_index=1",
@@ -6483,7 +6618,7 @@
     },
     {
       "date": "2026-06-15",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DZmZTDlCWGy?xmt=AQG0MnFhpq6e7C-2q2AFK0TCeTP4KftRr4CeoOCXkBtlBQ",
@@ -6588,7 +6723,7 @@
     },
     {
       "date": "2026-06-15",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.instagram.com/p/DZmPNnAkXrT/?img_index=1",
@@ -6648,7 +6783,7 @@
     },
     {
       "date": "2026-06-15",
-      "persona": null,
+      "persona": "apu",
       "personaName": "阿埔",
       "platform": "threads",
       "postUrl": "https://www.facebook.com/share/p/195Bpj7NCG/",
@@ -6753,7 +6888,7 @@
     },
     {
       "date": "2026-06-15",
-      "persona": null,
+      "persona": "ating",
       "personaName": "阿聽 - 賽特代理",
       "platform": "ig",
       "postUrl": null,
@@ -6828,7 +6963,7 @@
     },
     {
       "date": "2026-06-12",
-      "persona": null,
+      "persona": "zahra",
       "personaName": "zahra",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@zmmm8294/post/DZeVvDFk_dN?xmt=AQG0G5faQzhuUdi5XDSn1KJUu1kezSuoXbnOfZ1oqfvgCPQ",
@@ -6843,7 +6978,7 @@
     },
     {
       "date": "2026-06-12",
-      "persona": null,
+      "persona": "zahra",
       "personaName": "zahra",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@zmmm8294/post/DZeVvDFk_dN?xmt=AQG04l15GSSRKlNSD-Il2AnFjuNKe_bAbQipBKINUbgktZklKkgS3rrONvEATMt5G601JgL6&slof=1",
@@ -6873,7 +7008,7 @@
     },
     {
       "date": "2026-06-12",
-      "persona": null,
+      "persona": "bs",
       "personaName": "BS",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ths22346/post/DZevEIwE9Xi?xmt=AQG0R4WEtsGSgt61XyP3k9JCpr9mR9SmjO5Y2v-hPEAw4_97l0M9_B87PBVSoN6O6KWCjqz9&slof=1",
@@ -6888,7 +7023,7 @@
     },
     {
       "date": "2026-06-12",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@i.dayan.yang/post/DZc3wEQHa11?xmt=AQG0fnHOo2YMkAM7IFuM99-eWY6nBU1BV9QvVMmJ34DCcw",
@@ -6903,7 +7038,7 @@
     },
     {
       "date": "2026-06-12",
-      "persona": null,
+      "persona": "axiang",
       "personaName": "阿象",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@elephph8/post/DZew34fGvZs?xmt=AQG0eHwd_3RRAsxh5VGo87gdoNhv6HKtM6UzbAR_jjzA2qjdqCvdNg2Nk9IxLd9UU18M1lcK&slof=1",
@@ -6918,7 +7053,7 @@
     },
     {
       "date": "2026-06-12",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@dybala._.1208/post/DZcnkJDk9HN?xmt=AQG0mrEojV0MkEKKz4vYvS16FXYC8hSpZAaLtgof0u8pZDt3-hcwfAD0-73XLxjLbyIldrY",
@@ -6933,7 +7068,7 @@
     },
     {
       "date": "2026-06-12",
-      "persona": null,
+      "persona": "mien",
       "personaName": "米恩",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@_mel925/post/DZenmCGkviM?xmt=AQG05UnfAeJQVxK4EH_EXxQ-Rq_KIQF4MUr02b5OvY-A350swbe4pFwhhLMI9cgGXj8SdLc",
@@ -6993,7 +7128,7 @@
     },
     {
       "date": "2026-06-12",
-      "persona": null,
+      "persona": "apu",
       "personaName": "阿埔",
       "platform": "fb",
       "postUrl": "https://www.facebook.com/share/p/1c8jN9TrEV/",
@@ -7113,7 +7248,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "linjiayi",
       "personaName": "林家益",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@yi.yi2200/post/DZbwDhDE3b6?xmt=AQG0qa3SljvzdPcmsG-sn_1VpWwrkZTYmpkfpjAOdMFS3p9XmWXwkxZQ0gzRVf3DDy_-iaM&slof=1",
@@ -7143,7 +7278,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DZb71WViV12?xmt=AQG0G8NIYL7PHbPyEFh-BQay1taH012SdXCXYg36rqt1VQ",
@@ -7158,7 +7293,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "ianlin",
       "personaName": "Ian Lin",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ugrsrbs53/post/DZcGpz5k5jX?xmt=AQG0gATOkJv2WGRlKWdIK8H1u-bAxzAwjL7UZsyoocAwmIDgilb7dZqHijdjkz_Ctpt0Aao",
@@ -7203,7 +7338,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "jasonchen",
       "personaName": "Jason Chen",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@kangaroo.38708057/post/DZcGdmKicDO?xmt=AQG0wUgo-_itBb35UhQJNKvYEyDPE1nVuF6oqx-yAgkXAp4V_BtC2S9xoS5ttCQGFnrd4zBu&slof=1",
@@ -7218,7 +7353,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "jack",
       "personaName": "Jack是個柴迷",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@crab.8995596/post/DZcGSuXicPl?xmt=AQG0cnEFF_Dwzy_11NUgDvDRoea6WCUmrUGZ7hTsarQgPKQRG-pgDf98dj0I1ahUQYNJYQan&slof=1",
@@ -7233,7 +7368,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "mien",
       "personaName": "米恩",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@cinemacat1717/post/DZcKRxEn0Rd?xmt=AQG0dg2Pp_3Gco614RzxvcFFSL0yTunx-d6QsT1jmH1mvUdbtuhAGv2xMDVjPtMKzAPsLjY%5C",
@@ -7248,7 +7383,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "linjiayi",
       "personaName": "林家益",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@brenden.tw/post/DZcGmYSGOmP?xmt=AQG0ft4xF33fayfMjTASAoQFNj1A7EosDaduqXBbGmkYcX5td9h-3d4h9PXBum4Uw3yaIgEw&slof=1",
@@ -7263,7 +7398,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "jasonchen",
       "personaName": "Jason Chen",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@andysjlin/post/DZbNJwjkzYU?xmt=AQG0FQ58JyHiu6Y7oaKzWYu51zU7ewtDV2n9N194AtQNEQSPQlZu5JKcXslpGzLk_TJq4Agi&slof=1",
@@ -7293,7 +7428,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "jasonchen",
       "personaName": "Jason Chen",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@_15ting/post/DZcRl9BkuIJ?xmt=AQG0tbEtybLkMISx8LgksChKEAzJy15J_NSnhQOY8SGbM6-GjLlKlOw2LnieQArCovMK5eKv&slof=1",
@@ -7383,7 +7518,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "apu",
       "personaName": "阿埔",
       "platform": "fb",
       "postUrl": "https://www.facebook.com/share/p/1LeF3Y2FEP/",
@@ -7398,7 +7533,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "dcard",
       "personaName": "dcard社區主任",
       "platform": "threads",
       "postUrl": "https://www.dcard.tw/f/sportsevents/p/261645715",
@@ -7413,7 +7548,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "dcard",
       "personaName": "Dcard社區主任",
       "platform": "fb",
       "postUrl": "https://www.dcard.tw/f/sportsevents/p/261645272",
@@ -7428,7 +7563,7 @@
     },
     {
       "date": "2026-06-11",
-      "persona": null,
+      "persona": "dcard",
       "personaName": "dcard社區主任",
       "platform": "threads",
       "postUrl": "https://www.dcard.tw/f/sportsevents/p/261645036",
@@ -7458,7 +7593,7 @@
     },
     {
       "date": "2026-06-10",
-      "persona": null,
+      "persona": "luna",
       "personaName": "Luna",
       "platform": "threads",
       "postUrl": "vhttps://www.threads.com/@zella24780/post/DZZ0JwNmieV?xmt=AQG055C-eYonpa39ElF4OT2jamqscoL32ZKnNuUQnniFcJmSI5ctKbfn_YLRIDD7tn9kS2Y&slof=1",
@@ -7473,7 +7608,7 @@
     },
     {
       "date": "2026-06-10",
-      "persona": null,
+      "persona": "ys",
       "personaName": "YS主IG",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ys89_com/post/DZZzOw-lJCS?xmt=AQG04v1NWOxl5yFjzcfOY5Kh6B-xncNG2uPHRNlcRtNBaw",
@@ -7488,7 +7623,7 @@
     },
     {
       "date": "2026-06-10",
-      "persona": null,
+      "persona": "jasonchen",
       "personaName": "Jason Chen",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@weichung11/post/DZZ69M4iZBS?xmt=AQG0YBnGYgVU6nQEp-aBdPS75NndMMUrXc6b5B7CdKZoQkFyV7uxCXuTl7wMc0cAVxOeShpB&slof=1",
@@ -7533,7 +7668,7 @@
     },
     {
       "date": "2026-06-10",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DZZn1pDm51h?xmt=AQG01OMG0Z85k4ASDivVvalBkFLmIcxJBQY5GUql8uzYPA",
@@ -7548,7 +7683,7 @@
     },
     {
       "date": "2026-06-10",
-      "persona": null,
+      "persona": "bs",
       "personaName": "BS",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ths22346/post/DZZ-KkyE1fC?xmt=AQG03DdGiegzt_sWGq2Qzer72RiMiFFbhmtupOOIJvdYEacVoP8NDsllT3iEN0Thnt4GLeXr&slof=1",
@@ -7578,7 +7713,7 @@
     },
     {
       "date": "2026-06-10",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@miya.chen215/post/DZZ-j1SCXbZ?xmt=AQG0DSO1xJgcc-pOPr_bMaAUIr7V6G9cuP-xc0FFHsy66tX6iHBYt1V13wVvZButs4crxnhA&slof=1",
@@ -7608,7 +7743,7 @@
     },
     {
       "date": "2026-06-10",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@cloudreamerrr/post/DZY1V7xE8nA?xmt=AQG03g_MoSl3l50fPmVGzc0mWxFVl9HNi6eaTfyDuV2mW6_APTXJhN6bJ8LWWj5vqA-A_oc",
@@ -7623,7 +7758,7 @@
     },
     {
       "date": "2026-06-10",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@cassn_taiwan_japan/post/DZZErVMj7KF?xmt=AQG0orqBne5lkTc3gLxkA3-dh7ZLhNxJM1DEZT6o8nsqFJ4sJzqdpwtj6_-JFn22y36M4do",
@@ -7638,7 +7773,7 @@
     },
     {
       "date": "2026-06-10",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@broman_goodlife/post/DZZVrgJkWdv?xmt=AQG0__OLOD6pqxpxUNQqHl9obK6lhr6uQYey2zk82UGm_RvsXzRjAhRLzGT-kkA0xOX86_0",
@@ -7668,7 +7803,7 @@
     },
     {
       "date": "2026-06-10",
-      "persona": null,
+      "persona": "luna",
       "personaName": "Luna",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@as555593/post/DZYjXyMk-_0?xmt=AQG0CaFln8jam_o6IGLb32391M8aYkxQwLEoVyTtV9sz1IN8LEBry1heUlJn61IwRt2G_SRG&slof=1",
@@ -7728,7 +7863,7 @@
     },
     {
       "date": "2026-06-09",
-      "persona": null,
+      "persona": "ys",
       "personaName": "YS主IG",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ys89_com/post/DZW2nuSlHYr?xmt=AQG0LVfz4UAKGUzUVN9QiZlDAjuOKudzdt779ff4-Rz7HQ",
@@ -7773,7 +7908,7 @@
     },
     {
       "date": "2026-06-09",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@miya.chen215/post/DZWqLhhiTwu?xmt=AQG0ArdA0hKS0zumuIDgsqoCHj4Ojm9rT6puNJdD_2zCve5LSrfryz3LwkCts_8BIrU1h_R5&slof=1",
@@ -7893,7 +8028,7 @@
     },
     {
       "date": "2026-06-08",
-      "persona": null,
+      "persona": "ys",
       "personaName": "YS主IG",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ys89_com/post/DZUEP1pEheh?xmt=AQG0irALs7kMYZPzyOBWsMRx1xodHO1SvUVmbbUg3mTVRnIdCraOVcdOPp3aanPKM0n9cUo",
@@ -7908,7 +8043,7 @@
     },
     {
       "date": "2026-06-08",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DZUvD9Cj6fl?xmt=AQG0omX0FLxwJ-qNPxh08mVOWO6c0xA18ShIdIlDw7Tk_Q",
@@ -7968,7 +8103,7 @@
     },
     {
       "date": "2026-06-08",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DZUvDOJDy_Q/?img_index=1",
@@ -8028,7 +8163,7 @@
     },
     {
       "date": "2026-06-05",
-      "persona": null,
+      "persona": "ys",
       "personaName": "YS主IG",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ys89_com/post/DZMem-ulGSz?xmt=AQG0rDwU723gDUnssqs5Gma-8bWiVq5UgXQ0D93NipdZfA",
@@ -8058,7 +8193,7 @@
     },
     {
       "date": "2026-06-05",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DZMikxmiThi?xmt=AQG08GdqFAtwcbSTNRiJHUG3-enDLDEHLFTRrtmxBrRilO9Xls36_UHEcL18zMB6bj2bBsro&slof=1",
@@ -8148,7 +8283,7 @@
     },
     {
       "date": "2026-06-05",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@miya.chen215/post/DZKKvj-ibmL?xmt=AQG0RGA-u5JjE0Whuawr1LBYblY6nq1H4nCRSwjeYVMlwg",
@@ -8163,7 +8298,7 @@
     },
     {
       "date": "2026-06-05",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@kka_1568/post/DZKnHg1AS5i?xmt=AQG0VVMFERCj5OsAncaVFcux2Ja5Vvh4dqFUcR38C4-CYt0_Y96k2L9NDpROeLhTPZUJfIg&slof=1",
@@ -8223,7 +8358,7 @@
     },
     {
       "date": "2026-06-05",
-      "persona": null,
+      "persona": "anne",
       "personaName": "Anne",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@aaanne_v/post/DZMJbSck4ZV?xmt=AQG0VZ8fnNa331IkYcLeEBk5p70E_E0SRYBsyLHdJFBj-YLXaXSG1GqkuRS1SQzeH8OAR6sr&slof=1",
@@ -8268,7 +8403,7 @@
     },
     {
       "date": "2026-06-04",
-      "persona": null,
+      "persona": "ys",
       "personaName": "YS主IG",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ys89_com/post/DZKcavLFENB?xmt=AQG0xpWoKdu85GteCSJqVgdonrjlRkS1WHZbPz97kjn6ToK_jba7E_N7ouxD1BHGWgm5U0Ab&slof=1",
@@ -8313,7 +8448,7 @@
     },
     {
       "date": "2026-06-04",
-      "persona": null,
+      "persona": "luna",
       "personaName": "Luna",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ooasj2356/post/DZKMKTLFAm1?xmt=AQG03yZUTsqMwNUzPdNpTFay1Dr12NAbwYvy-gyNgsXbrpMcl6IYOFkeR7HMJu2iXcoIphBS&slof=1",
@@ -8328,7 +8463,7 @@
     },
     {
       "date": "2026-06-04",
-      "persona": null,
+      "persona": "miya",
       "personaName": "米亞運動賽事",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@miya.chen215/post/DZKKvj-ibmL?xmt=AQG0T4O5e4e4s1ZbT4Diw_7SyzILkwhitSF4XKZblPfaCBmWNpw8SdpCAju2h0j9--bwCS8&slof=1",
@@ -8358,7 +8493,7 @@
     },
     {
       "date": "2026-06-04",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@jerrylau31/post/DY9ItyqlPUi?xmt=AQG0mCA_KYAMTSR2BbDdw1LzIN2mb3J7hdO75inY38hHHy0WpUTqYtteYpLMlvYvexEg2ZhN&slof=1",
@@ -8448,7 +8583,7 @@
     },
     {
       "date": "2026-06-03",
-      "persona": null,
+      "persona": "ys",
       "personaName": "YS主IG",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@ys89_com/post/DZIC4wNlHuW?xmt=AQG0EHpyfrXPYbq5_yV-I99yLq78wD7sp6ehyTO8Kgr-XA",
@@ -8463,7 +8598,7 @@
     },
     {
       "date": "2026-06-03",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.threads.com/@uncle_wc/post/DZH9KIWm89W?xmt=AQG0UCCzCAvon3BebWkFdEoD2bjaduS1exGuaFIU9lA9CQ",
@@ -8493,7 +8628,7 @@
     },
     {
       "date": "2026-06-03",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "threads",
       "postUrl": "https://www.instagram.com/p/DZH9JOrm_r6/?img_index=1",
@@ -8598,7 +8733,7 @@
     },
     {
       "date": "2026-05-29",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "ig",
       "postUrl": "https://ys89.fun/bellingham-vinicius-son-world-cup-2026-odds/",
@@ -8688,7 +8823,7 @@
     },
     {
       "date": "2026-05-26",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DYzNpc0EecZ/?img_index=1",
@@ -8823,7 +8958,7 @@
     },
     {
       "date": "2026-05-22",
-      "persona": null,
+      "persona": "shizu",
       "personaName": "世足排雷週記",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DYme1Lmka40/?img_index=1",
@@ -8883,7 +9018,7 @@
     },
     {
       "date": "2026-05-22",
-      "persona": null,
+      "persona": "bianbian",
       "personaName": "扁扁",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DYmAQzUiY5A/?img_index=1",
@@ -8913,7 +9048,7 @@
     },
     {
       "date": "2026-05-22",
-      "persona": null,
+      "persona": "yuchiazhi",
       "personaName": "魚池阿智",
       "platform": "ig",
       "postUrl": "https://www.instagram.com/p/DYjlrTkE9QH/?img_index=1",
@@ -8944,8 +9079,14 @@
   ],
   "daily": [
     {
-      "date": "2026-08-10",
+      "date": "2026-08-11",
       "totalImpressions": null,
+      "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
+    {
+      "date": "2026-08-10",
+      "totalImpressions": 1737,
       "totalLinkClicks": null,
       "totalRegistrations": null
     },
@@ -8976,7 +9117,7 @@
     {
       "date": "2026-08-03",
       "totalImpressions": 5993,
-      "totalLinkClicks": 11,
+      "totalLinkClicks": 13,
       "totalRegistrations": null
     },
     {
@@ -9072,7 +9213,7 @@
     {
       "date": "2026-07-14",
       "totalImpressions": 12020,
-      "totalLinkClicks": 9,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -9090,7 +9231,7 @@
     {
       "date": "2026-07-09",
       "totalImpressions": 7601,
-      "totalLinkClicks": 4,
+      "totalLinkClicks": 5,
       "totalRegistrations": null
     },
     {
@@ -9132,13 +9273,13 @@
     {
       "date": "2026-07-02",
       "totalImpressions": 1519,
-      "totalLinkClicks": 30,
+      "totalLinkClicks": 34,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-01",
       "totalImpressions": 23179,
-      "totalLinkClicks": 9,
+      "totalLinkClicks": 10,
       "totalRegistrations": null
     },
     {
@@ -9382,7 +9523,9 @@
       "code": "uncle",
       "name": "大叔",
       "agent": "fu001",
-      "platforms": []
+      "platforms": [
+        "threads"
+      ]
     },
     {
       "code": "crab",
@@ -9408,6 +9551,322 @@
       "agent": "chen",
       "platforms": [
         "fb"
+      ]
+    },
+    {
+      "code": "cc",
+      "name": "AI體育賽事分析",
+      "agent": null,
+      "platforms": [
+        "ig",
+        "threads"
+      ]
+    },
+    {
+      "code": "shizu",
+      "name": "世足排雷週記",
+      "agent": null,
+      "platforms": [
+        "ig",
+        "threads"
+      ]
+    },
+    {
+      "code": "cyq",
+      "name": "陳亦強",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "haogame",
+      "name": "小豪遊戲筆記",
+      "agent": null,
+      "platforms": [
+        "blogger",
+        "threads"
+      ]
+    },
+    {
+      "code": "hahaqiu",
+      "name": "哈哈看球",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "bam",
+      "name": "Bam班",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "diego",
+      "name": "diego",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "jack",
+      "name": "Jack是個柴迷",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "linjiayi",
+      "name": "林家益",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "jasonchen",
+      "name": "Jason Chen",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "miya",
+      "name": "米亞運動賽事",
+      "agent": null,
+      "platforms": [
+        "ig",
+        "threads"
+      ]
+    },
+    {
+      "code": "xie2",
+      "name": "蟹蟹觀測站",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "zhansen",
+      "name": "戰術阿森",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "qiuqiusaizhan",
+      "name": "全球球賽情報站",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "zhaohan",
+      "name": "昭涵",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "xiaoye",
+      "name": "小夜",
+      "agent": null,
+      "platforms": [
+        "blog",
+        "threads"
+      ]
+    },
+    {
+      "code": "apu",
+      "name": "阿埔",
+      "agent": null,
+      "platforms": [
+        "fb",
+        "threads"
+      ]
+    },
+    {
+      "code": "dcard",
+      "name": "Dcard社區主任",
+      "agent": null,
+      "platforms": [
+        "fb",
+        "threads"
+      ]
+    },
+    {
+      "code": "mien",
+      "name": "米恩",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "axiang",
+      "name": "阿象",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "ys",
+      "name": "YS",
+      "agent": null,
+      "platforms": [
+        "ig",
+        "threads"
+      ]
+    },
+    {
+      "code": "boqi",
+      "name": "波奇",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "bianbian",
+      "name": "扁扁",
+      "agent": null,
+      "platforms": [
+        "ig",
+        "threads"
+      ]
+    },
+    {
+      "code": "huiyi6430",
+      "name": "惠怡",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "ianlin",
+      "name": "Ian Lin",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "zahra",
+      "name": "zahra",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "bs",
+      "name": "BS",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "stevenc",
+      "name": "Steven.C",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "yuchiazhi",
+      "name": "魚池阿智",
+      "agent": null,
+      "platforms": [
+        "ig",
+        "threads"
+      ]
+    },
+    {
+      "code": "ating",
+      "name": "阿聽 - 賽特代理",
+      "agent": null,
+      "platforms": [
+        "ig"
+      ]
+    },
+    {
+      "code": "luna",
+      "name": "Luna",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "anne",
+      "name": "Anne",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "laok",
+      "name": "老K娛樂筆記",
+      "agent": null,
+      "platforms": [
+        "blog",
+        "pixnet 痞客邦",
+        "痞客邦"
+      ]
+    },
+    {
+      "code": "huaxuan",
+      "name": "華軒",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "xiaoqiu",
+      "name": "小悠學看球",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "alisi",
+      "name": "愛麗絲",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "meixuan4846",
+      "name": "美萱",
+      "agent": null,
+      "platforms": [
+        "threads"
+      ]
+    },
+    {
+      "code": "huiqi566",
+      "name": "慧琪",
+      "agent": null,
+      "platforms": [
+        "threads"
       ]
     }
   ]
