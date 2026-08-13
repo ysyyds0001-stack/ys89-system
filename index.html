@@ -10024,8 +10024,11 @@ function cpInline(text){cp(text);toast('已複製：'+text.slice(0,20)+'…')}
 const DEFAULT_ENTRANCES=[
   {id:'e1',name:'YS論壇優惠頁',url:'https://ys89.fun/promotions/',type:'forum',desc:'娛樂城優惠活動總覽',icon:'🏠'},
   {id:'e2',name:'YS 官方 IG',url:'https://www.instagram.com/ys89_com/',type:'social',desc:'最新活動·玩家互動·IG導流',icon:'📸'},
-  {id:'e9',name:'官賴-YS',url:'https://lin.ee/w1pIBtuZ',type:'line',desc:'YS 主手機',icon:'💬'},
-  {id:'e10',name:'官方LINE-體育專員',url:'https://lin.ee/pD3S0Z6',type:'line',desc:'CP013 · 體育專員 LINE',icon:'📋'},
+  // e9/e10（官賴-YS、官方LINE-體育專員）2026-08-13 移除：裸 lin.ee 網址，GA4 追蹤不到。
+  // LINE 加好友一律走「💬 LINE 加好友（自動帶到該角色的站）」（見 e_line_auto）。
+  // 千萬別再把 e9/e10 加回這裡——seedDefaultEntrances() 會把 DEFAULT_ENTRANCES
+  // 裡雲端沒有的項目自動補回去，只要還留在這個常數裡，刪了也會被悄悄種回來，
+  // 這正是它們反覆復活的真正原因，不是快取問題。
   {id:'e3',name:'ys89.fun',url:'https://ys89.fun/',type:'worldcup',desc:'夜色娛樂城品牌主站·投注攻略+推薦',icon:'⚽'},
   {id:'e4',name:'ys89.games',url:'https://ys89.games/',type:'worldcup',desc:'賽程·直播·賠率綜合站',icon:'📺'},
   {id:'e5',name:'ys89.info',url:'https://ys89.info/',type:'worldcup',desc:'台灣觀賽直播攻略（Elta/MOD/公視）',icon:'📡'},
