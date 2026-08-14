@@ -15044,31 +15044,13 @@ function renderMeeting() {
     ${pPath1Completed!=null?`<div style="font-size:.68rem;color:var(--text3);margin-top:4px">前期 ${pPath1Completed.toLocaleString()}</div>`:''}
     <div style="font-size:.6rem;color:var(--text3);margin-top:10px;border-top:1px solid var(--border);padding-top:6px">來源：real_reg（path_id=PATH_01），fu001/002/005/008/009</div>
   </div>`
-  const path2Html = `<div style="background:var(--g2);border:1px solid #a78bfa50;border-top:3px solid #a78bfa;border-radius:10px;padding:16px">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-      <span style="font-size:1.3rem">🤖</span>
-      <div>
-        <div style="font-size:.85rem;font-weight:700;color:#a78bfa">路徑2</div>
-        <div style="font-size:.68rem;color:var(--text3)">AI 預測工具 → picks168 → 進群</div>
-      </div>
-    </div>
-    <div style="font-size:.65rem;color:var(--text3);margin-bottom:2px">實際完成註冊（夜色）</div>
-    <div style="font-size:2rem;font-weight:800;color:#a78bfa;line-height:1.1">${path2Completed!=null?path2Completed.toLocaleString():'尚未取得資料'}${pathDelta(path2Completed,pPath2Completed)}</div>
-    ${pPath2Completed!=null?`<div style="font-size:.68rem;color:var(--text3);margin-top:4px">前期 ${pPath2Completed.toLocaleString()}</div>`:''}
-    ${pkFunnel?`<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:.68rem">
-      <div><b style="color:var(--text)">${pkFunnel.bot_friends.toLocaleString()}</b> bot好友</div>
-      <span style="color:var(--text3)">→</span>
-      <div><b style="color:var(--text)">${pkFunnel.applied_join.toLocaleString()}</b> 申請入群</div>
-      <span style="color:var(--text3)">→</span>
-      <div><b style="color:var(--text)">${pkFunnel.approved_join.toLocaleString()}</b> 審核通過</div>
-      <span style="color:var(--text3)">→</span>
-      <div><b style="color:#34d399">${pkFunnel.ys89_registered.toLocaleString()}</b> 完成註冊</div>
-    </div>
-    <div style="font-size:.6rem;color:#f87171;margin-top:6px">⚠ ${pkFunnel.blocked_total.toLocaleString()} 人已封鎖 bot，DM 可觸達僅剩 ${pkFunnel.dm_reachable.toLocaleString()} 人</div>
-    <div style="font-size:.6rem;color:var(--text3);margin-top:6px">來源：picks168.com/admin 分析頁（${pkFunnel.date} 讀取，人工匯入）</div>`
-    :`<div style="font-size:.6rem;color:var(--text3);margin-top:10px;border-top:1px solid var(--border);padding-top:6px">來源：real_reg（path_id=PATH_02），fu007</div>`}
-  </div>`
-  document.getElementById('mtg-path-compare').innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">${path1Html}${path2Html}</div>`
+  // 路徑2（AI 預測工具 bot → picks168 → 進群）2026-08-14 使用者裁示拿掉：
+  // 舊流程是 Telegram/LINE bot 加好友、人工從 picks168.com/admin 分析頁匯入
+  // 漏斗數字，517 人封鎖 bot、DM 觸達率低，已經不是主要導流方式。
+  // 現在統一走 LINE 官方帳號 → 圖文選單 → picks168，這條真實路徑已經在
+  // 上面「各站流量路徑總覽」卡片的「LINE 選單點擊」呈現，不用在這裡重複
+  // 一個手動匯入、口徑又不同的版本。
+  document.getElementById('mtg-path-compare').innerHTML = path1Html
 
   // 漏斗
   const fSteps = [
