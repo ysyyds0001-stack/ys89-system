@@ -11715,7 +11715,18 @@ function _categoryOptionsHTML(list, currentId, currentName, valueFn){
 }
 
 function _fillTaPersonaSel(sel, currentId, currentName){
-  const all=[...(DB.get('personas')||[]),...(DB.get('community')||[])]
+  // personas/community 常常有同一支帳號各存一筆（masterId 相同），選項值用的是
+  // 各自的 id，選到不同那筆會讓同一支帳號的發文紀錄分裂成兩個 personaId。
+  // 2026-08-14 實測踩到：獎獎獎江(P-16)、Yuki(P-17) 兩邊都各有一筆，改名字時
+  // 只改了其中一份，下拉就同時看到新舊名字各一次。用 masterId（沒有的話退回
+  // code）去重，personas 優先於 community（近期改動都寫在 personas）。
+  const raw=[...(DB.get('personas')||[]),...(DB.get('community')||[])]
+  const seen=new Set(), all=[]
+  raw.forEach(p=>{
+    const key=p.masterId||p.code||p.id
+    if(seen.has(key)) return
+    seen.add(key); all.push(p)
+  })
   sel.innerHTML = '<option value="">選擇帳號</option>'
     + _categoryOptionsHTML(all, currentId, currentName, p=>`${p.id}|${p.name}`)
     + '<option value="custom|">＋ 自訂帳號名稱</option>'
