@@ -7509,8 +7509,24 @@ function deletePersonaTemplate(personaId,templateId){
 }
 
 // ===== TRACKER =====
+// 2026-08-14 清空 posts 時發現：DB.pull() 故意設計成「雲端是空的就不動本機」
+// （防止誤刪的安全機制），代表任何一個瀏覽器分頁只要本機還留著清空前的舊
+// 快取，重新整理也清不掉——而且只要那個分頁存一次檔（DB.push 是合併，不是
+// 覆蓋），舊資料就會被合併回雲端，復活。純粹重刪沒有用，這裡讓每次載入都
+// 主動濾掉這批假種子資料（id 固定是 post001~post026 這種三位數格式，
+// 真正的紀錄用 DB.id() 產生，長得完全不一樣，不會誤刪真資料）。
+function _stripFakeSeedPosts(){
+  const posts=DB.get('posts')||[]
+  const clean=posts.filter(p=>!/^post\d{3}$/.test(p.id||''))
+  if(clean.length!==posts.length){
+    DB.set('posts',clean)
+    DB.push('posts').catch(()=>{})
+  }
+  return clean
+}
+
 function renderTracker(){
-  const posts=DB.get('posts')||[],personas=DB.get('personas')||[]
+  const posts=_stripFakeSeedPosts(),personas=DB.get('personas')||[]
   const sel=document.getElementById('tf-persona')
   if(sel) sel.innerHTML='<option value="">全部角色</option>'+[...new Set(posts.map(p=>p.personaName).filter(Boolean))].sort().map(n=>`<option>${n}</option>`).join('')
   const sum=k=>posts.reduce((a,p)=>a+(+(p.metrics?.[k]??p[k])||0),0)
