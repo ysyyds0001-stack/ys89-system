@@ -4009,12 +4009,21 @@ function renderAbTests() {
   </div>
 
   <!-- 誰帶進來的：五個 GA4 資源合計。同一支帳號會同時帶去多個站，
-       只看單一資源會低估（財神在 ys89 站群 51、在 picks168 45）。 -->
-  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">誰帶進來的</div>
+       只看單一資源會低估（財神在 ys89 站群 51、在 picks168 45）。
+       2026-08-14 發現：這張表跟 LINE 兩張表用的是每日排程算好的固定
+       「過去 28 天」滾動視窗（ga4_fetch.py get_date_range()），不會跟著
+       上面的報告期間選擇器變動。跟其他 KPI 卡片（有照選的期間算）放在
+       同一頁，數字看起來像同一份報告，其實是不同區間，開會報數字容易
+       混淆。加期間標示，不要默默讓人以為是同一段時間。 -->
+  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:2px;letter-spacing:.04em">誰帶進來的
+    <span id="mtg-accounts-period" style="font-weight:400;color:#f59e42;font-size:.68rem;margin-left:6px"></span></div>
+  <div style="font-size:.66rem;color:var(--text3);margin-bottom:8px">⚠ 固定近 28 天滾動視窗，不會跟著上面選的報告期間變動</div>
   <div id="mtg-accounts" style="margin-bottom:20px"></div>
 
   <!-- LINE 兩條路徑：加好友（陌生流量）與圖文選單（既有好友），刻意分開不合計 -->
-  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">LINE 官方帳號</div>
+  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:2px;letter-spacing:.04em">LINE 官方帳號
+    <span id="mtg-line-period" style="font-weight:400;color:#f59e42;font-size:.68rem;margin-left:6px"></span></div>
+  <div style="font-size:.66rem;color:var(--text3);margin-bottom:8px">⚠ 同樣是固定近 28 天滾動視窗，不是報告期間</div>
   <div class="mtg-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
     <div>
       <div style="font-size:.72rem;color:#06c755;margin-bottom:6px">👥 加好友管道（還沒加的人）</div>
@@ -15120,6 +15129,8 @@ function renderMeeting() {
   // 兩者的人不同層，刻意分成兩張表、不給合計，避免被加在一起當成「LINE 總成效」。
   ;(function renderLine(){
     const L = (_ga4Data && _ga4Data.line) || {}
+    const linePeriodEl = document.getElementById('mtg-line-period')
+    if(linePeriodEl) linePeriodEl.textContent = L['_期間'] ? `（實際涵蓋 ${L['_期間']}）` : ''
     // 用系統既有的 pName()：它從 UTM 產生器＋角色主檔動態建對照，
     // 自己另外維護一份 code→中文名 會跟主檔不同步。
     const nameOf = c => pName(c)
@@ -15157,6 +15168,8 @@ function renderMeeting() {
     // 一定 ≤100%；若看到超過 100% 就是後端取成 eventCount 了（曾出現 333%）。
     const A = (_ga4Data && _ga4Data.accounts_all) || {}
     const accs = A['帳號'] || []
+    const acctPeriodEl = document.getElementById('mtg-accounts-period')
+    if(acctPeriodEl) acctPeriodEl.textContent = A['_期間'] ? `（實際涵蓋 ${A['_期間']}）` : ''
     document.getElementById('mtg-accounts').innerHTML = accs.length
       ? `<table style="width:100%;font-size:.72rem;border-collapse:collapse">
           <thead><tr style="border-bottom:1px solid var(--border)">
