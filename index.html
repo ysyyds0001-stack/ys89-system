@@ -3992,6 +3992,15 @@ function renderAbTests() {
   <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">核心 KPI</div>
   <div id="mtg-kpi-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px"></div>
 
+  <!-- 各站流量路徑總覽：2026-08-14 使用者以行銷總監視角要求——原本內容導流（誰帶進來的）
+       跟 LINE（加好友/圖文選單）分散在頁面下面三張各自獨立的表，要來回對照才拼得出
+       「這一站的流量到底從哪裡來、去了哪裡、量多少」。這裡先給結論：依站別把三條路徑
+       攤開在同一張卡片，一眼看完再往下翻細節表格。 -->
+  <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:2px;letter-spacing:.04em">🛤️ 各站流量路徑總覽
+    <span id="mtg-station-paths-period" style="font-weight:400;color:#f59e42;font-size:.68rem;margin-left:6px"></span></div>
+  <div style="font-size:.66rem;color:var(--text3);margin-bottom:8px">內容導流＝貼文／Bio 帶進站；LINE 兩項是近 28 天滾動視窗，內容導流跟著上面報告期間走——三個數字口徑不同，不能直接相加</div>
+  <div id="mtg-station-paths" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:20px"></div>
+
   <!-- 第二區之二：路徑1/路徑2 實際達成對比（獨立分區，不與核心KPI卡片混放）-->
   <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:.04em">🛤️ 路徑實際達成對比</div>
   <div id="mtg-path-compare" style="margin-bottom:20px"></div>
@@ -15122,6 +15131,73 @@ function renderMeeting() {
         <td style="padding:5px 6px;text-align:right"><span style="font-size:.65rem;padding:1px 5px;border-radius:4px;background:${pa.color}20;color:${pa.color}">${pa.level}</span></td>
       </tr>`
     }).join('') + `</tbody></table>${mtgPartialNote}`
+
+  // ── 各站流量路徑總覽 ──────────────────────────────────────────────
+  // 2026-08-14 使用者以行銷總監視角要求：內容導流（accounts_all）跟 LINE
+  // 兩條路徑（line.加好友管道／圖文選單）本來分散在下面三張各自獨立的表，
+  // 依站別重新聚合成一張卡片，一眼看完四個站各自的流量從哪來、去哪、多少。
+  // 三個數字都用 accounts_all／line 既有的固定近 28 天視窗，不重新對報告
+  // 期間算一次——目前的資料源就只算得出這個口徑，寧可老實標期間，
+  // 不要假裝這是跟報告期間對齊的數字。
+  ;(function renderStationPaths(){
+    const A = (_ga4Data && _ga4Data.accounts_all) || {}
+    const L = (_ga4Data && _ga4Data.line) || {}
+    const periodEl = document.getElementById('mtg-station-paths-period')
+    if(periodEl) periodEl.textContent = A['_期間'] ? `（近 28 天：${A['_期間']}）` : ''
+
+    const STATIONS = [
+      {key:'體育預測站', icon:'🏆', line:'已上線'},
+      {key:'電子站',     icon:'🎰', line:'已上線'},
+      {key:'百家站',     icon:'🃏', line:'尚未建置'},
+      {key:'彩票站',     icon:'🎱', line:'尚未建置'},
+    ]
+
+    // 內容導流：把每支帳號的 by_station 拆開，依站別加總
+    const contentByStation = {}
+    ;(A['帳號']||[]).forEach(r=>{
+      Object.entries(r.by_station||{}).forEach(([st,v])=>{
+        contentByStation[st] = (contentByStation[st]||0) + v
+      })
+    })
+    const sumByStation = (rows, key) => {
+      const m = {}
+      ;(rows||[]).forEach(r=>{ m[r.station] = (m[r.station]||0) + (r[key]||r.sessions||0) })
+      return m
+    }
+    const lineJoinByStation = sumByStation(L['加好友管道'], 'sessions')
+    const lineMenuByStation = sumByStation(L['圖文選單'], 'sessions')
+
+    const wrap = document.getElementById('mtg-station-paths')
+    if(!wrap) return
+    wrap.innerHTML = STATIONS.map(s=>{
+      const content = contentByStation[s.key] || 0
+      const join = lineJoinByStation[s.key] || 0
+      const menu = lineMenuByStation[s.key] || 0
+      const lineBuilt = s.line === '已上線'
+      const total = content + (lineBuilt ? join + menu : 0)
+      let note
+      if(!lineBuilt) note = 'LINE 尚未建置，目前流量全部來自內容導流'
+      else if(content > (join+menu)*3) note = '內容導流是主要來源，LINE 剛起步'
+      else if((join+menu) > content) note = 'LINE 流量已超過內容導流'
+      else note = '內容與 LINE 並行'
+      return `<div style="background:var(--g2);border:1px solid var(--border);border-radius:10px;padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="font-size:.85rem;font-weight:700;color:var(--text)">${s.icon} ${s.key}</div>
+          <span style="font-size:.62rem;padding:2px 7px;border-radius:10px;background:${lineBuilt?'#06c75520':'#94a3b820'};color:${lineBuilt?'#06c755':'#94a3b8'}">LINE ${s.line}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text3);padding:4px 0;border-bottom:1px solid var(--g3)">
+          <span>📝 內容導流進站</span><b style="color:var(--text);font-family:ui-monospace,monospace">${content}</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text3);padding:4px 0;border-bottom:1px solid var(--g3)">
+          <span>👥 LINE 加好友點擊</span><b style="color:${lineBuilt?'#06c755':'var(--text3)'};font-family:ui-monospace,monospace">${lineBuilt?join:'—'}</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text3);padding:4px 0;margin-bottom:8px">
+          <span>📱 LINE 選單點擊</span><b style="color:${lineBuilt?'#60a5fa':'var(--text3)'};font-family:ui-monospace,monospace">${lineBuilt?menu:'—'}</b>
+        </div>
+        <div style="font-size:.64rem;color:var(--text3);line-height:1.5">${note}</div>
+      </div>`
+    }).join('')
+  })()
 
   // ── LINE 兩區 ────────────────────────────────────────────────────
   // 資料來自 ga4-data.json 的 line 區塊（ga4_fetch.py 的 aggregate_line()）。
