@@ -301,7 +301,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-tab" onclick="nav(this,'datahealth')">🔍 資料健康</div>
   <div class="nav-sep"></div>
   <!-- 第二區：內容與執行 -->
-  <div class="nav-tab" onclick="nav(this,'tracker')">📈 發文追蹤</div>
+  <div class="nav-tab" onclick="nav(this,'tracker')">📸 IG 發文</div>
   <div class="nav-tab" onclick="nav(this,'threadtracker')">🔥 社群互動</div>
   <div class="nav-tab" onclick="nav(this,'channel')">📝 匿名社群</div>
   <div class="nav-tab" onclick="nav(this,'channelfb')">📘 Facebook</div>
@@ -3570,22 +3570,19 @@ function renderAbTests() {
 <div id="pg-tracker" class="page">
   <div class="fb" style="margin-bottom:18px">
     <div>
-      <h2 style="font-size:1.2rem;font-weight:700">發文追蹤</h2>
-      <p class="tm" style="margin-top:3px">記錄每次發文的來源文章、流量數據</p>
+      <h2 style="font-size:1.2rem;font-weight:700">📸 IG 發文</h2>
+      <p class="tm" style="margin-top:3px">IG 貼文成效追蹤 · 瀏覽數／貼文互動次數／按讚數／留言數／儲存次數／分享次數</p>
     </div>
-    <button class="btn btn-primary" onclick="openAddPostModal()">+ 新增發文記錄</button>
+    <div class="flex">
+      <select id="tf-persona" style="width:120px" onchange="renderPosts()"><option value="">全部角色</option></select>
+      <select id="tf-status" style="width:100px" onchange="renderPosts()">
+        <option value="">全部狀態</option><option>待記錄</option><option>已記錄</option>
+      </select>
+      <button class="btn btn-primary" onclick="openAddPostModal()">+ 新增 IG 發文</button>
+    </div>
   </div>
   <div class="g4" style="margin-bottom:18px" id="t-stats"></div>
-  <div class="card">
-    <div class="fb" style="margin-bottom:12px">
-      <div class="card-title" style="margin-bottom:0">發文記錄</div>
-      <div class="flex">
-        <select id="tf-persona" style="width:120px" onchange="renderPosts()"><option value="">全部角色</option></select>
-        <select id="tf-platform" style="width:120px" onchange="renderPosts()"><option value="">全部平台</option><option>IG</option><option>FB</option><option>Threads</option><option>IG+FB</option><option>IG+Threads</option><option>FB+Threads</option><option>全平台</option></select>
-      </div>
-    </div>
-    <div id="posts-table"></div>
-  </div>
+  <div id="posts-table"></div>
 </div>
 
 <!-- ===== PAGE: 文章庫 ===== -->
@@ -4455,10 +4452,6 @@ function renderAbTests() {
         </div>
       </div>
     </div>
-    <div class="fr">
-      <div class="fg"><label>平台</label><select id="po-platform"><option>IG</option><option>FB</option><option>Threads</option><option>IG+FB</option><option>IG+Threads</option><option>FB+Threads</option><option>全平台</option></select></div>
-      <div class="fg"><label>引用文章</label><select id="po-article"><option value="">選擇文章</option></select></div>
-    </div>
     <div class="fg"><label>主題摘要</label><input id="po-topic" placeholder="例：USDT走勢分析"></div>
     <div class="fg">
       <label>📎 帶入已建的 UTM/短連結 <span style="color:var(--text3);font-size:.7rem">（UTM 產生器存的，選角色後出現）</span></label>
@@ -4479,19 +4472,29 @@ function renderAbTests() {
       <div id="po-posturl-title" style="font-size:.72rem;color:var(--text3);margin-top:4px;min-height:1em;word-break:break-all"></div>
     </div>
     <div class="fg"><label>短連結（選填，貼上 lihi 等短網址供後續追蹤）</label><input id="po-shortlink" type="url" placeholder="https://lihi2.me/..."></div>
-    <hr>
-    <div class="tm" style="margin-bottom:10px">流量數據（發文後填入）</div>
-    <div class="fr">
-      <div class="fg"><label>按讚</label><input type="number" id="po-likes" placeholder="0"></div>
-      <div class="fg"><label>留言</label><input type="number" id="po-comments" placeholder="0"></div>
-    </div>
-    <div class="fr">
-      <div class="fg"><label>分享</label><input type="number" id="po-shares" placeholder="0"></div>
-      <div class="fg"><label>觸及</label><input type="number" id="po-reach" placeholder="0"></div>
-    </div>
-    <div class="fb" style="margin-top:6px">
+    <div class="tm" style="font-size:.7rem;margin:6px 0 0">成效數字之後在列表按「📊 記錄成效」再填，跟社群互動同一個節奏，不用發文當下就湊數字。</div>
+    <div class="fb" style="margin-top:14px">
       <button class="btn btn-outline" onclick="closeModal('modal-add-post')">取消</button>
       <button class="btn btn-primary" onclick="savePost()">儲存記錄</button>
+    </div>
+  </div>
+</div>
+
+<!-- IG 發文成效：瀏覽數／貼文互動次數／按讚數／留言數／儲存次數／分享次數 -->
+<div id="modal-ig-metrics" class="overlay">
+  <div class="modal" style="max-width:420px">
+    <div class="mh"><div class="mt">記錄 IG 成效</div><button class="mc" onclick="closeModal('modal-ig-metrics')">✕</button></div>
+    <input type="hidden" id="igm-id">
+    <div id="igm-info" style="font-size:.82rem;margin-bottom:14px;line-height:1.6"></div>
+    <div class="fr"><div class="fg"><label>瀏覽數</label><input type="number" id="igm-views" placeholder="0"></div>
+      <div class="fg"><label>貼文互動次數</label><input type="number" id="igm-postInteractions" placeholder="0"></div></div>
+    <div class="fr"><div class="fg"><label>按讚數</label><input type="number" id="igm-likes" placeholder="0"></div>
+      <div class="fg"><label>留言數</label><input type="number" id="igm-comments" placeholder="0"></div></div>
+    <div class="fr"><div class="fg"><label>儲存次數</label><input type="number" id="igm-saves" placeholder="0"></div>
+      <div class="fg"><label>分享次數</label><input type="number" id="igm-shares" placeholder="0"></div></div>
+    <div class="fb" style="margin-top:6px">
+      <button class="btn btn-outline" onclick="closeModal('modal-ig-metrics')">取消</button>
+      <button class="btn btn-primary" onclick="saveIgMetrics()">儲存成效</button>
     </div>
   </div>
 </div>
@@ -7507,91 +7510,115 @@ function deletePersonaTemplate(personaId,templateId){
 
 // ===== TRACKER =====
 function renderTracker(){
-  const posts=DB.get('posts'),personas=DB.get('personas')
+  const posts=DB.get('posts')||[],personas=DB.get('personas')||[]
   const sel=document.getElementById('tf-persona')
-  sel.innerHTML='<option value="">全部角色</option>'+personas.map(p=>`<option>${p.name}</option>`).join('')
-  const ti=posts.reduce((a,p)=>a+(+p.impressions||0),0)
-  const tl=posts.reduce((a,p)=>a+(+p.likes||0),0)
-  const tc=posts.reduce((a,p)=>a+(+p.comments||0),0)
-  const tr=posts.reduce((a,p)=>a+(+p.reach||0),0)
-  const noInsights=posts.filter(p=>!(+p.impressions||+p.reach||+p.likes)).length
+  if(sel) sel.innerHTML='<option value="">全部角色</option>'+[...new Set(posts.map(p=>p.personaName).filter(Boolean))].sort().map(n=>`<option>${n}</option>`).join('')
+  const sum=k=>posts.reduce((a,p)=>a+(+(p.metrics?.[k]??p[k])||0),0)
+  const pending=posts.filter(p=>p.status!=='已記錄').length
   document.getElementById('t-stats').innerHTML=[
     ['總發文',posts.length,''],
-    ['總曝光',ti.toLocaleString(),''],
-    ['總觸及',tr.toLocaleString(),''],
-    ['總按讚',tl.toLocaleString(),''],
-    ['總留言',tc.toLocaleString(),''],
-    ['待填洞察',noInsights,'#f87171']
+    ['瀏覽數',sum('views').toLocaleString(),''],
+    ['貼文互動次數',sum('postInteractions').toLocaleString(),''],
+    ['按讚數',sum('likes').toLocaleString(),''],
+    ['留言數',sum('comments').toLocaleString(),''],
+    ['待記錄',pending,pending?'#f87171':'']
   ].map(([l,v,c])=>`<div class="stat"><div class="stat-num" style="${c?'color:'+c:''}">${v}</div><div class="stat-label">${l}</div></div>`).join('')
-  // populate selects
   const pSel=document.getElementById('po-persona')
-  pSel.innerHTML='<option value="">選擇角色</option>'+_categoryOptionsHTML(personas,'','')
-  const arts=DB.get('articles')
-  const aSel=document.getElementById('po-article')
-  aSel.innerHTML='<option value="">選擇文章</option>'+arts.map(a=>`<option value="${a.id}">${a.title}</option>`).join('')
+  if(pSel){ pSel.innerHTML='<option value="">選擇角色</option>'+_categoryOptionsHTML(personas,'','') }
   renderPosts()
 }
 
+// IG 六項指標，跟社群互動共用同一套「先建立、後填成效」節奏——
+// 建立時只記貼文本身，數字隔天再回來填，不用發文當下就要湊出數字。
+const IG_METRICS=[['views','瀏覽數'],['postInteractions','貼文互動次數'],['likes','按讚數'],['comments','留言數'],['saves','儲存次數'],['shares','分享次數']]
+
 function renderPosts(){
-  let posts=DB.get('posts').slice().reverse()
+  let posts=(DB.get('posts')||[]).slice().reverse()
   const pf=document.getElementById('tf-persona')?.value
-  const plf=document.getElementById('tf-platform')?.value
+  const sf=document.getElementById('tf-status')?.value
   if(pf)posts=posts.filter(p=>p.personaName===pf)
-  if(plf)posts=posts.filter(p=>p.platform===plf)
+  if(sf)posts=posts.filter(p=>(p.status||'待記錄')===sf)
   const wrap=document.getElementById('posts-table')
-  if(!posts.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)">尚無發文記錄</div>';return}
-  const deskHtml=`<div class="posts-desk" style="overflow-x:auto"><table>
-    <thead><tr><th>日期</th><th>角色</th><th>平台</th><th>主題</th><th>引用文章</th><th>貼文連結</th><th>📢曝光</th><th>👀瀏覽</th><th>👁觸及</th><th>👍讚</th><th>💬留言</th><th>🔖儲存</th><th>🔄分享</th><th>🔗點擊</th><th>操作</th></tr></thead>
-    <tbody>${posts.map(p=>`<tr onclick="contentDetailClick(event,'${p.id}','post')" class="cd-clickable">
-      <td style="white-space:nowrap">${p.date||'—'}</td>
-      <td><span class="badge b-green">${p.personaName||'—'}</span></td>
-      <td>${(p.platforms&&p.platforms.length?p.platforms:[p.platform]).filter(Boolean).map(pl=>`<span class="badge b-blue" style="margin-right:2px">${pl}</span>`).join('')||'—'}</td>
-      <td style="max-width:180px">
-        <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.topic||''}">${p.topic||'—'}</div>
-        ${p.urlTitle?`<div style="font-size:.66rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escAttr(p.urlTitle)}">📄 ${p.urlTitle}</div>`:''}
-        ${p.utmContent?`<div style="font-family:monospace;font-size:.62rem;color:#4ade80;white-space:nowrap" title="UTM 追蹤碼">🏷 ${p.utmContent}</div>`:''}
-      </td>
-      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.77rem" class="tm" title="${p.articleTitle||''}">${p.articleTitle||'—'}</td>
-      <td style="white-space:nowrap;text-align:center">${p.postUrl?`<a href="${escAttr(p.postUrl)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px" title="貼文連結">🔗 查看</a>`:''}
-        ${p.shortLink?`<a href="${escAttr(p.shortLink)}" target="_blank" class="btn btn-xs btn-copy" style="margin-right:3px;color:#fbbf24" title="短連結（導論壇文章）">🔗短</a>`:''}
-        <button class="btn btn-xs btn-outline" onclick="openSetPostUrl('${p.id}')" title="${p.postUrl?'編輯連結':'添加貼文連結'}">${p.postUrl?'✏':'＋連結'}</button></td>
-      <td style="${!(p.impressions||p.views||p.reach||p.likes)? 'color:#f87171' :''}">${p.impressions||0}</td><td>${p.views||0}</td><td>${p.reach||0}</td><td>${p.likes||0}</td><td>${p.comments||0}</td><td>${p.saves||0}</td><td>${p.shares||0}</td><td>${p.linkclicks||0}</td>
-      <td class="flex" style="gap:5px"><button class="btn btn-xs btn-primary" onclick="openMetrics('${p.id}')" title="填入洞察報告數據">📊填入</button><button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button></td>
-    </tr>`).join('')}</tbody>
-  </table></div>`
-  const mobHtml=`<div class="posts-mob">${posts.map(p=>{
-    const plats=(p.platforms&&p.platforms.length?p.platforms:[p.platform]).filter(Boolean)
-    return `<div class="po-card">
-      <div class="po-head" onclick="poToggle(this)">
-        <span class="po-chev">▸</span>
-        <span style="font-size:.72rem;color:var(--text3);white-space:nowrap;flex-shrink:0">${(p.date||'').slice(5)}</span>
-        <span class="badge b-green" style="flex-shrink:0">${p.personaName||'—'}</span>
-        <span class="po-topic">${p.topic||p.articleTitle||'—'}</span>
-      </div>
-      <div class="po-body">
-        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">${plats.map(pl=>`<span class="badge b-blue">${pl}</span>`).join('')||'—'}</div>
-        ${p.articleTitle?`<div style="font-size:.74rem;color:var(--text3);margin-bottom:6px">📄 ${p.articleTitle}</div>`:''}
-        ${p.utmContent?`<div style="font-family:monospace;font-size:.7rem;color:#4ade80;margin-bottom:6px">🏷 ${p.utmContent}</div>`:''}
-        <div class="po-metrics">
-          <div><div class="mv" style="${!(p.impressions)? 'color:#f87171':''}">${p.impressions||0}</div><div class="ml">📢曝光</div></div>
-          <div><div class="mv">${p.views||0}</div><div class="ml">👀瀏覽</div></div>
-          <div><div class="mv">${p.reach||0}</div><div class="ml">👁觸及</div></div>
-          <div><div class="mv">${p.likes||0}</div><div class="ml">👍讚</div></div>
-          <div><div class="mv">${p.comments||0}</div><div class="ml">💬留言</div></div>
-          <div><div class="mv">${p.saves||0}</div><div class="ml">🔖儲存</div></div>
-          <div><div class="mv">${p.shares||0}</div><div class="ml">🔄分享</div></div>
-          <div><div class="mv">${p.linkclicks||0}</div><div class="ml">🔗點擊</div></div>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${p.postUrl?`<a href="${escAttr(p.postUrl)}" target="_blank" class="btn btn-xs btn-copy">🔗 查看貼文</a>`:''}
-          ${p.shortLink?`<a href="${escAttr(p.shortLink)}" target="_blank" class="btn btn-xs btn-copy" style="color:#fbbf24">🔗 短連結</a>`:''}
-          <button class="btn btn-xs btn-outline" onclick="openSetPostUrl('${p.id}')">${p.postUrl?'✏ 編輯連結':'＋連結'}</button>
-          <button class="btn btn-xs btn-primary" onclick="openMetrics('${p.id}')">📊 填入洞察</button>
-          <button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button>
-        </div>
-      </div>
-    </div>`}).join('')}</div>`
-  wrap.innerHTML=deskHtml+mobHtml
+  if(!posts.length){wrap.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">尚無 IG 發文記錄<br><span style="font-size:.78rem">點右上角「+ 新增 IG 發文」，或在社群互動新增時勾選 IG</span></div>';return}
+
+  const WD=['日','一','二','三','四','五','六']
+  const byDate={}
+  posts.forEach(p=>{ const d=p.date||'未知日期'; (byDate[d]=byDate[d]||[]).push(p) })
+  const dash=()=>`<span style="color:var(--text3);font-family:ui-monospace,monospace">—</span>`
+  const numFmt=v=>{ if(v===null||v===undefined||v==='') return dash()
+    const n=Number(v); if(isNaN(n)) return dash()
+    if(n===0) return `<span style="color:var(--text3);font-family:ui-monospace,monospace">0</span>`
+    const s=n.toLocaleString('zh-TW')
+    return n>=1000?`<span style="color:var(--accent);font-weight:700;font-family:ui-monospace,monospace">${s}</span>`:`<span style="font-family:ui-monospace,monospace;color:var(--text3)">${s}</span>` }
+
+  wrap.innerHTML=Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).map(d=>{
+    const items=byDate[d]
+    const wd=(()=>{ const dt=new Date(d+'T00:00:00'); return isNaN(dt)?'':WD[dt.getDay()] })()
+    return `<div style="margin-bottom:18px">
+      <div style="font-size:.78rem;color:var(--text3);margin-bottom:8px;padding-left:2px">${d}${wd?'（'+wd+'）':''}　<span style="color:var(--text3)">${items.length} 則</span></div>
+      <div style="overflow-x:auto"><table style="width:100%;font-size:.8rem;border-collapse:collapse">
+        <thead><tr style="border-bottom:1px solid var(--border)">
+          <th style="text-align:left;padding:6px 8px;color:var(--text3)">角色</th>
+          <th style="text-align:left;padding:6px 8px;color:var(--text3)">貼文</th>
+          <th style="text-align:right;padding:6px 8px;color:var(--text3)">瀏覽數</th>
+          <th style="text-align:right;padding:6px 8px;color:var(--text3)">貼文互動</th>
+          <th style="text-align:right;padding:6px 8px;color:var(--text3)">讚</th>
+          <th style="text-align:right;padding:6px 8px;color:var(--text3)">留言</th>
+          <th style="text-align:right;padding:6px 8px;color:var(--text3)">儲存</th>
+          <th style="text-align:right;padding:6px 8px;color:var(--text3)">分享</th>
+          <th style="text-align:center;padding:6px 8px;color:var(--text3)">狀態</th>
+          <th style="padding:6px 8px"></th>
+        </tr></thead>
+        <tbody>${items.map(p=>{
+          const m=p.metrics||{}
+          const done=p.status==='已記錄'
+          return `<tr style="border-bottom:1px solid var(--g3)">
+            <td style="padding:6px 8px"><span class="badge b-green">${p.personaName||'—'}</span></td>
+            <td style="padding:6px 8px;max-width:220px">
+              <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2)" title="${escAttr(p.topic||'')}">${p.topic||p.urlTitle||'（無主題）'}</div>
+              ${p.utmContent?`<div style="font-family:monospace;font-size:.66rem;color:#4ade80">🏷 ${p.utmContent}</div>`:''}
+              ${p.postUrl?`<a href="${escAttr(p.postUrl)}" target="_blank" style="font-size:.68rem;color:#60a5fa">🔗 查看貼文</a>`:''}
+            </td>
+            <td style="padding:6px 8px;text-align:right">${numFmt(m.views??p.views)}</td>
+            <td style="padding:6px 8px;text-align:right">${numFmt(m.postInteractions??p.postInteractions)}</td>
+            <td style="padding:6px 8px;text-align:right">${numFmt(m.likes??p.likes)}</td>
+            <td style="padding:6px 8px;text-align:right">${numFmt(m.comments??p.comments)}</td>
+            <td style="padding:6px 8px;text-align:right">${numFmt(m.saves??p.saves)}</td>
+            <td style="padding:6px 8px;text-align:right">${numFmt(m.shares??p.shares)}</td>
+            <td style="padding:6px 8px;text-align:center"><span class="badge ${done?'b-green':'b-blue'}" style="${done?'':'color:#f59e42'}">${p.status||'待記錄'}</span></td>
+            <td style="padding:6px 8px;text-align:right;white-space:nowrap">
+              <button class="btn btn-xs btn-primary" onclick="openIgMetrics('${p.id}')" title="填入成效數字">📊 ${done?'修改':'記錄成效'}</button>
+              <button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">刪除</button>
+            </td>
+          </tr>`}).join('')}</tbody>
+      </table></div>
+    </div>`
+  }).join('')
+}
+
+function openIgMetrics(id){
+  const posts=DB.get('posts')||[]
+  const p=posts.find(x=>x.id===id); if(!p)return
+  document.getElementById('igm-id').value=id
+  document.getElementById('igm-info').innerHTML=`<b style="color:var(--accent)">${p.personaName||'—'}</b> · ${p.date||''}<br><span style="color:var(--text3)">${p.topic||p.urlTitle||''}</span>`
+  const m=p.metrics||{}
+  IG_METRICS.forEach(([k])=>{ const el=document.getElementById('igm-'+k); if(el) el.value=(m[k]??p[k])||0 })
+  openModal('modal-ig-metrics')
+}
+function saveIgMetrics(){
+  const id=document.getElementById('igm-id').value
+  const posts=DB.get('posts')||[]
+  const i=posts.findIndex(x=>x.id===id); if(i<0)return
+  const metrics={}
+  IG_METRICS.forEach(([k])=>{ metrics[k]=+document.getElementById('igm-'+k)?.value||0 })
+  posts[i].metrics=metrics
+  posts[i].status='已記錄'
+  posts[i].updatedAt=new Date().toISOString()
+  DB.set('posts',posts)
+  DB.push('posts').catch(()=>{})
+  closeModal('modal-ig-metrics')
+  renderTracker()
+  toast('成效已記錄')
 }
 function poToggle(el){ el.closest('.po-card')?.classList.toggle('open') }
 
@@ -7704,42 +7731,25 @@ function openAddPostModal(){
 
 function savePost(){
   const pid=document.getElementById('po-persona').value
-  const aid=document.getElementById('po-article').value
-  const personas=DB.get('personas')
+  const personas=DB.get('personas')||[]
   const p=personas.find(x=>x.id===pid)
-  const articles=DB.get('articles')
-  const a=articles.find(x=>x.id===aid)
-  if(a){
-    const ai=articles.findIndex(x=>x.id===aid)
-    if(!articles[ai].postedBy)articles[ai].postedBy=[]
-    if(p&&!articles[ai].postedBy.find(x=>x.pid===pid)){
-      articles[ai].postedBy.push({pid,name:p.name,date:document.getElementById('po-date').value})
-    }
-    articles[ai].lastUsed=new Date().toISOString()
-    DB.set('articles',articles)
-  }
-  const posts=DB.get('posts')
+  const posts=DB.get('posts')||[]
   posts.push({
     id:DB.id(),date:document.getElementById('po-date').value,
     personaId:pid,personaName:p?.name||'',
-    platform:document.getElementById('po-platform').value,
-    articleId:aid,articleTitle:a?.title||'',
     topic:document.getElementById('po-topic').value,
     postUrl:document.getElementById('po-posturl')?.value?.trim()||'',
     utmContent:document.getElementById('po-utm')?.value?.trim()||'',
     shortLink:document.getElementById('po-shortlink')?.value?.trim()||'',
     urlTitle:(_poUrlTitle||'').trim()||(document.getElementById('po-posturl')?.value?.trim()?taUrlLabel(document.getElementById('po-posturl').value.trim()):''),
-    likes:+document.getElementById('po-likes').value||0,
-    comments:+document.getElementById('po-comments').value||0,
-    shares:+document.getElementById('po-shares').value||0,
-    reach:+document.getElementById('po-reach').value||0,
-    createdAt:new Date().toISOString()
+    status:'待記錄', metrics:{},
+    createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()
   })
   DB.set('posts',posts)
   DB.push('posts').catch(()=>{})
   closeModal('modal-add-post')
   renderTracker()
-  toast('發文記錄已儲存')
+  toast('已建立，之後在列表按「📊 記錄成效」填數字')
 }
 
 function togglePlat(el){
@@ -11846,6 +11856,30 @@ function saveThreadActivity(){
   }
   const platforms = ['Threads','IG','FB','Blog'].filter(p=>document.getElementById('ta-plat-'+p)?.checked)
   const _gv = id => (document.getElementById(id)?.value||'').trim()
+  // 勾了 IG 就整筆轉存到「IG 發文」（posts），不進話題參與——
+  // 兩邊的成效欄位天生不同（IG 是瀏覽/互動/讚/留言/儲存/分享，
+  // Threads 是讚/回覆/轉發/分享），混在同一張表沒辦法對齊分析。
+  if(platforms.includes('IG')){
+    const pval2 = document.getElementById('ta-persona').value
+    let [pid2, pname2] = pval2 ? pval2.split('|') : ['','']
+    if(pval2==='custom|'){ pid2='custom'; pname2=document.getElementById('ta-persona-custom')?.value?.trim()||'自訂帳號' }
+    const posts = DB.get('posts')||[]
+    const created = {
+      id: DB.id(), date:_gv('ta-date'), personaId:pid2, personaName:pname2,
+      topic:_gv('ta-topic'), postUrl:_gv('ta-url'), utmContent:_gv('ta-utm'),
+      shortLink:_gv('ta-shortlink'),
+      urlTitle:(_taUrlTitle||'').trim() || (_gv('ta-url') ? taUrlLabel(_gv('ta-url')) : ''),
+      status:'待記錄', metrics:{}, createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()
+    }
+    posts.push(created)
+    DB.set('posts', posts)
+    DB.push('posts').catch(()=>{})
+    closeModal('modal-thread-activity')
+    const tab=[...document.querySelectorAll('.nav-tab')].find(t=>(t.getAttribute('onclick')||'').includes("'tracker'"))
+    if(tab) nav(tab,'tracker'); else renderTracker()
+    toast('已存到 IG 發文')
+    return
+  }
   const obj = {
     date: _gv('ta-date'),
     personaId, personaName,
