@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-15T02:13:54Z",
+  "lastUpdated": "2026-08-16T02:21:23Z",
   "posts": [
     {
       "date": "2026-08-14",
@@ -57,7 +57,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 3,
+      "linkClicks": 6,
       "registrations": null,
       "note": null
     },
@@ -2757,7 +2757,7 @@
       "impressions": 3662,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -2922,7 +2922,7 @@
       "impressions": 229,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 7,
+      "linkClicks": 5,
       "registrations": null,
       "note": null
     },
@@ -4422,7 +4422,7 @@
       "impressions": 133,
       "likes": 7,
       "comments": 0,
-      "linkClicks": 31,
+      "linkClicks": 30,
       "registrations": null,
       "note": null
     },
@@ -9636,7 +9636,7 @@
     {
       "date": "2026-08-14",
       "totalImpressions": null,
-      "totalLinkClicks": 3,
+      "totalLinkClicks": 6,
       "totalRegistrations": null
     },
     {
@@ -9768,13 +9768,13 @@
     {
       "date": "2026-07-17",
       "totalImpressions": 14992,
-      "totalLinkClicks": 1,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-16",
       "totalImpressions": 4329,
-      "totalLinkClicks": 7,
+      "totalLinkClicks": 5,
       "totalRegistrations": null
     },
     {
@@ -9846,7 +9846,7 @@
     {
       "date": "2026-07-02",
       "totalImpressions": 1519,
-      "totalLinkClicks": 31,
+      "totalLinkClicks": 30,
       "totalRegistrations": null
     },
     {
