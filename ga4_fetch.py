@@ -497,67 +497,60 @@ def aggregate_line(contents):
 SOCIAL_MEDIUMS = ["th_post", "th_bio", "ig_post", "ig_bio", "social", "post", "story", "comment", "bio"]
 
 def fetch_kpis_range(client, start_date, end_date):
-    """拉取指定日期範圍的 KPI"""
+    """拉取指定日期範圍的 KPI，五個 GA4 資源合計（ys89 站群 + 四站）。
 
-    request = RunReportRequest(
-        property=PROPERTY_FULL,
-        metrics=[
-            Metric(name="activeUsers"),
-            Metric(name="sessions"),
-            Metric(name="eventCount"),
-            Metric(name="engagedSessions"),
-        ],
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-    )
+    2026-08-17 修掉一個從一開始就在的根本性 bug：這支只查過 PROPERTY_FULL
+    （539393762，ys89 站群），從沒查過 picks168/tsaishen888/dgcasnio/lott168。
+    實測 8/10-8/14：539393762 完全沒有 picks168.com、tsaishen888.com 的流量
+    （0 場工作階段），但我們幾乎所有 UTM 貼文連結（th_post/ig_bio）導的都是
+    這四個站，不是 ys89.fun 家族網域。結果就是「GA4 Sessions」「社群連結
+    點擊」這些核心 KPI 卡片,量到的幾乎是另一批不相干的網域流量,不是我們
+    真正在追蹤的社群導流──社群連結點擊那格常年個位數字，就是這樣來的。
+    跟 fetch_accounts_all() 用同一套 STATION_PROPERTIES，五個資源都查、
+    加總，才是「這段期間我們真正帶進站多少人」的完整數字。
+    """
+    props = dict(STATION_PROPERTIES)
+    props["ys89站群"] = (PROPERTY_ID, "ys89.fun 等")
 
-    response = client.run_report(request)
-    row = response.rows[0]
+    cta_filter = FilterExpression(or_group={"expressions": [
+        FilterExpression(filter=Filter(field_name="eventName", string_filter={"value": e}))
+        for e in CTA_EVENTS]})
+    social_filter = FilterExpression(or_group={"expressions": [
+        FilterExpression(filter=Filter(field_name="sessionMedium", string_filter={"value": m}))
+        for m in SOCIAL_MEDIUMS]})
 
-    active_users = int(row.metric_values[0].value or 0)
-    sessions = int(row.metric_values[1].value or 0)
-    event_count = int(row.metric_values[2].value or 0)
-    engaged_sessions = int(row.metric_values[3].value or 0)
+    active_users = sessions = event_count = engaged_sessions = cta = social_clicks = 0
+    for station, (pid, host) in props.items():
+        prop = f"properties/{pid}"
+        try:
+            resp = client.run_report(RunReportRequest(
+                property=prop,
+                metrics=[Metric(name="activeUsers"), Metric(name="sessions"),
+                         Metric(name="eventCount"), Metric(name="engagedSessions")],
+                date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+            ))
+            if resp.rows:
+                row = resp.rows[0]
+                active_users     += int(row.metric_values[0].value or 0)
+                sessions         += int(row.metric_values[1].value or 0)
+                event_count      += int(row.metric_values[2].value or 0)
+                engaged_sessions += int(row.metric_values[3].value or 0)
 
-    # CTA 數
-    cta_filter = FilterExpression(
-        or_group={
-            "expressions": [
-                FilterExpression(
-                    filter=Filter(field_name="eventName", string_filter={"value": event})
-                )
-                for event in CTA_EVENTS
-            ]
-        }
-    )
+            cta_resp = client.run_report(RunReportRequest(
+                property=prop, metrics=[Metric(name="sessions")],
+                date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+                dimension_filter=cta_filter))
+            if cta_resp.rows:
+                cta += int(cta_resp.rows[0].metric_values[0].value or 0)
 
-    cta_request = RunReportRequest(
-        property=PROPERTY_FULL,
-        metrics=[Metric(name="sessions")],
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimension_filter=cta_filter,
-    )
-    cta_response = client.run_report(cta_request)
-    cta = int(cta_response.rows[0].metric_values[0].value or 0) if cta_response.rows else 0
-
-    # 社群連結點擊（social medium sessions）
-    social_filter = FilterExpression(
-        or_group={
-            "expressions": [
-                FilterExpression(
-                    filter=Filter(field_name="sessionMedium", string_filter={"value": m})
-                )
-                for m in SOCIAL_MEDIUMS
-            ]
-        }
-    )
-    social_request = RunReportRequest(
-        property=PROPERTY_FULL,
-        metrics=[Metric(name="sessions")],
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimension_filter=social_filter,
-    )
-    social_response = client.run_report(social_request)
-    social_clicks = int(social_response.rows[0].metric_values[0].value or 0) if social_response.rows else 0
+            social_resp = client.run_report(RunReportRequest(
+                property=prop, metrics=[Metric(name="sessions")],
+                date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+                dimension_filter=social_filter))
+            if social_resp.rows:
+                social_clicks += int(social_resp.rows[0].metric_values[0].value or 0)
+        except Exception as e:
+            print(f"   ⚠ KPI {station}（{pid}）失敗，跳過：{e}")
 
     conversion_rate = (cta / sessions * 100) if sessions > 0 else 0
 
