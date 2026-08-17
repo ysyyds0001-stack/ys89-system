@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-16T02:21:23Z",
+  "lastUpdated": "2026-08-17T02:19:40Z",
   "posts": [
     {
       "date": "2026-08-14",
@@ -2712,7 +2712,7 @@
       "impressions": 2867,
       "likes": 10,
       "comments": 0,
-      "linkClicks": 2,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -2727,7 +2727,7 @@
       "impressions": 553,
       "likes": 6,
       "comments": 0,
-      "linkClicks": 3,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -4197,7 +4197,7 @@
       "impressions": 0,
       "likes": 144,
       "comments": 31,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "無法顯示瀏覽"
     },
@@ -4422,7 +4422,7 @@
       "impressions": 133,
       "likes": 7,
       "comments": 0,
-      "linkClicks": 30,
+      "linkClicks": 28,
       "registrations": null,
       "note": null
     },
@@ -4617,7 +4617,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 9,
+      "linkClicks": 8,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -7842,7 +7842,7 @@
       "impressions": 22000,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 21,
+      "linkClicks": 10,
       "registrations": null,
       "note": "世界盃��費觀賽資訊"
     },
@@ -7977,7 +7977,7 @@
       "impressions": 720,
       "likes": 5,
       "comments": 6,
-      "linkClicks": 8,
+      "linkClicks": 6,
       "registrations": null,
       "note": "6/12賽事提醒"
     },
@@ -9756,7 +9756,7 @@
     {
       "date": "2026-07-19",
       "totalImpressions": 3420,
-      "totalLinkClicks": 5,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -9840,19 +9840,19 @@
     {
       "date": "2026-07-03",
       "totalImpressions": 24390,
-      "totalLinkClicks": 1,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-02",
       "totalImpressions": 1519,
-      "totalLinkClicks": 30,
+      "totalLinkClicks": 28,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-01",
       "totalImpressions": 23179,
-      "totalLinkClicks": 10,
+      "totalLinkClicks": 9,
       "totalRegistrations": null
     },
     {
@@ -9972,7 +9972,7 @@
     {
       "date": "2026-06-11",
       "totalImpressions": 48280,
-      "totalLinkClicks": 29,
+      "totalLinkClicks": 16,
       "totalRegistrations": null
     },
     {
