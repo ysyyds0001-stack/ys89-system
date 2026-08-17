@@ -2461,6 +2461,12 @@ function _inferPathId(a) {
   if (a.path_id) return a.path_id
   if (a.path_type === 'bio') return 'PATH_03'
   const url = (a.landingUrl || '').toLowerCase()
+  // LINE 轉址頁（/line/?ch=...）要先判斷，不能落到下面的 picks168.com 規則——
+  // 轉址頁本身就架在 picks168.com/tsaishen888.com 底下，網址裡當然含 picks168.com，
+  // 沒有這條的話全部會被歸到舊的 PATH_02（AI工具→picks168），跟現在真正
+  // 的 LINE 官方→圖文選單→picks168 這條路徑混在一起，分不出來。
+  // 2026-08-17 使用者裁示：路徑2 統一改成「LINE 官方 → 圖文選單 → picks168」。
+  if (url.includes('/line/') && (url.includes('ch=') || url.includes('pid='))) return 'PATH_02'
   if (url.includes('picks168.com') || url.includes('t.me/picks168') || url.includes('t.me/pickhelp')) return 'PATH_02'
   if (url.includes('lin.ee') || url.startsWith('line:')) return 'PATH_05'
   if (url.includes('ys89.fun') || url.includes('ys89.games') || url.includes('ys89.info') ||
@@ -2474,7 +2480,7 @@ function _ovPaths() {
   if (!el) return
   const PATHS = [
     {id:'PATH_01',icon:'🗺️',label:'社群 → 論壇/部落格 → YS89 → 註冊',attr:'B 強',ac:'#60a5fa',note:'來自 ys89.fun 或部落格 referral，GA4 source 可確認'},
-    {id:'PATH_02',icon:'🤖',label:'社群 → AI 預測工具 → picks168 → 進群',attr:'B 強',ac:'#60a5fa',note:'picks168.com GA4 source 可確認'},
+    {id:'PATH_02',icon:'💬',label:'社群 → LINE 官方 → 圖文選單 → picks168',attr:'B 強',ac:'#60a5fa',note:'轉址頁 UTM 可確認，2026-08-17 起取代舊的 AI 預測工具 bot 流程'},
     {id:'PATH_03',icon:'📸',label:'Instagram → Bio → 承接頁 → 註冊',attr:'C 輔助',ac:'#f59e42',note:'IG Bio 靜態連結，無法對應個別貼文'},
     {id:'PATH_04',icon:'🧵',label:'Threads 單篇 → 承接頁 → 註冊',attr:'B 強',ac:'#60a5fa',note:'UTM + 貼文 URL 確認社群觸點（A 級需 P2/P3 link_id）'},
     {id:'PATH_05',icon:'💬',label:'私訊/LINE → 承接頁 → 註冊',attr:'D 推估',ac:'#fb923c',note:'時間段推估，需 conv_daily 補充'},
@@ -15084,7 +15090,7 @@ function renderMeeting() {
     const pid = (typeof _inferPathId==='function') ? _inferPathId(a) : (a.path_id||'PATH_04')
     if(pathStats[pid]){ pathStats[pid].views+=(a.platformMetrics?.Threads?.views||0); pathStats[pid].posts++ }
   })
-  const pathLabels={PATH_01:'論壇/部落格→YS89',PATH_02:'AI工具→picks168',PATH_03:'IG Bio→承接頁',PATH_04:'Threads單篇',PATH_05:'LINE/私訊'}
+  const pathLabels={PATH_01:'論壇/部落格→YS89',PATH_02:'LINE官方→圖文選單→picks168',PATH_03:'IG Bio→承接頁',PATH_04:'Threads單篇',PATH_05:'LINE/私訊'}
   // 歸因等級依路徑類型動態計算（非硬編碼 B）
   const PATH_ATTR_MAP={
     PATH_01:{level:'B',color:'#60a5fa'},  // GA4 source referral 可確認
