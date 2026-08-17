@@ -8437,7 +8437,13 @@ function _setActorDir(id, tableKey, newCat){
 }
 
 function _actorCard(a,tableKey,opts){
-  const acctStatus=a.accountStatus||'active', inactive=acctStatus!=='active'
+  // 2026-08-17 修掉「所有角色卡片都反黑」的 bug：這裡原本寫
+  // inactive=acctStatus!=='active'，但全系統的狀態值其實是中文
+  // （現役/觀察中/申訴中/已封存），從來沒有等於過英文字串 'active'，
+  // 所以每一張卡片都被判定成 inactive、套上 opacity:.4——包括現役的也一樣。
+  // 改成跟 renderCommunity() 篩選清單時用的同一份 INACTIVE 判斷基準，
+  // 只有真的停用/停權/已封存才變暗。
+  const acctStatus=a.accountStatus||'active', inactive=['inactive','banned','已封存'].includes(acctStatus)
   const platforms=a.platforms||(a.platform?[a.platform]:[])
   const platIcon=p=>({'Blogger':'📝','Medium':'📝','Pixnet 痞客邦':'📝','方格子':'📝','IG':'📸','Threads':'🧵','FB':'📘'}[p]||'🔗')
   const platStr=platforms.map(p=>platIcon(p)+' '+p).join('  ')
