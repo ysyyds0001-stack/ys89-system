@@ -15018,13 +15018,25 @@ function renderMeeting() {
     </div>`
   }
 
+  // GA4 的社群連結點擊／Sessions／Engaged Sessions／CTA 四格，實際抓的是
+  // 排程同步當下（today）往回算固定 3/7/28 天，不是畫面上選的 from~to。
+  // 2026-08-17 使用者裁示：先不改邏輯，明確標出這四格是近似值、非精確對齊所選期間。
+  const kBucketDays = days<=3 ? 3 : days<=7 ? 7 : 28
+  const kSyncDate = (ga4.lastUpdated||'').slice(0,10)
+  let kWinRange = ''
+  if(kSyncDate){
+    const e = new Date(kSyncDate); const s = new Date(e); s.setDate(s.getDate()-(kBucketDays-1))
+    kWinRange = `${getTaipeiDateString(s)}～${kSyncDate}`
+  }
+  const kWarn = (days>28 ? `所選期間超過28天，僅能顯示近${kBucketDays}天近似值` : `近${kBucketDays}天近似值，非所選期間 ${from}～${to}`) + (kWinRange?`（實際涵蓋 ${kWinRange}）`:'')
+
   document.getElementById('mtg-kpi-grid').innerHTML = [
     kpiCard('📝','發文數',(cActs.length+cPosts.length+cChannel.length)||null,(pActs.length+pPosts.length+pChannel.length)||null,'社群互動+發文追蹤+匿名/FB',(cPosts.length||cChannel.length)?`含發文追蹤 ${cPosts.length} 篇、匿名/FB ${cChannel.length} 篇`:''),
     kpiCard('👁','已追蹤曝光',totV||null,pTotV||null,`Th ${totThreads.toLocaleString()} IG ${totIG.toLocaleString()} FB ${totFB.toLocaleString()} 部落格 ${totBlog.toLocaleString()} 發文追蹤 ${cPostsReach.toLocaleString()} 匿名/FB ${cChannelViews.toLocaleString()}`,(totIG===0&&totFB===0&&totThreads>0)?'僅 Threads，IG/FB/部落格 待補':''),
-    kpiCard('🔗','社群連結點擊',kUse.socialClicks||null,null,'GA4 social medium'),
-    kpiCard('📈','GA4 Sessions',kUse.sessions||null,kPrev.sessions||null,'GA4 自動同步'),
-    kpiCard('💬','Engaged Sessions',kUse.engagedSessions||null,null,'GA4 自動同步'),
-    kpiCard('🎯','CTA Click',kUse.cta||null,kPrev.cta||null,'GA4 cta_click','非完成註冊'),
+    kpiCard('🔗','社群連結點擊',kUse.socialClicks||null,null,'GA4 social medium',kWarn),
+    kpiCard('📈','GA4 Sessions',kUse.sessions||null,kPrev.sessions||null,'GA4 自動同步',kWarn),
+    kpiCard('💬','Engaged Sessions',kUse.engagedSessions||null,null,'GA4 自動同步',kWarn),
+    kpiCard('🎯','CTA Click',kUse.cta||null,kPrev.cta||null,'GA4 cta_click',kWarn+'；非完成註冊'),
     kpiCard('✅','完成註冊（總計）',cReg.completed,pReg.completed,'手動輸入',cReg.completed==null?'尚無資料，請至數據輸入填寫':''),
     kpiCard('🎖','有效註冊','待補',null,'手動輸入','定義為「註冊且有儲值」，目前無首存人數資料來源，待後台補齊'),
     kpiCard('💳','首存人數',cReg.dep,pReg.dep,'手動輸入',cReg.dep==null?'請至「代理收益週報」填入各代理首存人數':''),
@@ -15061,10 +15073,10 @@ function renderMeeting() {
   // 漏斗
   const fSteps = [
     {n:'① 社群曝光',v:totV||null,u:'次',s:'Threads+IG+FB'},
-    {n:'② 社群連結點擊',v:kUse.socialClicks||null,u:'次',s:'GA4 social medium'},
-    {n:'③ GA4 Sessions',v:kUse.sessions||null,u:'次',s:'GA4'},
-    {n:'④ Engaged Sessions',v:kUse.engagedSessions||null,u:'次',s:'GA4'},
-    {n:'⑤ CTA Click',v:kUse.cta||null,u:'次',s:'GA4 cta_click'},
+    {n:'② 社群連結點擊',v:kUse.socialClicks||null,u:'次',s:'GA4 social medium',approx:true},
+    {n:'③ GA4 Sessions',v:kUse.sessions||null,u:'次',s:'GA4',approx:true},
+    {n:'④ Engaged Sessions',v:kUse.engagedSessions||null,u:'次',s:'GA4',approx:true},
+    {n:'⑤ CTA Click',v:kUse.cta||null,u:'次',s:'GA4 cta_click',approx:true},
     {n:'⑥ 完成註冊',v:cReg.completed,u:'人',s:'手動輸入'},
     {n:'⑦ 有效註冊',v:cReg.reg,u:'人',s:'手動輸入'},
     {n:'⑧ 首存',v:cReg.dep,u:'人',s:'手動輸入'}
@@ -15078,6 +15090,7 @@ function renderMeeting() {
         <div>
           <div style="font-size:.7rem;font-weight:600;color:${s.v!=null?'var(--text)':'var(--text3)'}">${s.n}</div>
           ${s.v!=null?`<div style="font-size:1rem;font-weight:700;color:var(--accent)">${s.v.toLocaleString()} <span style="font-size:.62rem;color:var(--text3)">${s.u}</span></div>`:`<div style="font-size:.68rem;color:var(--text3)">尚未取得資料</div>`}
+          ${s.approx?`<div style="font-size:.58rem;color:#f59e42;margin-top:2px">⚠ ${kWarn}</div>`:''}
         </div>
         <div style="font-size:.6rem;color:var(--text3);background:var(--g3);padding:2px 6px;border-radius:4px">${s.s}</div>
       </div>
