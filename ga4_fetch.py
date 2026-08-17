@@ -444,24 +444,36 @@ def fetch_line_contents(client, start_date, end_date):
 
     一站掛掉不影響其他站——某個資源沒權限或暫時失敗時，回報後跳過，
     而不是整個 line 欄變空的（那樣看起來會像「沒人點」，是最糟的失敗方式）。
+
+    同時拉 sessionSource / sessionMedium：加好友轉址頁（picks168.com/line/）
+    在轉址前一律把 utm_medium 蓋成 line_addfriend、utm_source 蓋成 ch（帳號代碼），
+    但 utm_content 如果原始連結有帶 pid（貼文編號，例如 cyq-0817-1）會保留 pid，
+    不會是 <code>_bio/<code>_post 的格式。只看 content 字串結尾的舊邏輯會把這種
+    「LINE 加好友但帶貼文編號」的點擊漏掉，要靠 medium 才抓得到。
     """
     rows = []
     for station, (pid, host) in STATION_PROPERTIES.items():
         try:
             resp = client.run_report(RunReportRequest(
                 property=f"properties/{pid}",
-                dimensions=[Dimension(name="sessionManualAdContent")],
+                dimensions=[Dimension(name="sessionManualAdContent"),
+                            Dimension(name="sessionSource"),
+                            Dimension(name="sessionMedium")],
                 metrics=[Metric(name="sessions"), Metric(name="activeUsers")],
                 date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
             ))
             n = 0
             for row in resp.rows:
                 content = row.dimension_values[0].value
+                source  = row.dimension_values[1].value
+                medium  = row.dimension_values[2].value
                 s = int(row.metric_values[0].value or 0)
                 if not content or content == "(not set)" or s == 0:
                     continue
                 rows.append({
                     "content":  content,
+                    "source":   source,
+                    "medium":   medium,
                     "sessions": s,
                     "users":    int(row.metric_values[1].value or 0),
                     "station":  station,
@@ -475,13 +487,25 @@ def fetch_line_contents(client, start_date, end_date):
 
 
 def aggregate_line(contents):
-    """把 contents 依 LINE 的兩條路徑分組。contents 已含所有 utm_content。"""
+    """把 contents 依 LINE 的兩條路徑分組。contents 已含所有 utm_content。
+
+    加好友判斷改用 medium == line_addfriend（轉址頁強制蓋上的，可靠），
+    不再只看 content 字串是不是 _bio/_post 結尾——帶 pid（貼文編號）的
+    加好友連結 content 會是貼文編號本身，字串比對抓不到，之前會整筆消失。
+    channel 優先用 source（轉址頁同樣把它蓋成 ch，比從 content 字串反推準）。
+    """
     join, menu = [], []
     for c in contents or []:
-        name = str(c.get("content") or "")
-        if name.endswith("_bio") or name.endswith("_post"):
-            code, _, at = name.rpartition("_")
-            join.append({**c, "channel": code, "placement": at})
+        name   = str(c.get("content") or "")
+        medium = str(c.get("medium") or "")
+        source = str(c.get("source") or "")
+        if medium == "line_addfriend":
+            if name.endswith("_bio") or name.endswith("_post"):
+                code, _, at = name.rpartition("_")
+                channel = code or source or "unknown"
+            else:
+                channel, at = (source or "unknown"), "post"
+            join.append({**c, "channel": channel, "placement": at})
         elif name.startswith("line_"):
             parts = name.split("_")
             menu.append({**c, "oa": "_".join(parts[:2]), "item": parts[-1]})
