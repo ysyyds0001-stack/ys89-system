@@ -1,6 +1,21 @@
 {
-  "lastUpdated": "2026-08-17T03:33:25Z",
+  "lastUpdated": "2026-08-17T04:19:23Z",
   "posts": [
+    {
+      "date": "2026-08-17",
+      "persona": "cyq",
+      "personaName": "陳亦強",
+      "platform": "threads",
+      "postUrl": null,
+      "landingUrl": "https://picks168.com/line/?utm_source=cyq&utm_medium=th_post&utm_campaign=wc2026&utm_content=cyq-0817-1",
+      "utmContent": "cyq-0817-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "UTM產生器建立"
+    },
     {
       "date": "2026-08-14",
       "persona": "yuya",
@@ -9633,6 +9648,12 @@
     }
   ],
   "daily": [
+    {
+      "date": "2026-08-17",
+      "totalImpressions": null,
+      "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
     {
       "date": "2026-08-14",
       "totalImpressions": null,

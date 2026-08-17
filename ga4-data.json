@@ -314,31 +314,31 @@
     }
   ],
   "kpis": {
-    "activeUsers": 633,
-    "sessions": 845,
-    "eventCount": 6095,
+    "activeUsers": 635,
+    "sessions": 847,
+    "eventCount": 6101,
     "engagedSessions": 325,
     "socialClicks": 242,
     "cta": 83,
-    "conversionRate": 9.82
+    "conversionRate": 9.8
   },
   "kpis_3d": {
-    "activeUsers": 21,
-    "sessions": 22,
-    "eventCount": 102,
+    "activeUsers": 23,
+    "sessions": 24,
+    "eventCount": 108,
     "engagedSessions": 4,
     "socialClicks": 2,
     "cta": 0,
     "conversionRate": 0.0
   },
   "kpis_7d": {
-    "activeUsers": 138,
-    "sessions": 217,
-    "eventCount": 2846,
+    "activeUsers": 140,
+    "sessions": 219,
+    "eventCount": 2852,
     "engagedSessions": 92,
     "socialClicks": 11,
     "cta": 3,
-    "conversionRate": 1.38
+    "conversionRate": 1.37
   },
   "kpis_prev7d": {
     "activeUsers": 139,
@@ -350,13 +350,13 @@
     "conversionRate": 10.61
   },
   "kpis_28d": {
-    "activeUsers": 512,
-    "sessions": 719,
-    "eventCount": 5567,
+    "activeUsers": 514,
+    "sessions": 721,
+    "eventCount": 5573,
     "engagedSessions": 279,
     "socialClicks": 148,
     "cta": 45,
-    "conversionRate": 6.26
+    "conversionRate": 6.24
   },
   "accounts_3d": [
     {
@@ -470,7 +470,42 @@
   "line": {
     "加好友管道": [
       {
+        "content": "test0813",
+        "source": "zhansen",
+        "medium": "line_addfriend",
+        "sessions": 13,
+        "users": 3,
+        "station": "電子站",
+        "host": "tsaishen888.com",
+        "channel": "zhansen",
+        "placement": "post"
+      },
+      {
+        "content": "haogame-0813-1",
+        "source": "haogame",
+        "medium": "line_addfriend",
+        "sessions": 7,
+        "users": 7,
+        "station": "電子站",
+        "host": "tsaishen888.com",
+        "channel": "haogame",
+        "placement": "post"
+      },
+      {
+        "content": "cc-0814-1",
+        "source": "cc",
+        "medium": "line_addfriend",
+        "sessions": 6,
+        "users": 6,
+        "station": "體育預測站",
+        "host": "picks168.com",
+        "channel": "cc",
+        "placement": "post"
+      },
+      {
         "content": "zhansen_bio",
+        "source": "zhansen",
+        "medium": "line_addfriend",
         "sessions": 6,
         "users": 3,
         "station": "電子站",
@@ -479,18 +514,66 @@
         "placement": "bio"
       },
       {
+        "content": "egameobs-0814-1",
+        "source": "egameobs",
+        "medium": "line_addfriend",
+        "sessions": 3,
+        "users": 3,
+        "station": "電子站",
+        "host": "tsaishen888.com",
+        "channel": "egameobs",
+        "placement": "post"
+      },
+      {
+        "content": "yuchiazhi-0813-1",
+        "source": "yuchiazhi",
+        "medium": "line_addfriend",
+        "sessions": 3,
+        "users": 3,
+        "station": "電子站",
+        "host": "tsaishen888.com",
+        "channel": "yuchiazhi",
+        "placement": "post"
+      },
+      {
         "content": "god_bio",
+        "source": "god",
+        "medium": "line_addfriend",
         "sessions": 2,
         "users": 1,
         "station": "體育預測站",
         "host": "picks168.com",
         "channel": "god",
         "placement": "bio"
+      },
+      {
+        "content": "unknown_unknown",
+        "source": "unknown",
+        "medium": "line_addfriend",
+        "sessions": 2,
+        "users": 1,
+        "station": "電子站",
+        "host": "tsaishen888.com",
+        "channel": "unknown",
+        "placement": "post"
+      },
+      {
+        "content": "zhansen--0813",
+        "source": "zhansen",
+        "medium": "line_addfriend",
+        "sessions": 1,
+        "users": 1,
+        "station": "電子站",
+        "host": "tsaishen888.com",
+        "channel": "zhansen",
+        "placement": "post"
       }
     ],
     "圖文選單": [
       {
         "content": "line_sports_sports",
+        "source": "line_sports",
+        "medium": "line_menu",
         "sessions": 2,
         "users": 2,
         "station": "體育預測站",
@@ -500,6 +583,8 @@
       },
       {
         "content": "line_sports_mlb",
+        "source": "line_sports",
+        "medium": "line_menu",
         "sessions": 1,
         "users": 1,
         "station": "體育預測站",
@@ -509,6 +594,8 @@
       },
       {
         "content": "line_sports_nba",
+        "source": "line_sports",
+        "medium": "line_menu",
         "sessions": 1,
         "users": 0,
         "station": "體育預測站",
@@ -518,6 +605,8 @@
       },
       {
         "content": "line_egame_tools",
+        "source": "line_egame",
+        "medium": "line_menu",
         "sessions": 1,
         "users": 1,
         "station": "電子站",
@@ -708,12 +797,12 @@
     "其他來源": [
       {
         "source": "(direct)",
-        "sessions": 365,
-        "users": 299,
+        "sessions": 367,
+        "users": 301,
         "cta": 10,
         "by_station": {
           "體育預測站": 79,
-          "電子站": 75,
+          "電子站": 77,
           "百家站": 24,
           "彩票站": 20,
           "ys89站群": 167
@@ -1622,5 +1711,5 @@
       }
     ]
   },
-  "lastUpdated": "2026-08-17T03:33:23.709424"
+  "lastUpdated": "2026-08-17T04:19:21.436920"
 }
