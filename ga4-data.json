@@ -314,49 +314,49 @@
     }
   ],
   "kpis": {
-    "activeUsers": 293,
-    "sessions": 315,
-    "eventCount": 1196,
-    "engagedSessions": 73,
-    "socialClicks": 108,
-    "cta": 37,
-    "conversionRate": 11.75
+    "activeUsers": 633,
+    "sessions": 845,
+    "eventCount": 6095,
+    "engagedSessions": 325,
+    "socialClicks": 242,
+    "cta": 83,
+    "conversionRate": 9.82
   },
   "kpis_3d": {
-    "activeUsers": 9,
-    "sessions": 9,
-    "eventCount": 31,
-    "engagedSessions": 0,
+    "activeUsers": 21,
+    "sessions": 22,
+    "eventCount": 102,
+    "engagedSessions": 4,
     "socialClicks": 2,
     "cta": 0,
     "conversionRate": 0.0
   },
   "kpis_7d": {
-    "activeUsers": 54,
-    "sessions": 63,
-    "eventCount": 227,
-    "engagedSessions": 14,
-    "socialClicks": 2,
-    "cta": 0,
-    "conversionRate": 0.0
+    "activeUsers": 138,
+    "sessions": 217,
+    "eventCount": 2846,
+    "engagedSessions": 92,
+    "socialClicks": 11,
+    "cta": 3,
+    "conversionRate": 1.38
   },
   "kpis_prev7d": {
-    "activeUsers": 46,
-    "sessions": 47,
-    "eventCount": 158,
-    "engagedSessions": 3,
-    "socialClicks": 3,
-    "cta": 0,
-    "conversionRate": 0.0
+    "activeUsers": 139,
+    "sessions": 179,
+    "eventCount": 1086,
+    "engagedSessions": 74,
+    "socialClicks": 51,
+    "cta": 19,
+    "conversionRate": 10.61
   },
   "kpis_28d": {
-    "activeUsers": 182,
-    "sessions": 203,
-    "eventCount": 735,
-    "engagedSessions": 35,
-    "socialClicks": 15,
-    "cta": 1,
-    "conversionRate": 0.49
+    "activeUsers": 512,
+    "sessions": 719,
+    "eventCount": 5567,
+    "engagedSessions": 279,
+    "socialClicks": 148,
+    "cta": 45,
+    "conversionRate": 6.26
   },
   "accounts_3d": [
     {
@@ -1622,5 +1622,5 @@
       }
     ]
   },
-  "lastUpdated": "2026-08-17T02:19:38.128732"
+  "lastUpdated": "2026-08-17T03:33:23.709424"
 }
