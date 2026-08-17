@@ -6638,6 +6638,16 @@ async function initData(){
     }
     if(sync) sync.textContent='已同步'
     setTimeout(()=>{if(sync)sync.textContent=''},2000)
+    // 2026-08-17 修掉一個「先點頁面、資料才拉完」的競速 bug：
+    // 使用者在這段 pull 還沒跑完前就點進「角色」頁的話，renderCommunity()
+    // 當下抓到的 personas/community 是空的，體育預測站/電子站/百家站/彩票站
+    // 幾個分類區塊因為「一個角色都沒有」直接不畫出來，只剩固定會保留版位的
+    // 「匿名部落格/SEO」那區還在，看起來像「角色被隱藏、只剩匿名社群能動」。
+    // 資料拉完之後原本沒有任何重畫機制，畫面會一直卡住直到使用者自己重新
+    // 點一次分頁。這裡資料拉完後，如果剛好還停在角色頁，就自動重畫一次。
+    if(document.getElementById('pg-community')?.classList.contains('active') && typeof renderCommunity==='function'){
+      renderCommunity()
+    }
   }catch(e){
     // 離線時同樣不種舊資料——寧可畫面空著，也不要塞一份過期名單進去，
     // 因為連上線之後那份就會被推回雲端汙染主檔。
