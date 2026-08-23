@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-22T02:16:52Z",
+  "lastUpdated": "2026-08-23T02:23:59Z",
   "posts": [
     {
       "date": "2026-08-21",
@@ -192,7 +192,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 2,
+      "linkClicks": 4,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -3702,7 +3702,7 @@
       "impressions": 287,
       "likes": 4,
       "comments": 6,
-      "linkClicks": 5,
+      "linkClicks": 6,
       "registrations": null,
       "note": null
     },
@@ -4767,7 +4767,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 3,
+      "linkClicks": 2,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -9132,7 +9132,7 @@
       "impressions": 720,
       "likes": 5,
       "comments": 6,
-      "linkClicks": 3,
+      "linkClicks": 1,
       "registrations": null,
       "note": "6/12賽事提醒"
     },
@@ -10626,7 +10626,7 @@
     {
       "date": "2026-08-21",
       "totalImpressions": null,
-      "totalLinkClicks": 2,
+      "totalLinkClicks": 4,
       "totalRegistrations": null
     },
     {
@@ -10764,7 +10764,7 @@
     {
       "date": "2026-07-21",
       "totalImpressions": 3863,
-      "totalLinkClicks": 6,
+      "totalLinkClicks": 7,
       "totalRegistrations": null
     },
     {
@@ -10824,7 +10824,7 @@
     {
       "date": "2026-07-09",
       "totalImpressions": 7601,
-      "totalLinkClicks": 3,
+      "totalLinkClicks": 2,
       "totalRegistrations": null
     },
     {
@@ -10992,7 +10992,7 @@
     {
       "date": "2026-06-11",
       "totalImpressions": 48280,
-      "totalLinkClicks": 3,
+      "totalLinkClicks": 1,
       "totalRegistrations": null
     },
     {
