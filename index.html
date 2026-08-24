@@ -15060,9 +15060,10 @@ function renderMeeting() {
     </div>`
   }
 
-  // GA4 的社群連結點擊／Sessions／Engaged Sessions／CTA 四格，實際抓的是
-  // 排程同步當下（today）往回算固定 3/7/28 天，不是畫面上選的 from~to。
-  // 2026-08-17 使用者裁示：先不改邏輯，明確標出這四格是近似值、非精確對齊所選期間。
+  // GA4 的社群連結點擊／Sessions／Engaged Sessions／CTA 四格，選到「本週」
+  // 或「上週」時走上面 isThisWeek/isPrevWeek 的精準日曆週資料；選其他自訂
+  // 區間，還是退回排程同步當下（today）往回算固定 3/7/28 天的滾動窗，
+  // 不是畫面上選的 from~to，明確標近似值、非精確對齊所選期間。
   const kBucketDays = days<=3 ? 3 : days<=7 ? 7 : 28
   const kSyncDate = (ga4.lastUpdated||'').slice(0,10)
   let kWinRange = ''
@@ -15070,7 +15071,11 @@ function renderMeeting() {
     const e = new Date(kSyncDate); const s = new Date(e); s.setDate(s.getDate()-(kBucketDays-1))
     kWinRange = `${getTaipeiDateString(s)}～${kSyncDate}`
   }
-  const kWarn = (isThisWeek||isPrevWeek) ? ''
+  // isThisWeek：本週數字(kUse)跟比較的上週數字(kPrev)都是精準日曆週，完全不用標。
+  // isPrevWeek：畫面主要看的上週數字(kUse)是精準的，但拿來比較的「前期」
+  // 沒有再往前一週的精準資料，只能退回近似值——只警告比較欄，不警告主數字。
+  const kWarn = isThisWeek ? ''
+    : isPrevWeek ? '比較期間（前期）非精準對齊，僅為近似值；本週/上週數字本身是精準的'
     : (days>28 ? `所選期間超過28天，僅能顯示近${kBucketDays}天近似值` : `近${kBucketDays}天近似值，非所選期間 ${from}～${to}`) + (kWinRange?`（實際涵蓋 ${kWinRange}）`:'')
 
   document.getElementById('mtg-kpi-grid').innerHTML = [
