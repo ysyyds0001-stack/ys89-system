@@ -80,7 +80,13 @@ def get_date_range():
     return start, today
 
 def get_weekly_ranges():
-    """近 3 天 / 本週 7 天 / 上週 7 天 / 近 28 天 的日期範圍"""
+    """近 3 天 / 近 7 天（滾動）/ 前 7 天（滾動）/ 近 28 天 的日期範圍
+
+    這裡的 7d/prev7d 是「同步當下往回推 N 天」的滾動窗，給各頁籤既有的
+    「近一週」類篩選用（GA4 儀表板／多平台發文等），不對齊日曆週。
+    會議總覽要精準對齊「本週一～昨天」「上週一～週日」的話，
+    用下面的 get_calendar_week_ranges()，兩套互不影響。
+    """
     now = datetime.now()
     today = now.strftime("%Y-%m-%d")
     return {
@@ -88,6 +94,28 @@ def get_weekly_ranges():
         "7d":    ((now - timedelta(days=6)).strftime("%Y-%m-%d"), today),
         "prev7d":((now - timedelta(days=13)).strftime("%Y-%m-%d"), (now - timedelta(days=7)).strftime("%Y-%m-%d")),
         "28d":   ((now - timedelta(days=27)).strftime("%Y-%m-%d"), today),
+    }
+
+def get_taipei_now():
+    """台灣現在時間（UTC+8，全年無日光節約），跟前端 getTaipeiDateString() 對齊"""
+    return datetime.utcnow() + timedelta(hours=8)
+
+def get_calendar_week_ranges():
+    """本週（週一～昨天）／上週（週一～週日），對齊會議總覽「本週/上週」按鈕
+    （index.html 的 mtgSetPeriod／getTaipeiWeekStart，Asia/Taipei、週一起算）。
+
+    2026-08-24 使用者裁示：會議總覽是常態性要給業主檢討的報告，需要單位
+    一致，本週跟上週的 KPI 要能精準對齊畫面上選的那個日曆週，不能再用
+    「同步當下往回推 7 天」這種會飄動的滾動窗口去逼近。
+    """
+    today = get_taipei_now().date()
+    yesterday = today - timedelta(days=1)
+    this_monday = today - timedelta(days=today.weekday())
+    last_monday = this_monday - timedelta(days=7)
+    last_sunday = this_monday - timedelta(days=1)
+    return {
+        "week":     (this_monday.isoformat(), yesterday.isoformat()),
+        "prevweek": (last_monday.isoformat(), last_sunday.isoformat()),
     }
 
 def fetch_traffic_sources(client):
@@ -910,6 +938,20 @@ def main():
                 print(f"   ⚠ {key} 貼文成效失敗：{ex}")
                 period_contents[key] = []
 
+    print("📆 拉取日曆週 KPI（本週一~昨天 / 上週一~日，會議總覽精準對齊用）...")
+    cweeks = get_calendar_week_ranges()
+    _empty_kpis = {"activeUsers":0,"sessions":0,"eventCount":0,"engagedSessions":0,
+                   "socialClicks":0,"cta":0,"conversionRate":0}
+    # 每週一「本週」還沒有任何完整天數（週一~昨天會變成起迄顛倒），
+    # GA4 API 不接受 start>end，直接跳過用 0 值，不要讓整個排程崩掉。
+    w_start, w_end = cweeks["week"]
+    if w_start > w_end:
+        print("   ⚠ 今天是週一，本週尚無完整資料，先用 0 值")
+        kpis_week = dict(_empty_kpis)
+    else:
+        kpis_week = fetch_kpis_range(client, w_start, w_end)
+    kpis_prevweek = fetch_kpis_range(client, *cweeks["prevweek"])
+
     print("🏪 拉取 picks168.com 數據...")
     p_start, p_end = get_date_range()
     picks168_data = {
@@ -962,6 +1004,9 @@ def main():
         "accounts_prev7d": period_accts["prev7d"],
         "accounts_28d": period_accts["28d"],
         "ranges": {k: f"{v[0]}~{v[1]}" for k, v in ranges.items()},
+        "kpis_week":     kpis_week,
+        "kpis_prevweek": kpis_prevweek,
+        "week_ranges": {k: f"{v[0]}~{v[1]}" for k, v in cweeks.items()},
         "line": line_data,
         "accounts_all": accounts_all_data,
         "picks168": picks168_data,
@@ -980,6 +1025,8 @@ def main():
     print(f"   - 總活躍使用者：{kpis['activeUsers']}")
     print(f"   - 總工作階段：{kpis['sessions']}")
     print(f"   - CTA 轉換：{kpis['cta']} / {kpis['conversionRate']}%")
+    print(f"   - 本週（{cweeks['week'][0]}~{cweeks['week'][1]}）sessions：{kpis_week['sessions']}")
+    print(f"   - 上週（{cweeks['prevweek'][0]}~{cweeks['prevweek'][1]}）sessions：{kpis_prevweek['sessions']}")
     p = picks168_data["kpis_28d"]
     print(f"   - picks168 28d sessions：{p['sessions']}，events：{p['events']}")
     print(f"   - picks168 事件類型：{[e['name'] for e in picks168_data['events_28d'][:5]]}")

@@ -3987,6 +3987,7 @@ function renderAbTests() {
     <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:.75rem;color:var(--text2)">
       <span>📅 報告期間：<b id="mtg-s-period" style="color:var(--text)">—</b></span>
       <span>🔄 比較期間：<b id="mtg-s-compare" style="color:var(--text)">—</b></span>
+      <span id="mtg-s-align" style="display:none">GA4 對齊：<b id="mtg-s-align-b">—</b></span>
       <span>🕐 時區：<b style="color:var(--text)">Asia/Taipei</b></span>
       <span>✅ 資料完整至：<b id="mtg-s-complete" style="color:#34d399">—</b></span>
       <span>🔁 最後同步：<b id="mtg-s-sync" style="color:var(--text)">—</b></span>
@@ -14936,6 +14937,19 @@ function renderMeeting() {
   // 狀態列
   document.getElementById('mtg-s-period').textContent = `${from} ～ ${to}`
   document.getElementById('mtg-s-compare').textContent = `${pFrom} ～ ${pTo}`
+  {
+    const wrEl = document.getElementById('mtg-s-align')
+    const wrB = document.getElementById('mtg-s-align-b')
+    const wrNow = (_ga4Data||{}).week_ranges || {}
+    const isTW = wrNow.week === (from+'~'+to), isPW = wrNow.prevweek === (from+'~'+to)
+    if (isTW || isPW) {
+      wrEl.style.display=''; wrB.textContent='已精準對齊本週/上週'; wrB.style.color='#34d399'
+    } else if (days<=28) {
+      wrEl.style.display=''; wrB.textContent='近似值（非日曆本週/上週，見 KPI 卡片註記）'; wrB.style.color='#fbbf24'
+    } else {
+      wrEl.style.display='none'
+    }
+  }
   document.getElementById('mtg-s-complete').textContent = completeTo
   const sw = document.getElementById('mtg-s-today-warn')
   if (todayIncluded) sw.style.display='' ; else sw.style.display='none'
@@ -14970,8 +14984,19 @@ function renderMeeting() {
   const pChannelViews = pChannel.reduce((s,p)=>s+(+p.views||0),0)
   const ga4 = _ga4Data||{}
   const k7 = ga4.kpis_7d||{}, k28 = ga4.kpis_28d||{}, kCum = ga4.kpis||{}
-  const kUse = days<=3 ? (ga4.kpis_3d||k7) : days<=7 ? k7 : days<=28 ? k28 : kCum
-  const kPrev = days<=7 ? (ga4.kpis_prev7d||{}) : {}
+  // 精準對齊：後端另外算了「本週一~昨天」「上週一~週日」的日曆週 KPI
+  // （get_calendar_week_ranges()），畫面選的期間如果剛好等於其中一個，
+  // 直接用那組真實資料，不用近似值。選別的期間（自訂區間、更早的週）
+  // 還是退回原本近N天滾動窗，並標近似值。
+  const wr = ga4.week_ranges || {}
+  const selRange = from + '~' + to
+  const isThisWeek = wr.week === selRange
+  const isPrevWeek = wr.prevweek === selRange
+  const kUse = isThisWeek ? (ga4.kpis_week||{})
+             : isPrevWeek ? (ga4.kpis_prevweek||{})
+             : days<=3 ? (ga4.kpis_3d||k7) : days<=7 ? k7 : days<=28 ? k28 : kCum
+  const kPrev = isThisWeek ? (ga4.kpis_prevweek||{})
+              : days<=7 ? (ga4.kpis_prev7d||{}) : {}
   const regs = getMonthlyRegs()
   // 任何與查詢區間重疊的記錄都計入；月度記錄橫跨查詢範圍或延伸至月底時標記提示
   const cRegs = regs.filter(r=>{const rf=r.from||r.date||'',rt=r.to||r.date||r.from||'';return !!rf&&rf<=to&&rt>=from})
@@ -15045,7 +15070,8 @@ function renderMeeting() {
     const e = new Date(kSyncDate); const s = new Date(e); s.setDate(s.getDate()-(kBucketDays-1))
     kWinRange = `${getTaipeiDateString(s)}～${kSyncDate}`
   }
-  const kWarn = (days>28 ? `所選期間超過28天，僅能顯示近${kBucketDays}天近似值` : `近${kBucketDays}天近似值，非所選期間 ${from}～${to}`) + (kWinRange?`（實際涵蓋 ${kWinRange}）`:'')
+  const kWarn = (isThisWeek||isPrevWeek) ? ''
+    : (days>28 ? `所選期間超過28天，僅能顯示近${kBucketDays}天近似值` : `近${kBucketDays}天近似值，非所選期間 ${from}～${to}`) + (kWinRange?`（實際涵蓋 ${kWinRange}）`:'')
 
   document.getElementById('mtg-kpi-grid').innerHTML = [
     kpiCard('📝','發文數',(cActs.length+cPosts.length+cChannel.length)||null,(pActs.length+pPosts.length+pChannel.length)||null,'社群互動+發文追蹤+匿名/FB',(cPosts.length||cChannel.length)?`含發文追蹤 ${cPosts.length} 篇、匿名/FB ${cChannel.length} 篇`:''),
