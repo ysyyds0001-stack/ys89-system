@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-23T02:23:59Z",
+  "lastUpdated": "2026-08-24T02:23:14Z",
   "posts": [
     {
       "date": "2026-08-21",
@@ -4077,7 +4077,7 @@
       "impressions": 229,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 3,
+      "linkClicks": 2,
       "registrations": null,
       "note": null
     },
@@ -5187,7 +5187,7 @@
       "impressions": 2905,
       "likes": 11,
       "comments": 10,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -9132,7 +9132,7 @@
       "impressions": 720,
       "likes": 5,
       "comments": 6,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "6/12賽事提醒"
     },
@@ -10560,66 +10560,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": "2026世界盃 48 隊完整分組解析：死亡之組在哪？台灣球迷該關注哪幾組？"
-    },
-    {
-      "date": "2026-05-25",
-      "persona": "linzihao",
-      "personaName": "林子豪｜玩法觀察",
-      "platform": "方格子",
-      "postUrl": "百家樂決策樹｜每一局都問自己這 3 個問題",
-      "landingUrl": null,
-      "utmContent": "linzihao-0525-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "百家樂決策樹｜每一局都問自己這 3 個問題"
-    },
-    {
-      "date": "2026-05-25",
-      "persona": "nightcat",
-      "personaName": "nightcat-game-notes",
-      "platform": "tumblr",
-      "postUrl": "https://www.tumblr.com/nightcat-game-notes/817586937544294400/%E5%87%BA%E9%87%91%E8%A2%AB%E6%8B%92%E4%BA%86%E6%80%8E%E9%BA%BC%E8%BE%A6%E6%88%91%E7%9A%84%E8%87%AA%E6%95%91%E6%B8%85%E5%96%AE?source=share",
-      "landingUrl": null,
-      "utmContent": "nightcat-0525-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "出金被拒了怎麼辦？我的自救清單"
-    },
-    {
-      "date": "2026-05-25",
-      "persona": "crab",
-      "personaName": "蟹蟹世足觀測站",
-      "platform": "ig",
-      "postUrl": "https://www.instagram.com/p/DYwV_KFj9kd/?img_index=1",
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": 46,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "2026世界盃觀賽懶人包：台灣球迷必知的 7 件事"
-    },
-    {
-      "date": "2026-05-25",
-      "persona": "azhe",
-      "personaName": "阿哲的遊戲筆記",
-      "platform": "medium",
-      "postUrl": "https://medium.com/@ysyyds0006/%E8%B3%A0%E7%8E%87-%E6%9C%9F%E6%9C%9B%E5%80%BC-%E6%A6%82%E7%8E%87-%E6%90%9E%E6%87%82%E5%86%8D%E7%8E%A9-810d63b5c9a8",
-      "landingUrl": null,
-      "utmContent": "azhe-0525-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "賠率、期望值、機率…搞懂再玩"
     }
   ],
   "daily": [
@@ -10794,7 +10734,7 @@
     {
       "date": "2026-07-16",
       "totalImpressions": 4329,
-      "totalLinkClicks": 3,
+      "totalLinkClicks": 2,
       "totalRegistrations": null
     },
     {
@@ -10842,7 +10782,7 @@
     {
       "date": "2026-07-06",
       "totalImpressions": 4420,
-      "totalLinkClicks": 1,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -10992,7 +10932,7 @@
     {
       "date": "2026-06-11",
       "totalImpressions": 48280,
-      "totalLinkClicks": 1,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -11076,12 +11016,6 @@
     {
       "date": "2026-05-26",
       "totalImpressions": 40,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-05-25",
-      "totalImpressions": 46,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
