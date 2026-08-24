@@ -968,23 +968,49 @@ def main():
         "contents_7d":  fetch_picks168_by_content(client, *ranges["7d"]),
     }
 
+    def build_line_data(s, e):
+        d = aggregate_line(fetch_line_contents(client, s, e))
+        d["_期間"] = f"{s}~{e}"
+        return d
+
+    def build_accounts_all(s, e, names):
+        rows = fetch_accounts_all(client, s, e, list(names))
+        for a in rows:
+            a["name"] = names.get(a["source"], a["source"])
+        return {
+            "_期間": f"{s}~{e}",
+            "_說明": "每支帳號在所有站的進站合計。同一支會同時帶去多個站，"
+                     "各資源分開看會低估。CTA 用『有 CTA 事件的工作階段數』，"
+                     "轉換率＝CTA階段/進站，必 ≤100%。",
+            "帳號":     [a for a in rows if a.get("is_account")],
+            "其他來源": [a for a in rows if not a.get("is_account")][:20],
+        }
+
     print("💬 拉取四站的 LINE 數據（加好友管道 / 圖文選單）...")
-    line_data = aggregate_line(fetch_line_contents(client, p_start, p_end))
-    line_data["_期間"] = f"{p_start}~{p_end}"
+    line_data = build_line_data(p_start, p_end)
 
     print("👤 拉取「誰帶進來的」（五個資源合計）...")
     persona_names = load_persona_codes()
-    accounts_all = fetch_accounts_all(client, p_start, p_end, list(persona_names))
-    for a in accounts_all:
-        a["name"] = persona_names.get(a["source"], a["source"])
-    accounts_all_data = {
-        "_期間": f"{p_start}~{p_end}",
-        "_說明": "每支帳號在所有站的進站合計。同一支會同時帶去多個站，"
-                 "各資源分開看會低估。CTA 用『有 CTA 事件的工作階段數』，"
-                 "轉換率＝CTA階段/進站，必 ≤100%。",
-        "帳號":     [a for a in accounts_all if a.get("is_account")],
-        "其他來源": [a for a in accounts_all if not a.get("is_account")][:20],
-    }
+    accounts_all_data = build_accounts_all(p_start, p_end, persona_names)
+
+    print("📆 拉取「誰帶進來的」／LINE 的日曆週版本（本週/上週，會議總覽精準對齊用）...")
+    # 2026-08-24 使用者裁示：這兩張表也要能精準對齊本週/上週，不再固定只給
+    # 28 天。28 天那組保留（給看長期趨勢／流量規模用），新增 _week/_prevweek
+    # 兩組跟 kpis_week/kpis_prevweek 用同一組日曆週日期，前端對得上就用這組。
+    if w_start > w_end:
+        print("   ⚠ 今天是週一，本週尚無完整資料，「誰帶進來的」／LINE 先用空值")
+        accounts_all_week = {
+            "_期間": f"{w_start}~{w_end}",
+            "_說明": "每支帳號在所有站的進站合計，本週尚無完整資料。",
+            "帳號": [], "其他來源": [],
+        }
+        line_week = aggregate_line([])
+        line_week["_期間"] = f"{w_start}~{w_end}"
+    else:
+        accounts_all_week = build_accounts_all(w_start, w_end, persona_names)
+        line_week = build_line_data(w_start, w_end)
+    accounts_all_prevweek = build_accounts_all(*cweeks["prevweek"], persona_names)
+    line_prevweek = build_line_data(*cweeks["prevweek"])
 
     # 組合數據
     ga4_data = {
@@ -1009,6 +1035,10 @@ def main():
         "week_ranges": {k: f"{v[0]}~{v[1]}" for k, v in cweeks.items()},
         "line": line_data,
         "accounts_all": accounts_all_data,
+        "line_week": line_week,
+        "line_prevweek": line_prevweek,
+        "accounts_all_week": accounts_all_week,
+        "accounts_all_prevweek": accounts_all_prevweek,
         "picks168": picks168_data,
         "lastUpdated": datetime.now().isoformat(),
     }
