@@ -1,6 +1,111 @@
 {
-  "lastUpdated": "2026-08-24T06:09:29Z",
+  "lastUpdated": "2026-08-25T02:18:45Z",
   "posts": [
+    {
+      "date": "2026-08-24",
+      "persona": "zhansen",
+      "personaName": "戰術阿森",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/QJpR4E7Wz/",
+      "landingUrl": null,
+      "utmContent": "zhansen-0824-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-24",
+      "persona": "yuya",
+      "personaName": "妤雅",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/GZeJ40_3S/",
+      "landingUrl": null,
+      "utmContent": "yuya89223-0824-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-24",
+      "persona": "zhaohan",
+      "personaName": "昭涵",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/GYOgwbkOJ/",
+      "landingUrl": null,
+      "utmContent": "zhaohan-0824-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-24",
+      "persona": "yuchiazhi",
+      "personaName": "魚池阿智",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/FWvVdPq2v/",
+      "landingUrl": null,
+      "utmContent": "yuchiazhi-0824-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-24",
+      "persona": "lottnum",
+      "personaName": "獎號通",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/DvaHEE7w7/",
+      "landingUrl": null,
+      "utmContent": "huiyi7770-0824-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-24",
+      "persona": "baccobs",
+      "personaName": "百家樂觀測所",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/D1betxU-n/",
+      "landingUrl": null,
+      "utmContent": "huiyu13214-0824-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-08-24",
+      "persona": "haogame",
+      "personaName": "小豪遊戲筆記",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/BAZ1fBf50d/",
+      "landingUrl": null,
+      "utmContent": "haogame-0824-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
     {
       "date": "2026-08-21",
       "persona": "god",
@@ -10530,39 +10635,15 @@
       "linkClicks": null,
       "registrations": null,
       "note": "2026世界盃 48 隊完整分組解析：死亡之組在哪？台灣球迷該關注哪幾組？"
-    },
-    {
-      "date": "2026-05-26",
-      "persona": "shizu",
-      "personaName": "世足排雷週記",
-      "platform": "ig",
-      "postUrl": "https://www.instagram.com/p/DYzNpc0EecZ/?img_index=1",
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": 3,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "2026世界盃 48 隊完整分組解析：死亡之組在哪？台灣球迷該關注哪幾組？"
-    },
-    {
-      "date": "2026-05-26",
-      "persona": "god",
-      "personaName": "世足大財神",
-      "platform": "ig",
-      "postUrl": "https://www.instagram.com/p/DYzM2YmGMq8/?img_index=1",
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": 37,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "2026世界盃 48 隊完整分組解析：死亡之組在哪？台灣球迷該關注哪幾組？"
     }
   ],
   "daily": [
+    {
+      "date": "2026-08-24",
+      "totalImpressions": null,
+      "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
     {
       "date": "2026-08-21",
       "totalImpressions": 746,
@@ -11010,12 +11091,6 @@
     {
       "date": "2026-05-27",
       "totalImpressions": 51,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-05-26",
-      "totalImpressions": 40,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
