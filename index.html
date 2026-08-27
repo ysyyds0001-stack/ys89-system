@@ -11052,8 +11052,9 @@ function utmNewContent(){ const p=utmCurrentPersona(); if(!p) return; document.g
 // 落地頁只留一個 __LINE_AUTO__，站別由角色決定，選不錯。
 const LINE_REDIRECT_BASE={
   '體育預測站':'https://picks168.com/line/',
-  '電子站':'https://tsaishen888.com/line/'
-  // 百家站／彩票站的官方帳號還沒建，建好再加一行即可
+  '電子站':'https://tsaishen888.com/line/',
+  '百家站':'https://dgcasnio.com/line/',
+  '彩票站':'https://lott168.com/line/'
 }
 // 有開專屬加入好友管道的角色。沒在這裡的角色選 LINE 落地頁會被擋下來，
 // 而不是產一條轉去預設帳號的連結——那種連結看起來正常，但成效歸不到人。
@@ -11062,7 +11063,11 @@ const LINE_ROUTES={
   miya:'體育預測站', cyq:'體育預測站', hahaqiu:'體育預測站',
   lanlin:'體育預測站', zahra:'體育預測站',
   yuchiazhi:'電子站', fishdriver:'電子站', haogame:'電子站',
-  zhansen:'電子站', egameobs:'電子站', xiaoye:'電子站'
+  zhansen:'電子站', egameobs:'電子站', xiaoye:'電子站',
+  // 2026-08-25 百家站四支上線（蓋章連結，共用 @232jtahp）
+  yuya:'百家站', ni:'百家站', baccobs:'百家站', baccwiki:'百家站',
+  // 2026-08-27 彩票站四支上線（各自加好友管道，共用 @275yphzj）
+  zhaohan:'彩票站', jiang:'彩票站', yuki:'彩票站', lottnum:'彩票站'
 }
 function utmLineBase(code){
   const st=LINE_ROUTES[code];
