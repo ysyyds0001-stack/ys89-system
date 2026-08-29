@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-28T12:33:05Z",
+  "lastUpdated": "2026-08-29T07:42:22Z",
   "posts": [
     {
       "date": "2026-08-28",
@@ -222,7 +222,7 @@
       "impressions": 44,
       "likes": 0,
       "comments": 2,
-      "linkClicks": 2,
+      "linkClicks": 3,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -327,7 +327,7 @@
       "impressions": 102,
       "likes": 0,
       "comments": 1,
-      "linkClicks": 3,
+      "linkClicks": 4,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -3477,7 +3477,7 @@
       "impressions": 225,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 6,
+      "linkClicks": 3,
       "registrations": null,
       "note": null
     },
@@ -3567,7 +3567,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 3,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -3582,7 +3582,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 6,
+      "linkClicks": 3,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -3597,7 +3597,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 6,
+      "linkClicks": 3,
       "registrations": null,
       "note": null
     },
@@ -3627,7 +3627,7 @@
       "impressions": 895,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 4,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -3687,7 +3687,7 @@
       "impressions": 827,
       "likes": 0,
       "comments": 2,
-      "linkClicks": 2,
+      "linkClicks": 1,
       "registrations": null,
       "note": null
     },
@@ -3837,7 +3837,7 @@
       "impressions": 28,
       "likes": 0,
       "comments": 1,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -4932,7 +4932,7 @@
       "impressions": 229,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 2,
+      "linkClicks": 1,
       "registrations": null,
       "note": null
     },
@@ -6432,7 +6432,7 @@
       "impressions": 133,
       "likes": 7,
       "comments": 0,
-      "linkClicks": 29,
+      "linkClicks": 28,
       "registrations": null,
       "note": null
     },
@@ -6627,7 +6627,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 8,
+      "linkClicks": 6,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -11307,7 +11307,7 @@
     {
       "date": "2026-08-27",
       "totalImpressions": 227,
-      "totalLinkClicks": 5,
+      "totalLinkClicks": 7,
       "totalRegistrations": null
     },
     {
@@ -11421,19 +11421,19 @@
     {
       "date": "2026-07-31",
       "totalImpressions": 4672,
-      "totalLinkClicks": 21,
+      "totalLinkClicks": 9,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-30",
       "totalImpressions": 2547,
-      "totalLinkClicks": 6,
+      "totalLinkClicks": 1,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-29",
       "totalImpressions": 4128,
-      "totalLinkClicks": 1,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -11499,7 +11499,7 @@
     {
       "date": "2026-07-16",
       "totalImpressions": 4329,
-      "totalLinkClicks": 2,
+      "totalLinkClicks": 1,
       "totalRegistrations": null
     },
     {
@@ -11571,13 +11571,13 @@
     {
       "date": "2026-07-02",
       "totalImpressions": 1519,
-      "totalLinkClicks": 29,
+      "totalLinkClicks": 28,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-01",
       "totalImpressions": 23179,
-      "totalLinkClicks": 9,
+      "totalLinkClicks": 7,
       "totalRegistrations": null
     },
     {
