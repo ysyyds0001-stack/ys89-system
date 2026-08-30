@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-29T07:42:22Z",
+  "lastUpdated": "2026-08-30T06:17:46Z",
   "posts": [
     {
       "date": "2026-08-28",
@@ -42,7 +42,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 1,
+      "linkClicks": 2,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -177,7 +177,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 1,
+      "linkClicks": 2,
       "registrations": null,
       "note": null
     },
@@ -3687,7 +3687,7 @@
       "impressions": 827,
       "likes": 0,
       "comments": 2,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -11301,7 +11301,7 @@
     {
       "date": "2026-08-28",
       "totalImpressions": null,
-      "totalLinkClicks": 2,
+      "totalLinkClicks": 4,
       "totalRegistrations": null
     },
     {
@@ -11427,7 +11427,7 @@
     {
       "date": "2026-07-30",
       "totalImpressions": 2547,
-      "totalLinkClicks": 1,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
