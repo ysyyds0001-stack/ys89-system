@@ -1,6 +1,81 @@
 {
-  "lastUpdated": "2026-09-01T06:04:50Z",
+  "lastUpdated": "2026-09-02T05:30:33Z",
   "posts": [
+    {
+      "date": "2026-09-02",
+      "persona": "cc",
+      "personaName": "AI體育賽事分析",
+      "platform": null,
+      "postUrl": "資料時間 2026-08-30 📊 這則要處理傷兵、陣容與近期數據 先講結論，這三件事這份資料做不到  能看什麼 我們把三十八場逐欄清點過一次 近況欄　足球十一場有值，MLB 二十七場空 預期進球　三十八場全空 模型摘要　三十八場全空 精選標記與人工調整　三十八場全是 0 兩欄全部同一個值，分不出是沒人看過還是那欄沒在用  近況那欄填的是五個字母的勝負字串，像 WDLLL 它能講最近五場的輸贏順序，不能講誰受傷、誰輪休 有值不等於能回答我們想問的，它不是傷兵欄位的替代品 沒有欄位就沒有內容，我們不會去別處湊一份接上來  能整理的是盤口與模型的落差 MLB 二十七場，盤口與模型預估都是 8.5，落差 0 足球十一場，盤口 2.5，模型 2.6 到 2.7  不能看什麼 ⚠️ MLB 落差 0，可能是算完剛好等於盤口，也可能那欄根本沒逐場算 從輸出端分不出來，所以不當任何佐證 預測比分欄在足球十一場有值，MLB 二十七場全空  本次結論 這份資料能回答賽程與盤口形狀，不能回答陣容與傷兵 📌  以上為資料整理，不構成投注建議  #YS89 #資料整理 #體育數據 #欄位盤點 #MLB",
+      "landingUrl": null,
+      "utmContent": "cc-ig-0902-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-09-02",
+      "persona": "cc",
+      "personaName": "AI體育賽事分析",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/FuS2K0sgz/",
+      "landingUrl": "https://picks168.com/line/?utm_source=cc&utm_medium=th_post&utm_campaign=wc2026&utm_content=cc-0902-1",
+      "utmContent": "cc-0902-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "UTM產生器建立"
+    },
+    {
+      "date": "2026-09-02",
+      "persona": "zahra",
+      "personaName": "zahra",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/DzK9Z1_PR/",
+      "landingUrl": null,
+      "utmContent": "zahra-0902-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-09-02",
+      "persona": "fishdriver",
+      "personaName": "捕魚老司機阿網",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/DtUrHcTfg/",
+      "landingUrl": null,
+      "utmContent": "fishdriver-0902-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-09-02",
+      "persona": null,
+      "personaName": null,
+      "platform": null,
+      "postUrl": "https://www.instagram.com/p/DcxXjfAmKxG/",
+      "landingUrl": null,
+      "utmContent": null,
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
     {
       "date": "2026-09-01",
       "persona": "yuki",
@@ -9,9 +84,9 @@
       "postUrl": "https://www.threads.com/share/P7-L5G8Uo/",
       "landingUrl": null,
       "utmContent": "yuki-0901-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 1,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -24,9 +99,9 @@
       "postUrl": "https://www.threads.com/share/JRUgEuLXs/",
       "landingUrl": null,
       "utmContent": "zhansen-0901-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 5,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -39,9 +114,9 @@
       "postUrl": "https://www.threads.com/share/GgZLIo6SD/",
       "landingUrl": "https://tsaishen888.com/line/?utm_source=egameobs&utm_medium=th_post&utm_campaign=wc2026&utm_content=egameobs-0901-1",
       "utmContent": "egameobs-0901-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 11,
+      "likes": 0,
+      "comments": 1,
       "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
@@ -54,9 +129,9 @@
       "postUrl": "https://www.threads.com/share/Frf9AlGIl/",
       "landingUrl": null,
       "utmContent": "hahaqiu-0901-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 13,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -69,12 +144,27 @@
       "postUrl": "https://www.threads.com/share/FAApn97Jq/",
       "landingUrl": "https://lott168.com/line/?utm_source=lottnum&utm_medium=th_post&utm_campaign=wc2026&utm_content=lottnum-0901-1",
       "utmContent": "lottnum-0901-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 1,
+      "likes": 0,
+      "comments": 1,
       "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
+    },
+    {
+      "date": "2026-09-01",
+      "persona": "zhansen",
+      "personaName": "戰術阿森",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/E9JJOsWzq/",
+      "landingUrl": null,
+      "utmContent": "zhansen-0901-2",
+      "impressions": 7,
+      "likes": 0,
+      "comments": 1,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
     },
     {
       "date": "2026-09-01",
@@ -84,9 +174,9 @@
       "postUrl": "https://www.threads.com/share/D0ON9fzxk/",
       "landingUrl": null,
       "utmContent": "lanlin-0901-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 3,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -3582,7 +3672,7 @@
       "impressions": 1337,
       "likes": 4,
       "comments": 2,
-      "linkClicks": 9,
+      "linkClicks": 7,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -5142,7 +5232,7 @@
       "impressions": 229,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -6642,7 +6732,7 @@
       "impressions": 133,
       "likes": 7,
       "comments": 0,
-      "linkClicks": 27,
+      "linkClicks": 26,
       "registrations": null,
       "note": null
     },
@@ -6747,7 +6837,7 @@
       "impressions": 20000,
       "likes": 37,
       "comments": 9,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -6837,7 +6927,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 7,
+      "linkClicks": 6,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -11355,102 +11445,18 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-06-03",
-      "persona": "ys",
-      "personaName": "YS主IG",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@ys89_com/post/DZIC4wNlHuW?xmt=AQG0EHpyfrXPYbq5_yV-I99yLq78wD7sp6ehyTO8Kgr-XA",
-      "landingUrl": "https://ys89.games/live-104",
-      "utmContent": null,
-      "impressions": 0,
-      "likes": 4650,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "世足倒數8天"
-    },
-    {
-      "date": "2026-06-03",
-      "persona": "shizu",
-      "personaName": "世足排雷週記",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@uncle_wc/post/DZH9KIWm89W?xmt=AQG0UCCzCAvon3BebWkFdEoD2bjaduS1exGuaFIU9lA9CQ",
-      "landingUrl": "https://ys89.bet/?proxy=cysc9m&utm_source=threads&utm_medium=bio&utm_campaign=th_bio&utm_content=platform",
-      "utmContent": "shizu-0603-1",
-      "impressions": 69,
-      "likes": 1,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "賠率高，不等於比較值得看。"
-    },
-    {
-      "date": "2026-06-03",
-      "persona": "akki",
-      "personaName": "阿奇",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@noloxd6467/post/DZH8uzGGwSs?xmt=AQG062KYfO2mwjJsC9e15AdvP5wDrrogk0G0Hb63kgHiAiXvv1kAsjjLvE2Yyy7YxvRTnHiJ&slof=1",
-      "landingUrl": "https://ys89.games/live-104",
-      "utmContent": null,
-      "impressions": 0,
-      "likes": 9,
-      "comments": 7,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "世足賠率"
-    },
-    {
-      "date": "2026-06-03",
-      "persona": "shizu",
-      "personaName": "世足排雷週記",
-      "platform": "threads",
-      "postUrl": "https://www.instagram.com/p/DZH9JOrm_r6/?img_index=1",
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": 0,
-      "likes": 1,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "賠率怎麼算？體育投注三大賠率格式完全解析"
-    },
-    {
-      "date": "2026-06-03",
-      "persona": "akki",
-      "personaName": "阿奇",
-      "platform": "threads",
-      "postUrl": "https://www.instagram.com/p/DZH8t79mymF/?img_index=1",
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": 10,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "賠率怎麼算？體育投注三大賠率格式完全解析"
-    },
-    {
-      "date": "2026-06-03",
-      "persona": null,
-      "personaName": null,
-      "platform": "threads",
-      "postUrl": null,
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
     {
-      "date": "2026-09-01",
+      "date": "2026-09-02",
       "totalImpressions": null,
+      "totalLinkClicks": null,
+      "totalRegistrations": null
+    },
+    {
+      "date": "2026-09-01",
+      "totalImpressions": 41,
       "totalLinkClicks": null,
       "totalRegistrations": null
     },
@@ -11577,7 +11583,7 @@
     {
       "date": "2026-08-03",
       "totalImpressions": 5993,
-      "totalLinkClicks": 9,
+      "totalLinkClicks": 7,
       "totalRegistrations": null
     },
     {
@@ -11661,7 +11667,7 @@
     {
       "date": "2026-07-16",
       "totalImpressions": 4329,
-      "totalLinkClicks": 1,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -11733,13 +11739,13 @@
     {
       "date": "2026-07-02",
       "totalImpressions": 1519,
-      "totalLinkClicks": 27,
+      "totalLinkClicks": 26,
       "totalRegistrations": null
     },
     {
       "date": "2026-07-01",
       "totalImpressions": 23179,
-      "totalLinkClicks": 8,
+      "totalLinkClicks": 6,
       "totalRegistrations": null
     },
     {
@@ -11901,12 +11907,6 @@
     {
       "date": "2026-06-04",
       "totalImpressions": 8862,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-06-03",
-      "totalImpressions": 79,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
