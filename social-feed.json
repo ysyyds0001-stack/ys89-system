@@ -1,6 +1,21 @@
 {
-  "lastUpdated": "2026-09-04T05:36:36Z",
+  "lastUpdated": "2026-09-05T05:19:41Z",
   "posts": [
+    {
+      "date": "2026-09-04",
+      "persona": "god",
+      "personaName": "財神",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/_qRIk56pZ/",
+      "landingUrl": null,
+      "utmContent": "god-0904-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
     {
       "date": "2026-09-04",
       "persona": "huiqi566",
@@ -9,6 +24,36 @@
       "postUrl": "https://www.threads.com/share/HH0__U6Dy/",
       "landingUrl": null,
       "utmContent": "huiqi566-0904-2",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-09-04",
+      "persona": "zahra",
+      "personaName": "zahra",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/GdYF-bvAo/",
+      "landingUrl": null,
+      "utmContent": "zahra-0904-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-09-04",
+      "persona": "cyq",
+      "personaName": "陳亦強",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/GHtLOQQv0/",
+      "landingUrl": null,
+      "utmContent": "cyq-0904-1",
       "impressions": null,
       "likes": null,
       "comments": null,
@@ -33,12 +78,42 @@
     },
     {
       "date": "2026-09-04",
+      "persona": "hahaqiu",
+      "personaName": "哈哈看球",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/FtvDokDsY/",
+      "landingUrl": null,
+      "utmContent": "hahaqiu-0904-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-09-04",
       "persona": "mien",
       "personaName": "米恩",
       "platform": "threads",
       "postUrl": "https://www.threads.com/share/F-acBSdo_/",
       "landingUrl": null,
       "utmContent": "mien-0904-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-09-04",
+      "persona": null,
+      "personaName": "lan Lin",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/E8-QJkGLS/",
+      "landingUrl": null,
+      "utmContent": "lanlin-0904-1",
       "impressions": null,
       "likes": null,
       "comments": null,
@@ -69,6 +144,21 @@
       "postUrl": "https://www.threads.com/share/Dn3UmZuA2/",
       "landingUrl": null,
       "utmContent": "zhansen-0904-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-09-04",
+      "persona": "cc",
+      "personaName": "AI體育賽事分析",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/D6QSs1tC8/",
+      "landingUrl": null,
+      "utmContent": "cc-0904-1",
       "impressions": null,
       "likes": null,
       "comments": null,
@@ -2232,7 +2322,7 @@
       "impressions": 0,
       "likes": 2,
       "comments": 1,
-      "linkClicks": 3,
+      "linkClicks": 4,
       "registrations": null,
       "note": "瀏覽數 Threads 未顯示數字，暫記 0，非確認為零"
     },
@@ -4107,7 +4197,7 @@
       "impressions": 1337,
       "likes": 4,
       "comments": 2,
-      "linkClicks": 7,
+      "linkClicks": 4,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -5292,7 +5382,7 @@
       "impressions": 287,
       "likes": 4,
       "comments": 6,
-      "linkClicks": 5,
+      "linkClicks": 3,
       "registrations": null,
       "note": null
     },
@@ -7362,7 +7452,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 4,
+      "linkClicks": 3,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -11445,21 +11535,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-06-06",
-      "persona": null,
-      "personaName": null,
-      "platform": "threads",
-      "postUrl": null,
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -11538,7 +11613,7 @@
     {
       "date": "2026-08-19",
       "totalImpressions": 253,
-      "totalLinkClicks": 5,
+      "totalLinkClicks": 6,
       "totalRegistrations": null
     },
     {
@@ -11610,7 +11685,7 @@
     {
       "date": "2026-08-03",
       "totalImpressions": 5993,
-      "totalLinkClicks": 7,
+      "totalLinkClicks": 4,
       "totalRegistrations": null
     },
     {
@@ -11664,7 +11739,7 @@
     {
       "date": "2026-07-21",
       "totalImpressions": 3863,
-      "totalLinkClicks": 5,
+      "totalLinkClicks": 3,
       "totalRegistrations": null
     },
     {
@@ -11772,7 +11847,7 @@
     {
       "date": "2026-07-01",
       "totalImpressions": 23179,
-      "totalLinkClicks": 4,
+      "totalLinkClicks": 3,
       "totalRegistrations": null
     },
     {
@@ -11915,12 +11990,6 @@
     },
     {
       "date": "2026-06-07",
-      "totalImpressions": null,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-06-06",
       "totalImpressions": null,
       "totalLinkClicks": null,
       "totalRegistrations": null
