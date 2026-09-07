@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-06T05:35:26Z",
+  "lastUpdated": "2026-09-07T05:45:29Z",
   "posts": [
     {
       "date": "2026-09-04",
@@ -2322,7 +2322,7 @@
       "impressions": 0,
       "likes": 2,
       "comments": 1,
-      "linkClicks": 4,
+      "linkClicks": 6,
       "registrations": null,
       "note": "瀏覽數 Threads 未顯示數字，暫記 0，非確認為零"
     },
@@ -2412,7 +2412,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 2,
+      "linkClicks": 3,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -4302,7 +4302,7 @@
       "impressions": 225,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 3,
+      "linkClicks": 4,
       "registrations": null,
       "note": null
     },
@@ -4407,7 +4407,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 3,
+      "linkClicks": 4,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -4422,7 +4422,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 3,
+      "linkClicks": 4,
       "registrations": null,
       "note": null
     },
@@ -11415,111 +11415,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-06-08",
-      "persona": "ys",
-      "personaName": "YS主IG",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@ys89_com/post/DZUEP1pEheh?xmt=AQG0irALs7kMYZPzyOBWsMRx1xodHO1SvUVmbbUg3mTVRnIdCraOVcdOPp3aanPKM0n9cUo",
-      "landingUrl": "https://ys89.games/live-104",
-      "utmContent": null,
-      "impressions": 2994,
-      "likes": 21,
-      "comments": 14,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "預測荷蘭冠軍"
-    },
-    {
-      "date": "2026-06-08",
-      "persona": "shizu",
-      "personaName": "世足排雷週記",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@uncle_wc/post/DZUvD9Cj6fl?xmt=AQG0omX0FLxwJ-qNPxh08mVOWO6c0xA18ShIdIlDw7Tk_Q",
-      "landingUrl": "https://ys89.fun/",
-      "utmContent": null,
-      "impressions": 14,
-      "likes": 1,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "分組排雷"
-    },
-    {
-      "date": "2026-06-08",
-      "persona": "akki",
-      "personaName": "阿奇",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@rudyshen/post/DZSmorLk621?hl=zh-tw",
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": 552,
-      "likes": 1,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "這裡可以看直撥"
-    },
-    {
-      "date": "2026-06-08",
-      "persona": "akki",
-      "personaName": "阿奇",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@dzz552025/post/DZUc91dESY8?xmt=AQG0lN3D2CC99fHcku-nFCaXUNvS_q2kwJRyGK4jeqPekvw7rSWIMLd_NdrBGm8kPtPeV-GA&slof=1",
-      "landingUrl": "https://ys89.bet/?proxy=cysc9m",
-      "utmContent": null,
-      "impressions": 37,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "盲推註冊"
-    },
-    {
-      "date": "2026-06-08",
-      "persona": "crab",
-      "personaName": "蟹蟹世足觀測站",
-      "platform": "ig",
-      "postUrl": "https://www.instagram.com/p/DZUxzDQD8nJ/?img_index=1",
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": 35,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "2026世界盃分組賽完整賠率｜A到L組哪組最難預測、黑馬在哪"
-    },
-    {
-      "date": "2026-06-08",
-      "persona": "shizu",
-      "personaName": "世足排雷週記",
-      "platform": "ig",
-      "postUrl": "https://www.instagram.com/p/DZUvDOJDy_Q/?img_index=1",
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": 1,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "2026世界盃分組賽完整賠率｜A到L組哪組最難預測、黑馬在哪"
-    },
-    {
-      "date": "2026-06-08",
-      "persona": null,
-      "personaName": null,
-      "platform": "threads",
-      "postUrl": null,
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -11598,7 +11493,7 @@
     {
       "date": "2026-08-19",
       "totalImpressions": 253,
-      "totalLinkClicks": 6,
+      "totalLinkClicks": 9,
       "totalRegistrations": null
     },
     {
@@ -11676,7 +11571,7 @@
     {
       "date": "2026-07-31",
       "totalImpressions": 4672,
-      "totalLinkClicks": 9,
+      "totalLinkClicks": 12,
       "totalRegistrations": null
     },
     {
@@ -11964,12 +11859,6 @@
     {
       "date": "2026-06-09",
       "totalImpressions": 504,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-06-08",
-      "totalImpressions": 3633,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
