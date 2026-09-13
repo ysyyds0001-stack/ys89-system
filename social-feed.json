@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-12T05:27:46Z",
+  "lastUpdated": "2026-09-13T05:43:39Z",
   "posts": [
     {
       "date": "2026-09-11",
@@ -11415,21 +11415,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-06-14",
-      "persona": null,
-      "personaName": null,
-      "platform": "threads",
-      "postUrl": null,
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -11868,12 +11853,6 @@
     {
       "date": "2026-06-15",
       "totalImpressions": 6628,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-06-14",
-      "totalImpressions": null,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
