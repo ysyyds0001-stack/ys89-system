@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-19T05:32:19Z",
+  "lastUpdated": "2026-09-20T05:48:09Z",
   "posts": [
     {
       "date": "2026-09-18",
@@ -4092,7 +4092,7 @@
       "impressions": 325,
       "likes": 0,
       "comments": 1,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -7602,7 +7602,7 @@
       "impressions": 287,
       "likes": 4,
       "comments": 6,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -11205,81 +11205,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-06-21",
-      "persona": "god",
-      "personaName": "世足大財神",
-      "platform": "ig",
-      "postUrl": "https://www.threads.com/@wc_godofwealth/post/DZzJmyynxYf?xmt=AQG0-XZWhnXFrFb3VDTYMX5sddOaw9pB1GMKod5rnJsosDOfDTjMst0-c70RDduE5cViyOM",
-      "landingUrl": null,
-      "utmContent": "god-0621-1",
-      "impressions": 0,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "世紀盃預測"
-    },
-    {
-      "date": "2026-06-21",
-      "persona": "bam",
-      "personaName": "Bam班",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@mn12aksj/post/DZ1npkEIGqs?xmt=AQG0-XZWhnXFrFb3VDTYMX5sddOaw9pB1GMKod5rnJsosDOfDTjMst0-c70RDduE5cViyOM",
-      "landingUrl": null,
-      "utmContent": "bam-0621-1",
-      "impressions": 0,
-      "likes": 3,
-      "comments": 2,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "世界盃挑戰第5天"
-    },
-    {
-      "date": "2026-06-21",
-      "persona": null,
-      "personaName": "龍哥",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@longlongwin_/post/DZ1nBXqiRdk",
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": 10000,
-      "likes": 22,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "比分"
-    },
-    {
-      "date": "2026-06-21",
-      "persona": "diego",
-      "personaName": "diego",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@dddgo0805/post/DZ1lmjXD5T6",
-      "landingUrl": null,
-      "utmContent": "diego-0621-1",
-      "impressions": 4353,
-      "likes": 17,
-      "comments": 2,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "世界盃比分"
-    },
-    {
-      "date": "2026-06-21",
-      "persona": null,
-      "personaName": null,
-      "platform": "threads",
-      "postUrl": null,
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -11406,7 +11331,7 @@
     {
       "date": "2026-08-21",
       "totalImpressions": 746,
-      "totalLinkClicks": 1,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -11544,7 +11469,7 @@
     {
       "date": "2026-07-21",
       "totalImpressions": 3863,
-      "totalLinkClicks": 1,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -11708,12 +11633,6 @@
       "totalImpressions": 21568,
       "totalLinkClicks": null,
       "totalRegistrations": null
-    },
-    {
-      "date": "2026-06-21",
-      "totalImpressions": 14353,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
     }
   ],
   "personas": [
@@ -11821,9 +11740,7 @@
       "code": "diego",
       "name": "diego",
       "agent": null,
-      "platforms": [
-        "threads"
-      ]
+      "platforms": []
     },
     {
       "code": "jack",
