@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-03T06:06:12Z",
+  "lastUpdated": "2026-10-04T06:40:12Z",
   "posts": [
     {
       "date": "2026-10-02",
@@ -6267,7 +6267,7 @@
       "impressions": 0,
       "likes": 2,
       "comments": 1,
-      "linkClicks": 9,
+      "linkClicks": 6,
       "registrations": null,
       "note": "瀏覽數 Threads 未顯示數字，暫記 0，非確認為零 / 2026-09-08 補跑：Threads 回 invalid_post（貼文已刪除或帳號停用），不再重跑"
     },
@@ -6357,7 +6357,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -8247,7 +8247,7 @@
       "impressions": 225,
       "likes": 0,
       "comments": 0,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -8352,7 +8352,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -8367,7 +8367,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": null
     },
@@ -10920,21 +10920,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": "我跟財神"
-    },
-    {
-      "date": "2026-07-05",
-      "persona": "god",
-      "personaName": "世足大財神",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@wc_godofwealth/post/DaZw5a9Hykl?xmt=AQG0ksaQdBJ-azihrd4syqHHrZq30zt2VrRyYGGNhvo4-Q",
-      "landingUrl": null,
-      "utmContent": "god-0705-1",
-      "impressions": 6604,
-      "likes": 16,
-      "comments": 4,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "世界盃預測"
     }
   ],
   "daily": [
@@ -11121,7 +11106,7 @@
     {
       "date": "2026-08-19",
       "totalImpressions": 813,
-      "totalLinkClicks": 10,
+      "totalLinkClicks": 6,
       "totalRegistrations": null
     },
     {
@@ -11199,7 +11184,7 @@
     {
       "date": "2026-07-31",
       "totalImpressions": 4672,
-      "totalLinkClicks": 3,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -11325,12 +11310,6 @@
     {
       "date": "2026-07-06",
       "totalImpressions": 4420,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-07-05",
-      "totalImpressions": 6604,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
