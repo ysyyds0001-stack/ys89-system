@@ -11126,6 +11126,14 @@ function _utmApplyPicksUrl(p){
 function utmGen(){
   const p=utmCurrentPersona(); const out=document.getElementById('u-out'); if(!out) return;
   if(!p){ out.textContent='（請先在矩陣帳號號新增帳號）'; return; }
+  /* 2026-10-08 修：貼文編號沒自動帶進來的無聲 bug。
+     utmSuggestContent() 原本只在 _utmPersonaChange()（select 的 onchange）裡呼叫，
+     所以「開頁面時人設已經是選好的」這條路徑完全不會填 —— 使用者填完其他欄位、
+     複製連結，utm_content 是空的，而且畫面上沒有任何提示。
+     後果：GA4 只知道這支帳號帶了幾個人，不知道是哪一篇帶的，歸因整個斷掉。
+     改成在 utmGen 補一次（只在空的時候），所有路徑都會有編號。 */
+  const _ct=document.getElementById('u-content');
+  if(_ct && !_ct.value.trim()) _ct.value=utmSuggestContent(p);
   const url=utmBuildUrl(p);
   if(url==='__NO_LINE__'){
     out.innerHTML='<span style="color:#f87171">這支還沒開 LINE 加好友管道，產不出可追蹤的連結。</span>'
