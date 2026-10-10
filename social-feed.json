@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-09T07:11:18Z",
+  "lastUpdated": "2026-10-10T06:44:43Z",
   "posts": [
     {
       "date": "2026-10-08",
@@ -10485,51 +10485,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": "2026-09-08 修正：狀態字串編碼損毀，還原為待記錄"
-    },
-    {
-      "date": "2026-07-11",
-      "persona": "god",
-      "personaName": "世足大財神",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@wc_godofwealth/post/DapToDEH4BE?xmt=AQG0QFkhs9FAaRpstpGNh6ss2xDjq4n2GYbgQyPoWwKcHw",
-      "landingUrl": "https://picks168.com/vip-trial/?utm_source=god&utm_medium=th_post&utm_campaign=wc2026&utm_content=god-0711-1",
-      "utmContent": "god-0711-1",
-      "impressions": 0,
-      "likes": 8,
-      "comments": 4,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "無法顯示瀏覽"
-    },
-    {
-      "date": "2026-07-11",
-      "persona": "cc",
-      "personaName": "cc",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@wc_ccai/post/DapSAvCk3rt?xmt=AQG0QFkhs9FAaRpstpGNh6ss2xDjq4n2GYbgQyPoWwKcHw",
-      "landingUrl": "https://picks168.com/trust/?utm_source=cc&utm_medium=th_post&utm_campaign=wc2026&utm_content=cc-0711-1",
-      "utmContent": "cc-0711-1",
-      "impressions": 358,
-      "likes": 4,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-07-11",
-      "persona": "ianlin",
-      "personaName": "Ian Lin",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@ugrsrbs53/post/DapVgwuEf9O?xmt=AQG0QFkhs9FAaRpstpGNh6ss2xDjq4n2GYbgQyPoWwKcHw",
-      "landingUrl": null,
-      "utmContent": "ianlin-0711-1",
-      "impressions": 0,
-      "likes": 3,
-      "comments": 2,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "財神準"
     }
   ],
   "daily": [
@@ -10904,12 +10859,6 @@
       "totalImpressions": 12020,
       "totalLinkClicks": null,
       "totalRegistrations": null
-    },
-    {
-      "date": "2026-07-11",
-      "totalImpressions": 358,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
     }
   ],
   "personas": [
@@ -11133,9 +11082,7 @@
       "code": "ianlin",
       "name": "Ian Lin",
       "agent": null,
-      "platforms": [
-        "threads"
-      ]
+      "platforms": []
     },
     {
       "code": "zahra",
