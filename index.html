@@ -11115,10 +11115,23 @@ function _utmPersonaChange(){
 // 依人設 picksUrl 填入落地頁（僅在換人設或 init 時呼叫，不在 utmGen 裡）
 function _utmApplyPicksUrl(p){
   if(!p) p=utmCurrentPersona(); if(!p) return;
-  const pu=p.raw&&p.raw.picksUrl; if(!pu) return;
+  const pu=p.raw&&p.raw.picksUrl;
   const landSel=document.getElementById('u-landing');
   const landCustom=document.getElementById('u-landing-custom');
   if(!landSel) return;
+  /* 2026-10-13 修：換人設時落地頁沒有跟著換的無聲 bug。
+     原本是「沒有 picksUrl 就 return」，結果上一個人設的網址會留在欄位裡。
+     實測：先選財神（picksUrl = picks168.com/vip-trial/caishen/）再選電子遊戲觀測所、
+     戰術阿森，三個人產出的連結全部指向 picks168 的財神 VIP 頁——
+     電子站的角色導到體育站的頁面，點擊記進體育站的 GA4 資源，站別統計整個歪掉。
+     沒有 picksUrl 的角色改成退回 LINE 加好友（__LINE_AUTO__），它會依角色自動
+     對到該站自己的轉址頁；該角色若沒開 LINE 管道，utmBuildUrl 會回 __NO_LINE__
+     並明確報錯，而不是安靜地指到別站。 */
+  if(!pu){
+    landSel.value='__LINE_AUTO__';
+    if(landCustom){ landCustom.value=''; landCustom.style.display='none'; }
+    return;
+  }
   const match=Array.from(landSel.options).find(o=>o.value===pu);
   if(match){landSel.value=pu;if(landCustom)landCustom.style.display='none';}
   else{landSel.value='__custom__';if(landCustom){landCustom.value=pu;landCustom.style.display='block';}}
