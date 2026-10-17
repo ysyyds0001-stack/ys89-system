@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-16T05:32:29Z",
+  "lastUpdated": "2026-10-17T05:22:22Z",
   "posts": [
     {
       "date": "2026-10-16",
@@ -42,7 +42,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": null,
+      "linkClicks": 3,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -10395,28 +10395,13 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-07-18",
-      "persona": "cc",
-      "personaName": "cc",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@wc_ccai/post/Da5OeWhk4Vb?xmt=AQG0-JMRxDvpG_QM3BhTWgCYzTlizp9eaM4SwGQz_LIfUQ",
-      "landingUrl": null,
-      "utmContent": "cc-0718-1",
-      "impressions": 3665,
-      "likes": 8,
-      "comments": 2,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
     {
       "date": "2026-10-16",
       "totalImpressions": null,
-      "totalLinkClicks": null,
+      "totalLinkClicks": 3,
       "totalRegistrations": null
     },
     {
@@ -10782,12 +10767,6 @@
     {
       "date": "2026-07-19",
       "totalImpressions": 3420,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-07-18",
-      "totalImpressions": 3665,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
