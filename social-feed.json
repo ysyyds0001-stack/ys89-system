@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-18T05:30:07Z",
+  "lastUpdated": "2026-10-19T05:48:56Z",
   "posts": [
     {
       "date": "2026-10-16",
@@ -10350,21 +10350,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-07-20",
-      "persona": null,
-      "personaName": "測試帳號",
-      "platform": "threads",
-      "postUrl": "https://example.com",
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": 1500,
-      "likes": 30,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "2026-09-08 測試資料，非真實貼文，不再重跑"
     }
   ],
   "daily": [
@@ -10725,12 +10710,6 @@
     {
       "date": "2026-07-21",
       "totalImpressions": 3863,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-07-20",
-      "totalImpressions": 1500,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
