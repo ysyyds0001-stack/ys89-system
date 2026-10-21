@@ -3,7 +3,7 @@
     {
       "name": "(direct)",
       "medium": "(none)",
-      "sessions": 106,
+      "sessions": 105,
       "cls": "direct",
       "tag": "直接/未知",
       "tcls": "t-direct"
@@ -68,7 +68,7 @@
   "accounts": [
     {
       "name": "(direct)",
-      "s": 106,
+      "s": 105,
       "cta": 0,
       "warn": false
     },
@@ -121,20 +121,20 @@
       "v": 27
     },
     {
+      "t": "運彩算法與試算工具｜串關、讓分、大小盤怎麼算 - ys89.info",
+      "v": 27
+    },
+    {
       "t": "德州撲克怎麼玩？從零開始的完整入門教學｜撲克入門",
       "v": 25
     },
     {
-      "t": "運彩算法與試算工具｜串關、讓分、大小盤怎麼算 - ys89.info",
-      "v": 25
-    },
-    {
       "t": "2026 世界盃觀賽入口｜104場完整賽程・台灣時間・開賽提醒",
-      "v": 23
+      "v": 20
     },
     {
       "t": "娛樂城體驗金與優惠條款攻略｜把流水條件算給你看",
-      "v": 18
+      "v": 17
     },
     {
       "t": "2026世界盃投注攻略｜小組賽vs淘汰賽最佳下注時機分析｜深夜球場",
@@ -152,13 +152,7 @@
       "cta": 0
     }
   ],
-  "contents_3d": [
-    {
-      "content": "footer_network",
-      "sessions": 1,
-      "cta": 0
-    }
-  ],
+  "contents_3d": [],
   "contents_7d": [
     {
       "content": "footer_network",
@@ -167,66 +161,61 @@
     }
   ],
   "kpis": {
-    "activeUsers": 488,
-    "sessions": 568,
-    "eventCount": 3144,
-    "engagedSessions": 200,
+    "activeUsers": 517,
+    "sessions": 604,
+    "eventCount": 3322,
+    "engagedSessions": 223,
     "socialClicks": 6,
-    "cta": 8,
-    "conversionRate": 1.41
+    "cta": 7,
+    "conversionRate": 1.16
   },
   "kpis_3d": {
-    "activeUsers": 43,
-    "sessions": 55,
-    "eventCount": 345,
-    "engagedSessions": 25,
+    "activeUsers": 74,
+    "sessions": 87,
+    "eventCount": 541,
+    "engagedSessions": 43,
     "socialClicks": 0,
-    "cta": 0,
-    "conversionRate": 0.0
+    "cta": 1,
+    "conversionRate": 1.15
   },
   "kpis_7d": {
-    "activeUsers": 151,
-    "sessions": 187,
-    "eventCount": 1154,
-    "engagedSessions": 84,
+    "activeUsers": 182,
+    "sessions": 220,
+    "eventCount": 1342,
+    "engagedSessions": 101,
     "socialClicks": 0,
     "cta": 3,
-    "conversionRate": 1.6
+    "conversionRate": 1.36
   },
   "kpis_prev7d": {
-    "activeUsers": 111,
-    "sessions": 125,
-    "eventCount": 688,
-    "engagedSessions": 57,
+    "activeUsers": 124,
+    "sessions": 143,
+    "eventCount": 764,
+    "engagedSessions": 66,
     "socialClicks": 3,
-    "cta": 1,
-    "conversionRate": 0.8
+    "cta": 2,
+    "conversionRate": 1.4
   },
   "kpis_28d": {
-    "activeUsers": 464,
-    "sessions": 539,
-    "eventCount": 2979,
-    "engagedSessions": 193,
+    "activeUsers": 510,
+    "sessions": 594,
+    "eventCount": 3271,
+    "engagedSessions": 219,
     "socialClicks": 6,
     "cta": 6,
-    "conversionRate": 1.11
+    "conversionRate": 1.01
   },
   "accounts_3d": [
     {
       "name": "(direct)",
-      "s": 4,
-      "cta": 0
-    },
-    {
-      "name": "fifa_worldcups",
-      "s": 1,
+      "s": 8,
       "cta": 0
     }
   ],
   "accounts_7d": [
     {
       "name": "(direct)",
-      "s": 14,
+      "s": 19,
       "cta": 0
     },
     {
@@ -243,7 +232,7 @@
   "accounts_prev7d": [
     {
       "name": "(direct)",
-      "s": 18,
+      "s": 16,
       "cta": 0
     },
     {
@@ -260,7 +249,7 @@
   "accounts_28d": [
     {
       "name": "(direct)",
-      "s": 98,
+      "s": 104,
       "cta": 0
     },
     {
@@ -274,27 +263,27 @@
       "cta": 0
     },
     {
-      "name": "bolalive77.com",
-      "s": 2,
+      "name": "akki",
+      "s": 1,
       "cta": 0
     },
     {
-      "name": "akki",
+      "name": "fifa_worldcups/",
       "s": 1,
       "cta": 0
     }
   ],
   "ranges": {
-    "3d": "2026-10-18~2026-10-20",
-    "7d": "2026-10-14~2026-10-20",
-    "prev7d": "2026-10-07~2026-10-13",
-    "28d": "2026-09-23~2026-10-20"
+    "3d": "2026-10-19~2026-10-21",
+    "7d": "2026-10-15~2026-10-21",
+    "prev7d": "2026-10-08~2026-10-14",
+    "28d": "2026-09-24~2026-10-21"
   },
   "kpis_week": {
-    "activeUsers": 19,
-    "sessions": 22,
-    "eventCount": 198,
-    "engagedSessions": 13,
+    "activeUsers": 70,
+    "sessions": 82,
+    "eventCount": 502,
+    "engagedSessions": 41,
     "socialClicks": 0,
     "cta": 0,
     "conversionRate": 0.0
@@ -309,7 +298,7 @@
     "conversionRate": 1.33
   },
   "week_ranges": {
-    "week": "2026-10-19~2026-10-19",
+    "week": "2026-10-19~2026-10-20",
     "prevweek": "2026-10-12~2026-10-18"
   },
   "line": {
@@ -326,14 +315,14 @@
         "placement": "post"
       },
       {
-        "content": "egameobs-0922-1",
-        "source": "egameobs",
+        "content": "god-1019-1",
+        "source": "god",
         "medium": "line_addfriend",
         "sessions": 6,
         "users": 6,
-        "station": "電子站",
-        "host": "tsaishen888.com",
-        "channel": "egameobs",
+        "station": "體育預測站",
+        "host": "picks168.com",
+        "channel": "god",
         "placement": "post"
       },
       {
@@ -423,17 +412,6 @@
         "host": "picks168.com",
         "channel": "lanlin",
         "placement": "bio"
-      },
-      {
-        "content": "jingrou794-0922-1",
-        "source": "jingrou794",
-        "medium": "line_addfriend",
-        "sessions": 4,
-        "users": 4,
-        "station": "百家站",
-        "host": "dgcasnio.com",
-        "channel": "jingrou794",
-        "placement": "post"
       },
       {
         "content": "jingrou794_post",
@@ -546,17 +524,6 @@
         "placement": "bio"
       },
       {
-        "content": "lottnum-0922-1",
-        "source": "lottnum",
-        "medium": "line_addfriend",
-        "sessions": 3,
-        "users": 3,
-        "station": "彩票站",
-        "host": "lott168.com",
-        "channel": "lottnum",
-        "placement": "post"
-      },
-      {
         "content": "lottnum-0923-1",
         "source": "lottnum",
         "medium": "line_addfriend",
@@ -634,17 +601,6 @@
         "placement": "bio"
       },
       {
-        "content": "god-0922-1",
-        "source": "god",
-        "medium": "line_addfriend",
-        "sessions": 1,
-        "users": 1,
-        "station": "體育預測站",
-        "host": "picks168.com",
-        "channel": "god",
-        "placement": "post"
-      },
-      {
         "content": "god-1008-1",
         "source": "god",
         "medium": "line_addfriend",
@@ -668,6 +624,17 @@
       },
       {
         "content": "egameobs-1006-1",
+        "source": "egameobs",
+        "medium": "line_addfriend",
+        "sessions": 1,
+        "users": 1,
+        "station": "電子站",
+        "host": "tsaishen888.com",
+        "channel": "egameobs",
+        "placement": "post"
+      },
+      {
+        "content": "egameobs-1019-1",
         "source": "egameobs",
         "medium": "line_addfriend",
         "sessions": 1,
@@ -714,48 +681,24 @@
       }
     ],
     "_說明": "加好友＝還沒加的陌生流量（經 picks168.com/line/ 轉址頁）；圖文選單＝已經是好友的人在 LINE 內點擊。兩者不可合計。",
-    "_期間": "2026-09-22~2026-10-20"
+    "_期間": "2026-09-23~2026-10-21"
   },
   "accounts_all": {
-    "_期間": "2026-09-22~2026-10-20",
+    "_期間": "2026-09-23~2026-10-21",
     "_說明": "每支帳號在所有站的進站合計。同一支會同時帶去多個站，各資源分開看會低估。CTA 用『有 CTA 事件的工作階段數』，轉換率＝CTA階段/進站，必 ≤100%。",
     "帳號": [
       {
         "source": "god",
-        "sessions": 27,
-        "users": 27,
+        "sessions": 32,
+        "users": 32,
         "cta": 0,
         "by_station": {
-          "體育預測站": 26,
+          "體育預測站": 31,
           "ys89站群": 1
         },
         "is_account": true,
         "cta_rate": 0.0,
         "name": "財神"
-      },
-      {
-        "source": "lottnum",
-        "sessions": 15,
-        "users": 15,
-        "cta": 0,
-        "by_station": {
-          "彩票站": 15
-        },
-        "is_account": true,
-        "cta_rate": 0.0,
-        "name": "獎號通"
-      },
-      {
-        "source": "jingrou794",
-        "sessions": 14,
-        "users": 13,
-        "cta": 0,
-        "by_station": {
-          "百家站": 14
-        },
-        "is_account": true,
-        "cta_rate": 0.0,
-        "name": "百家通"
       },
       {
         "source": "cc",
@@ -770,12 +713,36 @@
         "name": "AI體育賽事分析"
       },
       {
-        "source": "egameobs",
+        "source": "lottnum",
         "sessions": 12,
         "users": 12,
         "cta": 0,
         "by_station": {
-          "電子站": 12
+          "彩票站": 12
+        },
+        "is_account": true,
+        "cta_rate": 0.0,
+        "name": "獎號通"
+      },
+      {
+        "source": "jingrou794",
+        "sessions": 10,
+        "users": 9,
+        "cta": 0,
+        "by_station": {
+          "百家站": 10
+        },
+        "is_account": true,
+        "cta_rate": 0.0,
+        "name": "百家通"
+      },
+      {
+        "source": "egameobs",
+        "sessions": 7,
+        "users": 7,
+        "cta": 0,
+        "by_station": {
+          "電子站": 7
         },
         "is_account": true,
         "cta_rate": 0.0,
@@ -905,44 +872,44 @@
     "其他來源": [
       {
         "source": "(direct)",
-        "sessions": 212,
-        "users": 181,
-        "cta": 2,
+        "sessions": 220,
+        "users": 186,
+        "cta": 1,
         "by_station": {
           "體育預測站": 30,
-          "電子站": 28,
-          "百家站": 16,
-          "彩票站": 32,
-          "ys89站群": 106
+          "電子站": 30,
+          "百家站": 15,
+          "彩票站": 40,
+          "ys89站群": 105
         },
         "is_account": false,
-        "cta_rate": 0.9,
+        "cta_rate": 0.5,
         "name": "(direct)"
       },
       {
         "source": "google",
-        "sessions": 136,
-        "users": 122,
-        "cta": 2,
+        "sessions": 166,
+        "users": 148,
+        "cta": 3,
         "by_station": {
-          "體育預測站": 5,
-          "電子站": 27,
+          "體育預測站": 4,
+          "電子站": 29,
           "百家站": 7,
-          "彩票站": 97
+          "彩票站": 126
         },
         "is_account": false,
-        "cta_rate": 1.5,
+        "cta_rate": 1.8,
         "name": "google"
       },
       {
         "source": "bing",
-        "sessions": 20,
-        "users": 19,
+        "sessions": 24,
+        "users": 23,
         "cta": 0,
         "by_station": {
           "電子站": 4,
           "百家站": 2,
-          "彩票站": 12,
+          "彩票站": 16,
           "ys89站群": 2
         },
         "is_account": false,
@@ -978,14 +945,14 @@
       },
       {
         "source": "telegram",
-        "sessions": 12,
+        "sessions": 9,
         "users": 3,
-        "cta": 3,
+        "cta": 2,
         "by_station": {
-          "體育預測站": 12
+          "體育預測站": 9
         },
         "is_account": false,
-        "cta_rate": 25.0,
+        "cta_rate": 22.2,
         "name": "telegram"
       },
       {
@@ -1001,6 +968,18 @@
         "name": "fifa_worldcups"
       },
       {
+        "source": "duckduckgo",
+        "sessions": 6,
+        "users": 1,
+        "cta": 0,
+        "by_station": {
+          "彩票站": 6
+        },
+        "is_account": false,
+        "cta_rate": 0.0,
+        "name": "duckduckgo"
+      },
+      {
         "source": "ni",
         "sessions": 5,
         "users": 5,
@@ -1013,16 +992,17 @@
         "name": "ni"
       },
       {
-        "source": "duckduckgo",
-        "sessions": 5,
-        "users": 1,
+        "source": "(not set)",
+        "sessions": 4,
+        "users": 3,
         "cta": 0,
         "by_station": {
-          "彩票站": 5
+          "體育預測站": 1,
+          "彩票站": 3
         },
         "is_account": false,
         "cta_rate": 0.0,
-        "name": "duckduckgo"
+        "name": "(not set)"
       },
       {
         "source": "cn.bing.com",
@@ -1061,6 +1041,18 @@
         "name": "dgcasnio.com"
       },
       {
+        "source": "search.google.com",
+        "sessions": 3,
+        "users": 1,
+        "cta": 0,
+        "by_station": {
+          "彩票站": 3
+        },
+        "is_account": false,
+        "cta_rate": 0.0,
+        "name": "search.google.com"
+      },
+      {
         "source": "bolalive77.com",
         "sessions": 2,
         "users": 1,
@@ -1071,18 +1063,6 @@
         "is_account": false,
         "cta_rate": 0.0,
         "name": "bolalive77.com"
-      },
-      {
-        "source": "(not set)",
-        "sessions": 1,
-        "users": 0,
-        "cta": 0,
-        "by_station": {
-          "體育預測站": 1
-        },
-        "is_account": false,
-        "cta_rate": 0.0,
-        "name": "(not set)"
       },
       {
         "source": "line_sports",
@@ -1097,18 +1077,6 @@
         "name": "line_sports"
       },
       {
-        "source": "pwa",
-        "sessions": 1,
-        "users": 1,
-        "cta": 0,
-        "by_station": {
-          "體育預測站": 1
-        },
-        "is_account": false,
-        "cta_rate": 0.0,
-        "name": "pwa"
-      },
-      {
         "source": "gemini.google.com",
         "sessions": 1,
         "users": 1,
@@ -1119,6 +1087,18 @@
         "is_account": false,
         "cta_rate": 0.0,
         "name": "gemini.google.com"
+      },
+      {
+        "source": "unknown",
+        "sessions": 1,
+        "users": 1,
+        "cta": 0,
+        "by_station": {
+          "電子站": 1
+        },
+        "is_account": false,
+        "cta_rate": 0.0,
+        "name": "unknown"
       },
       {
         "source": "hk.search.yahoo.com",
@@ -1143,26 +1123,37 @@
         "is_account": false,
         "cta_rate": 0.0,
         "name": "accounts.google.com.tw"
-      },
-      {
-        "source": "search.google.com",
-        "sessions": 1,
-        "users": 1,
-        "cta": 0,
-        "by_station": {
-          "彩票站": 1
-        },
-        "is_account": false,
-        "cta_rate": 0.0,
-        "name": "search.google.com"
       }
     ]
   },
   "line_week": {
-    "加好友管道": [],
+    "加好友管道": [
+      {
+        "content": "god-1019-1",
+        "source": "god",
+        "medium": "line_addfriend",
+        "sessions": 6,
+        "users": 6,
+        "station": "體育預測站",
+        "host": "picks168.com",
+        "channel": "god",
+        "placement": "post"
+      },
+      {
+        "content": "egameobs-1019-1",
+        "source": "egameobs",
+        "medium": "line_addfriend",
+        "sessions": 1,
+        "users": 1,
+        "station": "電子站",
+        "host": "tsaishen888.com",
+        "channel": "egameobs",
+        "placement": "post"
+      }
+    ],
     "圖文選單": [],
     "_說明": "加好友＝還沒加的陌生流量（經 picks168.com/line/ 轉址頁）；圖文選單＝已經是好友的人在 LINE 內點擊。兩者不可合計。",
-    "_期間": "2026-10-19~2026-10-19"
+    "_期間": "2026-10-19~2026-10-20"
   },
   "line_prevweek": {
     "加好友管道": [
@@ -1249,18 +1240,43 @@
     "_期間": "2026-10-12~2026-10-18"
   },
   "accounts_all_week": {
-    "_期間": "2026-10-19~2026-10-19",
+    "_期間": "2026-10-19~2026-10-20",
     "_說明": "每支帳號在所有站的進站合計。同一支會同時帶去多個站，各資源分開看會低估。CTA 用『有 CTA 事件的工作階段數』，轉換率＝CTA階段/進站，必 ≤100%。",
-    "帳號": [],
+    "帳號": [
+      {
+        "source": "god",
+        "sessions": 6,
+        "users": 6,
+        "cta": 0,
+        "by_station": {
+          "體育預測站": 6
+        },
+        "is_account": true,
+        "cta_rate": 0.0,
+        "name": "財神"
+      },
+      {
+        "source": "egameobs",
+        "sessions": 1,
+        "users": 1,
+        "cta": 0,
+        "by_station": {
+          "電子站": 1
+        },
+        "is_account": true,
+        "cta_rate": 0.0,
+        "name": "電子遊戲觀測所"
+      }
+    ],
     "其他來源": [
       {
         "source": "google",
-        "sessions": 11,
-        "users": 10,
+        "sessions": 39,
+        "users": 34,
         "cta": 0,
         "by_station": {
-          "電子站": 3,
-          "彩票站": 8
+          "電子站": 5,
+          "彩票站": 34
         },
         "is_account": false,
         "cta_rate": 0.0,
@@ -1268,17 +1284,30 @@
       },
       {
         "source": "(direct)",
-        "sessions": 6,
-        "users": 5,
+        "sessions": 24,
+        "users": 21,
         "cta": 0,
         "by_station": {
-          "體育預測站": 1,
-          "彩票站": 4,
-          "ys89站群": 1
+          "體育預測站": 2,
+          "電子站": 2,
+          "彩票站": 12,
+          "ys89站群": 8
         },
         "is_account": false,
         "cta_rate": 0.0,
         "name": "(direct)"
+      },
+      {
+        "source": "bing",
+        "sessions": 3,
+        "users": 3,
+        "cta": 0,
+        "by_station": {
+          "彩票站": 3
+        },
+        "is_account": false,
+        "cta_rate": 0.0,
+        "name": "bing"
       },
       {
         "source": "tw.search.yahoo.com",
@@ -1291,6 +1320,30 @@
         "is_account": false,
         "cta_rate": 0.0,
         "name": "tw.search.yahoo.com"
+      },
+      {
+        "source": "(not set)",
+        "sessions": 2,
+        "users": 2,
+        "cta": 0,
+        "by_station": {
+          "彩票站": 2
+        },
+        "is_account": false,
+        "cta_rate": 0.0,
+        "name": "(not set)"
+      },
+      {
+        "source": "search.google.com",
+        "sessions": 2,
+        "users": 1,
+        "cta": 0,
+        "by_station": {
+          "彩票站": 2
+        },
+        "is_account": false,
+        "cta_rate": 0.0,
+        "name": "search.google.com"
       },
       {
         "source": "chatgpt.com",
@@ -1317,6 +1370,18 @@
         "name": "gemini.google.com"
       },
       {
+        "source": "unknown",
+        "sessions": 1,
+        "users": 1,
+        "cta": 0,
+        "by_station": {
+          "電子站": 1
+        },
+        "is_account": false,
+        "cta_rate": 0.0,
+        "name": "unknown"
+      },
+      {
         "source": "accounts.google.com.tw",
         "sessions": 1,
         "users": 1,
@@ -1327,6 +1392,18 @@
         "is_account": false,
         "cta_rate": 0.0,
         "name": "accounts.google.com.tw"
+      },
+      {
+        "source": "duckduckgo",
+        "sessions": 1,
+        "users": 0,
+        "cta": 0,
+        "by_station": {
+          "彩票站": 1
+        },
+        "is_account": false,
+        "cta_rate": 0.0,
+        "name": "duckduckgo"
       }
     ]
   },
@@ -1565,38 +1642,32 @@
   },
   "picks168": {
     "kpis_28d": {
-      "users": 72,
+      "users": 77,
       "sessions": 101,
-      "events": 547
+      "events": 519
     },
     "kpis_7d": {
-      "users": 15,
-      "sessions": 23,
-      "events": 106
+      "users": 19,
+      "sessions": 22,
+      "events": 108
     },
     "kpis_prev7d": {
       "users": 18,
-      "sessions": 23,
-      "events": 106
+      "sessions": 25,
+      "events": 110
     },
     "sources_28d": [
+      {
+        "source": "god",
+        "medium": "line_addfriend",
+        "sessions": 31,
+        "users": 31
+      },
       {
         "source": "(direct)",
         "medium": "(none)",
         "sessions": 30,
         "users": 19
-      },
-      {
-        "source": "god",
-        "medium": "line_addfriend",
-        "sessions": 26,
-        "users": 26
-      },
-      {
-        "source": "telegram",
-        "medium": "free_group",
-        "sessions": 11,
-        "users": 3
       },
       {
         "source": "cc",
@@ -1605,22 +1676,28 @@
         "users": 9
       },
       {
+        "source": "telegram",
+        "medium": "free_group",
+        "sessions": 8,
+        "users": 3
+      },
+      {
         "source": "chatgpt.com",
         "medium": "ai-assistant",
         "sessions": 5,
         "users": 2
       },
       {
-        "source": "google",
-        "medium": "organic",
-        "sessions": 5,
-        "users": 1
-      },
-      {
         "source": "lanlin",
         "medium": "line_addfriend",
         "sessions": 5,
         "users": 5
+      },
+      {
+        "source": "google",
+        "medium": "organic",
+        "sessions": 4,
+        "users": 1
       },
       {
         "source": "cc",
@@ -1659,12 +1736,6 @@
         "users": 1
       },
       {
-        "source": "pwa",
-        "medium": "(not set)",
-        "sessions": 1,
-        "users": 1
-      },
-      {
         "source": "telegram",
         "medium": "channel",
         "sessions": 1,
@@ -1673,22 +1744,16 @@
     ],
     "sources_7d": [
       {
-        "source": "(direct)",
-        "medium": "(none)",
-        "sessions": 13,
-        "users": 8
-      },
-      {
         "source": "god",
         "medium": "line_addfriend",
-        "sessions": 6,
-        "users": 6
+        "sessions": 12,
+        "users": 12
       },
       {
-        "source": "telegram",
-        "medium": "free_group",
-        "sessions": 2,
-        "users": 1
+        "source": "(direct)",
+        "medium": "(none)",
+        "sessions": 8,
+        "users": 6
       },
       {
         "source": "(not set)",
@@ -1706,7 +1771,7 @@
     "events_28d": [
       {
         "name": "page_view",
-        "count": 163
+        "count": 146
       },
       {
         "name": "session_start",
@@ -1714,68 +1779,64 @@
       },
       {
         "name": "scroll",
-        "count": 86
+        "count": 89
       },
       {
         "name": "first_visit",
-        "count": 71
-      },
-      {
-        "name": "user_engagement",
-        "count": 51
+        "count": 75
       },
       {
         "name": "line_add_friend_click",
-        "count": 45
+        "count": 50
+      },
+      {
+        "name": "user_engagement",
+        "count": 38
       },
       {
         "name": "cta_click",
-        "count": 11
-      },
-      {
-        "name": "outbound_click",
-        "count": 8
-      },
-      {
-        "name": "click",
-        "count": 6
+        "count": 7
       },
       {
         "name": "line_fallback_shown",
         "count": 5
+      },
+      {
+        "name": "click",
+        "count": 4
+      },
+      {
+        "name": "outbound_click",
+        "count": 4
       }
     ],
     "events_7d": [
       {
         "name": "page_view",
-        "count": 31
+        "count": 27
       },
       {
         "name": "session_start",
-        "count": 22
+        "count": 21
       },
       {
         "name": "scroll",
-        "count": 17
+        "count": 20
       },
       {
         "name": "first_visit",
+        "count": 16
+      },
+      {
+        "name": "line_add_friend_click",
         "count": 13
       },
       {
         "name": "user_engagement",
-        "count": 9
-      },
-      {
-        "name": "line_add_friend_click",
-        "count": 7
+        "count": 6
       },
       {
         "name": "cta_click",
-        "count": 3
-      },
-      {
-        "name": "outbound_click",
         "count": 2
       },
       {
@@ -1785,15 +1846,14 @@
       {
         "name": "line_fallback_shown",
         "count": 1
+      },
+      {
+        "name": "outbound_click",
+        "count": 1
       }
     ],
     "conversions_by_source_28d": {
       "cta_click": [
-        {
-          "source": "(direct)",
-          "medium": "(none)",
-          "count": 4
-        },
         {
           "source": "cyq",
           "medium": "th_post",
@@ -1805,13 +1865,18 @@
           "count": 2
         },
         {
-          "source": "telegram",
-          "medium": "free_group",
-          "count": 2
+          "source": "(direct)",
+          "medium": "(none)",
+          "count": 1
         },
         {
           "source": "telegram",
           "medium": "channel",
+          "count": 1
+        },
+        {
+          "source": "telegram",
+          "medium": "free_group",
           "count": 1
         }
       ],
@@ -1828,11 +1893,6 @@
           "source": "telegram",
           "medium": "channel",
           "count": 1
-        },
-        {
-          "source": "telegram",
-          "medium": "free_group",
-          "count": 1
         }
       ],
       "subscribe_click": []
@@ -1842,6 +1902,11 @@
         "content": "cc-0819-1",
         "sessions": 9,
         "users": 9
+      },
+      {
+        "content": "god-1019-1",
+        "sessions": 6,
+        "users": 6
       },
       {
         "content": "god_post",
@@ -1904,11 +1969,6 @@
         "users": 1
       },
       {
-        "content": "god-0922-1",
-        "sessions": 1,
-        "users": 1
-      },
-      {
         "content": "god-1008-1",
         "sessions": 1,
         "users": 1
@@ -1926,6 +1986,11 @@
     ],
     "contents_7d": [
       {
+        "content": "god-1019-1",
+        "sessions": 6,
+        "users": 6
+      },
+      {
         "content": "god-1015-1",
         "sessions": 3,
         "users": 3
@@ -1937,5 +2002,5 @@
       }
     ]
   },
-  "lastUpdated": "2026-10-20T05:43:16.774390"
+  "lastUpdated": "2026-10-21T05:47:05.688865"
 }
