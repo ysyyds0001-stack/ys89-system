@@ -1,6 +1,51 @@
 {
-  "lastUpdated": "2026-10-22T05:49:09Z",
+  "lastUpdated": "2026-10-23T05:48:16Z",
   "posts": [
+    {
+      "date": "2026-10-22",
+      "persona": "god",
+      "personaName": "財神",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/_pJemOEQL/",
+      "landingUrl": "https://picks168.com/line/?utm_source=god&utm_medium=th_post&utm_campaign=wc2026&utm_content=god-1021-2",
+      "utmContent": "god-1021-2",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": 4,
+      "registrations": null,
+      "note": "UTM產生器建立"
+    },
+    {
+      "date": "2026-10-22",
+      "persona": null,
+      "personaName": "銓部的銓",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/D6m5Whu3Z/",
+      "landingUrl": null,
+      "utmContent": "silin66238-1022-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
+    {
+      "date": "2026-10-22",
+      "persona": "yuchiazhi",
+      "personaName": "魚池阿智",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/C3r9H2zFc/",
+      "landingUrl": null,
+      "utmContent": "yuchiazhi-1022-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": null
+    },
     {
       "date": "2026-10-21",
       "persona": null,
@@ -9,9 +54,9 @@
       "postUrl": "https://www.threads.com/share/EAKjt9NDn/",
       "landingUrl": null,
       "utmContent": "jiaqing612-1021-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 22,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -24,9 +69,9 @@
       "postUrl": "https://www.threads.com/share/D7aOgu2cA/",
       "landingUrl": null,
       "utmContent": "ni-1021-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 4,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -39,9 +84,9 @@
       "postUrl": "https://www.threads.com/share/BAXncdsdam/",
       "landingUrl": "https://picks168.com/line/?utm_source=god&utm_medium=th_post&utm_campaign=wc2026&utm_content=god-1021-1",
       "utmContent": "god-1021-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 131,
+      "likes": 1,
+      "comments": 1,
       "linkClicks": 3,
       "registrations": null,
       "note": "UTM產生器建立"
@@ -7362,7 +7407,7 @@
       "impressions": 0,
       "likes": 2,
       "comments": 1,
-      "linkClicks": 9,
+      "linkClicks": 3,
       "registrations": null,
       "note": "瀏覽數 Threads 未顯示數字，暫記 0，非確認為零 / 2026-09-08 補跑：Threads 回 invalid_post（貼文已刪除或帳號停用），不再重跑"
     },
@@ -10095,57 +10140,18 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-07-24",
-      "persona": "god",
-      "personaName": "世足大財神",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@wc_godofwealth/post/DbLJiDeEzzU?xmt=AQG0jRRie_S3pNRXuZ1s8ImC5NzQy3lF-977nhLK98ggiw",
-      "landingUrl": null,
-      "utmContent": "god-0724-1",
-      "impressions": 301,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-07-24",
-      "persona": "shizu",
-      "personaName": "世足排雷週記",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@uncle_wc/post/DbLJSNUCZ6i?xmt=AQG0jRRie_S3pNRXuZ1s8ImC5NzQy3lF-977nhLK98ggiw",
-      "landingUrl": null,
-      "utmContent": "shizu-0724-1",
-      "impressions": 117,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-07-24",
-      "persona": "akki",
-      "personaName": "阿奇",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@noloxd6467/post/DbLHfn0E1VS?xmt=AQG0qsTkD0uP9Aij3yDTuM5MTnGgM3O6-X2uHjihPSOSSg",
-      "landingUrl": null,
-      "utmContent": "akki-0724-1",
-      "impressions": 19,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "賽事"
     }
   ],
   "daily": [
     {
-      "date": "2026-10-21",
+      "date": "2026-10-22",
       "totalImpressions": null,
+      "totalLinkClicks": 4,
+      "totalRegistrations": null
+    },
+    {
+      "date": "2026-10-21",
+      "totalImpressions": 157,
       "totalLinkClicks": 3,
       "totalRegistrations": null
     },
@@ -10392,7 +10398,7 @@
     {
       "date": "2026-08-19",
       "totalImpressions": 813,
-      "totalLinkClicks": 9,
+      "totalLinkClicks": 3,
       "totalRegistrations": null
     },
     {
@@ -10494,12 +10500,6 @@
     {
       "date": "2026-07-27",
       "totalImpressions": 1237,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-07-24",
-      "totalImpressions": 437,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
