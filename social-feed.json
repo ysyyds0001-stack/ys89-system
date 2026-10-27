@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-26T05:49:27Z",
+  "lastUpdated": "2026-10-27T06:02:23Z",
   "posts": [
     {
       "date": "2026-10-22",
@@ -9915,111 +9915,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-07-28",
-      "persona": "qiuqiusaizhan",
-      "personaName": "全球球賽情報站",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/HTfu3wFgU/",
-      "landingUrl": null,
-      "utmContent": "qiuqiusaizhan-0728-2",
-      "impressions": 21,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-07-28",
-      "persona": "shizu",
-      "personaName": "世足排雷週記",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@uncle_wc/post/DbVINL3CUFV?xmt=AQG0vEw-0SBnFaymhaCIS7xneKXuCVPOE2sT1qXM59sn2Aa4IPZ2P9226YCHBXd1ORz5zVbq&slof=1",
-      "landingUrl": "https://ys89.fun/?utm_source=shizu&utm_medium=th_post&utm_campaign=wc2026&utm_content=shizu-0728-1",
-      "utmContent": "shizu-0728-1",
-      "impressions": 199,
-      "likes": 5,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-07-28",
-      "persona": "akki",
-      "personaName": "阿奇",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@noloxd6467/post/DbVHJ7mk1Kj?xmt=AQG0vW6y_7OY5WPVTwN0P0MUEhaQPP11GlDi1tcvfp4Vew",
-      "landingUrl": "https://ys89.fun/?utm_source=akki&utm_medium=th_post&utm_campaign=wc2026&utm_content=akki-0728-1",
-      "utmContent": "akki-0728-1",
-      "impressions": 15,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-07-28",
-      "persona": null,
-      "personaName": "小豪",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@haogamediary/post/DbVP4zUGqRs?xmt=AQG0OAnW9s5e851PGBoaKCNWahVv5XvSxvaPuSqAbbNf_xECO3pveZxTIKw9BGxJ9TSf9o5B&slof=1",
-      "landingUrl": "https://ys89.fun/?utm_source=haogame&utm_medium=th_post&utm_campaign=wc2026&utm_content=haogame-0728-1",
-      "utmContent": "haogame-0728-1",
-      "impressions": 253,
-      "likes": 5,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-07-28",
-      "persona": "hahaqiu",
-      "personaName": "哈哈看球",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@baoxinyi824h/post/DbVJnCCkcPG?xmt=AQG0JXTUY2a8BJo89OFctRrNJy_s7QlVxLVtNDRFwF00eA",
-      "landingUrl": "https://picks168.com/trust/?utm_source=hahaqiu&utm_medium=th_post&utm_campaign=wc2026&utm_content=hahaqiu-0728-1",
-      "utmContent": "hahaqiu-0728-1",
-      "impressions": 120,
-      "likes": 0,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-07-28",
-      "persona": "miya",
-      "personaName": "米亞運動賽事",
-      "platform": "threads",
-      "postUrl": "https://www.instagram.com/p/DbVR2TFEchk/?img_index=1",
-      "landingUrl": null,
-      "utmContent": "miyunsai-0728-1",
-      "impressions": 2,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-07-28",
-      "persona": "miya",
-      "personaName": "米亞運動賽事",
-      "platform": "ig",
-      "postUrl": "https://www.instagram.com/p/DbVR2TFEchk/?img_index=1",
-      "landingUrl": null,
-      "utmContent": "miyunsai-0728-1",
-      "impressions": 0,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -10368,12 +10263,6 @@
     {
       "date": "2026-07-29",
       "totalImpressions": 4128,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-07-28",
-      "totalImpressions": 610,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
