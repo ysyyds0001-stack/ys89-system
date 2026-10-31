@@ -1,6 +1,36 @@
 {
-  "lastUpdated": "2026-10-30T06:51:30Z",
+  "lastUpdated": "2026-10-31T06:43:13Z",
   "posts": [
+    {
+      "date": "2026-10-30",
+      "persona": "god",
+      "personaName": "財神",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/BAW8Q4vRzX/",
+      "landingUrl": "https://picks168.com/line/?utm_source=god&utm_medium=th_post&utm_campaign=wc2026&utm_content=god-1029-2",
+      "utmContent": "god-1029-2",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": 1,
+      "registrations": null,
+      "note": "UTM產生器建立"
+    },
+    {
+      "date": "2026-10-30",
+      "persona": null,
+      "personaName": "倪",
+      "platform": "threads",
+      "postUrl": "https://www.threads.com/share/BAUp08mabb/",
+      "landingUrl": "https://dgcasnio.com/line/?utm_source=ni&utm_medium=th_post&utm_campaign=wc2026&utm_content=ni-1030-1",
+      "utmContent": "ni-1030-1",
+      "impressions": null,
+      "likes": null,
+      "comments": null,
+      "linkClicks": null,
+      "registrations": null,
+      "note": "UTM產生器建立"
+    },
     {
       "date": "2026-10-29",
       "persona": null,
@@ -9,9 +39,9 @@
       "postUrl": "https://www.threads.com/share/_ypzWMVRS/",
       "landingUrl": null,
       "utmContent": "jingrou794-1029-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 10,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -24,9 +54,9 @@
       "postUrl": "https://www.threads.com/share/BCQP_YFa02/",
       "landingUrl": "https://picks168.com/line/?utm_source=god&utm_medium=th_post&utm_campaign=wc2026&utm_content=god-1029-1",
       "utmContent": "god-1029-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 86,
+      "likes": 0,
+      "comments": 1,
       "linkClicks": 1,
       "registrations": null,
       "note": "UTM產生器建立"
@@ -39,9 +69,9 @@
       "postUrl": "https://www.threads.com/share/BAa9jgas6G/",
       "landingUrl": null,
       "utmContent": "lanlin-1029-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
+      "impressions": 8,
+      "likes": 0,
+      "comments": 0,
       "linkClicks": null,
       "registrations": null,
       "note": null
@@ -9364,8 +9394,14 @@
   ],
   "daily": [
     {
-      "date": "2026-10-29",
+      "date": "2026-10-30",
       "totalImpressions": null,
+      "totalLinkClicks": 1,
+      "totalRegistrations": null
+    },
+    {
+      "date": "2026-10-29",
+      "totalImpressions": 104,
       "totalLinkClicks": 1,
       "totalRegistrations": null
     },
