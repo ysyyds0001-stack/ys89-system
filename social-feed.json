@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-01T07:11:16Z",
+  "lastUpdated": "2026-11-02T07:21:11Z",
   "posts": [
     {
       "date": "2026-10-30",
@@ -9255,141 +9255,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-08-03",
-      "persona": null,
-      "personaName": "小豪",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/_mJYQ8URp/",
-      "landingUrl": null,
-      "utmContent": "haogame-0803-1",
-      "impressions": 510,
-      "likes": 3,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-03",
-      "persona": "zhansen",
-      "personaName": "戰術阿森",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Hvq8J-U9Q/",
-      "landingUrl": null,
-      "utmContent": "zhansen-0803-1",
-      "impressions": 3001,
-      "likes": 15,
-      "comments": 2,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-03",
-      "persona": "jasonchen",
-      "personaName": "Jason Chen",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/GUOLIR0_4/",
-      "landingUrl": null,
-      "utmContent": "jasonchen-0803-1",
-      "impressions": 13,
-      "likes": 0,
-      "comments": 2,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-03",
-      "persona": "cc",
-      "personaName": "cc",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/FlbEeW1O2/",
-      "landingUrl": null,
-      "utmContent": "cc-0803-1",
-      "impressions": 211,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-03",
-      "persona": "linjiayi",
-      "personaName": "林家益",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Et63VgPMO/",
-      "landingUrl": null,
-      "utmContent": "linjiayi-0803-1",
-      "impressions": 164,
-      "likes": 2,
-      "comments": 16,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-03",
-      "persona": "cc",
-      "personaName": "cc",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/DxcLk_bmA/",
-      "landingUrl": null,
-      "utmContent": "cc-0803-2",
-      "impressions": 667,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-03",
-      "persona": "alisi",
-      "personaName": "愛麗絲",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/BBpN88RomZ/",
-      "landingUrl": null,
-      "utmContent": "alisi-0803-1",
-      "impressions": 41,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "先前抓錯成別篇熱門貼文(5055瀏覽/48讚/154回覆)，已依用戶回報更正為真實瀏覽數41，其餘互動數字待補"
-    },
-    {
-      "date": "2026-08-03",
-      "persona": "shizu",
-      "personaName": "世足排雷週記",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/BAbjWLs2c1/",
-      "landingUrl": null,
-      "utmContent": "shizu-0803-1",
-      "impressions": 49,
-      "likes": 1,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-03",
-      "persona": "god",
-      "personaName": "世足大財神",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@wc_godofwealth/post/DbkpDwmH7hk",
-      "landingUrl": "https://picks168.com/vip-trial/?utm_source=god&utm_medium=th_post&utm_campaign=wc2026&utm_content=god-0803-1",
-      "utmContent": "god-0803-1",
-      "impressions": 1337,
-      "likes": 4,
-      "comments": 2,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
     }
   ],
   "daily": [
@@ -9734,12 +9599,6 @@
       "totalImpressions": 3160,
       "totalLinkClicks": null,
       "totalRegistrations": null
-    },
-    {
-      "date": "2026-08-03",
-      "totalImpressions": 5993,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
     }
   ],
   "personas": [
@@ -10027,9 +9886,7 @@
       "code": "alisi",
       "name": "愛麗絲",
       "agent": null,
-      "platforms": [
-        "threads"
-      ]
+      "platforms": []
     },
     {
       "code": "meixuan4846",
