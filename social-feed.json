@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-03T07:39:26Z",
+  "lastUpdated": "2026-11-04T07:18:17Z",
   "posts": [
     {
       "date": "2026-11-02",
@@ -9030,141 +9030,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-08-05",
-      "persona": "zhaohan",
-      "personaName": "昭涵",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/HhgKCwoSF/",
-      "landingUrl": null,
-      "utmContent": "zhaohan-0805-1",
-      "impressions": 5,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-05",
-      "persona": "zhansen",
-      "personaName": "戰術阿森",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/H0HynP1zs/",
-      "landingUrl": null,
-      "utmContent": "zhansen-0805-1",
-      "impressions": 604,
-      "likes": 3,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-05",
-      "persona": "cc",
-      "personaName": "cc",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/E3QvPPf2N/",
-      "landingUrl": "https://picks168.com/trust/?utm_source=cc&utm_medium=th_post&utm_campaign=wc2026&utm_content=cc-0805-1",
-      "utmContent": "cc-0805-1",
-      "impressions": 0,
-      "likes": 3,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-05",
-      "persona": "yuchiazhi",
-      "personaName": "魚池阿智",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/E1rZcjlpk/",
-      "landingUrl": null,
-      "utmContent": "yuchiazhi-0805-2",
-      "impressions": 123,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-05",
-      "persona": "hahaqiu",
-      "personaName": "哈哈看球",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Dv8q6URgI/",
-      "landingUrl": null,
-      "utmContent": "hahaqiu-0805-1",
-      "impressions": 649,
-      "likes": 2,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-05",
-      "persona": "shizu",
-      "personaName": "世足排雷週記",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/BBjsy0ZQU7/",
-      "landingUrl": null,
-      "utmContent": "shizu-0805-1",
-      "impressions": 12,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-05",
-      "persona": "cyq",
-      "personaName": "陳亦強",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@qiang_no_blind/post/DbpjHeDGb0s?xmt=AQG0eoVN3m3022ful3Ekb2SIx9j5ZtlywlDDQejXuin2ew",
-      "landingUrl": null,
-      "utmContent": "cyq-0805-2",
-      "impressions": 228,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-05",
-      "persona": "yuchiazhi",
-      "personaName": "魚池阿智",
-      "platform": "threads",
-      "postUrl": "https://www.instagram.com/p/DbppcoBk2pK/",
-      "landingUrl": null,
-      "utmContent": "yuchiazhi-0805-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-05",
-      "persona": "meixuan4846",
-      "personaName": "美萱",
-      "platform": "threads",
-      "postUrl": "https://www.instagram.com/p/DbpkwLjkghp/",
-      "landingUrl": null,
-      "utmContent": "meixuan4846-0805-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -9503,12 +9368,6 @@
       "totalImpressions": 1309,
       "totalLinkClicks": null,
       "totalRegistrations": null
-    },
-    {
-      "date": "2026-08-05",
-      "totalImpressions": 1621,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
     }
   ],
   "personas": [
@@ -9564,9 +9423,7 @@
       "code": "shizu",
       "name": "世足排雷週記",
       "agent": null,
-      "platforms": [
-        "threads"
-      ]
+      "platforms": []
     },
     {
       "code": "cyq",
@@ -9802,9 +9659,7 @@
       "code": "meixuan4846",
       "name": "美萱",
       "agent": null,
-      "platforms": [
-        "threads"
-      ]
+      "platforms": []
     },
     {
       "code": "huiqi566",
