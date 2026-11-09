@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-08T06:58:14Z",
+  "lastUpdated": "2026-11-09T07:42:13Z",
   "posts": [
     {
       "date": "2026-11-04",
@@ -8700,126 +8700,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-08-10",
-      "persona": "haogame",
-      "personaName": "小豪遊戲筆記",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/_fEuwN3kg/",
-      "landingUrl": null,
-      "utmContent": "haogame-0810-1",
-      "impressions": 62,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-10",
-      "persona": "xiaoye",
-      "personaName": "小夜",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/HbiV840tY/",
-      "landingUrl": null,
-      "utmContent": "xiao-0810-1",
-      "impressions": 0,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-10",
-      "persona": null,
-      "personaName": "惠怡",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/GkMy4Eaqx/",
-      "landingUrl": null,
-      "utmContent": "huiyi6430-0810-1",
-      "impressions": 27,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-10",
-      "persona": "zhansen",
-      "personaName": "戰術阿森",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/FqGq7FHrR/",
-      "landingUrl": null,
-      "utmContent": "zhansen-0810-1",
-      "impressions": 885,
-      "likes": 2,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-10",
-      "persona": "god",
-      "personaName": "財神",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/BAVFOYyYYV/",
-      "landingUrl": null,
-      "utmContent": "god-0810-1",
-      "impressions": 85,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-10",
-      "persona": "zhaohan",
-      "personaName": "昭涵",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@zhaohan221/post/Db3AhNsEzSw?xmt=AQG04nuaaYzD-WMwXI2ICLlIvJ_W5a5z0Xtgp2VItFmLOw",
-      "landingUrl": null,
-      "utmContent": "zhaohan-0810-1",
-      "impressions": 9,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-10",
-      "persona": "cc",
-      "personaName": "AI體育賽事分析",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@wc_ccai/post/Db3CuQUEykT?xmt=AQG04QyLrJh8cdNHNcdULv7g_wSvd0f6zWYnwsS24rko-g",
-      "landingUrl": null,
-      "utmContent": "cc-0810-1",
-      "impressions": 446,
-      "likes": 1,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-10",
-      "persona": "hahaqiu",
-      "personaName": "哈哈看球",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@baoxinyi824h/post/Db3CCaME6r2?xmt=AQG0eGCWk0TcLon64hwh_5UW8iLawllrAnaYIPvtV5SUDg",
-      "landingUrl": null,
-      "utmContent": "hahaqiu-0810-1",
-      "impressions": 223,
-      "likes": 5,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -9144,12 +9024,6 @@
     {
       "date": "2026-08-11",
       "totalImpressions": 797,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-08-10",
-      "totalImpressions": 1737,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
