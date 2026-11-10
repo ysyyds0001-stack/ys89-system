@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-09T07:42:13Z",
+  "lastUpdated": "2026-11-10T08:03:35Z",
   "posts": [
     {
       "date": "2026-11-04",
@@ -8565,141 +8565,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-11",
-      "persona": "uncle",
-      "personaName": "體育賽事排雷大叔",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/_0iootNNj/",
-      "landingUrl": null,
-      "utmContent": "uncle-0811-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "帳號已停權，無法查看貼文內容，成效永久無法查證，不用再追問 / 2026-09-01 標記放棄追蹤：share 連結持續回 invalid_post，多次嘗試皆無法解析到該帳號貼文。日後跑成效請跳過。"
-    },
-    {
-      "date": "2026-08-11",
-      "persona": "linjiayi",
-      "personaName": "林家益",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Oh7S1mHNt/",
-      "landingUrl": null,
-      "utmContent": "linjiayi-0811-1",
-      "impressions": 9,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-11",
-      "persona": null,
-      "personaName": "惠琪",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/HyZ57UzWv/",
-      "landingUrl": null,
-      "utmContent": "huiqi3034-0811-1",
-      "impressions": 46,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-11",
-      "persona": "zhansen",
-      "personaName": "戰術阿森",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/GVG93fyVn/",
-      "landingUrl": null,
-      "utmContent": "zhansen-0811-1",
-      "impressions": 266,
-      "likes": 2,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-11",
-      "persona": "yuya",
-      "personaName": "妤雅",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/GIyv_K1QY/",
-      "landingUrl": null,
-      "utmContent": "yuya89223-0811-1",
-      "impressions": 10,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-11",
-      "persona": "hahaqiu",
-      "personaName": "哈哈看球",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/FiAla-Rvd/",
-      "landingUrl": null,
-      "utmContent": "hahaqiu-0811-1",
-      "impressions": 142,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-11",
-      "persona": "cc",
-      "personaName": "AI體育賽事分析",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/DUqZPXBSi/",
-      "landingUrl": null,
-      "utmContent": "cc-0811-1",
-      "impressions": 315,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-11",
-      "persona": "egameobs",
-      "personaName": "電子遊戲觀測所",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/DScoE3J_m/",
-      "landingUrl": null,
-      "utmContent": "siyuhan739-0811-1",
-      "impressions": 8,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-11",
-      "persona": "jasonchen",
-      "personaName": "Jason Chen",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Bh6Te0Bl3q/",
-      "landingUrl": null,
-      "utmContent": "jasonchen-0811-1",
-      "impressions": 1,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -9020,12 +8885,6 @@
       "totalImpressions": 101,
       "totalLinkClicks": null,
       "totalRegistrations": null
-    },
-    {
-      "date": "2026-08-11",
-      "totalImpressions": 797,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
     }
   ],
   "personas": [
@@ -9047,9 +8906,7 @@
       "code": "uncle",
       "name": "大叔",
       "agent": "fu001",
-      "platforms": [
-        "threads"
-      ]
+      "platforms": []
     },
     {
       "code": "crab",
