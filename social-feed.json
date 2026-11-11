@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-10T08:03:35Z",
+  "lastUpdated": "2026-11-11T07:32:53Z",
   "posts": [
     {
       "date": "2026-11-04",
@@ -747,7 +747,7 @@
       "impressions": null,
       "likes": null,
       "comments": null,
-      "linkClicks": 2,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -7557,7 +7557,7 @@
       "impressions": 0,
       "likes": 2,
       "comments": 1,
-      "linkClicks": 3,
+      "linkClicks": null,
       "registrations": null,
       "note": "瀏覽數 Threads 未顯示數字，暫記 0，非確認為零 / 2026-09-08 補跑：Threads 回 invalid_post（貼文已刪除或帳號停用），不再重跑"
     },
@@ -8415,156 +8415,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-08-12",
-      "persona": null,
-      "personaName": "惠怡",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/IFFJKGUrV/",
-      "landingUrl": null,
-      "utmContent": "huiyi6430-0812-1",
-      "impressions": 7,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-12",
-      "persona": "yuya",
-      "personaName": "妤雅",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/HfHmgJXhN/",
-      "landingUrl": null,
-      "utmContent": "yuya89223-0812-1",
-      "impressions": 10,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-12",
-      "persona": "zhaohan",
-      "personaName": "昭涵",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/G3L9YowDo/",
-      "landingUrl": null,
-      "utmContent": "zhaohan-0812-1",
-      "impressions": 10,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-12",
-      "persona": "zhansen",
-      "personaName": "戰術阿森",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Fcq1mUkBU/",
-      "landingUrl": null,
-      "utmContent": "zhansen-0812-1",
-      "impressions": 0,
-      "likes": 1,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "無法看瀏覽"
-    },
-    {
-      "date": "2026-08-12",
-      "persona": "cc",
-      "personaName": "AI體育賽事分析",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/FCKGptznK/",
-      "landingUrl": null,
-      "utmContent": "cc-0812-1",
-      "impressions": 19,
-      "likes": 1,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-12",
-      "persona": "hahaqiu",
-      "personaName": "哈哈看球",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/DQno7eaXV/",
-      "landingUrl": null,
-      "utmContent": "hahaqiu-0812-1",
-      "impressions": 21,
-      "likes": 1,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-12",
-      "persona": "cyq",
-      "personaName": "陳亦強",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@qiang_no_blind/post/Db8EEmBGVqZ?xmt=AQG0m_Ceq-9HqoLtBr7KUsxdSpB1NSXjKSxP1tjVyeEBDg",
-      "landingUrl": null,
-      "utmContent": "cyq-0812-2",
-      "impressions": 17,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-12",
-      "persona": "cyq",
-      "personaName": "陳亦強",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@qiang_no_blind/post/Db8EEmBGVqZ?xmt=AQG0_5kAP_36aarRzaEigVkev68Jlq5Ci0JmaQ5z0VROWw",
-      "landingUrl": null,
-      "utmContent": "cyq-0812-1",
-      "impressions": 17,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-12",
-      "persona": "hahaqiu",
-      "personaName": "哈哈看球",
-      "platform": "threads",
-      "postUrl": null,
-      "landingUrl": "https://lin.ee/UqoYjNiS?utm_source=hahaqiu&utm_medium=th_bio&utm_campaign=wc2026&utm_content=hahaqiu-0812-1",
-      "utmContent": "hahaqiu-0812-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-12",
-      "persona": "hahaqiu",
-      "personaName": "哈哈看球",
-      "platform": "ig",
-      "postUrl": null,
-      "landingUrl": "https://lin.ee/UqoYjNiS?utm_source=hahaqiu&utm_medium=ig_bio&utm_campaign=wc2026&utm_content=hahaqiu-0812-2",
-      "utmContent": "hahaqiu-0812-2",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
     }
   ],
   "daily": [
@@ -8643,7 +8493,7 @@
     {
       "date": "2026-10-13",
       "totalImpressions": 395,
-      "totalLinkClicks": 2,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -8853,7 +8703,7 @@
     {
       "date": "2026-08-19",
       "totalImpressions": 813,
-      "totalLinkClicks": 3,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -8877,12 +8727,6 @@
     {
       "date": "2026-08-13",
       "totalImpressions": 1103,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-08-12",
-      "totalImpressions": 101,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
@@ -8961,7 +8805,6 @@
       "name": "哈哈看球",
       "agent": null,
       "platforms": [
-        "ig",
         "threads"
       ]
     },
