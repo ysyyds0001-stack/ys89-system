@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-11T07:32:53Z",
+  "lastUpdated": "2026-11-12T08:00:16Z",
   "posts": [
     {
       "date": "2026-11-04",
@@ -8280,141 +8280,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-08-13",
-      "persona": "haogame",
-      "personaName": "小豪遊戲筆記",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/_hVRh8Lo4/",
-      "landingUrl": "https://tsaishen888.com/line/?utm_source=haogame&utm_medium=th_post&utm_campaign=wc2026&utm_content=haogame-0813-1",
-      "utmContent": "haogame-0813-1",
-      "impressions": 750,
-      "likes": 1,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-13",
-      "persona": null,
-      "personaName": "惠琪",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/QXbhOsMO_/",
-      "landingUrl": null,
-      "utmContent": "yuki-0813-1",
-      "impressions": 9,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-13",
-      "persona": "yuya",
-      "personaName": "妤雅",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/HhUlxocLJ/",
-      "landingUrl": null,
-      "utmContent": "yuya-0813-1",
-      "impressions": 6,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-13",
-      "persona": "cc",
-      "personaName": "AI體育賽事分析",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/He-EKp2_I/",
-      "landingUrl": null,
-      "utmContent": "cc-0813-1",
-      "impressions": 92,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-13",
-      "persona": "god",
-      "personaName": "財神",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/FnhSzoFIl/",
-      "landingUrl": null,
-      "utmContent": "god-0813-1",
-      "impressions": 136,
-      "likes": 0,
-      "comments": 2,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-13",
-      "persona": "baccobs",
-      "personaName": "百家樂觀測所",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/FF2rrUcZw/",
-      "landingUrl": null,
-      "utmContent": "huiyu13214-0813-1",
-      "impressions": 3,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-13",
-      "persona": "lottnum",
-      "personaName": "獎號通",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@huiyi7770/post/Db-xvsVklWk?xmt=AQG0tYb59aDJAcfBqPYFeLx947qqY69Ig9VEAx36PSQHBw",
-      "landingUrl": null,
-      "utmContent": "lottnum-0813-1",
-      "impressions": 15,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-13",
-      "persona": "yuchiazhi",
-      "personaName": "魚池阿智",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/@fish_no_trap/post/Db-vj-KFHKx?xmt=AQG0ycxfd5balXqOulOrNvfBrpjuXnpGrUBMS_hbk_Np3Q",
-      "landingUrl": "https://tsaishen888.com/line/?utm_source=yuchiazhi&utm_medium=th_post&utm_campaign=wc2026&utm_content=yuchiazhi-0813-1",
-      "utmContent": "yuchiazhi-0813-1",
-      "impressions": 92,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-13",
-      "persona": "miya",
-      "personaName": "米亞運動賽事",
-      "platform": "threads",
-      "postUrl": "https://www.instagram.com/p/Db-vErDFIf_/",
-      "landingUrl": null,
-      "utmContent": "miyunsai-0813-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -8721,12 +8586,6 @@
     {
       "date": "2026-08-14",
       "totalImpressions": 344,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-08-13",
-      "totalImpressions": 1103,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
