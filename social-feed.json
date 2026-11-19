@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-18T08:15:48Z",
+  "lastUpdated": "2026-11-19T08:27:59Z",
   "posts": [
     {
       "date": "2026-11-04",
@@ -237,7 +237,7 @@
       "impressions": 131,
       "likes": 1,
       "comments": 1,
-      "linkClicks": 3,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -7215,216 +7215,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-08-20",
-      "persona": "hahaqiu",
-      "personaName": "哈哈看球",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Pqn0-P5j5/",
-      "landingUrl": "https://picks168.com/line/?utm_source=hahaqiu&utm_medium=th_post&utm_campaign=wc2026&utm_content=hahaqiu-0820-1",
-      "utmContent": "hahaqiu-0820-1",
-      "impressions": 70,
-      "likes": 0,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-20",
-      "persona": "yuki",
-      "personaName": "Yuki",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/KaAFqqCUY/",
-      "landingUrl": null,
-      "utmContent": "yuki-0820-1",
-      "impressions": 3,
-      "likes": 0,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "瀏覽數 Threads 未顯示數字，暫記 0，非確認為零"
-    },
-    {
-      "date": "2026-08-20",
-      "persona": "yuchiazhi",
-      "personaName": "魚池阿智",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/ILHxzAKIi/",
-      "landingUrl": null,
-      "utmContent": "yuchiazhi-0820-1",
-      "impressions": 0,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "瀏覽數 Threads 未顯示數字，暫記 0，非確認為零 / 2026-09-08 補跑：Threads 回 invalid_post（貼文已刪除或帳號停用），不再重跑"
-    },
-    {
-      "date": "2026-08-20",
-      "persona": null,
-      "personaName": "佳彤",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/HQAKMABnM/",
-      "landingUrl": null,
-      "utmContent": "jiatong668-0820-1",
-      "impressions": 1,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "2026-08-20 修正：原記錄誤標為嘉彤，實際連結為佳彤(jiatong5956)的貼文，已更正角色 / 2026-09-08 補跑：Threads 回 invalid_post（貼文已刪除或帳號停用），不再重跑"
-    },
-    {
-      "date": "2026-08-20",
-      "persona": "xiaoye",
-      "personaName": "小夜",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/GDcVPUMNr/",
-      "landingUrl": null,
-      "utmContent": "xiaoye-0820-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "2026-09-01 標記放棄追蹤：share 連結已失敗 5 次（invalid_post／帳號主頁打不開），研判連結或貼文已失效。日後跑成效請跳過。"
-    },
-    {
-      "date": "2026-08-20",
-      "persona": "cc",
-      "personaName": "AI體育賽事分析",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/GCGFN2ok2/",
-      "landingUrl": null,
-      "utmContent": "cc-0820-1",
-      "impressions": 36,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-20",
-      "persona": "boqi",
-      "personaName": "波奇",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/FyngkmUcW/",
-      "landingUrl": null,
-      "utmContent": "boqi-0820-1",
-      "impressions": 57,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-20",
-      "persona": null,
-      "personaName": "佳晴",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Ducca7YsG/",
-      "landingUrl": null,
-      "utmContent": "jiaqing1441-0820-1",
-      "impressions": 2,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-20",
-      "persona": "lottnum",
-      "personaName": "獎號通",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/DtfKytt0L/",
-      "landingUrl": null,
-      "utmContent": "huiyi7770-0820-1",
-      "impressions": 5,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-20",
-      "persona": null,
-      "personaName": "嘉瑜",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/D6650IbEA/",
-      "landingUrl": null,
-      "utmContent": "jiayu79995-0820-1",
-      "impressions": 6,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-20",
-      "persona": null,
-      "personaName": "靜柔",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/BlFnEzBfZH/",
-      "landingUrl": null,
-      "utmContent": "jingrou794-0820-1",
-      "impressions": 6,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "瀏覽數 Threads 未顯示數字，暫記 0，非確認為零"
-    },
-    {
-      "date": "2026-08-20",
-      "persona": "god",
-      "personaName": "財神",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/BCIXmDsLAQ",
-      "landingUrl": null,
-      "utmContent": "god-0820-1",
-      "impressions": 141,
-      "likes": 3,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-20",
-      "persona": "haogame",
-      "personaName": "小豪遊戲筆記",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/BBX-_VJpww/",
-      "landingUrl": "https://tsaishen888.com/line/?utm_source=haogame&utm_medium=th_post&utm_campaign=wc2026&utm_content=haogame-0820-1",
-      "utmContent": "haogame-0820-1",
-      "impressions": 0,
-      "likes": 1,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立；瀏覽數 Threads 未顯示數字，暫記 0，非確認為零 / 2026-09-08 補跑：Threads 回 invalid_post（貼文已刪除或帳號停用），不再重跑"
-    },
-    {
-      "date": "2026-08-20",
-      "persona": "miya",
-      "personaName": "米亞運動賽事",
-      "platform": null,
-      "postUrl": "https://www.instagram.com/p/DcQSzSnkYS1/",
-      "landingUrl": null,
-      "utmContent": "miya-0820-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -7467,7 +7257,7 @@
     {
       "date": "2026-10-21",
       "totalImpressions": 157,
-      "totalLinkClicks": 3,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -7703,12 +7493,6 @@
       "totalImpressions": 746,
       "totalLinkClicks": null,
       "totalRegistrations": null
-    },
-    {
-      "date": "2026-08-20",
-      "totalImpressions": 327,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
     }
   ],
   "personas": [
@@ -7858,9 +7642,7 @@
       "code": "xiaoye",
       "name": "小夜",
       "agent": null,
-      "platforms": [
-        "threads"
-      ]
+      "platforms": []
     },
     {
       "code": "apu",
@@ -7898,9 +7680,7 @@
       "code": "boqi",
       "name": "波奇",
       "agent": null,
-      "platforms": [
-        "threads"
-      ]
+      "platforms": []
     },
     {
       "code": "bianbian",
