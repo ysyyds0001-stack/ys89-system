@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-22T07:49:37Z",
+  "lastUpdated": "2026-11-23T08:39:20Z",
   "posts": [
     {
       "date": "2026-11-04",
@@ -6810,111 +6810,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-08-24",
-      "persona": "zhansen",
-      "personaName": "戰術阿森",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/QJpR4E7Wz/",
-      "landingUrl": null,
-      "utmContent": "zhansen-0824-1",
-      "impressions": 776,
-      "likes": 2,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-24",
-      "persona": "yuya",
-      "personaName": "妤雅",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/GZeJ40_3S/",
-      "landingUrl": null,
-      "utmContent": "yuya89223-0824-1",
-      "impressions": 16,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-24",
-      "persona": "zhaohan",
-      "personaName": "昭涵",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/GYOgwbkOJ/",
-      "landingUrl": null,
-      "utmContent": "zhaohan-0824-1",
-      "impressions": 88,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-24",
-      "persona": "yuchiazhi",
-      "personaName": "魚池阿智",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/FWvVdPq2v/",
-      "landingUrl": null,
-      "utmContent": "yuchiazhi-0824-1",
-      "impressions": 37,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-24",
-      "persona": "lottnum",
-      "personaName": "獎號通",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/DvaHEE7w7/",
-      "landingUrl": null,
-      "utmContent": "huiyi7770-0824-1",
-      "impressions": 0,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "瀏覽數 Threads 未顯示數字，暫記 0，非確認為零"
-    },
-    {
-      "date": "2026-08-24",
-      "persona": "baccobs",
-      "personaName": "百家樂觀測所",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/D1betxU-n/",
-      "landingUrl": null,
-      "utmContent": "huiyu13214-0824-1",
-      "impressions": 3,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-24",
-      "persona": "haogame",
-      "personaName": "小豪遊戲筆記",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/BAZ1fBf50d/",
-      "landingUrl": null,
-      "utmContent": "haogame-0824-1",
-      "impressions": 23,
-      "likes": 0,
-      "comments": 2,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -7179,12 +7074,6 @@
     {
       "date": "2026-08-25",
       "totalImpressions": 1348,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-08-24",
-      "totalImpressions": 943,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
