@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-24T10:43:30Z",
+  "lastUpdated": "2026-11-25T09:38:04Z",
   "posts": [
     {
       "date": "2026-11-04",
@@ -6435,126 +6435,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-08-26",
-      "persona": "yuya",
-      "personaName": "妤雅",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/FPAbGS-Cf/",
-      "landingUrl": null,
-      "utmContent": "yuya-0826-2",
-      "impressions": 9,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-26",
-      "persona": "cc",
-      "personaName": "AI體育賽事分析",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/ESiH2MGES/",
-      "landingUrl": null,
-      "utmContent": "cc-0826-2",
-      "impressions": 81,
-      "likes": 0,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-26",
-      "persona": "zahra",
-      "personaName": "zahra",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Dy7OXLuTG/",
-      "landingUrl": null,
-      "utmContent": "zahra-0826-1",
-      "impressions": 4,
-      "likes": 1,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-26",
-      "persona": null,
-      "personaName": "倪",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/DvWfDY10r/",
-      "landingUrl": null,
-      "utmContent": "ni-0826-1",
-      "impressions": 2,
-      "likes": 1,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-26",
-      "persona": "jiang",
-      "personaName": "獎獎獎江",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/DWEZgMZWX/",
-      "landingUrl": null,
-      "utmContent": "jiang-0826-1",
-      "impressions": 16,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-26",
-      "persona": "cc",
-      "personaName": "AI體育賽事分析",
-      "platform": "threads",
-      "postUrl": "https://www.instagram.com/p/DcgRuZWD0GA/",
-      "landingUrl": null,
-      "utmContent": "cc-0826-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-26",
-      "persona": "cc",
-      "personaName": "AI體育賽事分析",
-      "platform": null,
-      "postUrl": "https://www.instagram.com/p/DcgRuZWD0GA/",
-      "landingUrl": null,
-      "utmContent": "cc-0826-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-26",
-      "persona": "fishdriver",
-      "personaName": "捕魚老司機阿網",
-      "platform": null,
-      "postUrl": "https://www.instagram.com/p/DcgRfpuGPg_/",
-      "landingUrl": null,
-      "utmContent": "fishdriver-0826-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -6807,12 +6687,6 @@
     {
       "date": "2026-08-27",
       "totalImpressions": 227,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-08-26",
-      "totalImpressions": 112,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
