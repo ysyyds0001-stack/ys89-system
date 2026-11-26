@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-25T09:38:04Z",
+  "lastUpdated": "2026-11-26T09:13:39Z",
   "posts": [
     {
       "date": "2026-11-04",
@@ -132,7 +132,7 @@
       "impressions": 66,
       "likes": 0,
       "comments": 1,
-      "linkClicks": 3,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -6270,171 +6270,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-08-27",
-      "persona": "cyq",
-      "personaName": "陳亦強",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/IQSIE8r7n/",
-      "landingUrl": "https://picks168.com/line/?utm_source=cyq&utm_medium=th_comment&utm_campaign=wc2026&utm_content=cyq-0827-1",
-      "utmContent": "cyq-0827-1",
-      "impressions": 44,
-      "likes": 0,
-      "comments": 2,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-27",
-      "persona": "yuya",
-      "personaName": "妤雅",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Freq___G1/",
-      "landingUrl": null,
-      "utmContent": "yuya-0827-1",
-      "impressions": 0,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "瀏覽數 Threads 未顯示數字，暫記 0，非確認為零"
-    },
-    {
-      "date": "2026-08-27",
-      "persona": "lottnum",
-      "personaName": "獎號通",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/FbkQIenAj/",
-      "landingUrl": null,
-      "utmContent": "huiyi7770-0827-1",
-      "impressions": 0,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "瀏覽數 Threads 未顯示數字，暫記 0，非確認為零"
-    },
-    {
-      "date": "2026-08-27",
-      "persona": "hahaqiu",
-      "personaName": "哈哈看球",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/F1Y4poeM5/",
-      "landingUrl": null,
-      "utmContent": "hahaqiu-0827-1",
-      "impressions": 6,
-      "likes": 0,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-27",
-      "persona": "haogame",
-      "personaName": "小豪遊戲筆記",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/DyZIqh57b/",
-      "landingUrl": "https://tsaishen888.com/line/?utm_source=haogame&utm_medium=th_comment&utm_campaign=wc2026&utm_content=haogame-0827-2",
-      "utmContent": "haogame-0827-2",
-      "impressions": 62,
-      "likes": 0,
-      "comments": 3,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-27",
-      "persona": "baccobs",
-      "personaName": "百家樂觀測所",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/D4HO_xUz8/",
-      "landingUrl": null,
-      "utmContent": "baccobs-0827-1",
-      "impressions": 9,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-27",
-      "persona": "yuchiazhi",
-      "personaName": "魚池阿智",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Bigic-ORJG/",
-      "landingUrl": null,
-      "utmContent": "yuchiazhi-0827-2",
-      "impressions": 4,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-27",
-      "persona": "god",
-      "personaName": "財神",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/BCAQKuzAH6/",
-      "landingUrl": "https://picks168.com/vip-trial/caishen/?utm_source=god&utm_medium=th_comment&utm_campaign=wc2026&utm_content=god-0827-1",
-      "utmContent": "god-0827-1",
-      "impressions": 102,
-      "likes": 0,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-27",
-      "persona": "haogame",
-      "personaName": "小豪遊戲筆記",
-      "platform": null,
-      "postUrl": "https://www.instagram.com/p/Dcitz1wzuwv/",
-      "landingUrl": null,
-      "utmContent": "haogame-ig-0827-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-27",
-      "persona": "yuchiazhi",
-      "personaName": "魚池阿智",
-      "platform": null,
-      "postUrl": "https://www.instagram.com/p/DciqhDEE5HQ/",
-      "landingUrl": null,
-      "utmContent": "yuchiazhi-0827-3",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-27",
-      "persona": null,
-      "personaName": null,
-      "platform": null,
-      "postUrl": "https://www.instagram.com/p/Dcips87H6N6/",
-      "landingUrl": null,
-      "utmContent": null,
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -6465,7 +6300,7 @@
     {
       "date": "2026-10-28",
       "totalImpressions": 106,
-      "totalLinkClicks": 3,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -6681,12 +6516,6 @@
     {
       "date": "2026-08-28",
       "totalImpressions": 163,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-08-27",
-      "totalImpressions": 227,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
@@ -7012,9 +6841,7 @@
       "code": "baccobs",
       "name": "百家樂觀測所",
       "agent": null,
-      "platforms": [
-        "threads"
-      ]
+      "platforms": []
     },
     {
       "code": "lottnum",
