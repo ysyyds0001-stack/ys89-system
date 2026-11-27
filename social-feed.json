@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-26T09:13:39Z",
+  "lastUpdated": "2026-11-27T09:29:31Z",
   "posts": [
     {
       "date": "2026-11-04",
@@ -102,7 +102,7 @@
       "impressions": 86,
       "likes": 0,
       "comments": 1,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -6060,216 +6060,6 @@
       "linkClicks": null,
       "registrations": null,
       "note": null
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "fishdriver",
-      "personaName": "捕魚老司機阿網",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/KgRW1_Wsh/",
-      "landingUrl": null,
-      "utmContent": "fishdriver-0828-1",
-      "impressions": 15,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "hahaqiu",
-      "personaName": "哈哈看球",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Hn64KszQq/",
-      "landingUrl": null,
-      "utmContent": "hahaqiu-0828-2",
-      "impressions": 9,
-      "likes": 0,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "cc",
-      "personaName": "AI體育賽事分析",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/Hey2HqHvH/",
-      "landingUrl": "https://picks168.com/line/?utm_source=cc&utm_medium=th_comment&utm_campaign=wc2026&utm_content=cc-0828-1",
-      "utmContent": "cc-0828-1",
-      "impressions": 16,
-      "likes": 0,
-      "comments": 2,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "yuya",
-      "personaName": "妤雅",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/FEJAipGBD/",
-      "landingUrl": null,
-      "utmContent": "yuya-0828-1",
-      "impressions": 17,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "zhansen",
-      "personaName": "戰術阿森",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/DwyJ4oE9I/",
-      "landingUrl": "https://tsaishen888.com/line/?utm_source=zhansen&utm_medium=th_comment&utm_campaign=wc2026&utm_content=zhansen-0828-1",
-      "utmContent": "zhansen-0828-1",
-      "impressions": 9,
-      "likes": 0,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "UTM產生器建立"
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "zhaohan",
-      "personaName": "昭涵",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/DqMyPb1Of/",
-      "landingUrl": null,
-      "utmContent": "zhaohan-0828-1",
-      "impressions": 77,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "yuki",
-      "personaName": "Yuki",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/D2iE66yLi/",
-      "landingUrl": null,
-      "utmContent": "yuki-0828-1",
-      "impressions": 3,
-      "likes": 0,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-28",
-      "persona": null,
-      "personaName": "倪",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/D0WaKYzh2/",
-      "landingUrl": null,
-      "utmContent": "ni-0828-1",
-      "impressions": 1,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "egameobs",
-      "personaName": "電子遊戲觀測所",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/C40D7yx2w/",
-      "landingUrl": null,
-      "utmContent": "egameobs-0828-1",
-      "impressions": 0,
-      "likes": 0,
-      "comments": 0,
-      "linkClicks": null,
-      "registrations": null,
-      "note": "無法顯示瀏覽數"
-    },
-    {
-      "date": "2026-08-28",
-      "persona": null,
-      "personaName": "lan Lin",
-      "platform": "threads",
-      "postUrl": "https://www.threads.com/share/BAvXweHaUT/",
-      "landingUrl": null,
-      "utmContent": "lanlin-0828-1",
-      "impressions": 16,
-      "likes": 0,
-      "comments": 1,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "hahaqiu",
-      "personaName": "哈哈看球",
-      "platform": null,
-      "postUrl": "https://www.instagram.com/p/DclIkLZFBxU/",
-      "landingUrl": null,
-      "utmContent": "hahaqiu-0828-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "cc",
-      "personaName": "AI體育賽事分析",
-      "platform": null,
-      "postUrl": "https://www.instagram.com/p/DclIEGPjz5t/",
-      "landingUrl": null,
-      "utmContent": "cc-0828-1",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "egameobs",
-      "personaName": "電子遊戲觀測所",
-      "platform": null,
-      "postUrl": "https://www.instagram.com/p/DclHcTNEsYR/",
-      "landingUrl": null,
-      "utmContent": "egameobs-0828-2",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
-    },
-    {
-      "date": "2026-08-28",
-      "persona": "fishdriver",
-      "personaName": "捕魚老司機阿網",
-      "platform": null,
-      "postUrl": "https://www.instagram.com/p/DclGxn1GDir/",
-      "landingUrl": null,
-      "utmContent": "fishdriver-0828-2",
-      "impressions": null,
-      "likes": null,
-      "comments": null,
-      "linkClicks": null,
-      "registrations": null,
-      "note": null
     }
   ],
   "daily": [
@@ -6294,7 +6084,7 @@
     {
       "date": "2026-10-29",
       "totalImpressions": 104,
-      "totalLinkClicks": 1,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
@@ -6510,12 +6300,6 @@
     {
       "date": "2026-08-31",
       "totalImpressions": 32,
-      "totalLinkClicks": null,
-      "totalRegistrations": null
-    },
-    {
-      "date": "2026-08-28",
-      "totalImpressions": 163,
       "totalLinkClicks": null,
       "totalRegistrations": null
     }
@@ -6817,9 +6601,7 @@
       "code": "yuya",
       "name": "妤雅",
       "agent": null,
-      "platforms": [
-        "threads"
-      ]
+      "platforms": []
     },
     {
       "code": "yuki",
