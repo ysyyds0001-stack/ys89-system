@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-27T09:29:31Z",
+  "lastUpdated": "2026-11-28T08:43:00Z",
   "posts": [
     {
       "date": "2026-11-04",
@@ -57,7 +57,7 @@
       "impressions": 85,
       "likes": 0,
       "comments": 1,
-      "linkClicks": 1,
+      "linkClicks": null,
       "registrations": null,
       "note": "UTM產生器建立"
     },
@@ -6078,7 +6078,7 @@
     {
       "date": "2026-10-30",
       "totalImpressions": 113,
-      "totalLinkClicks": 1,
+      "totalLinkClicks": null,
       "totalRegistrations": null
     },
     {
